@@ -899,10 +899,9 @@ class GenerateTarget(BaseTransform):
             - ``'heatmap'``: The encoded should be instance-irrelevant
                 heatmaps and will be stored in ``results['heatmaps']``
             - ``'multilevel_heatmap'`` The encoded should be a list of
-                heatmaps and will be stored in
-                ``results['multilevel_heatmaps']``. Note that in this case,
-                ``self.encoder`` is also a list, each encoder for a single
-                level of heatmaps.
+                heatmaps and will be stored in ``results['heatmaps']``.
+                Note that in this case, ``self.encoder`` should also be
+                a list, and each encoder encodes a single-level heatmaps.
             - ``'keypoint_label'``: The encoded should be instance-level
                 labels and will be stored in ``results['keypoint_label']``
             - ``'keypoint_xy_label'``: The encoed should be instance-level

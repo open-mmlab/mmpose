@@ -68,7 +68,7 @@ model = dict(
         num_units=4,
         norm_cfg=dict(type='BN'),
         # each sub list is for a stage
-        # and each element in each list if for a unit
+        # and each element in each list is for a unit
         level_indices=[0, 1, 2, 3] + [1, 2, 3, 4],
         loss=([
             dict(

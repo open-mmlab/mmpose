@@ -93,8 +93,6 @@ class PackPoseInputs(BaseTransform):
         'heatmaps': 'heatmaps',
     }
 
-    multilevel_field_mapping_table = {'multilevel_heatmaps': 'heatmaps'}
-
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'input_size', 'flip',
