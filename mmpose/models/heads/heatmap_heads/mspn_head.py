@@ -392,20 +392,13 @@ class MSPNHead(BaseHead):
         # multi-stage multi-unit predict heatmaps
         msmu_pred_heatmaps = self.forward(feats)
 
-        num_levels = self.num_stages * self.num_units
-
-        multilevel_gt_heatmaps = [
-            torch.stack([d.gt_fields[i].heatmaps for d in batch_data_samples])
-            for i in self.level_indices
-        ]
-
         keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])  # shape: [B*N, L, K]
 
         # calculate losses over multiple stages and multiple units
         losses = dict()
-        for i in range(num_levels):
+        for i in range(self.num_stages * self.num_units):
             if isinstance(self.loss_module, nn.ModuleList):
                 # use different loss_module over different stages and units
                 loss_func = self.loss_module[i]
@@ -413,12 +406,14 @@ class MSPNHead(BaseHead):
                 # use the same loss_module over different stages and units
                 loss_func = self.loss_module
 
-            # the `gt_heatmaps` used to calculate loss for different stages
-            # and different units are different, but the `keypoint_weights`
-            # are the same
-            loss_i = loss_func(msmu_pred_heatmaps[i],
-                               multilevel_gt_heatmaps[i], keypoint_weights[:,
-                                                                           i])
+            # select `gt_heatmaps` and `keypoint_weights` for different level
+            # according to `self.level_indices` to calculate loss
+            gt_heatmaps = torch.stack([
+                d.gt_fields[self.level_indices[i]].heatmaps
+                for d in batch_data_samples
+            ])
+            loss_i = loss_func(msmu_pred_heatmaps[i], gt_heatmaps,
+                               keypoint_weights[:, self.level_indices[i]])
 
             if 'loss_kpt' not in losses:
                 losses['loss_kpt'] = loss_i
@@ -428,11 +423,10 @@ class MSPNHead(BaseHead):
         # calculate accuracy
         _, avg_acc, _ = pose_pck_accuracy(
             output=to_numpy(msmu_pred_heatmaps[-1]),
-            target=to_numpy(multilevel_gt_heatmaps[-1]),
+            target=to_numpy(gt_heatmaps),
             mask=to_numpy(keypoint_weights[:, -1]) > 0)
 
-        acc_pose = torch.tensor(
-            avg_acc, device=multilevel_gt_heatmaps[0].device)
+        acc_pose = torch.tensor(avg_acc, device=gt_heatmaps.device)
         losses.update(acc_pose=acc_pose)
 
         return losses
