@@ -38,11 +38,7 @@ def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
 
 def get_face_keypoint_ids(dataset_meta: Dict) -> List:
     """A help function to get the keypoint indices of the face from the
-<<<<<<< HEAD
     dataset meta information.
-=======
-    model config.
->>>>>>> add webcam api
 
     Args:
         dataset_meta (dict): dataset meta information.
@@ -71,11 +67,7 @@ def get_face_keypoint_ids(dataset_meta: Dict) -> List:
 
 def get_wrist_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
     """A help function to get the keypoint indices of left and right wrists
-<<<<<<< HEAD
     from the dataset meta information.
-=======
-    from the model config.
->>>>>>> add webcam api
 
     Args:
         dataset_meta (dict): dataset meta information.

@@ -179,7 +179,6 @@ class PoseLocalVisualizer(Visualizer):
             for i, (pos, label) in enumerate(zip(positions, labels)):
                 label_text = classes[
                     label] if classes is not None else f'class {label}'
-                pos -= self.line_width
 
                 if isinstance(self.bbox_color,
                               tuple) and max(self.bbox_color) > 1:
