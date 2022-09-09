@@ -147,12 +147,19 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.field_mapping_table.items():
             if key in results:
                 if isinstance(results[key], list):
-                    data_type = MultilevelPixelData
+                    if gt_fields is None:
+                        gt_fields = MultilevelPixelData()
+                    else:
+                        assert isinstance(
+                            gt_fields, MultilevelPixelData
+                        ), 'Got mixed single-level and multi-level pixel data.'
                 else:
-                    data_type = PixelData
-
-                if gt_fields is None:
-                    gt_fields = data_type()
+                    if gt_fields is None:
+                        gt_fields = PixelData()
+                    else:
+                        assert isinstance(
+                            gt_fields, PixelData
+                        ), 'Got mixed single-level and multi-level pixel data.'
 
                 gt_fields.set_field(results[key], packed_key)
 
