@@ -22,7 +22,7 @@ In this section we demonstrate how to prepare an environment with PyTorch.
 
 MMPose works on Linux, Windows and macOS. It requires Python 3.6+, CUDA 9.2+ and PyTorch 1.6+.
 
-If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose Installation](#installation). Otherwise, you can follow these steps for the preparation.
+If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose Installation](#install-mmpose). Otherwise, you can follow these steps for the preparation.
 
 **Step 0.** Download and install Miniconda from the [official website](https://docs.conda.io/en/latest/miniconda.html).
 

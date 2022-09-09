@@ -20,7 +20,7 @@
 
 MMPose 适用于 Linux、Windows 和 macOS。它需要 Python 3.6+、CUDA 9.2+ 和 PyTorch 1.6+。
 
-如果您对配置 PyTorch 环境已经很熟悉，并且已经完成了配置，可以直接进入下一节：[安装](#安装)。否则，请依照以下步骤完成配置。
+如果您对配置 PyTorch 环境已经很熟悉，并且已经完成了配置，可以直接进入下一节：[安装](#安装-mmpose)。否则，请依照以下步骤完成配置。
 
 **第 1 步** 从[官网](https://docs.conda.io/en/latest/miniconda.html) 下载并安装 Miniconda。
 
