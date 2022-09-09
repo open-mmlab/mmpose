@@ -1,23 +1,20 @@
-<!-- TOC -->
+# 安装
 
-- [依赖环境](#依赖环境)
 - [安装](#安装)
-  - [最佳实践](#最佳实践)
-    - [从源码安装](#从源码安装)
-    - [作为 Python 包安装](#作为-python-包安装)
-  - [验证安装](#验证安装)
-  - [自定义安装](#自定义安装)
-    - [CUDA 版本](#cuda-版本)
-    - [不使用 MIM 安装 MMEngine](#不使用-mim-安装-mmengine)
-    - [不使用 MIM 安装 MMCV](#不使用-mim-安装-mmcv)
-    - [在 CPU 环境中安装](#在-cpu-环境中安装)
-    - [在 Google Colab 中安装](#在-google-colab-中安装)
-    - [通过 Docker 使用 MMPose](#通过-docker-使用-mmpose)
-  - [故障解决](#故障解决)
+  - [依赖环境](#依赖环境)
+  - [安装 MMPose](#安装-mmpose)
+    - [最佳实践](#最佳实践)
+    - [验证安装](#验证安装)
+    - [自定义安装](#自定义安装)
+      - [CUDA 版本](#cuda-版本)
+      - [不使用 MIM 安装 MMEngine](#不使用-mim-安装-mmengine)
+      - [不使用 MIM 安装 MMCV](#不使用-mim-安装-mmcv)
+      - [在 CPU 环境中安装](#在-cpu-环境中安装)
+      - [在 Google Colab 中安装](#在-google-colab-中安装)
+      - [通过 Docker 使用 MMPose](#通过-docker-使用-mmpose)
+    - [故障解决](#故障解决)
 
-<!-- TOC -->
-
-# 依赖环境
+## 依赖环境
 
 在本节中，我们将演示如何准备 PyTorch 相关的依赖环境。
 
@@ -52,12 +49,12 @@ conda install pytorch torchvision -c pytorch
 conda install pytorch torchvision cpuonly -c pytorch
 ```
 
-# 安装
+## 安装 MMPose
 
 我们推荐用户按照我们的最佳实践来安装 MMPose。但除此之外，如果您想根据
 您的习惯完成安装流程，也可以参见 [自定义安装](#自定义安装) 一节来获取更多信息。
 
-## 最佳实践
+### 最佳实践
 
 **第 1 步** 使用 [MIM](https://github.com/open-mmlab/mim) 安装 [MMEngine](https://github.com/open-mmlab/mmengine) 和 [MMCV](https://github.com/open-mmlab/mmcv/tree/2.x)
 
@@ -69,12 +66,9 @@ mim install "mmcv>=2.0.0rc1"
 
 **第 2 步** 安装 MMPose
 
-根据具体需求，我们支持两种安装模式：
+根据具体需求，我们支持两种安装模式: 从源码安装（推荐）和作为 Python 包安装
 
-- [从源码安装（推荐）](#从源码安装)：如果基于 MMPose 框架开发自己的任务，需要添加新的功能，比如新的模型或是数据集，或者使用我们提供的各种工具。
-- [作为 Python 包安装](#作为-python-包安装)：只是希望调用 MMPose 的接口，或者在自己的项目中导入 MMPose 中的模块。
-
-### 从源码安装
+方式 1： **从源码安装（推荐）**：如果基于 MMPose 框架开发自己的任务，需要添加新的功能，比如新的模型或是数据集，或者使用我们提供的各种工具。
 
 这种情况下，从源码按如下方式安装 mmpose：
 
@@ -88,7 +82,7 @@ pip install -v -e .
 # "-e" 表示以可编辑形式安装，这样可以在不重新安装的情况下，让本地修改直接生效
 ```
 
-### 作为 Python 包安装
+方式 2：**作为 Python 包安装**：只是希望调用 MMPose 的接口，或者在自己的项目中导入 MMPose 中的模块。
 
 直接使用 mim 安装即可。
 
@@ -96,13 +90,13 @@ pip install -v -e .
 mim install "mmpose>=1.0.0b0"
 ```
 
-## 验证安装
+### 验证安装
 
 为了验证 MMPose 的安装是否正确，您可以运行我们提供的 [示例代码](/demo/docs/2d_human_pose_demo.md) 来执行模型推理。
 
-## 自定义安装
+### 自定义安装
 
-### CUDA 版本
+#### CUDA 版本
 
 安装 PyTorch 时，需要指定 CUDA 版本。如果您不清楚选择哪个，请遵循我们的建议：
 
@@ -118,7 +112,7 @@ mim install "mmpose>=1.0.0b0"
 的配置相匹配（如用 `conda install` 安装 PyTorch 时指定的 cudatoolkit 版本）。
 ```
 
-### 不使用 MIM 安装 MMEngine
+#### 不使用 MIM 安装 MMEngine
 
 若不使用 mim 安装 MMEngine，请遵循 [ MMEngine 安装指南](https://mmengine.readthedocs.io/zh_CN/latest/get_started/installation.html).
 
@@ -128,7 +122,7 @@ mim install "mmpose>=1.0.0b0"
 pip install mmengine
 ```
 
-### 不使用 MIM 安装 MMCV
+#### 不使用 MIM 安装 MMCV
 
 MMCV 包含 C++ 和 CUDA 扩展，因此其对 PyTorch 的依赖比较复杂。MIM 会自动解析这些
 依赖，选择合适的 MMCV 预编译包，使安装更简单，但它并不是必需的。
@@ -142,13 +136,13 @@ MMCV 包含 C++ 和 CUDA 扩展，因此其对 PyTorch 的依赖比较复杂。M
 pip install 'mmcv>=2.0.0rc1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
-### 在 CPU 环境中安装
+#### 在 CPU 环境中安装
 
 MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训练、测试和模型推理等所有操作。
 
 在 CPU 模式下，MMCV 的部分功能将不可用，通常是一些 GPU 编译的算子，如 `Deformable Convolution`。MMPose 中大部分的模型都不会依赖这些算子，但是如果您尝试使用包含这些算子的模型来运行训练、测试或推理，将会报错。
 
-### 在 Google Colab 中安装
+#### 在 Google Colab 中安装
 
 [Google Colab](https://colab.research.google.com/) 通常已经包含了 PyTorch 环境，因此我们只需要安装 MMEngine, MMCV 和 MMPose 即可，命令如下：
 
@@ -180,7 +174,7 @@ print(mmpose.__version__)
 在 Jupyter 中，感叹号 `!` 用于执行外部命令，而 `%cd` 是一个[魔术命令](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-cd)，用于切换 Python 的工作路径。
 ```
 
-### 通过 Docker 使用 MMPose
+#### 通过 Docker 使用 MMPose
 
 MMPose 提供 [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/docker/Dockerfile)
 用于构建镜像。请确保您的 [Docker 版本](https://docs.docker.com/engine/install/) >=19.03。
@@ -201,7 +195,7 @@ docker run --gpus all --shm-size=8g -it -v {DATA_DIR}:/mmpose/data mmpose
 
 `{DATA_DIR}` 是您本地存放用于 MMPose 训练、测试、推理等流程的数据目录。
 
-## 故障解决
+### 故障解决
 
 如果您在安装过程中遇到了什么问题，请先查阅[常见问题](faq.md)。如果没有找到解决方法，可以在 GitHub
 上[提出 issue](https://github.com/open-mmlab/mmpose/issues/new/choose)。

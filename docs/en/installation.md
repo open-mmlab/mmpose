@@ -1,14 +1,18 @@
-- [MMPose Installation](#mmpose-installation)
-  - [Best Practices](#best-practices)
-  - [Verify the installation](#verify-the-installation)
-  - [Customize Installation](#customize-installation)
-    - [CUDA versions](#cuda-versions)
-    - [Install MMEngine without MIM](#install-mmengine-without-mim)
-    - [Install MMCV without MIM](#install-mmcv-without-mim)
-    - [Install on CPU-only platforms](#install-on-cpu-only-platforms)
-    - [Install on Google Colab](#install-on-google-colab)
-    - [Using MMPose with Docker](#using-mmpose-with-docker)
-  - [Trouble shooting](#trouble-shooting)
+# Installation
+
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Install MMPose](#install-mmpose)
+    - [Best Practices](#best-practices)
+    - [Verify the installation](#verify-the-installation)
+    - [Customize Installation](#customize-installation)
+      - [CUDA versions](#cuda-versions)
+      - [Install MMEngine without MIM](#install-mmengine-without-mim)
+      - [Install MMCV without MIM](#install-mmcv-without-mim)
+      - [Install on CPU-only platforms](#install-on-cpu-only-platforms)
+      - [Install on Google Colab](#install-on-google-colab)
+      - [Using MMPose with Docker](#using-mmpose-with-docker)
+    - [Trouble shooting](#trouble-shooting)
 
 <!-- TOC -->
 
@@ -47,7 +51,7 @@ On CPU platforms:
 conda install pytorch torchvision cpuonly -c pytorch
 ```
 
-# MMPose Installation
+## Install MMPose
 
 We recommend that users follow our best practices to install MMPose. However, the whole process is highly customizable. See [Customize Installation](#customize-installation) section for more information.
 
