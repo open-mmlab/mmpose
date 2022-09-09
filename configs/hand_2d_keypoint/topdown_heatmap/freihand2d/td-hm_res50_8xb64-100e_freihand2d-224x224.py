@@ -64,7 +64,7 @@ data_root = 'data/freihand/'
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', ffile_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale', padding=0.8),
     dict(type='RandomFlip', direction='horizontal'),
     dict(
@@ -77,7 +77,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type='LoadImage', ffile_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale', padding=0.8),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
