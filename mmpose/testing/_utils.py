@@ -15,7 +15,8 @@ def get_coco_sample(
         num_instances=1,
         with_bbox_cs=True,
         with_img_mask=False,
-        random_keypoints_visible=False):
+        random_keypoints_visible=False,
+        non_occlusion=False):
     """Create a dummy data sample in COCO style."""
     rng = np.random.RandomState(0)
     h, w = img_shape
@@ -24,7 +25,13 @@ def get_coco_sample(
     else:
         img = np.full((h, w, 3), img_fill, dtype=np.uint8)
 
-    bbox = _rand_bboxes(rng, num_instances, w, h)
+    if non_occlusion:
+        bbox = _rand_bboxes(rng, num_instances, w / num_instances, h)
+        for i in range(num_instances):
+            bbox[i, 0::2] += w / num_instances * i
+    else:
+        bbox = _rand_bboxes(rng, num_instances, w, h)
+
     keypoints = _rand_keypoints(rng, bbox, 17)
     if random_keypoints_visible:
         keypoints_visible = np.random.randint(0, 2, (num_instances,

@@ -5,9 +5,10 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
-from .utils import (gaussian_blur, generate_gaussian_heatmaps,
-                    get_heatmap_maximum)
-from .utils.gaussian_heatmap import generate_unbiased_gaussian_heatmaps
+from .utils.gaussian_heatmap import (generate_gaussian_heatmaps,
+                                     generate_unbiased_gaussian_heatmaps)
+from .utils.post_processing import get_heatmap_maximum
+from .utils.refinement import refine_keypoints, refine_keypoints_dark
 
 
 @KEYPOINT_CODECS.register_module()
@@ -126,26 +127,16 @@ class MSRAHeatmap(BaseKeypointCodec):
 
         keypoints, scores = get_heatmap_maximum(heatmaps)
 
+        # Unsqueeze the instance dimension for single-instance results
+        keypoints, scores = keypoints[None], scores[None]
+
         if self.unbiased:
             # Alleviate biased coordinate
-            # Apply Gaussian distribution modulation.
-            heatmaps = gaussian_blur(heatmaps, kernel=self.blur_kernel_size)
-            heatmaps = np.log(np.maximum(heatmaps, 1e-10))
-            for k in range(K):
-                keypoints[k] = self._taylor_decode(
-                    heatmap=heatmaps[k], keypoint=keypoints[k])
+            keypoints = refine_keypoints_dark(
+                keypoints, heatmaps, blur_kernel_size=self.blur_kernel_size)
+
         else:
-            # Add +/-0.25 shift to the predicted locations for higher acc.
-            for k in range(K):
-                heatmap = heatmaps[k]
-                px = int(keypoints[k, 0])
-                py = int(keypoints[k, 1])
-                if 1 < px < W - 1 and 1 < py < H - 1:
-                    diff = np.array([
-                        heatmap[py][px + 1] - heatmap[py][px - 1],
-                        heatmap[py + 1][px] - heatmap[py - 1][px]
-                    ])
-                    keypoints[k] += np.sign(diff) * 0.25
+            keypoints = refine_keypoints(keypoints, heatmaps)
 
         # Unsqueeze the instance dimension for single-instance results
         # and restore the keypoint scales
@@ -153,42 +144,3 @@ class MSRAHeatmap(BaseKeypointCodec):
         scores = scores[None]
 
         return keypoints, scores
-
-    @staticmethod
-    def _taylor_decode(heatmap: np.ndarray,
-                       keypoint: np.ndarray) -> np.ndarray:
-        """Distribution aware coordinate decoding for a single keypoint.
-
-        Note:
-            - heatmap height: H
-            - heatmap width: W
-
-        Args:
-            heatmap (np.ndarray[H, W]): Heatmap of a particular keypoint type.
-            keypoint (np.ndarray[2,]): Coordinates of the predicted keypoint.
-
-        Returns:
-            np.ndarray[2,]: Updated coordinates.
-        """
-        H, W = heatmap.shape[:2]
-        px, py = int(keypoint[0]), int(keypoint[1])
-        if 1 < px < W - 2 and 1 < py < H - 2:
-            dx = 0.5 * (heatmap[py][px + 1] - heatmap[py][px - 1])
-            dy = 0.5 * (heatmap[py + 1][px] - heatmap[py - 1][px])
-            dxx = 0.25 * (
-                heatmap[py][px + 2] - 2 * heatmap[py][px] +
-                heatmap[py][px - 2])
-            dxy = 0.25 * (
-                heatmap[py + 1][px + 1] - heatmap[py - 1][px + 1] -
-                heatmap[py + 1][px - 1] + heatmap[py - 1][px - 1])
-            dyy = 0.25 * (
-                heatmap[py + 2 * 1][px] - 2 * heatmap[py][px] +
-                heatmap[py - 2 * 1][px])
-            derivative = np.array([[dx], [dy]])
-            hessian = np.array([[dxx, dxy], [dxy, dyy]])
-            if dxx * dyy - dxy**2 != 0:
-                hessianinv = np.linalg.inv(hessian)
-                offset = -hessianinv @ derivative
-                offset = np.squeeze(np.array(offset.T), axis=0)
-                keypoint += offset
-        return keypoint
