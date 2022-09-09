@@ -5,6 +5,7 @@ from typing import Optional, Sequence, Tuple, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
+from mmcv.cnn import build_conv_layer
 from mmengine.structures import PixelData
 from torch import Tensor, nn
 
@@ -141,8 +142,18 @@ class IntegralRegressionHead(BaseHead):
                 in_channels = deconv_out_channels[-1]
 
         else:
-            self.simplebaseline_head = None
             in_channels = self._get_in_channels()
+            self.simplebaseline_head = None
+
+            if has_final_layer:
+                cfg = dict(
+                    type='Conv2d',
+                    in_channels=in_channels,
+                    out_channels=num_joints,
+                    kernel_size=1)
+                self.final_layer = build_conv_layer(cfg)
+            else:
+                self.final_layer = None
 
             if self.input_transform == 'resize_concat':
                 if isinstance(in_featuremap_size, tuple):
@@ -201,6 +212,8 @@ class IntegralRegressionHead(BaseHead):
         """
         if self.simplebaseline_head is None:
             feats = self._transform_inputs(feats)
+            if self.final_layer is not None:
+                feats = self.final_layer(feats)
         else:
             feats = self.simplebaseline_head(feats)
 
@@ -349,12 +362,14 @@ class IntegralRegressionHead(BaseHead):
             v = state_dict.pop(_k)
             k = _k.lstrip(prefix)
 
+            k_new = _k
             k_parts = k.split('.')
-            if k_parts[0] == 'conv_layers':
-                k_new = (
-                    prefix + 'simplebaseline_head.deconv_layers.' +
-                    '.'.join(k_parts[1:]))
-            else:
-                k_new = _k
+            if self.simplebaseline_head is not None:
+                if k_parts[0] == 'conv_layers':
+                    k_new = (
+                        prefix + 'simplebaseline_head.deconv_layers.' +
+                        '.'.join(k_parts[1:]))
+                elif k_parts[0] == 'final_layer':
+                    k_new = prefix + 'simplebaseline_head.' + k
 
             state_dict[k_new] = v
