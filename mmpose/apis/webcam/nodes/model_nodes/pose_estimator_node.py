@@ -122,12 +122,13 @@ class TopDownPoseEstimatorNode(Node):
             register_all_modules()
             pose_results = inference_topdown(self.model, img, bboxes)
 
+            # Update objects
             for pose_result, object in zip(pose_results, objects):
                 pred_instances = pose_result.pred_instances
                 object['keypoints'] = pred_instances.keypoints[0]
                 object['keypoint_scores'] = pred_instances.keypoint_scores[0]
 
-                dataset_meta = object.get('dataset_meta', dict()).copy()
+                dataset_meta = object.get('dataset_meta', dict())
                 dataset_meta.update(self.model.dataset_meta)
                 object['dataset_meta'] = dataset_meta
                 object['pose_model_cfg'] = self.model.cfg

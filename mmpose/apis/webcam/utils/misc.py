@@ -11,6 +11,7 @@ from urllib.request import urlopen
 
 import cv2
 import numpy as np
+from mmengine import mkdir_or_exist
 from torch.hub import HASH_REGEX, download_url_to_file
 
 
@@ -78,14 +79,6 @@ def load_image_from_disk_or_url(filename: str,
     else:
         image = cv2.imread(filename, readFlag)
         return image
-
-
-def mkdir_or_exist(dir_name: str, mode: int = 0o777):
-    """Create a directory if it doesn't exist."""
-    if dir_name == '':
-        return
-    dir_name = osp.expanduser(dir_name)
-    os.makedirs(dir_name, mode=mode, exist_ok=True)
 
 
 def get_cached_file_path(url: str,

@@ -145,7 +145,7 @@ class PoseLocalVisualizer(Visualizer):
 
     def _draw_instances_bbox(self, image: np.ndarray,
                              instances: InstanceData) -> np.ndarray:
-        """Draw bounding boxes of GT or prediction.
+        """Draw bounding boxes and corresponding labels of GT or prediction.
 
         Args:
             image (np.ndarray): The image to draw.
@@ -171,7 +171,7 @@ class PoseLocalVisualizer(Visualizer):
             classes = self.dataset_meta.get('CLASSES', None)
             labels = instances.labels
 
-            positions = bboxes[:, :2] + self.line_width
+            positions = bboxes[:, :2]
             areas = (bboxes[:, 3] - bboxes[:, 1]) * (
                 bboxes[:, 2] - bboxes[:, 0])
             scales = _get_adaptive_scales(areas)
@@ -179,7 +179,6 @@ class PoseLocalVisualizer(Visualizer):
             for i, (pos, label) in enumerate(zip(positions, labels)):
                 label_text = classes[
                     label] if classes is not None else f'class {label}'
-                pos -= self.line_width
 
                 if isinstance(self.bbox_color,
                               tuple) and max(self.bbox_color) > 1:

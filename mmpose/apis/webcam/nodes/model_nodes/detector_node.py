@@ -138,7 +138,7 @@ class DetectorNode(Node):
                 'label': classes[class_id],
                 'bbox': instances.bboxes[i],
                 'det_model_cfg': self.model.cfg,
-                'dataset_meta': self.model.dataset_meta,
+                'dataset_meta': self.model.dataset_meta.copy(),
             }
             objects.append(obj)
         return objects

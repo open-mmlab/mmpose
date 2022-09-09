@@ -107,17 +107,18 @@ class ObjectVisualizerNode(BaseVisualizerNode):
         if not objects:
             return canvas
 
-        objects_by_labels = defaultdict(list)
+        objects_by_label = defaultdict(list)
         for object in objects:
-            objects_by_labels[object['label']].append(object)
+            objects_by_label[object['label']].append(object)
 
         # draw objects of each category individually
-        for label, objects in objects_by_labels.items():
+        for label, objects in objects_by_label.items():
             dataset_meta = objects[0]['dataset_meta']
             dataset_meta['bbox_color'] = self.default_bbox_color.get(
                 label, self.bbox_color)
             self.visualizer.set_dataset_meta(dataset_meta)
 
+            # assign bboxes, keypoints and other predictions to data_sample
             instances = InstanceData()
             instances.bboxes = np.stack([object['bbox'] for object in objects])
             instances.labels = np.array(
