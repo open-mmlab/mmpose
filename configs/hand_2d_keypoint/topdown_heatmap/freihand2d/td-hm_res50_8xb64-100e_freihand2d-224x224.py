@@ -62,11 +62,9 @@ dataset_type = 'FreiHandDataset'
 data_mode = 'topdown'
 data_root = 'data/freihand/'
 
-file_client_args = dict(backend='disk')
-
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', file_client_args=file_client_args),
+    dict(type='LoadImage', ffile_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale', padding=0.8),
     dict(type='RandomFlip', direction='horizontal'),
     dict(
@@ -78,8 +76,8 @@ train_pipeline = [
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-test_pipeline = [
-    dict(type='LoadImage', file_client_args=file_client_args),
+val_pipeline = [
+    dict(type='LoadImage', ffile_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale', padding=0.8),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
@@ -112,7 +110,7 @@ val_dataloader = dict(
         ann_file='annotations/freihand_val.json',
         data_prefix=dict(img=''),
         test_mode=True,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
     ))
 test_dataloader = dict(
     batch_size=32,
@@ -127,7 +125,7 @@ test_dataloader = dict(
         ann_file='annotations/freihand_test.json',
         data_prefix=dict(img=''),
         test_mode=True,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
     ))
 
 # evaluators
