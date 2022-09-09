@@ -298,10 +298,8 @@ class SimCCHead(BaseHead):
         # calculate losses
         losses = dict()
         loss = self.loss_module(pred_simcc, gt_simcc, keypoint_weights)
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
+
+        losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = simcc_pck_accuracy(

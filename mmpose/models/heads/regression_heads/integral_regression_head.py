@@ -323,10 +323,7 @@ class IntegralRegressionHead(BaseHead):
         loss = self.loss_module(pred_coords, keypoint_labels,
                                 keypoint_weights.unsqueeze(-1))
 
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
+        losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
