@@ -55,8 +55,8 @@ model = dict(
         in_featuremap_size=(8, 8),
         num_joints=17,
         loss=dict(
-            type='MultiTaskLoss',
-            loss_cfg_list=[
+            type='MultipleLossWrapper',
+            losses=[
                 dict(type='SmoothL1Loss', use_target_weight=True),
                 dict(type='JSDiscretLoss', use_target_weight=True)
             ],
