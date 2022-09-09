@@ -59,8 +59,7 @@ model = dict(
             losses=[
                 dict(type='SmoothL1Loss', use_target_weight=True),
                 dict(type='JSDiscretLoss', use_target_weight=True)
-            ],
-            factors=[1.0, 1.0]),
+            ]),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,

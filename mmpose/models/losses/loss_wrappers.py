@@ -28,25 +28,17 @@ class MultipleLossWrapper(nn.Module):
             loss_modules.append(t_loss)
         self.loss_modules = nn.ModuleList(loss_modules)
 
-    def forward(self,
-                input_list,
-                target_list,
-                keypoint_weights=None,
-                epoch_facotrs=None):
+    def forward(self, input_list, target_list, keypoint_weights=None):
         assert isinstance(input_list, list), ''
         assert isinstance(target_list, list), ''
         assert len(input_list) == len(target_list), ''
 
-        loss_sum = 0.
+        losses = []
         for i in range(self.num_losses):
             input_i = input_list[i]
             target_i = target_list[i]
 
             loss_i = self.loss_modules[i](input_i, target_i, keypoint_weights)
+            losses.append(loss_i)
 
-            if epoch_facotrs:
-                loss_sum += loss_i * epoch_facotrs[i]
-            else:
-                loss_sum += loss_i * self.factors[i]
-
-        return loss_sum
+        return losses

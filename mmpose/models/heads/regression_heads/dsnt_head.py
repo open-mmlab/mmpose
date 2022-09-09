@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
+from mmengine.logging import MessageHub
 from torch import Tensor
 
 from mmpose.evaluation.functional import keypoint_pck_accuracy
@@ -73,6 +74,7 @@ class DSNTHead(IntegralRegressionHead):
                  in_channels: Union[int, Sequence[int]],
                  in_featuremap_size: Tuple[int, int],
                  num_joints: int,
+                 lambda_t: int = -1,
                  deconv_out_channels: OptIntSeq = (256, 256, 256),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
@@ -82,7 +84,11 @@ class DSNTHead(IntegralRegressionHead):
                  input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
-                     type='DSNTLoss', use_target_weight=True),
+                     type='MultipleLossWrapper',
+                     losses=[
+                         dict(type='SmoothL1Loss', use_target_weight=True),
+                         dict(type='JSDiscretLoss', use_target_weight=True)
+                     ]),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -101,6 +107,8 @@ class DSNTHead(IntegralRegressionHead):
             loss=loss,
             decoder=decoder,
             init_cfg=init_cfg)
+
+        self.lambda_t = lambda_t
 
     def loss(self,
              inputs: Tuple[Tensor],
@@ -122,8 +130,16 @@ class DSNTHead(IntegralRegressionHead):
         # calculate losses
         losses = dict()
 
-        loss = self.loss_module(input_list, target_list,
-                                keypoint_weights.unsqueeze(-1))
+        loss_list = self.loss_module(input_list, target_list,
+                                     keypoint_weights.unsqueeze(-1))
+
+        loss = torch.sum(loss_list)
+
+        if self.lambda_t > 0:
+            mh = MessageHub.get_current_instance()
+            cur_epoch = mh.get_info('epoch')
+            if cur_epoch >= self.lambda_t:
+                loss = loss_list[0]
 
         losses.update(loss_kpt=loss)
 
