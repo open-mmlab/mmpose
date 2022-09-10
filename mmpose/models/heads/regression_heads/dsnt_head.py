@@ -29,6 +29,12 @@ class DSNTHead(IntegralRegressionHead):
         in_channels (int | sequence[int]): Number of input channels
         in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
+        lambda_t (int): Discard heatmap-based loss when current
+            epoch > lambda_t
+        debias (bool): Whether to remove the bias of Integral Pose Regression.
+            see `Removing the Bias of Integral Pose Regression`_ by Gu et al
+            (2021). Defaults to ``False``.
+        beta (float): A smoothing parameter in softmax. Defaults to ``1.0``.
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
@@ -75,6 +81,8 @@ class DSNTHead(IntegralRegressionHead):
                  in_featuremap_size: Tuple[int, int],
                  num_joints: int,
                  lambda_t: int = -1,
+                 debias: bool = False,
+                 beta: float = 1.0,
                  deconv_out_channels: OptIntSeq = (256, 256, 256),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
@@ -96,6 +104,8 @@ class DSNTHead(IntegralRegressionHead):
             in_channels=in_channels,
             in_featuremap_size=in_featuremap_size,
             num_joints=num_joints,
+            debias=debias,
+            beta=beta,
             deconv_out_channels=deconv_out_channels,
             deconv_kernel_sizes=deconv_kernel_sizes,
             conv_out_channels=conv_out_channels,
