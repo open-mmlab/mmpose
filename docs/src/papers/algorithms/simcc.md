@@ -1,4 +1,4 @@
-# DeepPose: Human pose estimation via deep neural networks
+# Simple Coordinate Classification Perspective for Human Pose Estimation
 
 <!-- [ALGORITHM] -->
 

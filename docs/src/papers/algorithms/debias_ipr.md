@@ -1,4 +1,4 @@
-# DeepPose: Human pose estimation via deep neural networks
+# Removing the Bias of Integral Pose Regression
 
 <!-- [ALGORITHM] -->
 

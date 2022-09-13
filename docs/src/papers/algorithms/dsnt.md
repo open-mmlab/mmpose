@@ -1,4 +1,4 @@
-# DeepPose: Human pose estimation via deep neural networks
+# Numerical Coordinate Regression with Convolutional Neural Networks
 
 <!-- [ALGORITHM] -->
 
