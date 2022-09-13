@@ -6,21 +6,16 @@ from mmpose.registry import MODELS
 
 @MODELS.register_module()
 class MultipleLossWrapper(nn.Module):
-    """A wrapper to combine multiple losses together with different factors.
+    """A wrapper to collect multiple loss functions together and return a list
+    of losses in the same order.
 
     Args:
         losses (list): List of Loss Config
-        factors (list): List of Loss factors
     """
 
-    def __init__(self, losses: list, factors: list):
+    def __init__(self, losses: list):
         super().__init__()
-
-        assert len(losses) == len(factors), (
-            'len(losses) must be equal to len(factors')
-
-        self.factors = factors
-        self.num_losses = len(factors)
+        self.num_losses = len(losses)
 
         loss_modules = []
         for loss_cfg in losses:
