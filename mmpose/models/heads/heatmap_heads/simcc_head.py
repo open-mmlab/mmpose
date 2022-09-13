@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
 from mmcv.cnn import build_conv_layer
 from torch import Tensor, nn
@@ -288,10 +287,6 @@ class SimCCHead(BaseHead):
             dim=0,
         )
 
-        target_coords = np.concatenate(
-            [d.gt_instances.transformed_keypoints for d in batch_data_samples],
-            axis=0)
-
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
 
@@ -304,7 +299,7 @@ class SimCCHead(BaseHead):
         # calculate accuracy
         _, avg_acc, _ = simcc_pck_accuracy(
             output=to_numpy(pred_simcc),
-            target=target_coords,
+            target=to_numpy(gt_simcc),
             simcc_split_ratio=self.simcc_split_ratio,
             mask=to_numpy(keypoint_weights) > 0,
         )
