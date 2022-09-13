@@ -16,57 +16,72 @@ This  tutorial covers what developers will concern when using MMPose 1.0:
 - How to add new modules(backbone, head, loss function, etc.)
 ```
 
-## Overall code architecture
+The content of this tutorial is organized as follows:
+
+- [Migration](#migration)
+  - [Overall Code Architecture](#overall-code-architecture)
+  - [Step1: Configs](#step1-configs)
+  - [Step2: Data](#step2-data)
+    - [Dataset Meta Information](#dataset-meta-information)
+    - [Dataset](#dataset)
+    - [Pipeline](#pipeline)
+      - [i. Augmentation](#i-augmentation)
+      - [ii. Transformation](#ii-transformation)
+      - [iii. Encoding](#iii-encoding)
+      - [iv. Packing](#iv-packing)
+  - [Step3: Model](#step3-model)
+    - [Data Preprocessor](#data-preprocessor)
+    - [Backbone](#backbone)
+    - [Neck](#neck)
+    - [Head](#head)
+  - [Compatibility of MMPose 0.X](#compatibility-of-mmpose-0x)
+    - [Data Transformation](#data-transformation)
+      - [Translation, Rotation and Scaling](#translation-rotation-and-scaling)
+      - [Target Generation](#target-generation)
+      - [Data Normalization](#data-normalization)
+    - [Compatibility of Models](#compatibility-of-models)
+      - [Heatmap-based Model](#heatmap-based-model)
+      - [RLE-based Model](#rle-based-model)
+
+## Overall Code Architecture
 
 ![overall-en](https://user-images.githubusercontent.com/13503330/187372008-2a94bad5-5252-4155-9ae3-3da1c426f569.png)
 
 Generally speaking, there are **five parts** developers will use during project development:
 
-- **General:** Environment, Hook, Checkpoint, Logger, Timer, etc.
+- **General:** Environment, Hook, Checkpoint, Logger, etc.
 
-- **Data:** Dataset, Dataloader, Data Augmentations, etc.
+- **Data:** Dataset, Dataloader, Data Augmentation, etc.
 
-- **Training:** Optimizer, Learning Rate, etc.
+- **Training:** Optimizer, Learning Rate Scheduler, etc.
 
-- **Model:** Backbone, Neck, Head, Loss functions, etc.
+- **Model:** Backbone, Neck, Head, Loss function, etc.
 
-- **Evaluation:** Metrics
+- **Evaluation:** Metric, Evaluator, etc.
 
-Among them, modules related to **General**, **Training** and **Evaluation** are often provided by the training frameworks, developers only need to call APIs and adjust the parameters.  Developers mainly focus on implementing the **Data** and **Model** parts.
+Among them, modules related to **General**, **Training** and **Evaluation** are often provided by the training framework [MMEngine](https://github.com/open-mmlab/mmengine), and developers only need to call APIs and adjust the parameters.  Developers mainly focus on implementing the **Data** and **Model** parts.
 
 ## Step1: Configs
 
-In MMPose, we use a Python file as config for the definition, parameter management of the whole project. Therefore, we strongly recommend the developers who use MMPose for the first time to refer to [Configs](./user_guides/configs.md).
+In MMPose, we use a Python file as config for the definition and parameter management of the whole project. Therefore, we strongly recommend the developers who use MMPose for the first time to refer to [Configs](./user_guides/configs.md).
 
-Note that all the new modules need to be registered using `Registry`, and `import` them in `__init__.py` in the corresponding directory.
+Note that all new modules need to be registered using `Registry` and imported in `__init__.py` in the corresponding directory before we can create their instances from configs.
 
 ## Step2: Data
 
 The organization of data in MMPose contains:
 
-- Dataset Information
+- Dataset Meta Information
 
 - Dataset
 
 - Pipeline
 
-### Dataset Information
+### Dataset Meta Information
 
-In MMPose, **data is organized in COCO style**, and we define a base class `BaseCocoStyleDataset` under `$MMPOSE/mmpose/datasets/base`.
+The meta information of a pose dataset usually includes the definition of keypoints and skeleton, symmetrical characteristic, and keypoint properties (e.g. belonging to upper or lower body, weights and sigmas). These information is important in data preprocessing, model training and evaluation. In MMpose, the dataset meta information is stored in configs files under `$MMPOSE/configs/_base_/datasets/`.
 
-The data format of bbox is in `xyxy` instead of `xywh`, which is consistent with the format used in MMDetection.
-
-If your data is originally organized in COCO format, then you can use our implementation directly.
-
-If not, you need to define the keypoint information of the data (keypoint order, skeleton information, weights, sigmas of annotation) in `$MMPOSE/configs/_base_/datasets`.
-
-For the conversion between different bbox formats, we also provide many useful utils, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`, which can help you to convert your own data format.
-
-```{note}
-Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
-```
-
-Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
+To use a custom dataset in MMPose, you need to add a new config file of the dataset meta information. Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
 
 ```Python
 dataset_info = dict(
@@ -108,7 +123,17 @@ dataset_info = dict(
 
 ### Dataset
 
-When your data is not organized in COCO format, you need to implement the `Dataset` class in `$MMPOSE/mmpose/datasets/datasets`, and convert the data into COCO format.
+To use costom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
+
+Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like style**. Thus we provide a base class [BaseCocoStyleDataset](mmpose/datasets/datasets/base/base_coco_style_dataset.py) for these datasets. We recommend that users subclass `BaseCocoStyleDataset` and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new costom 2D keypoint dataset.
+
+```{note}
+Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
+```
+
+```{note}
+The bbox format in MMPose is in `xyxy` instead of `xywh`, which is consistent with the format used in other OpenMMLab projects like [MMDetection](https://github.com/open-mmlab/mmdetection).  We provide useful utils for bbox format conversion, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., which are defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`.
+```
 
 Let's take the implementation of the MPII dataset (`$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py`) as an example.
 
@@ -120,7 +145,8 @@ class MpiiDataset(BaseCocoStyleDataset):
     def __init__(self,
                  ## omitted
                  headbox_file: Optional[str] = None,
-                 ## omitted):
+                 ## omitted
+                ):
 
         if headbox_file:
             if data_mode != 'topdown':
@@ -215,9 +241,11 @@ class MpiiDataset(BaseCocoStyleDataset):
 
 When supporting MPII dataset, since we need to use `head_size` to calculate `PCKh`, we add `headbox_file` to `__init__()` and override`_load_annotations()`.
 
+To support a dataset that is beyond the scope of `BaseCocoStyleDataset`, you may need to subclass from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to the [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
+
 ### Pipeline
 
-Here is an example of typical pipelines：
+Data augmentations and transformations during pre-processing are organized as a pipeline. Here is an example of typical pipelines：
 
 ```Python
 # pipelines
@@ -239,15 +267,15 @@ test_pipeline = [
 ]
 ```
 
-In a keypoint detection task, data will be transformed in the three scale spaces:
+In a keypoint detection task, data will be transformed among three scale spaces:
 
 - **Original Image Space**: the space where the images are stored. The sizes of different images are not necessarily the same
 
-- **Input Image Space**: the image space used for model training. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
+- **Input Image Space**: the image space used for model input. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
 
-- **Output Space**: the space used for model training, and also the scale space where model outputs are located, such as `64x64(Heatmap)`，`1x1(Regression)`, etc.
+- **Output Space**: the scale space where model outputs are located, such as `64x64(Heatmap)`，`1x1(Regression)`, etc. The supervision signal is also in this space during training
 
-Here is a diagram to show the workflow of data transformation in the three scale spaces:
+Here is a diagram to show the workflow of data transformation among the three scale spaces:
 
 ![migration-en](https://user-images.githubusercontent.com/13503330/187190213-cad87b5f-0a95-4f1f-b722-15896914ded4.png)
 
@@ -267,22 +295,20 @@ Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obta
 
 #### ii. Transformation
 
-The matrix will be used to perform affine transformation on the images and annotations.
-
-For top-down methods, it is done by `TopdownAffine` and by `BottomupRandomAffine` for bottom-up methods.
+Affine transformation is used to convert images and annotations from the original image space to the input space. This is done by `TopdownAffine` for top-down methods and `BottomupRandomAffine` for bottom-up methods.
 
 #### iii. Encoding
 
-After the data is transformed from the original image space into the input space, it it necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
+In training phase, after the data is transformed from the original image space into the input space, it is necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
 
 In MMPose, we collect Encoding and Decoding processes into a **Codec**, in which `encode()` and `decode()` are implemented.
 
 Currently we support the following types of Targets.
 
 - `heatmaps`: Gaussian heatmaps
-- `keypoint_labels`: normalized coordinates
-- `keypoint_x_labels`: x-axis representation
-- `keypoint_y_labels`: y-axis representation
+- `keypoint_labels`: keypoint representation (e.g. normalized coordinates)
+- `keypoint_x_labels`: keypoint x-axis representation
+- `keypoint_y_labels`: keypoint y-axis representation
 - `keypoint_weights`: keypoint visibility and weights
 
 Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:
@@ -303,15 +329,15 @@ If you wish to customize a new codec, you can refer to [Codec](./user_guides/cod
 
 #### iv. Packing
 
-After the data is transformed, you need to pack it by using `PackPoseInputs`.
+After the data is transformed, you need to pack it using `PackPoseInputs`.
 
-This method converts the data stored in the dictionary `results` into the formats required for MMEngine training, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
+This method converts the data stored in the dictionary `results` into standard data structures in MMPose, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
 
-Specifically, we divide the data into `gt` and `pred`, each of which has the following types:
+Specifically, we divide the data into `gt` (ground-truth) and `pred` (prediction), each of which has the following types:
 
-- **instances**(numpy.array): instance-level raw annotations for model evaluatin in the original scale space
-- **instance_labels**(torch.tensor): instance-level training labels(e.g. normalized coordinates, keypoint visibility), used for model training in the output scale space
-- **fields**(torch.tensor): instance-level training labels with spatial information(e.g. Gaussian Heatmaps), used for model training in the output scale space
+- **instances**(numpy.array): instance-level raw annotations or predictions in the original scale space
+- **instance_labels**(torch.tensor): instance-level training labels (e.g. normalized coordinates, keypoint visibility) in the output scale space
+- **fields**(torch.tensor): pixel-level training labels or predictions (e.g. Gaussian Heatmaps) in the output scale space
 
 The following is an example of the implementation of `PoseDataSample` under the hood:
 
@@ -368,9 +394,7 @@ In MMPose 1.0, the model consists of the following components:
 
 - **Head**: used to implement the core algorithm and loss function
 
-We define a base class `BasePoseEstimator` for the model in `$MMPOSE/models/pose_estimators/base.py`. All models should inherit from this base class and override the corresponding methods.
-
-Depending on the algorithm, MMPose classifies the models into `TopdownPoseEstimator`, `BottomupPoseEstimator`, etc.
+We define a base class `BasePoseEstimator` for the model in `$MMPOSE/models/pose_estimators/base.py`. All models, e.g. `TopdownPoseEstimator`, should inherit from this base class and override the corresponding methods.
 
 Three modes are provided in `forward()` of the estimator:
 
@@ -406,7 +430,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
 
 ### Data Preprocessor
 
-Starting from MMPose 1.0, we have added data normalization and channel transposition as modules to the model, which has the advantage of further enabling end-to-end model training and prediction, allowing trained models to directly use resized images as input, without the need for users to implement the normalization preprocessing.
+Starting from MMPose 1.0, we have added a new module to the model called data preprocessor, which performs data preprocessings like image normalization and channel transposition. It can benefit from the high computing power of devices like GPU, and improve the integrity in model export and deployment.
 
 A typical `data_preprocessor` in the config is as follows:
 
@@ -451,7 +475,7 @@ init_cfg=dict(
     checkpoint='torchvision://resnet50')
 ```
 
-In addition to these commonly used backbones, you can easily use backbones from repositories in the OpenMMLab ecosystem such as MMClassification, which all share the same config system and provide pre-trained weights.
+In addition to these commonly used backbones, you can easily use backbones from other repositories in the OpenMMLab family such as MMClassification, which all share the same config system and provide pre-trained weights.
 
 It should be emphasized that if you add a new backbone, you need to register it by doing:
 
@@ -482,7 +506,7 @@ Modules related to Head in MMPose are defined under `$MMPOSE/mmpose/models/heads
 
 - loss()
 
-Specifically, the `predict()` should return the result in the input image space, so you should call `self.decode()`, which we have implemented in `BaseHead`, to decode the output. It will call the `decoder` provided by the codec to perform the decoding process.
+Specifically, `predict()` method needs to return pose predictions in the image space, which is obtained from the model output though the decoding function provided by the codec. We implement this process in `BaseHead.decode()`.
 
 On the other hand, we will perform test-time augmentation(TTA) in `predict()`.
 
@@ -517,7 +541,7 @@ def predict(self,
     preds = self.decode(batch_coords)
 ```
 
-The `loss()` not only performs the calculation of loss functions, but also the calculation of training-time metrics such as pose accuracy, and is carried by a dictionary `losses`:
+The `loss()` not only performs the calculation of loss functions, but also the calculation of training-time metrics such as pose accuracy. The results are carried by a dictionary `losses`:
 
 ```Python
  # calculate accuracy

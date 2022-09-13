@@ -1,11 +1,11 @@
 # 迁移指南
 
-重构之后的 MMPose1.0 与之前的版本有较大改动，对部分模块进行了重新设计和组织，降低代码冗余度，提升运行效率，降低学习难度。
+重构之后的 MMPose 1.0 与之前的版本有较大改动，对部分模块进行了重新设计和组织，降低代码冗余度，提升运行效率，降低学习难度。
 
-对于有一定基础的开发者，本章节提供了一份迁移指南。不论你是**旧版MMPose的用户**，还是**希望将自己的Pytorch项目迁移到MMPose的新用户**，都可以通过本教程了解如何构建一个基于 MMPose1.0 的项目。
+对于有一定基础的开发者，本章节提供了一份迁移指南。不论你是**旧版 MMPose 的用户**，还是**希望将自己的 PyTorch 项目迁移到 MMPose 的新用户**，都可以通过本教程了解如何构建一个基于 MMPose 1.0 的项目。
 
 ```{note}
-本教程包含了使用 MMPose1.0 时开发者会关心的内容：
+本教程包含了使用 MMPose 1.0 时开发者会关心的内容：
 
 - 整体代码架构与设计逻辑
 
@@ -16,57 +16,72 @@
 - 如何添加新的模块（骨干网络、模型头部、损失函数等）
 ```
 
+以下是这篇教程的目录：
+
+- [迁移指南](#迁移指南)
+  - [整体架构与设计](#整体架构与设计)
+  - [Step1：配置文件](#step1配置文件)
+  - [Step2：数据](#step2数据)
+    - [数据集元信息](#数据集元信息)
+    - [数据集](#数据集)
+    - [数据流水线](#数据流水线)
+      - [i. 数据增强](#i-数据增强)
+      - [ii. 数据变换](#ii-数据变换)
+      - [iii. 数据编码](#iii-数据编码)
+      - [iv. 数据打包](#iv-数据打包)
+  - [Step3: 模型](#step3-模型)
+    - [前处理器（DataPreprocessor）](#前处理器datapreprocessor)
+    - [主干网络（Backbone）](#主干网络backbone)
+    - [颈部模块（Neck）](#颈部模块neck)
+    - [预测头（Head）](#预测头head)
+  - [MMPose 0.X 兼容性说明](#mmpose-0x-兼容性说明)
+    - [数据变换](#数据变换)
+      - [平移、旋转和缩放](#平移旋转和缩放)
+      - [标签生成](#标签生成)
+      - [数据归一化](#数据归一化)
+    - [模型兼容](#模型兼容)
+      - [Heatmap-based 方法](#heatmap-based-方法)
+      - [RLE-based 方法](#rle-based-方法)
+
 ## 整体架构与设计
 
 ![overall-cn](https://user-images.githubusercontent.com/13503330/187830967-f2d7bf40-6261-42f3-91a5-ae045fa0dc0c.png)
 
 一般来说，开发者在项目开发过程中经常接触内容的主要有**五个**方面：
 
-- **通用**：环境、Hook、Checkpoint、Logger、Timer等
+- **通用**：环境、钩子（Hook）、模型权重存取（Checkpoint）、日志（Logger）等
 
-- **数据**：Dataset、Dataloader、数据增强等
+- **数据**：数据集、数据读取（Dataloader）、数据增强等
 
 - **训练**：优化器、学习率调整等
 
-- **模型**：Backbone、Neck、Head、损失函数等
+- **模型**：主干网络、颈部模块（Neck）、预测头模块（Head）、损失函数等
 
-- **评测**：Metrics
+- **评测**：评测指标（Metric）、评测器（Evaluator）等
 
 其中**通用**、**训练**和**评测**相关的模块往往由训练框架提供，开发者只需要调用和调整参数，不需要自行实现，开发者主要实现的是**数据**和**模型**部分。
 
 ## Step1：配置文件
 
-在MMPose中，我们使用一个python文件作为config，用于整个项目的定义、参数管理，因此我们强烈建议第一次接触MMPose的开发者，查阅 [配置文件](./user_guides/configs.md) 学习配置文件的定义。
+在MMPose中，我们通常 python 格式的配置文件，用于整个项目的定义、参数管理，因此我们强烈建议第一次接触 MMPose 的开发者，查阅 [配置文件](./user_guides/configs.md) 学习配置文件的定义。
 
-需要注意的是，所有新增的模块都需要使用`Registry`进行注册，并在对应目录的`__init__.py`中进行`import`。
+需要注意的是，所有新增的模块都需要使用注册器（Registry）进行注册，并在对应目录的 `__init__.py` 中进行 `import`，以便能够使用配置文件构建其实例。
 
 ## Step2：数据
 
-MMPose数据的组织主要包含三个方面：
+MMPose 数据的组织主要包含三个方面：
 
-- 数据格式
+- 数据集元信息
 
 - 数据集
 
 - 数据流水线
 
-### 数据格式
+### 数据集元信息
 
-在MMPose中，**所有数据都使用COCO风格进行组织**，我们在`$MMPOSE/mmpose/datasets/base`下定义了一个基类`BaseCocoStyleDataset`。
+元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 `$MMPOSE/configs/_base_/datasets` 目录下。
 
-bbox的数据格式采用`xyxy`，而不是`xywh`，这与`mmdet`中采用的格式一致。
-
-如果你的数据原本就是使用COCO格式进行存储的，那么可以直接使用我们的实现。
-
-当你的数据不是用COCO格式存储时，你需要在`$MMPOSE/configs/_base_/datasets`目录下定义数据的关键点信息（关键点顺序、骨架信息、权重、标注信息的标准差）。
-
-对于不同bbox格式之间的转换，我们同样提供了丰富的方法：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等，定义在`$MMPOSE/mmpose/structures/bbox/transforms.py`中，可以帮助你完成自己数据格式的转换。
-
-```{note}
-关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
-```
-
-以MPII数据集（`$MMPOSE/configs/_base_/datasets/mpii.py`）为例：
+在 MMPose 中使用自定义数据集时，你需要增加对应的元信息配置文件。以 MPII 数据集（`$MMPOSE/configs/_base_/datasets/mpii.py`）为例：
 
 ```Python
 dataset_info = dict(
@@ -99,7 +114,7 @@ dataset_info = dict(
     joint_weights=[
         1.5, 1.2, 1., 1., 1.2, 1.5, 1., 1., 1., 1., 1.5, 1.2, 1., 1., 1.2, 1.5
     ],
-    # Adapted from COCO dataset.
+    # 使用 COCO 数据集中提供的 sigmas 值
     sigmas=[
         0.089, 0.083, 0.107, 0.107, 0.083, 0.089, 0.026, 0.026, 0.026, 0.026,
         0.062, 0.072, 0.179, 0.179, 0.072, 0.062
@@ -108,7 +123,17 @@ dataset_info = dict(
 
 ### 数据集
 
-当你的数据不是用COCO格式存储时，你需要在`$MMPOSE/mmpose/datasets/datasets`目录下实现Dataset的定义，将数据组织为COCO格式。
+在 MMPose 中使用自定义数据集时，我们推荐将数据转化为已支持的格式（如 COCO 或 MPII），并直接使用我们提供的对应数据集实现。如果这种方式不可行，则用户需要实现自己的数据集类。
+
+MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了基类 [BaseCocoStyleDataset](/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
+
+```{note}
+关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
+```
+
+```{note}
+在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在`$MMPOSE/mmpose/structures/bbox/transforms.py`。
+```
 
 下面我们以MPII数据集的实现（`$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py`）为例：
 
@@ -213,7 +238,9 @@ class MpiiDataset(BaseCocoStyleDataset):
         return data_list
 ```
 
-在对MPII数据集进行支持时，由于MPII需要读入`head_size`信息来计算`PCKh`，因此我们在`__init__()`中增加了`headbox_file`，并重载了`_load_annotations()`来完成数据组织。
+在对MPII数据集进行支持时，由于MPII需要读入 `head_size` 信息来计算 `PCKh`，因此我们在`__init__()`中增加了 `headbox_file`，并重载了 `_load_annotations()` 来完成数据组织。
+
+如果自定义数据集无法被 `BaseCocoStyleDataset` 支持，你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)。
 
 ### 数据流水线
 
@@ -243,9 +270,9 @@ test_pipeline = [
 
 - **原始图片空间**：图片存储时的原始空间，不同图片的尺寸不一定相同
 
-- **输入图片空间**：用于模型训练的图片尺度空间，所有**图片**和**标注**被缩放到输入尺度，如`256x256`，`256x192`等
+- **输入图片空间**：模型输入的图片尺度空间，所有**图片**和**标注**被缩放到输入尺度，如 `256x256`，`256x192` 等
 
-- **输出尺度空间**：用于模型训练的标注尺度空间，同时也是模型预测结果所在的尺度空间，如`64x64(Heatmap)`，`1x1(Regression)`等
+- **输出尺度空间**：模型输出和训练监督信息所在的尺度空间，如`64x64(热力图)`，`1x1(回归坐标值)`等
 
 数据在三个空间中变换的流程如图所示：
 
@@ -257,37 +284,33 @@ test_pipeline = [
 
 #### i. 数据增强
 
-数据增强中常用的变换存放在`$MMPOSE/mmpose/datasets/transforms/common_transforms.py`中，如`RandomFlip`、`RandomHalfBody`等。
+数据增强中常用的变换存放在 `$MMPOSE/mmpose/datasets/transforms/common_transforms.py` 中，如 `RandomFlip`、`RandomHalfBody` 等。
 
-对于top-down方法，`Shift`、`Rotate`、`Resize`操作由`RandomBBoxTransform`来实现，对于bottom-up方法，则是由`BottomupRandomAffine`实现。
-
-值得注意的是，大部分数据变换都依赖于`bbox_center`和`bbox_scale`，可以通过`GetBBoxCenterScale`来得到。
+对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于 bottom-up 方法，这些则是由 `BottomupRandomAffine` 实现。
 
 ```{note}
-这部分所有操作只会生成对应的**变换矩阵**，**不会**对原始数据进行实际的变换。
+值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 `GetBBoxCenterScale` 来得到。
 ```
 
 #### ii. 数据变换
 
-当完成对应的变换矩阵生成后，我们会通过仿射变换来实际变换图片和标注。
-
-对于top-down方法，是由`TopdownAffine`来完成。对于bottom-up方法，是在`BottomupRandomAffine`中完成。
+我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 `TopdownAffine` 完成，在 bottom-up 方法中则由 `BottomupRandomAffine` 完成。
 
 #### iii. 数据编码
 
-数据从原始空间变换到输入空间后，需要使用`GenerateTarget`来生成训练所需的Target（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
+在模型训练时，数据从原始空间变换到输入图片空间后，需要使用 `GenerateTarget` 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
 
-在MMPose中，我们将编码和解码过程集合成一个编解码器（Codec），在其中实现`encode()`和`decode()`。
+在 MMPose 中，我们将编码和解码过程集合成一个编解码器（Codec），在其中实现 `encode()` 和 `decode()`。
 
-目前MMPose支持以下类型的Target：
+目前 MMPose 支持以下类型的监督目标：
 
 - `heatmaps`：高斯热图
 
-- `keypoint_labels`：归一化的坐标值
+- `keypoint_labels`：关键点标签（如归一化的坐标值）
 
-- `keypoint_x_labels`：x轴坐标表征
+- `keypoint_x_labels`：x 轴关键点标签
 
-- `keypoint_y_labels`：y轴坐标表征
+- `keypoint_y_labels`：y 轴关键点标签
 
 - `keypoint_weights`：关键点权重
 
@@ -305,7 +328,7 @@ class GenerateTarget(BaseTransform):
     """
 ```
 
-值得注意的是，我们对top-down和bottom-up的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同instance，格式为：
+值得注意的是，我们对 top-down 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
@@ -315,25 +338,23 @@ class GenerateTarget(BaseTransform):
 
 - Bottom-up: `[B, N, K, D]`
 
-当前已经支持的编解码器定义在`$MMPOSE/mmpose/codecs`目录下，如果你需要自定新的编解码器，可以前往 [编解码器](./user_guides/codecs.md) 了解更多详情。
+当前已经支持的编解码器定义在 `$MMPOSE/mmpose/codecs` 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
 
 #### iv. 数据打包
 
-数据经过变换完成后，都需要通过`PackPoseInputs`进行打包，转换成MMPose训练所需要的格式，定义在`$MMPOSE/mmpose/datasets/transforms/formatting.py`中。
+数据经过前处理变换后，最终需要通过 `PackPoseInputs` 打包成数据样本。该操作定义在 `$MMPOSE/mmpose/datasets/transforms/formatting.py` 中。
 
-这一方法会将数据流水线中用字典`results`存储的数据转换成用MMEngine训练所需的`InstanceData`，`PixelData`，`PoseDataSample`格式。
+打包过程会将数据流水线中用字典 `results` 存储的数据转换成用 MMPose 所需的标准数据结构， 如 `InstanceData`，`PixelData`，`PoseDataSample` 等。
 
-如果你的模型训练所需的格式超出了MMPose支持的范围，那么你需要注意变换过程中`results`、`PackPoseInputs`和`PoseDataSample`。
+具体而言，我们将数据样本内容分为 `gt`（标注真值） 和 `pred`（模型预测）两部分，它们都包含以下数据项：
 
-具体而言，我们将数据分为`gt`和`pred`两种，每一种都有如下类型：
+- **instances**(numpy.array)：实例级别的原始标注或预测结果，属于原始尺度空间
 
-- **instances**(numpy.array)：实例级别的原始标注，用于在原始尺度空间下进行模型评测
+- **instance_labels**(torch.tensor)：实例级别的训练标签（如归一化的坐标值、关键点可见性），属于输出尺度空间
 
-- **instance_labels**(torch.tensor)：实例级别的训练标签（如归一化的坐标值、关键点可见性），用于在输出尺度空间下进行模型训练
+- **fields**(torch.tensor)：像素级别的训练标签（如高斯热图）或预测结果，属于输出尺度空间
 
-- **fields**(torch.tensor)：实例级别且带空间信息的训练标签（如高斯热图），用于在输出尺度空间下进行模型训练
-
-下面是`PoseDataSample`底层实现的例子：
+下面是 `PoseDataSample` 底层实现的例子：
 
 ```Python
 def get_pose_data_sample(self):
@@ -378,19 +399,19 @@ def get_pose_data_sample(self):
 
 ## Step3: 模型
 
-在MMPose1.0中，我们的模型由以下几部分构成：
+在 MMPose 1.0中，模型由以下几部分构成：
 
-- **Data Preprocessor**：完成数据归一化和通道转换
+- **预处理器（DataPreprocessor）**：完成图像归一化和通道转换等前处理
 
-- **Backbone**：骨干网络，用于特征提取
+- **主干网络 （Backbone）**：用于特征提取
 
-- **Neck**：GAP，FPN等可选项
+- **颈部模块（Neck）**：GAP，FPN 等可选项
 
-- **Head**：模型头部，用于实现核心算法功能和损失函数定义
+- **预测头（Head）**：用于实现核心算法功能和损失函数定义
 
-我们在`$MMPOSE/models/pose_estimators/base.py`下为姿态估计模型定义了一个基类`BasePoseEstimator`，所有的模型都需要继承这个基类，并重载对应的方法。
+我们在 `$MMPOSE/models/pose_estimators/base.py` 下为姿态估计模型定义了一个基类 `BasePoseEstimator`，所有的模型（如 `TopdownPoseEstimator`）都需要继承这个基类，并重载对应的方法。
 
-根据算法流程，MMPose将模型划分为`TopdownPoseEstimator`、`BottomupPoseEstimator`等，在`forward()`中提供了三种不同的模式：
+在模型的 `forward()` 方法中提供了三种不同的模式：
 
 - `mode == 'loss'`：返回损失函数计算的结果，用于模型训练
 
@@ -398,7 +419,7 @@ def get_pose_data_sample(self):
 
 - `mode == 'tensor'`：返回输出尺度下的模型输出，即只进行模型前向传播，用于模型导出
 
-开发者需要在`PoseEstimator`中按照模型结构调用对应的`Registry`，对模块进行实例化。以top-down模型为例：
+开发者需要在 `PoseEstimator` 中按照模型结构调用对应的 `Registry` ，对模块进行实例化。以 top-down 模型为例：
 
 ```Python
 @MODELS.register_module()
@@ -422,11 +443,11 @@ class TopdownPoseEstimator(BasePoseEstimator):
             self.head = MODELS.build(head)
 ```
 
-### Data Preprocessor
+### 前处理器（DataPreprocessor）
 
-从 MMPose1.0 开始，我们将数据归一化和通道转换操作作为模块加入到模型结构中，这样做的好处是可以进一步实现模型端到端训练和预测，让训练好的模型可以直接以图片作为输入，而不需要用户自己实现数据归一化预处理。
+从 MMPose 1.0 开始，我们在模型中添加了新的前处理器模块，用以完成图像归一化、通道顺序变换等操作。这样做的好处是可以利用 GPU 等设备的计算能力加快计算，并使模型在导出和部署时更具完整性。
 
-在配置文件中，一个常见的`data_preprocessor`如下：
+在配置文件中，一个常见的 `data_preprocessor` 如下：
 
 ```Python
 data_preprocessor=dict(
@@ -436,15 +457,13 @@ data_preprocessor=dict(
         bgr_to_rgb=True),
 ```
 
-它会将输入图片的通道顺序从`bgr`转换为`rgb`，并根据`mean`和`std`进行数据归一化。
+它会将输入图片的通道顺序从 `bgr` 转换为 `rgb`，并根据 `mean` 和 `std` 进行数据归一化。
 
-### Backbone
+### 主干网络（Backbone）
 
-MMPose实现的backbone存放在`$MMPOSE/mmpose/models/backbones`目录下。
+MMPose 实现的主干网络存放在 `$MMPOSE/mmpose/models/backbones` 目录下。
 
-在实际开发中，开发者经常会使用预训练的backbone权重进行迁移学习，这能有效提升模型在小数据集上的性能。
-
-在MMPose中，我们只需要在配置文件backbone的`init_cfg`中设置：
+在实际开发中，开发者经常会使用预训练的网络权重进行迁移学习，这能有效提升模型在小数据集上的性能。 在 MMPose 中，只需要在配置文件 `backbone` 的 `init_cfg` 中设置：
 
 ```Python
 init_cfg=dict(
@@ -452,7 +471,7 @@ init_cfg=dict(
     checkpoint='PATH/TO/YOUR_MODEL_WEIGHTS.pth'),
 ```
 
-其中`checkpoint`既可以是本地路径，也可以是下载链接。因此，如果你想使用Torchvision提供的预训练模型（比如ResNet50），可以使用：
+其中 `checkpoint` 既可以是本地路径，也可以是下载链接。因此，如果你想使用 Torchvision 提供的预训练模型（比如ResNet50），可以使用：
 
 ```Python
 init_cfg=dict(
@@ -460,30 +479,30 @@ init_cfg=dict(
     checkpoint='torchvision://resnet50')
 ```
 
-除了这些常用的backbone以外，你还可以从MMClassification等OpenMMLab生态系统中的仓库，方便地迁移backbone，它们都遵循同一套配置文件格式，并提供了预训练权重可供使用。
+除了这些常用的主干网络以外，你还可以从 MMClassification 等其他 OpenMMLab 项目中方便地迁移主干网络，它们都遵循同一套配置文件格式，并提供了预训练权重可供使用。
 
-需要强调的是，如果你加入了新的backbone，需要在模型定义时进行注册：
+需要强调的是，如果你加入了新的主干网络，需要在模型定义时进行注册：
 
 ```Python
 @MODELS.register_module()
 class YourBackbone(BaseBackbone):
 ```
 
-同时在`$MMPOSE/mmpose/models/backbones/__init__.py`下进行`import`，并加入到`__all__`中，才能被配置文件正确地调用。
+同时在 `$MMPOSE/mmpose/models/backbones/__init__.py` 下进行 `import`，并加入到 `__all__` 中，才能被配置文件正确地调用。
 
-### Neck
+### 颈部模块（Neck）
 
-Neck通常是介于backbone和head之间的模块，在有些模型算法中会用到，常见的Neck有：
+颈部模块通常是介于主干网络和预测头之间的模块，在部分模型算法中会用到，常见的颈部模块有：
 
-- Global Average Pooling(GAP)
+- Global Average Pooling (GAP)
 
-- Feature Pyramid Networks(FPN)
+- Feature Pyramid Networks (FPN)
 
-### Head
+### 预测头（Head）
 
-通常来说，Head是模型算法实现的核心，用于控制模型的输出，并进行Loss计算。
+通常来说，预测头是模型算法实现的核心，用于控制模型的输出，并进行损失函数计算。
 
-MMPose中Head相关的模块定义在`$MMPOSE/mmpose/models/heads`目录下，开发者在自定义Head时需要继承我们提供的基类`BaseHead`，并重载以下三个方法对应模型推理的三种模式：
+MMPose 中 Head 相关的模块定义在 `$MMPOSE/mmpose/models/heads` 目录下，开发者在自定义预测头时需要继承我们提供的基类 `BaseHead`，并重载以下三个方法对应模型推理的三种模式：
 
 - forward()
 
@@ -491,11 +510,11 @@ MMPose中Head相关的模块定义在`$MMPOSE/mmpose/models/heads`目录下，�
 
 - loss()
 
-具体而言，`predict()`返回的应是输入图片尺度下的结果，因此需要调用`self.decode()`对输出进行解码，我们在`BaseHead`中已经进行了实现，它会调用编解码器提供的`decoder`来完成解码过程。
+具体而言，`predict()` 返回的应是输入图片尺度下的结果，因此需要调用 `self.decode()` 对网络输出进行解码，这一过程实现在 `BaseHead` 中已经实现，它会调用编解码器提供的 `decode()` 方法来完成解码。
 
-另一方面，我们会在`predict()`中进行测试时增强。在进行预测时，一个常见的测试时增强技巧是进行翻转集成。即，将一张图片先进行一次推理，再将图片水平翻转进行一次推理，推理的结果再次水平翻转回去，对两次推理的结果进行平均。这个技巧能有效提升模型的预测稳定性。
+另一方面，我们会在 `predict()` 中进行测试时增强。在进行预测时，一个常见的测试时增强技巧是进行翻转集成。即，将一张图片先进行一次推理，再将图片水平翻转进行一次推理，推理的结果再次水平翻转回去，对两次推理的结果进行平均。这个技巧能有效提升模型的预测稳定性。
 
-下面是在`RegressionHead`中定义`predict()`的例子：
+下面是在 `RegressionHead` 中定义 `predict()` 的例子：
 
 ```Python
 def predict(self,
@@ -524,7 +543,7 @@ def predict(self,
     preds = self.decode(batch_coords)
 ```
 
-`loss()`除了进行损失函数的计算，还会进行accuracy等训练时指标的计算，并通过一个字典`losses`来传递:
+`loss()`除了进行损失函数的计算，还会进行 accuracy 等训练时指标的计算，并通过一个字典 `losses` 来传递:
 
 ```Python
  # calculate accuracy
@@ -539,7 +558,7 @@ acc_pose = torch.tensor(avg_acc, device=keypoint_labels.device)
 losses.update(acc_pose=acc_pose)
 ```
 
-每个batch的数据都打包成了`batch_data_samples`，你可以根据targert类型获取，以Regression-based方法为例，训练所需的归一化的坐标值和关键点权重可以用如下方式获取：
+每个 batch 的数据都打包成了 `batch_data_samples`。以 Regression-based 方法为例，训练所需的归一化的坐标值和关键点权重可以用如下方式获取：
 
 ```Python
 keypoint_labels = torch.cat(
@@ -549,7 +568,7 @@ keypoint_weights = torch.cat([
 ])
 ```
 
-以下为`RegressionHead`中完整的`loss()`实现：
+以下为 `RegressionHead` 中完整的 `loss()` 实现：
 
 ```Python
 def loss(self,
@@ -591,13 +610,13 @@ def loss(self,
 
 ## MMPose 0.X 兼容性说明
 
-MMPose 1.0 经过了大规模重构并解决了许多遗留问题，对于0.x版本的大部分代码 MMPose 1.0 将不兼容。
+MMPose 1.0 经过了大规模重构并解决了许多遗留问题，对于 0.x 版本的大部分代码 MMPose 1.0 将不兼容。
 
 ### 数据变换
 
 #### 平移、旋转和缩放
 
-旧版的数据变换方法`TopDownRandomShiftBboxCenter`和`TopDownGetRandomScaleRotation`，将被合并为`RandomBBoxTransform`：
+旧版的数据变换方法 `TopDownRandomShiftBboxCenter` 和 `TopDownGetRandomScaleRotation`，将被合并为 `RandomBBoxTransform`：
 
 ```Python
 @TRANSFORMS.register_module()
@@ -646,7 +665,7 @@ class RandomBBoxTransform(BaseTransform):
 
 #### 标签生成
 
-旧版用于训练标签生成的方法`TopDownGenerateTarget`、`TopDownGenerateTargetRegression`、`BottomUpGenerateHeatmapTarget`、`BottomUpGenerateTarget`等将被合并为`GenerateTarget`，而实际的生成方法由 [编解码器](./user_guides/codecs.md)提供：
+旧版用于训练标签生成的方法 `TopDownGenerateTarget` 、`TopDownGenerateTargetRegression`、`BottomUpGenerateHeatmapTarget`、`BottomUpGenerateTarget` 等将被合并为 `GenerateTarget`，而实际的生成方法由[编解码器](./user_guides/codecs.md) 提供：
 
 ```Python
 @TRANSFORMS.register_module()
@@ -698,13 +717,13 @@ class GenerateTarget(BaseTransform):
 
 #### 数据归一化
 
-旧版的数据归一化操作`NormalizeTensor`和`ToTensor`方法将由**DataPreprocessor**模块替代，不再作为预处理操作，而是作为模块加入到模型前向传播中。
+旧版的数据归一化操作 `NormalizeTensor` 和 `ToTensor` 方法将由 **DataPreprocessor** 模块替代，不再作为流水线的一部分，而是作为模块加入到模型前向传播中。
 
 ### 模型兼容
 
-我们对model zoo提供的模型权重进行了兼容性处理，确保相同的模型权重测试精度能够与0.x版本保持同等水平，但由于在这两个版本中存在大量处理细节的差异，推理可能会产生轻微的不同（误差小于0.05%）。
+我们对 model zoo 提供的模型权重进行了兼容性处理，确保相同的模型权重测试精度能够与 0.x 版本保持同等水平，但由于在这两个版本中存在大量处理细节的差异，推理结果可能会产生轻微的不同（精度误差小于 0.05%）。
 
-对于使用0.x版本训练保存的模型权重，我们在Head中提供了一个`_load_state_dict_pre_hook()`方法来将旧版的权重字典替换为新版，如果你希望将在旧版上开发的模型兼容到新版，可以参考我们的实现。
+对于使用 0.x 版本训练保存的模型权重，我们在预测头中提供了 `_load_state_dict_pre_hook()` 方法来将旧版的权重字典替换为新版，如果你希望将在旧版上开发的模型兼容到新版，可以参考我们的实现。
 
 ```Python
 @MODELS.register_module()
@@ -717,7 +736,7 @@ def __init__(self):
     self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
 ```
 
-#### Heatmap-based方法
+#### Heatmap-based 方法
 
 对于基于SimpleBaseline方法的模型，主要需要注意最后一层卷积层的兼容：
 
@@ -768,9 +787,9 @@ def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
         state_dict[prefix + k_new] = v
 ```
 
-#### RLE-based方法
+#### RLE-based 方法
 
-对于基于RLE的模型，由于新版的`loss`模块更名为`loss_module`，且flow模型归属在`loss`模块下，因此需要对权重字典中`loss`字段进行更改：
+对于基于 RLE 的模型，由于新版的 `loss` 模块更名为 `loss_module`，且 flow 模型归属在 `loss` 模块下，因此需要对权重字典中 `loss` 字段进行更改：
 
 ```Python
 def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
