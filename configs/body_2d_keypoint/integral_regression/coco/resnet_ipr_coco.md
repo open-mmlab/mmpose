@@ -51,6 +51,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------ | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [ipr_resnet_50](<>) |  256x192   | 0.611 |      0.849      |      0.679      | 0.714 |      0.912      | [ckpt](<>) | [log](<>) |
+| Arch                                                                                                     | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
+| :------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
+| [ipr_resnet_50](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256.py) |  256x256   | 0.633 |      0.860      |      0.703      | 0.730 |      0.919      | [ckpt](<>) | [log](<>) |

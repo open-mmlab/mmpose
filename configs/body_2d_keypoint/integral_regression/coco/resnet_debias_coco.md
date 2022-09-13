@@ -1,17 +1,16 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/2107.03332">SimCC (ECCV'2022)</a></summary>
+<summary align="right"><a href="https://openaccess.thecvf.com/content/ICCV2021/papers/Gu_Removing_the_Bias_of_Integral_Pose_Regression_ICCV_2021_paper.pdf">Debias IPR (ICCV'2021)</a></summary>
 
 ```bibtex
-@misc{li20212d,
-      title={Is 2D Heatmap Representation Even Necessary for Human Pose Estimation?},
-      author={Yanjie Li and Sen Yang and Shoukui Zhang and Zhicheng Wang and Wankou Yang and Shu-Tao Xia and Erjin Zhou},
-      year={2021},
-      eprint={2107.03332},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
+@inproceedings{gu2021removing,
+    title={Removing the Bias of Integral Pose Regression},
+    author={Gu, Kerui and Yang, Linlin and Yao, Angela},
+    booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+    pages={11067--11076},
+    year={2021}
+  }
 ```
 
 </details>
@@ -53,6 +52,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :--------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-140e_coco-384x288.py) |  384x288   | 0.735 |      0.899      |      0.800      | 0.790 |      0.939      | [ckpt](<>) | [log](<>) |
+| Arch                                                                                                                 | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
+| :------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
+| [debias-ipr_resnet_50](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_debias--8xb64-210e_coco-256x256.py) |  256x256   | 0.633 |      0.860      |      0.703      | 0.730 |      0.919      | [ckpt](<>) | [log](<>) |
