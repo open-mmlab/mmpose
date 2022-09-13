@@ -58,7 +58,7 @@ def _parse_model_doc_path(path):
     dataset = _rel_path[3]
 
     # get keywords
-    keywords_algo = (_rel_path[1], )
+    keywords_algo = (_rel_path[2], )
     keywords_setting = tuple(_rel_path[4][:-3].split('_'))
     keywords = keywords_algo + keywords_setting
 

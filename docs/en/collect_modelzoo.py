@@ -2,7 +2,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
-import pdb
 import re
 from collections import defaultdict
 from glob import glob
@@ -59,7 +58,7 @@ def _parse_model_doc_path(path):
     dataset = _rel_path[3]
 
     # get keywords
-    keywords_algo = (_rel_path[1], )
+    keywords_algo = (_rel_path[2], )
     keywords_setting = tuple(_rel_path[4][:-3].split('_'))
     keywords = keywords_algo + keywords_setting
 
@@ -112,7 +111,6 @@ def main():
     # Collect all document contents
     model_doc_list = _get_model_docs()
     model_docs = Addict()
-    pdb.set_trace()
 
     for path in model_doc_list:
         task, dataset, keywords = _parse_model_doc_path(path)
