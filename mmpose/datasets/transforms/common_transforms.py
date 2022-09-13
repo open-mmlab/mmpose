@@ -908,6 +908,9 @@ class GenerateTarget(BaseTransform):
                 labels in x-axis and y-axis respectively. They will be stored
                 in ``results['keypoint_x_label']`` and
                 ``results['keypoint_y_label']``
+            - ``'heatmap+keypoint_label'``: The encoded should be heatmaps and
+                keypoint_labels, will be stored in ``results['heatmaps']``
+                and ``results['keypoint_label']``
         use_dataset_keypoint_weights (bool): Whether use the keypoint weights
             from the dataset meta information. Defaults to ``False``
     """
@@ -967,6 +970,14 @@ class GenerateTarget(BaseTransform):
 
             results['keypoint_x_labels'] = x_labels
             results['keypoint_y_labels'] = y_labels
+            results['keypoint_weights'] = keypoint_weights
+
+        elif self.target_type == 'heatmap+keypoint_label':
+            heatmaps, keypoint_labels, keypoint_weights = self.encoder.encode(
+                keypoints=keypoints, keypoints_visible=keypoints_visible)
+
+            results['heatmaps'] = heatmaps
+            results['keypoint_labels'] = keypoint_labels
             results['keypoint_weights'] = keypoint_weights
 
         elif self.target_type == 'multiscale_heatmap':

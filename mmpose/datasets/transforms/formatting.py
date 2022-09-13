@@ -79,8 +79,7 @@ class PackPoseInputs(BaseTransform):
         'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
-        'keypoints_visible': 'keypoints_visible',
-        'transformed_keypoints': 'transformed_keypoints'
+        'keypoints_visible': 'keypoints_visible'
     }
 
     label_mapping_table = {
@@ -127,9 +126,13 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.instance_mapping_table.items():
             if key in results:
                 gt_instances.set_field(results[key], packed_key)
-        if not self.pack_transformed:
-            if 'transformed_keypoints' in gt_instances:
-                del gt_instances['transformed_keypoints']
+
+        # pack `transformed_keypoints` for visualizing data transform
+        # and augmentation results
+        if self.pack_transformed and 'transformed_keypoints' in results:
+            gt_instances.set_field(results['transformed_keypoints'],
+                                   'transformed_keypoints')
+
         data_sample.gt_instances = gt_instances
 
         # pack instance labels

@@ -1,8 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
+from mmcv.cnn import build_conv_layer
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
@@ -29,7 +29,7 @@ class SimCCHead(BaseHead):
             feature map
         out_channels (int): Number of channels in the output heatmap
         input_size (tuple): Input image size in shape [w, h]
-        heatmap_size (tuple): Size of the output heatmap
+        in_featuremap_size (int | sequence[int]): Size of input feature map
         simcc_split_ratio (float): Split ratio of pixels
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
@@ -133,9 +133,20 @@ class SimCCHead(BaseHead):
                 in_channels = out_channels
             else:
                 in_channels = deconv_out_channels[-1]
+
         else:
-            self.simplebaseline_head = None
             in_channels = self._get_in_channels()
+            self.simplebaseline_head = None
+
+            if has_final_layer:
+                cfg = dict(
+                    type='Conv2d',
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    kernel_size=1)
+                self.final_layer = build_conv_layer(cfg)
+            else:
+                self.final_layer = None
 
             if self.input_transform == 'resize_concat':
                 if isinstance(in_featuremap_size, tuple):
@@ -175,6 +186,8 @@ class SimCCHead(BaseHead):
         """
         if self.simplebaseline_head is None:
             feats = self._transform_inputs(feats)
+            if self.final_layer is not None:
+                feats = self.final_layer(feats)
         else:
             feats = self.simplebaseline_head(feats)
 
@@ -274,24 +287,19 @@ class SimCCHead(BaseHead):
             dim=0,
         )
 
-        target_coords = np.concatenate(
-            [d.gt_instances.keypoints for d in batch_data_samples], axis=0)
-
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
 
         # calculate losses
         losses = dict()
         loss = self.loss_module(pred_simcc, gt_simcc, keypoint_weights)
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
+
+        losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = simcc_pck_accuracy(
             output=to_numpy(pred_simcc),
-            target=target_coords,
+            target=to_numpy(gt_simcc),
             simcc_split_ratio=self.simcc_split_ratio,
             mask=to_numpy(keypoint_weights) > 0,
         )

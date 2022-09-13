@@ -39,15 +39,15 @@ class TestDSNTHead(TestCase):
         # square heatmap
         head = DSNTHead(
             in_channels=32, in_featuremap_size=(8, 8), num_joints=17)
-        self.assertEqual(head.linspace_x.shape, (64, 64))
-        self.assertEqual(head.linspace_y.shape, (64, 64))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 64))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 64, 1))
         self.assertIsNone(head.decoder)
 
         # rectangle heatmap
         head = DSNTHead(
             in_channels=32, in_featuremap_size=(6, 8), num_joints=17)
-        self.assertEqual(head.linspace_x.shape, (8 * 8, 6 * 8))
-        self.assertEqual(head.linspace_y.shape, (8 * 8, 6 * 8))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 8))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 8, 1))
         self.assertIsNone(head.decoder)
 
         # 2 deconv + 1x1 conv
@@ -60,8 +60,8 @@ class TestDSNTHead(TestCase):
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
         )
-        self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
-        self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 4))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 4, 1))
         self.assertIsNone(head.decoder)
 
         # 2 deconv + w/o 1x1 conv
@@ -75,8 +75,8 @@ class TestDSNTHead(TestCase):
             conv_kernel_sizes=(1, ),
             has_final_layer=False,
         )
-        self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
-        self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 4))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 4, 1))
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
@@ -88,8 +88,8 @@ class TestDSNTHead(TestCase):
             deconv_kernel_sizes=tuple(),
             has_final_layer=False,
         )
-        self.assertEqual(head.linspace_x.shape, (8, 6))
-        self.assertEqual(head.linspace_y.shape, (8, 6))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8, 1))
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
@@ -101,8 +101,8 @@ class TestDSNTHead(TestCase):
             deconv_kernel_sizes=None,
             has_final_layer=False,
         )
-        self.assertEqual(head.linspace_x.shape, (8, 6))
-        self.assertEqual(head.linspace_y.shape, (8, 6))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8, 1))
         self.assertIsNone(head.decoder)
 
         # w/ decoder
@@ -110,12 +110,20 @@ class TestDSNTHead(TestCase):
             in_channels=1024,
             in_featuremap_size=(6, 8),
             num_joints=17,
-            decoder=dict(type='RegressionLabel', input_size=(192, 256)),
-        )
+            decoder=dict(
+                type='IntegralRegressionLabel',
+                input_size=(192, 256),
+                heatmap_size=(48, 64),
+                sigma=2))
+
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
-        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
+        decoder_cfg = dict(
+            type='IntegralRegressionLabel',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2)
 
         # inputs transform: select
         head = DSNTHead(
@@ -179,7 +187,11 @@ class TestDSNTHead(TestCase):
         self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 8 * 8, 6 * 8))
 
     def test_tta(self):
-        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
+        decoder_cfg = dict(
+            type='IntegralRegressionLabel',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2)
 
         # inputs transform: select
         head = DSNTHead(
@@ -206,28 +218,28 @@ class TestDSNTHead(TestCase):
 
     def test_loss(self):
         for dist_loss in ['l1', 'l2']:
-            for div_reg in ['kl', 'js']:
-                head = DSNTHead(
-                    in_channels=[16, 32],
-                    in_featuremap_size=(6, 8),
-                    num_joints=17,
-                    input_transform='select',
-                    input_index=-1,
-                    loss=dict(
-                        type='DSNTLoss',
-                        use_target_weight=True,
-                        dist_loss=dist_loss,
-                        div_reg=div_reg))
+            head = DSNTHead(
+                in_channels=[16, 32],
+                in_featuremap_size=(6, 8),
+                num_joints=17,
+                input_transform='select',
+                input_index=-1,
+                loss=dict(
+                    type='MultipleLossWrapper',
+                    losses=[
+                        dict(type='SmoothL1Loss', use_target_weight=True),
+                        dict(type='JSDiscretLoss', use_target_weight=True)
+                    ]))
 
-                feats = self._get_feats(
-                    batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-                batch_data_samples = self._get_data_samples(
-                    batch_size=2, with_reg_label=True)
-                losses = head.loss(feats, batch_data_samples)
+            feats = self._get_feats(
+                batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            batch_data_samples = self._get_data_samples(
+                batch_size=2, with_reg_label=True)
+            losses = head.loss(feats, batch_data_samples)
 
-                self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
-                self.assertEqual(losses['loss_kpt'].shape, torch.Size())
-                self.assertIsInstance(losses['acc_pose'], torch.Tensor)
+            self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
+            self.assertEqual(losses['loss_kpt'].shape, torch.Size())
+            self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
 
