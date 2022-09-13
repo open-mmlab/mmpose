@@ -235,7 +235,7 @@ def pose_pck_accuracy(output: np.ndarray,
 
 
 def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
-                       target: np.ndarray,
+                       target: Tuple[np.ndarray, np.ndarray],
                        simcc_split_ratio: float,
                        mask: np.ndarray,
                        thr: float = 0.05,
@@ -255,7 +255,7 @@ def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
 
     Args:
         output (Tuple[np.ndarray, np.ndarray]): Model predicted SimCC.
-        target (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        target (Tuple[np.ndarray, np.ndarray]): Groundtruth SimCC.
         mask (np.ndarray[N, K]): Visibility of the target. False for invisible
             joints, and True for visible. Invisible joints will be ignored for
             accuracy calculation.
@@ -270,6 +270,8 @@ def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
         - int: Number of valid keypoints.
     """
     pred_x, pred_y = output
+    gt_x, gt_y = target
+
     N, _, Wx = pred_x.shape
     _, _, Wy = pred_y.shape
     H, W = int(Wx / simcc_split_ratio), int(Wy / simcc_split_ratio)
@@ -279,8 +281,10 @@ def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
 
     pred_coords, _ = get_simcc_maximum(pred_x, pred_y)
     pred_coords /= simcc_split_ratio
+    gt_coords, _ = get_simcc_maximum(gt_x, gt_y)
+    gt_coords /= simcc_split_ratio
 
-    return keypoint_pck_accuracy(pred_coords, target, mask, thr, normalize)
+    return keypoint_pck_accuracy(pred_coords, gt_coords, mask, thr, normalize)
 
 
 def multilabel_classification_accuracy(pred: np.ndarray,
