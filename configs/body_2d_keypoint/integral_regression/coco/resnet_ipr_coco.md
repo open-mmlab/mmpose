@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/1711.08229">DSNT (ECCV'2018)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/1711.08229">IPR (ECCV'2018)</a></summary>
 
 ```bibtex
 @article{sun2018integral,
