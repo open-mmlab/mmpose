@@ -76,7 +76,7 @@ train_pipeline = [
     dict(
         type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
     # simcc needs transformed keypoints to calculate the training accuracy
-    dict(type='PackPoseInputs', pack_transformed=True)
+    dict(type='PackPoseInputs')
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),

@@ -79,7 +79,8 @@ class PackPoseInputs(BaseTransform):
         'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
-        'keypoints_visible': 'keypoints_visible'
+        'keypoints_visible': 'keypoints_visible',
+        'transformed_keypoints': 'transformed_keypoints'
     }
 
     label_mapping_table = {
@@ -96,8 +97,10 @@ class PackPoseInputs(BaseTransform):
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'input_size', 'flip',
-                            'flip_direction', 'flip_indices')):
+                            'flip_direction', 'flip_indices'),
+                 pack_transformed=False):
         self.meta_keys = meta_keys
+        self.pack_transformed = pack_transformed
 
     def transform(self, results: dict) -> dict:
         """Method to pack the input data.
@@ -124,6 +127,9 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.instance_mapping_table.items():
             if key in results:
                 gt_instances.set_field(results[key], packed_key)
+        if not self.pack_transformed:
+            if 'transformed_keypoints' in gt_instances:
+                del gt_instances['transformed_keypoints']
         data_sample.gt_instances = gt_instances
 
         # pack instance labels
