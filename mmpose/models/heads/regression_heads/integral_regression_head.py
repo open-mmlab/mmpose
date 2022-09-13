@@ -5,6 +5,7 @@ from typing import Optional, Sequence, Tuple, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
+from mmcv.cnn import build_conv_layer
 from mmengine.structures import PixelData
 from torch import Tensor, nn
 
@@ -27,13 +28,16 @@ class IntegralRegressionHead(BaseHead):
     (DSNT) layer that do soft-argmax operation on the predicted heatmaps to
     regress the coordinates.
 
-    This head is used for algorithms that only supervise the coordinates. If
-    you need to supervise the heatmaps, please refer to `DSNTHead`.
+    This head is used for algorithms that only supervise the coordinates.
 
     Args:
         in_channels (int | sequence[int]): Number of input channels
         in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
+        debias (bool): Whether to remove the bias of Integral Pose Regression.
+            see `Removing the Bias of Integral Pose Regression`_ by Gu et al
+            (2021). Defaults to ``False``.
+        beta (float): A smoothing parameter in softmax. Defaults to ``1.0``.
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
@@ -71,6 +75,7 @@ class IntegralRegressionHead(BaseHead):
             :attr:`default_init_cfg` for default settings
 
     .. _`IPR`: https://arxiv.org/abs/1711.08229
+    .. _`Debias`:
     """
 
     _version = 2
@@ -79,13 +84,15 @@ class IntegralRegressionHead(BaseHead):
                  in_channels: Union[int, Sequence[int]],
                  in_featuremap_size: Tuple[int, int],
                  num_joints: int,
+                 debias: bool = False,
+                 beta: float = 1.0,
                  deconv_out_channels: OptIntSeq = (256, 256, 256),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
                  input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = 0,
+                 input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='SmoothL1Loss', use_target_weight=True),
@@ -99,6 +106,8 @@ class IntegralRegressionHead(BaseHead):
 
         self.in_channels = in_channels
         self.num_joints = num_joints
+        self.debias = debias
+        self.beta = beta
         self.align_corners = align_corners
         self.input_transform = input_transform
         self.input_index = input_index
@@ -133,8 +142,18 @@ class IntegralRegressionHead(BaseHead):
                 in_channels = deconv_out_channels[-1]
 
         else:
-            self.simplebaseline_head = None
             in_channels = self._get_in_channels()
+            self.simplebaseline_head = None
+
+            if has_final_layer:
+                cfg = dict(
+                    type='Conv2d',
+                    in_channels=in_channels,
+                    out_channels=num_joints,
+                    kernel_size=1)
+                self.final_layer = build_conv_layer(cfg)
+            else:
+                self.final_layer = None
 
             if self.input_transform == 'resize_concat':
                 if isinstance(in_featuremap_size, tuple):
@@ -153,20 +172,20 @@ class IntegralRegressionHead(BaseHead):
                 'multiple input features.')
 
         W, H = self.heatmap_size
-        self.linspace_x = torch.arange(0.0, 1.0 * H, 1).reshape(H, 1).repeat(
-            [1, W]) / H
-        self.linspace_y = torch.arange(0.0, 1.0 * W, 1).reshape(1, W).repeat(
-            [H, 1]) / W
+        self.linspace_x = torch.arange(0.0, 1.0 * W, 1).reshape(1, 1, 1, W) / W
+        self.linspace_y = torch.arange(0.0, 1.0 * H, 1).reshape(1, 1, H, 1) / H
 
         self.linspace_x = nn.Parameter(self.linspace_x, requires_grad=False)
         self.linspace_y = nn.Parameter(self.linspace_y, requires_grad=False)
+
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
 
     def _linear_expectation(self, heatmaps: Tensor,
                             linspace: Tensor) -> Tensor:
         """Calculate linear expectation."""
 
-        N, C, _, _ = heatmaps.shape
-        heatmaps = heatmaps.mul(linspace).reshape(N, C, -1)
+        B, N, _, _ = heatmaps.shape
+        heatmaps = heatmaps.mul(linspace).reshape(B, N, -1)
         expectation = torch.sum(heatmaps, dim=2, keepdim=True)
 
         return expectation
@@ -174,12 +193,12 @@ class IntegralRegressionHead(BaseHead):
     def _flat_softmax(self, featmaps: Tensor) -> Tensor:
         """Use Softmax to normalize the featmaps in depthwise."""
 
-        _, C, H, W = featmaps.shape
+        _, N, H, W = featmaps.shape
 
-        featmaps = featmaps.reshape(-1, C, H * W)
+        featmaps = featmaps.reshape(-1, N, H * W)
         heatmaps = F.softmax(featmaps, dim=2)
 
-        return heatmaps.reshape(-1, C, H, W)
+        return heatmaps.reshape(-1, N, H, W)
 
     def forward(self, feats: Tuple[Tensor]) -> Union[Tensor, Tuple[Tensor]]:
         """Forward the network. The input is multi scale feature maps and the
@@ -193,13 +212,22 @@ class IntegralRegressionHead(BaseHead):
         """
         if self.simplebaseline_head is None:
             feats = self._transform_inputs(feats)
+            if self.final_layer is not None:
+                feats = self.final_layer(feats)
         else:
             feats = self.simplebaseline_head(feats)
 
-        heatmaps = self._flat_softmax(feats)
+        heatmaps = self._flat_softmax(feats * self.beta)
 
         pred_x = self._linear_expectation(heatmaps, self.linspace_x)
         pred_y = self._linear_expectation(heatmaps, self.linspace_y)
+
+        if self.debias:
+            B, N, H, W = feats.shape
+            C = feats.reshape(B, N, H * W).exp().sum(dim=2).reshape(B, N, 1)
+            pred_x = C / (C - 1) * (pred_x - 1 / (2 * C))
+            pred_y = C / (C - 1) * (pred_y - 1 / (2 * C))
+
         coords = torch.cat([pred_x, pred_y], dim=-1)
         return coords, heatmaps
 
@@ -292,13 +320,9 @@ class IntegralRegressionHead(BaseHead):
         losses = dict()
 
         # TODO: multi-loss calculation
-        loss = self.loss_module(pred_coords, keypoint_labels,
-                                keypoint_weights.unsqueeze(-1))
+        loss = self.loss_module(pred_coords, keypoint_labels, keypoint_weights)
 
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
+        losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
@@ -317,3 +341,31 @@ class IntegralRegressionHead(BaseHead):
     def default_init_cfg(self):
         init_cfg = [dict(type='Normal', layer=['Linear'], std=0.01, bias=0)]
         return init_cfg
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to load weights of deconv layers from
+        :class:`HeatmapHead` into `simplebaseline_head`.
+
+        The hook will be automatically registered during initialization.
+        """
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for _k in keys:
+            if not _k.startswith(prefix):
+                continue
+            v = state_dict.pop(_k)
+            k = _k.lstrip(prefix)
+
+            k_new = _k
+            k_parts = k.split('.')
+            if self.simplebaseline_head is not None:
+                if k_parts[0] == 'conv_layers':
+                    k_new = (
+                        prefix + 'simplebaseline_head.deconv_layers.' +
+                        '.'.join(k_parts[1:]))
+                elif k_parts[0] == 'final_layer':
+                    k_new = prefix + 'simplebaseline_head.' + k
+
+            state_dict[k_new] = v

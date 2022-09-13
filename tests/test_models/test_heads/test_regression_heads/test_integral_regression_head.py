@@ -39,15 +39,15 @@ class TestIntegralRegressionHead(TestCase):
         # square heatmap
         head = IntegralRegressionHead(
             in_channels=32, in_featuremap_size=(8, 8), num_joints=17)
-        self.assertEqual(head.linspace_x.shape, (64, 64))
-        self.assertEqual(head.linspace_y.shape, (64, 64))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 64))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 64, 1))
         self.assertIsNone(head.decoder)
 
         # rectangle heatmap
         head = IntegralRegressionHead(
             in_channels=32, in_featuremap_size=(6, 8), num_joints=17)
-        self.assertEqual(head.linspace_x.shape, (8 * 8, 6 * 8))
-        self.assertEqual(head.linspace_y.shape, (8 * 8, 6 * 8))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 8))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 8, 1))
         self.assertIsNone(head.decoder)
 
         # 2 deconv + 1x1 conv
@@ -60,8 +60,8 @@ class TestIntegralRegressionHead(TestCase):
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
         )
-        self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
-        self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 4))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 4, 1))
         self.assertIsNone(head.decoder)
 
         # 2 deconv + w/o 1x1 conv
@@ -75,8 +75,8 @@ class TestIntegralRegressionHead(TestCase):
             conv_kernel_sizes=(1, ),
             has_final_layer=False,
         )
-        self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
-        self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 4))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 4, 1))
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
@@ -88,8 +88,8 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=tuple(),
             has_final_layer=False,
         )
-        self.assertEqual(head.linspace_x.shape, (8, 6))
-        self.assertEqual(head.linspace_y.shape, (8, 6))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8, 1))
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
@@ -101,8 +101,8 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=None,
             has_final_layer=False,
         )
-        self.assertEqual(head.linspace_x.shape, (8, 6))
-        self.assertEqual(head.linspace_y.shape, (8, 6))
+        self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6))
+        self.assertEqual(head.linspace_y.shape, (1, 1, 8, 1))
         self.assertIsNone(head.decoder)
 
         # w/ decoder

@@ -328,10 +328,8 @@ class HeatmapHead(BaseHead):
         # calculate losses
         losses = dict()
         loss = self.loss_module(pred_fields, gt_heatmaps, keypoint_weights)
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
+
+        losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = pose_pck_accuracy(

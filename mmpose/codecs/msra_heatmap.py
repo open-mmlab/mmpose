@@ -138,9 +138,7 @@ class MSRAHeatmap(BaseKeypointCodec):
         else:
             keypoints = refine_keypoints(keypoints, heatmaps)
 
-        # Unsqueeze the instance dimension for single-instance results
-        # and restore the keypoint scales
-        keypoints = keypoints[None] * self.scale_factor
-        scores = scores[None]
+        # Restore the keypoint scale
+        keypoints = keypoints * self.scale_factor
 
         return keypoints, scores
