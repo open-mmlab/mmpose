@@ -2,9 +2,9 @@
 
 In the keypoint detection task, depending on the algorithm, it is often necessary to generate targets in different formats, such as normalized coordinates, vectors and heatmaps, etc. Similarly, for the model outputs, a decoding process is required to transform them into coordinates.
 
-In normal open source code, the encoding and decoding processes are usually scattered across many files. This makes the pair of processes, which are mutually inverse, less intuitive and unified.
+Encoding and decoding are closely related and inverse each other. In earlier versions of MMPose, encoding and decoding are implemented at different modules, making it less intuitive and unified.
 
-MMPose proposes the `Codec` to integrate the `encoder` and `decoder` together, to make them modular and user friendly.
+MMPose 1.0 introduced a new module **Codec** to integrate the encoding and decoding together in a modular and user-friendly form.
 
 Here is a diagram to show where the `Codec` is:
 
@@ -13,7 +13,6 @@ Here is a diagram to show where the `Codec` is:
 A typical codec consists of two parts:
 
 - Encoder
-
 - Decoder
 
 ### Encoder
@@ -21,9 +20,7 @@ A typical codec consists of two parts:
 The encoder transforms the coordinates in the input image space into the needed target format:
 
 - Normalized Coordinates
-
 - One-dimensional Vectors
-
 - Gaussian Heatmaps
 
 For example, in the Regression-based method, the encoder will be:
@@ -80,7 +77,7 @@ def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     Returns:
         tuple:
         - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
-        - socres (np.ndarray): The keypoint scores in shape (N, K).
+        - scores (np.ndarray): The keypoint scores in shape (N, K).
             It usually represents the confidence of the keypoint prediction
 
     """
@@ -111,13 +108,11 @@ By default, the `decode()` method only performs decoding on a single instance. Y
 
 The example below shows how to use a codec in your config:
 
-- Definition
-
-- Generate Target
-
+- Define the Codec
+- Generate Targets
 - Head
 
-### Definition
+### Define the Codec
 
 Take the Regression-based method to generate normalized coordinates as an example, you can define a `codec` in your config as follows:
 
@@ -125,7 +120,7 @@ Take the Regression-based method to generate normalized coordinates as an exampl
 codec = dict(type='RegressionLabel', input_size=(192, 256))
 ```
 
-### Generate Target
+### Generate Targets
 
 In pipelines, A codec should be passed into `GenerateTarget` to work as the `encoder`:
 

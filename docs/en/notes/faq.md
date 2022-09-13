@@ -114,6 +114,8 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
   ]
   ```
 
+  You can refer to [user_guides/visualization.md](../user_guides/visualization.md).
+
 - **Log info is NOT printed**
 
   Use smaller log interval. For example, change `interval=50` to `interval=1` in the config:
@@ -140,7 +142,7 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 
 - **How to speed up inference?**
 
-  For top-down models, try to edit the config file. For example,
+  A few approaches may help to improve the inference speed:
 
-  1. set `flip_test=False` in `test_cfg` in the config file.
-  2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).
+  1. Set `flip_test=False` in `init_cfg` in the config file.
+  2. For top-down models, use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).

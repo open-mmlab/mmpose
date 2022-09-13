@@ -2,18 +2,17 @@
 
 在关键点检测任务中，根据算法的不同，需要利用标注信息，生成不同格式的训练目标，比如归一化的坐标值、一维向量、高斯热图等。同样的，对于模型输出的结果，也需要经过处理转换成标注信息格式。我们一般将标注信息到训练目标的处理过程称为编码，模型输出到标注信息的处理过程称为解码。
 
-在目前的开源项目代码中，编码和解码过程往往散落在不同模块里，使得这一对原本互逆的处理过程不够直观和统一，增加了用户的阅读成本。
+编码和解码是一对紧密相关的互逆处理过程。在 MMPose 早期版本中，编码和解码过程往往分散在不同模块里，使其不够直观和统一，增加了学习和维护成本。
 
-MMPose 使用 Codec 来将关键点数据的编码器和解码器集成到一起，以增加代码的友好度和复用性。
+MMPose 1.0 中引入了新模块 **编解码器（Codec）** ，将关键点数据的编码和解码过程进行集成，以增加代码的友好度和复用性。
 
-Codec 在工作流程中所处的位置如下所示：
+编解码器在工作流程中所处的位置如下所示：
 
 ![codec-cn](https://user-images.githubusercontent.com/13503330/187829784-4d5939de-97d7-43cc-b934-c6d17c02d589.png)
 
-一个编解码器（Codec）主要包含两个部分：
+一个编解码器主要包含两个部分：
 
 - 编码器
-
 - 解码器
 
 ### 编码器
@@ -21,9 +20,7 @@ Codec 在工作流程中所处的位置如下所示：
 编码器主要负责将处于输入图片尺度的坐标值，编码为模型训练所需要的目标格式，主要包括：
 
 - 归一化的坐标值：用于 Regression-based 方法
-
 - 一维向量：用于 SimCC-based 方法
-
 - 高斯热图：用于 Heatmap-based 方法
 
 以 Regression-based 方法的编码器为例：
@@ -81,7 +78,7 @@ def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     Returns:
         tuple:
         - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
-        - socres (np.ndarray): The keypoint scores in shape (N, K).
+        - scores (np.ndarray): The keypoint scores in shape (N, K).
             It usually represents the confidence of the keypoint prediction
 
     """
@@ -110,17 +107,15 @@ def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
 ## 常见用法
 
-在 MMPose 配置文件中，主要有三个地方用到 Codec：
+在 MMPose 配置文件中，主要有三处涉及编解码器：
 
-- 定义
-
+- 定义编解码器
 - 生成训练目标
-
 - 模型头部
 
-### 定义
+### 定义编解码器
 
-以回归方法生成归一化的坐标值为例，在配置文件中，我们通过如下方式定义 Codec ：
+以回归方法生成归一化的坐标值为例，在配置文件中，我们通过如下方式定义编解码器：
 
 ```Python
 codec = dict(type='RegressionLabel', input_size=(192, 256))
@@ -128,7 +123,7 @@ codec = dict(type='RegressionLabel', input_size=(192, 256))
 
 ### 生成训练目标
 
-在数据处理阶段生成训练目标时，需要传入 Codec 作为编码器：
+在数据处理阶段生成训练目标时，需要传入编解码器用于编码：
 
 ```Python
 dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec)
@@ -136,7 +131,7 @@ dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec)
 
 ### 模型头部
 
-在 MMPose 中，我们在模型头部对模型的输出进行解码，需要传入 Codec 作为解码器：
+在 MMPose 中，我们在模型头部对模型的输出进行解码，需要传入编解码器用于解码：
 
 ```Python
 head=dict(
