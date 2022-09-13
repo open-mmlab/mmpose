@@ -1,12 +1,12 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=300, val_interval=10)
+train_cfg = dict(max_epochs=210, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=1e-3,
+    lr=5e-4,
 ))
 
 # learning policy
@@ -17,8 +17,8 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=300,
-        milestones=[270, 290],
+        end=210,
+        milestones=[170, 200],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -30,7 +30,12 @@ auto_scale_lr = dict(base_batch_size=512)
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
-codec = dict(type='RegressionLabel', input_size=(192, 256))
+codec = dict(
+    type='IntegralRegressionLabel',
+    input_size=(256, 256),
+    heatmap_size=(64, 64),
+    sigma=2.0,
+    normalize=True)
 
 # model settings
 model = dict(
@@ -50,13 +55,18 @@ model = dict(
             'pretrain_models/td-hm_res50_8xb64-210e_coco-256x192.pth'),
     ),
     head=dict(
-        type='IntegralRegressionHead',
+        type='DSNTHead',
         in_channels=2048,
         in_featuremap_size=(6, 8),
         num_joints=17,
         debias=True,
         beta=10.,
-        loss=dict(type='SmoothL1Loss', use_target_weight=True),
+        loss=dict(
+            type='MultipleLossWrapper',
+            loss_cfg_list=[
+                dict(type='SmoothL1Loss', use_target_weight=True),
+                dict(type='JSDiscretLoss', use_target_weight=True)
+            ]),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -77,10 +87,7 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(
-        type='RandomBBoxTransform',
-        scale_factor=(0.75, 1.25),
-        rotate_factor=60),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
     dict(type='PackPoseInputs')

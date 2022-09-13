@@ -140,8 +140,7 @@ class DSNTHead(IntegralRegressionHead):
         # calculate losses
         losses = dict()
 
-        loss_list = self.loss_module(input_list, target_list,
-                                     keypoint_weights.unsqueeze(-1))
+        loss_list = self.loss_module(input_list, target_list, keypoint_weights)
 
         loss = torch.sum(loss_list)
 

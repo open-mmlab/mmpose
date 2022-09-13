@@ -47,7 +47,10 @@ model = dict(
     backbone=dict(
         type='ResNet',
         depth=50,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='https://download.openmmlab.com/mmpose/'
+            'pretrain_models/td-hm_res50_8xb64-210e_coco-256x192.pth'),
     ),
     head=dict(
         type='DSNTHead',
