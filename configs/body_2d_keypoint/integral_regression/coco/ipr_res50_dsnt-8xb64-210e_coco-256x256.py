@@ -44,14 +44,7 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
-    backbone=dict(
-        type='ResNet',
-        depth=50,
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose/'
-            'pretrain_models/td-hm_res50_8xb64-210e_coco-256x192.pth'),
-    ),
+    backbone=dict(type='ResNet', depth=50),
     head=dict(
         type='DSNTHead',
         in_channels=2048,
@@ -68,7 +61,11 @@ model = dict(
         flip_test=True,
         shift_coords=True,
         shift_heatmap=True,
-    ))
+    ),
+    init_cfg=dict(
+        type='Pretrained',
+        checkpoint='https://download.openmmlab.com/mmpose/'
+        'pretrain_models/td-hm_res50_8xb64-210e_coco-256x192.pth'))
 
 # base dataset settings
 dataset_type = 'CocoDataset'

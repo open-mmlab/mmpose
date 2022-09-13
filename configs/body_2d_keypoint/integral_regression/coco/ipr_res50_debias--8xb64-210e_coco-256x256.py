@@ -45,25 +45,17 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
-    backbone=dict(
-        type='ResNet',
-        depth=50,
-        init_cfg=dict(
-            type='Pretrained',
-            prefix='backbone.',
-            checkpoint='https://download.openmmlab.com/mmpose/'
-            'pretrain_models/td-hm_res50_8xb64-210e_coco-256x192.pth'),
-    ),
+    backbone=dict(type='ResNet', depth=50),
     head=dict(
         type='DSNTHead',
         in_channels=2048,
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=(8, 8),
         num_joints=17,
         debias=True,
         beta=10.,
         loss=dict(
             type='MultipleLossWrapper',
-            loss_cfg_list=[
+            losses=[
                 dict(type='SmoothL1Loss', use_target_weight=True),
                 dict(type='JSDiscretLoss', use_target_weight=True)
             ]),
@@ -72,7 +64,11 @@ model = dict(
         flip_test=True,
         shift_coords=True,
         shift_heatmap=True,
-    ))
+    ),
+    init_cfg=dict(
+        type='Pretrained',
+        checkpoint='https://download.openmmlab.com/mmpose/'
+        'pretrain_models/td-hm_res50_8xb64-210e_coco-256x192.pth'))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -89,7 +85,10 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
+    dict(
+        type='GenerateTarget',
+        target_type='heatmap+keypoint_label',
+        encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
@@ -101,7 +100,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=16,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

@@ -77,7 +77,11 @@ class JSDiscretLoss(nn.Module):
     def forward(self, pred_hm, gt_hm, target_weight=None):
         if self.use_target_weight:
             assert target_weight is not None
-            target_weight = target_weight.unsqueeze(-1)
+            assert pred_hm.ndim >= target_weight.ndim
+
+            for i in range(pred_hm.ndim - target_weight.ndim):
+                target_weight = target_weight.unsqueeze(-1)
+
             loss = self.js(pred_hm * target_weight, gt_hm * target_weight)
         else:
             loss = self.js(pred_hm, gt_hm)

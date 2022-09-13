@@ -142,7 +142,7 @@ class DSNTHead(IntegralRegressionHead):
 
         loss_list = self.loss_module(input_list, target_list, keypoint_weights)
 
-        loss = torch.sum(loss_list)
+        loss = loss_list[0] + loss_list[1]
 
         if self.lambda_t > 0:
             mh = MessageHub.get_current_instance()
