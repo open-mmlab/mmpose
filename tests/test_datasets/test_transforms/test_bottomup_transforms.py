@@ -129,18 +129,18 @@ class TestBottomupResize(TestCase):
         self.assertEqual(results['img'].shape, (256, 512, 3))
         self.assertTrue(np.all(results['img'] > 0))
 
-        # single-scale, expand, base_size=100
+        # single-scale, expand, size_factor=100
         transform = BottomupResize(
-            input_size=(256, 256), resize_mode='expand', base_size=100)
+            input_size=(256, 256), resize_mode='expand', size_factor=100)
         results = transform(deepcopy(self.data_info))
         # input size is ceiled from (512, 256) to (600, 300)
         self.assertEqual(results['img'].shape, (300, 600, 3))
 
         # multi-scale
         transform = BottomupResize(
-            input_size=(256, 256), input_scales=[1., 1.5], resize_mode='fit')
+            input_size=(256, 256), aux_scales=[1.5], resize_mode='fit')
         results = transform(deepcopy(self.data_info))
         self.assertIsInstance(results['img'], list)
-        self.assertIsInstance(results['warp_mat'], list)
+        self.assertIsInstance(results['warp_mat'], np.ndarray)
         self.assertEqual(results['img'][0].shape, (256, 256, 3))
         self.assertEqual(results['img'][1].shape, (384, 384, 3))

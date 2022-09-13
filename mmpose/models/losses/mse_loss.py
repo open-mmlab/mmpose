@@ -45,8 +45,14 @@ class KeypointMSELoss(nn.Module):
             Tensor: The calculated loss.
         """
         if self.use_target_weight:
-            loss = self.criterion(output * target_weights[..., None, None],
-                                  target * target_weights[..., None, None])
+            assert target_weights is not None
+            assert output.ndim >= target_weights.ndim
+
+            for i in range(output.ndim - target_weights.ndim):
+                target_weights = target_weights.unsqueeze(-1)
+
+            loss = self.criterion(output * target_weights,
+                                  target * target_weights)
         else:
             loss = self.criterion(output, target)
 

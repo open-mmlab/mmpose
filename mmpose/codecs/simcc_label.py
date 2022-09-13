@@ -177,7 +177,7 @@ class SimCCLabel(BaseKeypointCodec):
 
             # detect abnormal coords and assign the weight 0
             if mu_x >= W or mu_y >= H or mu_x < 0 or mu_y < 0:
-                keypoint_weights[k] = 0
+                keypoint_weights[n, k] = 0
                 continue
 
             if self.label_smoothing > 0:

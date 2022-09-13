@@ -443,8 +443,7 @@ class BottomupResize(BaseTransform):
 
         input_sizes = [(w, h)]
         if self.aux_scales:
-            input_sizes += [(int(w * s), int(h * s))
-                            for s in self.input_scales]
+            input_sizes += [(int(w * s), int(h * s)) for s in self.aux_scales]
 
         imgs = []
         warp_mats = []
@@ -479,7 +478,7 @@ class BottomupResize(BaseTransform):
 
             imgs.append(_img)
             warp_mats.append(warp_mat)
-            actual_input_sizes[actual_input_size]
+            actual_input_sizes.append(actual_input_size)
             actual_img_sizes.append(actual_img_size)
 
         if self.aux_scales:
@@ -487,7 +486,7 @@ class BottomupResize(BaseTransform):
         else:
             results['img'] = imgs[0]
 
-        # The size/transform information of the original image
+        # Store the transform information w.r.t. the main input size
         results['warp_mat'] = warp_mats[0]
         results['input_size'] = actual_input_sizes[0]
         results['img_size'] = actual_img_sizes[0]

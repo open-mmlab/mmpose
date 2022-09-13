@@ -31,12 +31,12 @@ def refine_keypoints(keypoints: np.ndarray,
     for n, k in product(range(N), range(K)):
         x, y = keypoints[n, k, :2].astype(int)
 
-        if 1 < x < W - 1:
+        if 1 < x < W - 1 and 0 < y < H:
             dx = heatmaps[k, y, x + 1] - heatmaps[k, y, x - 1]
         else:
             dx = 0.
 
-        if 1 < y < H - 1:
+        if 1 < y < H - 1 and 0 < x < W:
             dy = heatmaps[k, y + 1, x] - heatmaps[k, y - 1, x]
         else:
             dy = 0.

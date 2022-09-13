@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
+from mmengine.logging import MessageHub
 from torch import Tensor
 
 from mmpose.evaluation.functional import keypoint_pck_accuracy
@@ -21,12 +22,19 @@ class DSNTHead(IntegralRegressionHead):
     (DSNT) layer that do soft-argmax operation on the predicted heatmaps to
     regress the coordinates.
 
-    This head is used for algorithms that require supervision of heatmaps.
+    This head is used for algorithms that require supervision of heatmaps
+    in `DSNT` approach.
 
     Args:
         in_channels (int | sequence[int]): Number of input channels
         in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
+        lambda_t (int): Discard heatmap-based loss when current
+            epoch > lambda_t
+        debias (bool): Whether to remove the bias of Integral Pose Regression.
+            see `Removing the Bias of Integral Pose Regression`_ by Gu et al
+            (2021). Defaults to ``False``.
+        beta (float): A smoothing parameter in softmax. Defaults to ``1.0``.
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
@@ -72,16 +80,23 @@ class DSNTHead(IntegralRegressionHead):
                  in_channels: Union[int, Sequence[int]],
                  in_featuremap_size: Tuple[int, int],
                  num_joints: int,
+                 lambda_t: int = -1,
+                 debias: bool = False,
+                 beta: float = 1.0,
                  deconv_out_channels: OptIntSeq = (256, 256, 256),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
                  input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = 0,
+                 input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
-                     type='DSNTLoss', use_target_weight=True),
+                     type='MultipleLossWrapper',
+                     losses=[
+                         dict(type='SmoothL1Loss', use_target_weight=True),
+                         dict(type='JSDiscretLoss', use_target_weight=True)
+                     ]),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -89,6 +104,8 @@ class DSNTHead(IntegralRegressionHead):
             in_channels=in_channels,
             in_featuremap_size=in_featuremap_size,
             num_joints=num_joints,
+            debias=debias,
+            beta=beta,
             deconv_out_channels=deconv_out_channels,
             deconv_kernel_sizes=deconv_kernel_sizes,
             conv_out_channels=conv_out_channels,
@@ -100,6 +117,8 @@ class DSNTHead(IntegralRegressionHead):
             loss=loss,
             decoder=decoder,
             init_cfg=init_cfg)
+
+        self.lambda_t = lambda_t
 
     def loss(self,
              inputs: Tuple[Tensor],
@@ -113,18 +132,25 @@ class DSNTHead(IntegralRegressionHead):
         keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
+        gt_heatmaps = torch.stack(
+            [d.gt_fields.heatmaps for d in batch_data_samples])
 
+        input_list = [pred_coords, pred_heatmaps]
+        target_list = [keypoint_labels, gt_heatmaps]
         # calculate losses
         losses = dict()
 
-        # TODO: multi-loss calculation
-        loss = self.loss_module(pred_coords, pred_heatmaps, keypoint_labels,
-                                keypoint_weights.unsqueeze(-1))
+        loss_list = self.loss_module(input_list, target_list, keypoint_weights)
 
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
+        loss = loss_list[0] + loss_list[1]
+
+        if self.lambda_t > 0:
+            mh = MessageHub.get_current_instance()
+            cur_epoch = mh.get_info('epoch')
+            if cur_epoch >= self.lambda_t:
+                loss = loss_list[0]
+
+        losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
