@@ -4,7 +4,7 @@ mmpose.apis
     :members:
 
 
-mmpose.codes
+mmpose.codecs
 -------------
 
 .. automodule:: mmpose.codecs
