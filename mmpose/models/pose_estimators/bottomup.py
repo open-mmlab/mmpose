@@ -1,7 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from itertools import zip_longest
-from typing import Optional
+from typing import List, Optional, Union
 
+from mmengine.utils import is_list_of
 from torch import Tensor
 
 from mmpose.registry import MODELS
@@ -11,8 +12,8 @@ from .base import BasePoseEstimator
 
 
 @MODELS.register_module()
-class TopdownPoseEstimator(BasePoseEstimator):
-    """Base class for top-down pose estimators.
+class BottomupPoseEstimator(BasePoseEstimator):
+    """Base class for bottom-up pose estimators.
 
     Args:
         backbone (dict): The backbone config
@@ -24,15 +25,9 @@ class TopdownPoseEstimator(BasePoseEstimator):
             Defaults to ``None``
         data_preprocessor (dict, optional): The data preprocessing config to
             build the instance of :class:`BaseDataPreprocessor`. Defaults to
-            ``None``
+            ``None``.
         init_cfg (dict, optional): The config to control the initialization.
             Defaults to ``None``
-        metainfo (dict): Meta information for dataset, such as keypoints
-            definition and properties. If set, the metainfo of the input data
-            batch will be overridden. For more details, please refer to
-            https://mmpose.readthedocs.io/en/1.x/user_guides/
-            prepare_datasets.html#create-a-custom-dataset-info-
-            config-file-for-the-dataset. Defaults to ``None``
     """
 
     def __init__(self,
@@ -42,8 +37,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
                  train_cfg: OptConfigType = None,
                  test_cfg: OptConfigType = None,
                  data_preprocessor: OptConfigType = None,
-                 init_cfg: OptMultiConfig = None,
-                 metainfo: Optional[dict] = None):
+                 init_cfg: OptMultiConfig = None):
         super().__init__(
             backbone=backbone,
             neck=neck,
@@ -51,8 +45,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
             train_cfg=train_cfg,
             test_cfg=test_cfg,
             data_preprocessor=data_preprocessor,
-            init_cfg=init_cfg,
-            metainfo=metainfo)
+            init_cfg=init_cfg)
 
     def loss(self, inputs: Tensor, data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and data samples.
@@ -75,12 +68,15 @@ class TopdownPoseEstimator(BasePoseEstimator):
 
         return losses
 
-    def predict(self, inputs: Tensor, data_samples: SampleList) -> SampleList:
+    def predict(self, inputs: Union[Tensor, List[Tensor]],
+                data_samples: SampleList) -> SampleList:
         """Predict results from a batch of inputs and data samples with post-
         processing.
 
         Args:
-            inputs (Tensor): Inputs with shape (N, C, H, W)
+            inputs (Tensor | List[Tensor]): Input image in tensor or image
+                pyramid as a list of tensors. Each tensor is in shape
+                [B, C, H, W]
             data_samples (List[:obj:`PoseDataSample`]): The batch
                 data samples
 
@@ -99,12 +95,34 @@ class TopdownPoseEstimator(BasePoseEstimator):
         assert self.with_head, (
             'The model must have head to perform prediction.')
 
-        if self.test_cfg.get('flip_test', False):
-            _feats = self.extract_feat(inputs)
-            _feats_flip = self.extract_feat(inputs.flip(-1))
-            feats = [_feats, _feats_flip]
+        multiscale_test = self.test_cfg.get('multiscale_test', False)
+        flip_test = self.test_cfg.get('flip_test', False)
+
+        # enable multi-scale test
+        aug_scales = data_samples[0].metainfo.get('aug_scales', None)
+        if multiscale_test:
+            assert isinstance(aug_scales, list)
+            assert is_list_of(inputs, Tensor)
+            # `inputs` includes images in original and augmented scales
+            assert len(inputs) == len(aug_scales) + 1
         else:
-            feats = self.extract_feat(inputs)
+            assert isinstance(inputs, Tensor)
+            # single-scale test
+            inputs = [inputs]
+
+        feats = []
+        for _inputs in inputs:
+            if flip_test:
+                _feats_orig = self.extract_feat(_inputs)
+                _feats_flip = self.extract_feat(_inputs.flip(-1))
+                _feats = [_feats_orig, _feats_flip]
+            else:
+                _feats = self.extract_feat(_inputs)
+
+            feats.append(_feats)
+
+        if not multiscale_test:
+            feats = feats[0]
 
         preds = self.head.predict(feats, data_samples, test_cfg=self.test_cfg)
 
@@ -134,49 +152,28 @@ class TopdownPoseEstimator(BasePoseEstimator):
         Returns:
             List[PoseDataSample]: A list of data samples where the predictions
             are stored in the ``pred_instances`` field of each data sample.
+            The length of the list is the batch size when ``merge==False``, or
+            1 when ``merge==True``.
         """
         assert len(batch_pred_instances) == len(batch_data_samples)
         if batch_pred_fields is None:
             batch_pred_fields = []
-        output_keypoint_indices = self.test_cfg.get('output_keypoint_indices',
-                                                    None)
 
         for pred_instances, pred_fields, data_sample in zip_longest(
                 batch_pred_instances, batch_pred_fields, batch_data_samples):
 
-            gt_instances = data_sample.gt_instances
-
             # convert keypoint coordinates from input space to image space
-            bbox_centers = gt_instances.bbox_centers
-            bbox_scales = gt_instances.bbox_scales
-            input_size = data_sample.metainfo['input_size']
+            # bbox_centers = gt_instances.bbox_centers
+            # bbox_scales = gt_instances.bbox_scales
+            # input_size = data_sample.metainfo['input_size']
 
-            pred_instances.keypoints = pred_instances.keypoints / input_size \
-                * bbox_scales + bbox_centers - 0.5 * bbox_scales
-
-            if output_keypoint_indices is not None:
-                # select output keypoints with given indices
-                num_keypoints = pred_instances.keypoints.shape[1]
-                for key, value in pred_instances.all_items():
-                    if key.startswith('keypoint'):
-                        pred_instances.set_field(
-                            value[:, output_keypoint_indices], key)
-
-            # add bbox information into pred_instances
-            pred_instances.bboxes = gt_instances.bboxes
-            pred_instances.bbox_scores = gt_instances.bbox_scores
+            # pred_instances.keypoints = \
+            # pred_instances.keypoints / input_size \
+            #     * bbox_scales + bbox_centers - 0.5 * bbox_scales
 
             data_sample.pred_instances = pred_instances
 
             if pred_fields is not None:
-                if output_keypoint_indices is not None:
-                    # select output heatmap channels with keypoint indices
-                    # when the number of heatmap channel matches num_keypoints
-                    for key, value in pred_fields.all_items():
-                        if value.shape[0] != num_keypoints:
-                            continue
-                        pred_fields.set_field(value[output_keypoint_indices],
-                                              key)
                 data_sample.pred_fields = pred_fields
 
         return batch_data_samples

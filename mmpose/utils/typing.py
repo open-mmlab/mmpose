@@ -25,4 +25,5 @@ ForwardResults = Union[Dict[str, Tensor], List[PoseDataSample], Tuple[Tensor],
 # Type hint of features
 #   - Tuple[Tensor]: multi-level features extracted by the network
 #   - List[Tuple[Tensor]]: multiple feature pyramids for TTA
-Features = Union[Tuple[Tensor], List[Tuple[Tensor]]]
+#   - List[List[Tuple[Tensor]]]: multi-scale feature pyramids
+Features = Union[Tuple[Tensor], List[Tuple[Tensor]], List[List[Tuple[Tensor]]]]

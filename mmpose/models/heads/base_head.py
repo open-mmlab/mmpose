@@ -100,6 +100,11 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             decoded pose information of the instances of one data sample.
         """
 
+        def _pack_and_call(args, func):
+            if not isinstance(args, tuple):
+                args = (args, )
+            return func(*args)
+
         if self.decoder is None:
             raise RuntimeError(
                 f'The decoder has not been set in {self.__class__.__name__}. '
@@ -107,15 +112,16 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
                 'enable head methods `head.predict()` and `head.decode()`')
 
         if self.decoder.support_batch_decoding:
-            batch_keypoints, batch_scores = self.decoder.batch_decode(
-                batch_outputs)
+            batch_keypoints, batch_scores = _pack_and_call(
+                batch_outputs, self.decoder.batch_decode)
 
         else:
             batch_output_np = to_numpy(batch_outputs, unzip=True)
             batch_keypoints = []
             batch_scores = []
             for outputs in batch_output_np:
-                keypoints, scores = self.decoder.decode(outputs)
+                keypoints, scores = _pack_and_call(outputs,
+                                                   self.decoder.decode)
                 batch_keypoints.append(keypoints)
                 batch_scores.append(scores)
 

@@ -18,7 +18,7 @@ def to_numpy(x: Union[Tensor, Sequence[Tensor]],
             tensors
         return_device (bool): Whether return the tensor device. Defaults to
             ``False``
-        unzip (bool): Whether unzip the input sequence. Ddfaults to ``False``
+        unzip (bool): Whether unzip the input sequence. Defaults to ``False``
 
     Returns:
         np.ndarray | tuple: If ``return_device`` is ``True``, return a tuple

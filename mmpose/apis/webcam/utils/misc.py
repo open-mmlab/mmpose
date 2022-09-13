@@ -82,7 +82,7 @@ def load_image_from_disk_or_url(filename: str,
 
 
 def get_cached_file_path(url: str,
-                         save_dir: Optional[str] = None,
+                         save_dir: str,
                          progress: bool = True,
                          check_hash: bool = False,
                          file_name: Optional[str] = None) -> str:
@@ -97,7 +97,7 @@ def get_cached_file_path(url: str,
 
     Args:
         url (str): URL of the object to download
-        save_dir (str, optional): directory in which to save the object
+        save_dir (str): directory in which to save the object
         progress (bool): whether or not to display a progress bar
             to stderr. Default: ``True``
         check_hash(bool): If True, the filename part of the URL
@@ -112,8 +112,6 @@ def get_cached_file_path(url: str,
     Returns:
         str: The path to the cached file.
     """
-    if save_dir is None:
-        save_dir = os.path.join('webcam_resources')
 
     mkdir_or_exist(save_dir)
 

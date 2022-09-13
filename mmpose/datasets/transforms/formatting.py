@@ -103,6 +103,7 @@ class PackPoseInputs(BaseTransform):
     # used for computing losses
     field_mapping_table = {
         'heatmaps': 'heatmaps',
+        'heatmap_mask': 'heatmap_mask'
     }
 
     def __init__(self,

@@ -53,6 +53,7 @@ def get_coco_sample(
     data = {
         'img': img,
         'img_shape': img_shape,
+        'ori_shape': img_shape,
         'bbox': bbox,
         'keypoints': keypoints,
         'keypoints_visible': keypoints_visible,
@@ -114,7 +115,6 @@ def get_packed_inputs(batch_size=2,
         # gt_instance
         gt_instances = InstanceData()
         gt_instance_labels = InstanceData()
-
         bboxes = _rand_bboxes(rng, num_instances, w, h)
         bbox_centers, bbox_scales = bbox_xyxy2cs(bboxes)
 
@@ -196,7 +196,8 @@ def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
 
 
 def _rand_bboxes(rng, num_instances, img_w, img_h):
-    cx, cy, bw, bh = rng.rand(num_instances, 4).T
+    cx, cy = rng.rand(num_instances, 2).T
+    bw, bh = 0.2 + 0.8 * rng.rand(num_instances, 2).T
 
     tl_x = ((cx * img_w) - (img_w * bw / 2)).clip(0, img_w)
     tl_y = ((cy * img_h) - (img_h * bh / 2)).clip(0, img_h)

@@ -195,18 +195,19 @@ class AssociativeEmbedding(BaseKeypointCodec):
     .. _`UDP (CVPR 2020)`: https://arxiv.org/abs/1911.07524
     """
 
-    def __init__(self,
-                 input_size: Tuple[int, int],
-                 heatmap_size: Tuple[int, int],
-                 sigma: Optional[float] = None,
-                 use_udp: bool = False,
-                 decode_keypoint_order: List[int] = [],
-                 decode_nms_kernel: int = 5,
-                 decode_gaussian_kernel: int = 3,
-                 decode_thr: float = 0.1,
-                 decode_topk: int = 20,
-                 decode_max_instances: Optional[int] = None,
-                 tag_per_keypoint: bool = True) -> None:
+    def __init__(
+        self,
+        input_size: Tuple[int, int],
+        heatmap_size: Tuple[int, int],
+        sigma: Optional[float] = None,
+        use_udp: bool = False,
+        decode_keypoint_order: List[int] = [],
+        decode_nms_kernel: int = 5,
+        decode_gaussian_kernel: int = 3,
+        decode_thr: float = 0.1,
+        decode_topk: int = 20,
+        decode_max_instances: Optional[int] = None,
+    ) -> None:
         super().__init__()
         self.input_size = input_size
         self.heatmap_size = heatmap_size
@@ -216,36 +217,25 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.decode_thr = decode_thr
         self.decode_topk = decode_topk
         self.decode_max_instances = decode_max_instances
-        self.tag_per_keypoint = tag_per_keypoint
         self.dedecode_keypoint_order = decode_keypoint_order.copy()
+
+        if self.use_udp:
+            self.scale_factor = ((np.array(input_size) - 1) /
+                                 (np.array(heatmap_size) - 1)).astype(
+                                     np.float32)
+        else:
+            self.scale_factor = (np.array(input_size) /
+                                 heatmap_size).astype(np.float32)
 
         if sigma is None:
             sigma = (heatmap_size[0] * heatmap_size[1])**0.5 / 64
         self.sigma = sigma
 
-    def _get_scale_factor(self, input_size: Tuple[int, int],
-                          heatmap_size: Tuple[int, int]) -> np.ndarray:
-        """Calculate scale factors from the input size and the heatmap size.
-
-        Args:
-            input_size (tuple): Image size in [w, h]
-            heatmap_size (tuple): Heatmap size in [W, H]
-
-        Returns:
-            np.ndarray: scale factors in [fx, fy] where :math:`fx=w/W` and
-            :math:`fy=h/H`.
-        """
-        if self.use_udp:
-            scale_factor = ((np.array(input_size) - 1) /
-                            (np.array(heatmap_size) - 1)).astype(np.float32)
-        else:
-            scale_factor = (np.array(input_size) /
-                            heatmap_size).astype(np.float32)
-        return scale_factor
-
-    def encode(self,
-               keypoints: np.ndarray,
-               keypoints_visible: Optional[np.ndarray] = None) -> dict:
+    def encode(
+        self,
+        keypoints: np.ndarray,
+        keypoints_visible: Optional[np.ndarray] = None
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Encode keypoints into heatmaps and position indices. Note that the
         original keypoint coordinates should be in the input image space.
 
@@ -266,14 +256,11 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 (N, K)
         """
 
-        scale_factor = self._get_scale_factor(self.input_size,
-                                              self.heatmap_size)
-
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         # keypoint coordinates in heatmap
-        _keypoints = keypoints / scale_factor
+        _keypoints = keypoints / self.scale_factor
 
         if self.use_udp:
             heatmaps, keypoint_weights = generate_udp_gaussian_heatmaps(
@@ -349,7 +336,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
         topk_tags_per_kpts = [
             torch.gather(_tag, dim=2, index=topk_indices)
-            for _tag in torch.unbind(batch_tags.view(B, K, L, H * W), dim=2)
+            for _tag in torch.unbind(batch_tags.view(B, L, K, H * W), dim=1)
         ]
 
         topk_tags = torch.stack(topk_tags_per_kpts, dim=-1)  # (B, K, TopK, L)
@@ -402,7 +389,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 missing in the initial prediction
             heatmaps (np.ndarry): Heatmaps in shape (K, H, W)
             tags (np.ndarray): Tagging heatmaps in shape (C, H, W) where
-                C=K*L
+                C=L*K
 
         Returns:
             tuple:
@@ -414,7 +401,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
         N, K = keypoints.shape[:2]
         H, W = heatmaps.shape[1:]
-        keypoint_tags = np.split(tags, K, axis=0)
+        keypoint_tags = [tags[k::K] for k in range(K)]
 
         for n in range(N):
             # Calculate the instance tag (mean tag of detected keypoints)
@@ -439,12 +426,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
         return keypoints, keypoint_scores
 
-    def batch_decode(
-        self,
-        batch_heatmaps: Tensor,
-        batch_tags: Tensor,
-        input_sizes: Optional[Tuple[int, int]] = None
-    ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    def batch_decode(self, batch_heatmaps: Tensor, batch_tags: Tensor
+                     ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """Decode the keypoint coordinates from a batch of heatmaps and tagging
         heatmaps. The decoded keypoint coordinates are in the input image
         space.
@@ -453,13 +436,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
             batch_heatmaps (Tensor): Keypoint detection heatmaps in shape
                 (B, K, H, W)
             batch_tags (Tensor): Tagging heatmaps in shape (B, C, H, W), where
-                :math:`C=L` if `tag_per_keypoint==False`, or
-                :math:`C=L*K` otherwise
-            input_sizes (List[Tuple[int, int]], optional): Manually set the
-                input size [w, h] of each sample for decoding. This is useful
-                when inference a model on images with arbitrary sizes. If not
-                given, the value `self.input_size` set at initialization will
-                be used for all samples. Defaults to ``None``
+                :math:`C=L*K`
 
         Returns:
             tuple:
@@ -469,13 +446,10 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 batch, each is in shape (N, K). It usually represents the
                 confidience of the keypoint prediction
         """
-        B, K, H, W = batch_heatmaps.shape
+        B, _, H, W = batch_heatmaps.shape
         assert batch_tags.shape[0] == B and batch_tags.shape[2:4] == (H, W), (
             f'Unmatched shapes of heatmap ({batch_heatmaps.shape}) and '
             f'tagging map ({batch_tags.shape})')
-
-        if not self.tag_per_keypoint:
-            batch_tags = batch_tags.repeat((1, K, 1, 1))
 
         # Heatmap NMS
         batch_heatmaps = batch_heatmap_nms(batch_heatmaps,
@@ -518,16 +492,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
             batch_keypoint_scores[i] = scores
 
         # restore keypoint scale
-        if input_sizes is None:
-            input_sizes = [self.input_size] * B
-        else:
-            assert len(input_sizes) == B
-
-        heatmap_size = (W, H)
-
         batch_keypoints = [
-            kpts * self._get_scale_factor(input_size, heatmap_size)
-            for kpts, input_size in zip(batch_keypoints, input_sizes)
+            kpts * self.scale_factor for kpts in batch_keypoints
         ]
 
         return batch_keypoints, batch_keypoint_scores
