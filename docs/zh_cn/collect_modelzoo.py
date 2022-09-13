@@ -137,10 +137,14 @@ def main():
                 keyword_strs = [
                     titlecase(x.replace('_', ' ')) for x in keywords
                 ]
+                dataset_str = titlecase(dataset)
+                if dataset_str in keyword_strs:
+                    keyword_strs.remove(dataset_str)
+
                 lines += [
                     '<br/>', '',
                     (f'### {" + ".join(keyword_strs)}'
-                     f' on {titlecase(dataset)}'), '', doc['content'], ''
+                     f' on {dataset_str}'), '', doc['content'], ''
                 ]
 
         fn = osp.join('model_zoo', f'{task.replace(" ", "_").lower()}.md')
