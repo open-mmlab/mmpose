@@ -6,13 +6,22 @@
 <summary align="right"><a href="https://arxiv.org/abs/2107.03332">SimCC (ECCV'2022)</a></summary>
 
 ```bibtex
-@misc{li20212d,
-      title={Is 2D Heatmap Representation Even Necessary for Human Pose Estimation?},
-      author={Yanjie Li and Sen Yang and Shoukui Zhang and Zhicheng Wang and Wankou Yang and Shu-Tao Xia and Erjin Zhou},
-      year={2021},
-      eprint={2107.03332},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@misc{https://doi.org/10.48550/arxiv.2107.03332,
+  doi = {10.48550/ARXIV.2107.03332},
+
+  url = {https://arxiv.org/abs/2107.03332},
+
+  author = {Li, Yanjie and Yang, Sen and Liu, Peidong and Zhang, Shoukui and Wang, Yunxiao and Wang, Zhicheng and Yang, Wankou and Xia, Shu-Tao},
+
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+
+  title = {SimCC: a Simple Coordinate Classification Perspective for Human Pose Estimation},
+
+  publisher = {arXiv},
+
+  year = {2021},
+
+  copyright = {arXiv.org perpetual, non-exclusive license}
 }
 ```
 
