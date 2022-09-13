@@ -157,7 +157,7 @@ class TestHeatmapHead(TestCase):
                                  flip_mode='heatmap',
                                  shift_heatmap=True,
                              ))
-
+        print(preds[0].keypoints.shape)
         self.assertTrue(len(preds), 2)
         self.assertIsInstance(preds[0], InstanceData)
         self.assertEqual(preds[0].keypoints.shape,

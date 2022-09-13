@@ -110,12 +110,20 @@ class TestDSNTHead(TestCase):
             in_channels=1024,
             in_featuremap_size=(6, 8),
             num_joints=17,
-            decoder=dict(type='RegressionLabel', input_size=(192, 256)),
-        )
+            decoder=dict(
+                type='IntegralRegressionLabel',
+                input_size=(192, 256),
+                heatmap_size=(48, 64),
+                sigma=2))
+
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
-        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
+        decoder_cfg = dict(
+            type='IntegralRegressionLabel',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2)
 
         # inputs transform: select
         head = DSNTHead(
@@ -179,7 +187,11 @@ class TestDSNTHead(TestCase):
         self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 8 * 8, 6 * 8))
 
     def test_tta(self):
-        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
+        decoder_cfg = dict(
+            type='IntegralRegressionLabel',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2)
 
         # inputs transform: select
         head = DSNTHead(
@@ -213,9 +225,11 @@ class TestDSNTHead(TestCase):
                 input_transform='select',
                 input_index=-1,
                 loss=dict(
-                    type='DSNTLoss',
-                    use_target_weight=True,
-                    dist_loss=dist_loss))
+                    type='MultipleLossWrapper',
+                    losses=[
+                        dict(type='SmoothL1Loss', use_target_weight=True),
+                        dict(type='JSDiscretLoss', use_target_weight=True)
+                    ]))
 
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
