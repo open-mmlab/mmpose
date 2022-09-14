@@ -9,7 +9,7 @@ from mmpose.registry import MODELS
 @MODELS.register_module()
 class BCELoss(nn.Module):
     """Binary Cross Entropy loss.
-    
+
     Args:
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
