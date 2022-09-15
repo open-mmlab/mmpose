@@ -198,7 +198,7 @@ class BufferManager():
         buffer_info = {}
         for name, buffer in self._buffers.items():
             buffer_info[name] = {
-                'size': buffer.size,
+                'size': buffer.qsize(),
                 'maxsize': buffer.maxsize
             }
         return buffer_info
