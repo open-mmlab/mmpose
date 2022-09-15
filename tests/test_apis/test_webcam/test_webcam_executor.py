@@ -12,8 +12,8 @@ class TestWebcamExecutor(unittest.TestCase):
 
     def _get_config(self):
         config = Config.fromfile('demo/webcam_cfg/test_camera.py').executor_cfg
-        config.camera_id = 'tests/data/posetrack18/videos/000001_mpiinew_test/'
-        '000001_mpiinew_test.mp4'
+        config.camera_id = 'tests/data/posetrack18/videos/' \
+                           '000001_mpiinew_test/000001_mpiinew_test.mp4'
         return config
 
     def test_init(self):
