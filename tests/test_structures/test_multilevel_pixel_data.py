@@ -50,17 +50,11 @@ class TestMultilevelPixelData(TestCase):
         self.assertTrue(isinstance(data[0].heatmaps, np.ndarray))
         self.assertTrue(data[0].masks.device.type == 'cpu')
 
-        # test `cuda`
-        data = self.get_multi_level_pixel_data()
-        self.assertTrue(data[0].masks.device.type == 'cpu')
-        data = data.cuda()
-        self.assertTrue(data[0].masks.device.type == 'cuda')
-
         # test `to`
         data = self.get_multi_level_pixel_data()
         self.assertTrue(data[0].masks.device.type == 'cpu')
-        data = data.to('cuda')
-        self.assertTrue(data[0].masks.device.type == 'cuda')
+        data = data.to('cpu')
+        self.assertTrue(data[0].masks.device.type == 'cpu')
 
         # test `numpy`
         data = self.get_multi_level_pixel_data()
