@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import unittest
 from queue import Queue
-from unittest import TestCase
 
 from mmpose.apis.webcam.utils.buffer import Buffer, BufferManager
 
 
-class TestBuffer(TestCase):
+class TestBuffer(unittest.TestCase):
 
     def test_buffer(self):
 
@@ -17,7 +16,7 @@ class TestBuffer(TestCase):
         self.assertEqual(item, 2)
 
 
-class TestBufferManager(TestCase):
+class TestBufferManager(unittest.TestCase):
 
     def _get_buffer_dict(self):
         return dict(example_buffer=Buffer())

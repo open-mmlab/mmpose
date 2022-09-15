@@ -52,7 +52,7 @@ class Message():
         if node is not None:
             if node_name is not None or node_type is not None:
                 warnings.warn(
-                    '`node_name` and `node_type` will be overridden if node'
+                    '`node_name` and `node_type` will be overridden if node '
                     'is provided.')
             node_name = node.name
             node_type = node.__class__.__name__

@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import unittest
-from unittest import TestCase
 
 from mmengine import Config
 
@@ -12,7 +11,7 @@ from mmpose.apis.webcam.utils.pose import (get_eye_keypoint_ids,
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 
 
-class TestGetKeypointIds(TestCase):
+class TestGetKeypointIds(unittest.TestCase):
 
     def setUp(self) -> None:
         datasets_meta = dict(

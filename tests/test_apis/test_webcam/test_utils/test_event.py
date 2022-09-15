@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import unittest
 from threading import Event
-from unittest import TestCase
 
 from mmpose.apis.webcam.utils.event import EventManager
 
 
-class TestEventManager(TestCase):
+class TestEventManager(unittest.TestCase):
 
     def test_event_manager(self):
         event_manager = EventManager()
