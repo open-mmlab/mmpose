@@ -64,6 +64,12 @@ mim install mmengine
 mim install "mmcv>=2.0.0rc1"
 ```
 
+请注意，MMPose 中的一些推理示例脚本需要使用 [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet) 检测人体。如果您想运行这些示例脚本，可以通过运行以下命令安装 mmdet:
+
+```shell
+mim install "mmdet>=3.0.0rc0"
+```
+
 **第 2 步** 安装 MMPose
 
 根据具体需求，我们支持两种安装模式: 从源码安装（推荐）和作为 Python 包安装
@@ -92,7 +98,22 @@ mim install "mmpose>=1.0.0b0"
 
 ### 验证安装
 
-为了验证 MMPose 的安装是否正确，您可以运行我们提供的 [示例代码](/demo/docs/2d_human_pose_demo.md) 来执行模型推理。
+为了验证 MMPose 是否安装正确，您可以运行以下推理示例脚本：
+
+```shell
+python demo/image_demo.py \
+    tests/data/coco/000000000785.jpg \
+    configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    --out-file vis_results.jpg \
+    --draw-heatmap
+```
+
+如果一切顺利，您将会得到这样的可视化结果：
+
+![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
+
+输出图片将会保存到 `$MMPOSE/vis_results.jpg`.
 
 ### 自定义安装
 

@@ -28,7 +28,6 @@ python demo/image_demo.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --out-file vis_results.jpg \
     --draw-heatmap
-
 ```
 
 To run this demo on CPU:

@@ -65,6 +65,12 @@ mim install mmengine
 mim install "mmcv>=2.0.0rc1"
 ```
 
+Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can install mmdet as a dependency by running:
+
+```shell
+mim install "mmdet>=3.0.0rc0"
+```
+
 **Step 1.** Install MMPose.
 
 Case A: To develop and run mmpose directly, install it from source:
@@ -88,7 +94,22 @@ mim install "mmpose>=1.0.0b0"
 
 ### Verify the installation
 
-To verify that MMPose is installed correctly, you can run an inference demo according to this [guide](/demo/docs/2d_human_pose_demo.md).
+To verify that MMPose is installed correctly, you can run the following inference demo script:
+
+```shell
+python demo/image_demo.py \
+    tests/data/coco/000000000785.jpg \
+    configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    --out-file vis_results.jpg \
+    --draw-heatmap
+```
+
+If everything goes fine, you will get this visualization result:
+
+![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
+
+And the output will be saved as `$MMPOSE/vis_results.jpg`.
 
 ### Customize Installation
 

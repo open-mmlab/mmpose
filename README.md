@@ -27,10 +27,10 @@
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
 [📘Documentation](https://mmpose.readthedocs.io/en/1.x/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/1.x/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/1.x/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/1.x/changelog.html) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/1.x/installation.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/1.x/notes/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -99,13 +99,13 @@ Please refer to [installation.md](https://mmpose.readthedocs.io/en/1.x/installat
 
 We provided a series of tutorials about the basic usage of MMPose for new users:
 
-- [About Configs](https://mmpose.readthedocs.io/en/1.x/user_guides/configs.md)
-- [Add New Dataset](https://mmpose.readthedocs.io/en/1.x/user_guides/prepare_datasets.md)
-- [Keypoint Encoding & Decoding](https://mmpose.readthedocs.io/en/1.x/user_guides/codecs.md)
-- [Inference with Existing Models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.md)
-- [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.md)
-- [Visualization Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/visualization.md)
-- [Other Useful Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/useful_tools.md)
+- [About Configs](https://mmpose.readthedocs.io/en/1.x/user_guides/configs.html)
+- [Add New Dataset](https://mmpose.readthedocs.io/en/1.x/user_guides/prepare_datasets.html)
+- [Keypoint Encoding & Decoding](https://mmpose.readthedocs.io/en/1.x/user_guides/codecs.html)
+- [Inference with Existing Models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)
+- [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html)
+- [Visualization Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/visualization.html)
+- [Other Useful Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/useful_tools.html)
 
 ## Model Zoo
 
