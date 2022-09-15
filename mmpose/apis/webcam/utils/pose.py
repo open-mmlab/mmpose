@@ -51,7 +51,7 @@ def get_face_keypoint_ids(dataset_meta: Dict) -> List:
     # try obtaining nose point ids from dataset_meta
     keypoint_name2id = dataset_meta.get('keypoint_name2id', {})
     for id in range(68):
-        face_indices.append(keypoint_name2id.get(f'face_{id}', None))
+        face_indices.append(keypoint_name2id.get(f'face-{id}', None))
 
     if None in face_indices:
         # Fall back to hard coded keypoint id
