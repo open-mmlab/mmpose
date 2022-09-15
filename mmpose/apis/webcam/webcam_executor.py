@@ -204,8 +204,10 @@ class WebcamExecutor():
                 else:
                     logger.info('Reached the end of the video.')
                     # Put a video ending signal
-                    self.buffer_manager.put('_frame_', VideoEndingMessage())
-                    self.buffer_manager.put('_input_', VideoEndingMessage())
+                    self.buffer_manager.put_force('_frame_',
+                                                  VideoEndingMessage())
+                    self.buffer_manager.put_force('_input_',
+                                                  VideoEndingMessage())
                     # Wait for `_exit_` event util a timeout occurs
                     if not self.event_manager.wait('_exit_', timeout=5.0):
                         break
