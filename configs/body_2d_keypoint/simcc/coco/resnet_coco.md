@@ -52,4 +52,4 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 | Arch                                                                                           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
 | :--------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-140e_coco-384x288.py) |  384x288   | 0.735 |      0.899      |      0.800      | 0.790 |      0.939      | [ckpt](<>) | [log](<>) |
+| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288.py) |  384x288   | 0.735 |      0.899      |      0.800      | 0.790 |      0.939      | [ckpt](<>) | [log](<>) |
