@@ -463,7 +463,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
             f'tagging map ({batch_tags.shape})')
 
         if not self.tag_per_keypoint:
-            batch_tags = batch_tags.tile((1, K, 1, 1))
+            batch_tags = batch_tags.repeat((1, K, 1, 1))
 
         # Heatmap NMS
         batch_heatmaps = batch_heatmap_nms(batch_heatmaps,
