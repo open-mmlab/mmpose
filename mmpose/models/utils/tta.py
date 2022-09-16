@@ -43,6 +43,7 @@ def flip_heatmaps(heatmaps: Tensor,
         raise ValueError(f'Invalid flip_mode value "{flip_mode}"')
 
     if shift_heatmap:
+        # clone data to avoid unexpected in-place operation when using CPU
         heatmaps[..., 1:] = heatmaps[..., :-1].clone()
 
     return heatmaps
