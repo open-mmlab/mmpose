@@ -61,6 +61,7 @@ class TestMonitorNode(unittest.TestCase):
         video = mmcv.VideoReader('webcam_output.mp4')
         self.assertEqual(video.frame_cnt, 5)
         self.assertEqual(video.fps, 30)
+        video.vcap.release()
         os.remove('webcam_output.mp4')
 
 

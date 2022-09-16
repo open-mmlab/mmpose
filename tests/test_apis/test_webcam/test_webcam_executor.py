@@ -12,6 +12,7 @@ class TestWebcamExecutor(unittest.TestCase):
 
     def _get_config(self):
         config = Config.fromfile('demo/webcam_cfg/test_camera.py').executor_cfg
+        config.synchronous = True
         config.camera_id = 'tests/data/posetrack18/videos/' \
                            '000001_mpiinew_test/000001_mpiinew_test.mp4'
         return config
@@ -37,6 +38,7 @@ class TestWebcamExecutor(unittest.TestCase):
         video = mmcv.VideoReader('webcam_output.mp4')
         self.assertGreaterEqual(video.frame_cnt, 1)
         self.assertEqual(video.fps, 30)
+        video.vcap.release()
         os.remove('webcam_output.mp4')
 
 
