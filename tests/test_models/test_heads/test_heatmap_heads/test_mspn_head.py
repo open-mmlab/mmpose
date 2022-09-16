@@ -58,6 +58,7 @@ class TestMSPNHead(TestCase):
             out_channels=17,
             use_prm=False,
             norm_cfg=dict(type='BN'),
+            level_indices=[0, 1, 2, 3],
             decoder=dict(
                 type='MegviiHeatmap',
                 input_size=(192, 256),
@@ -75,6 +76,7 @@ class TestMSPNHead(TestCase):
             use_prm=False,
             norm_cfg=dict(type='BN'),
             loss=dict(type='KeypointMSELoss', use_target_weight=True),
+            level_indices=[0, 1, 2, 3],
         )
         self.assertTrue(isinstance(head.loss_module, nn.Module))
 
@@ -88,6 +90,7 @@ class TestMSPNHead(TestCase):
             use_prm=False,
             norm_cfg=dict(type='BN'),
             loss=[dict(type='KeypointMSELoss', use_target_weight=True)] * 8,
+            level_indices=[0, 1, 2, 3, 1, 2, 3, 4],
         )
         self.assertTrue(isinstance(head.loss_module, nn.ModuleList))
         self.assertTrue(len(head.loss_module), 8)
@@ -101,7 +104,8 @@ class TestMSPNHead(TestCase):
             num_units=4,
             out_shape=(64, 48),
             unit_channels=unit_channels,
-            out_channels=17)
+            out_channels=17,
+            level_indices=[0, 1, 2, 3])
 
         with self.assertRaisesRegex(
                 AssertionError,
@@ -176,7 +180,8 @@ class TestMSPNHead(TestCase):
                     type='KeypointOHKMMSELoss',
                     use_target_weight=True,
                     loss_weight=0.1)
-            ]) * 4)
+            ]) * 4,
+            level_indices=[0, 1, 2, 3] * 3 + [1, 2, 3, 4])
 
         feats = self._get_feats(
             num_stages=4,
@@ -207,6 +212,7 @@ class TestMSPNHead(TestCase):
             out_shape=(64, 48),
             unit_channels=unit_channels,
             out_channels=17,
+            level_indices=[0, 1, 2, 3],
             decoder=decoder_cfg)
 
         with self.assertRaisesRegex(
@@ -272,6 +278,7 @@ class TestMSPNHead(TestCase):
             out_shape=(64, 48),
             unit_channels=unit_channels,
             out_channels=17,
+            level_indices=[0, 1, 2, 3] * 3 + [1, 2, 3, 4],
             decoder=decoder_cfg)
         feats = self._get_feats(
             num_stages=4,
@@ -307,6 +314,7 @@ class TestMSPNHead(TestCase):
             out_shape=(64, 48),
             unit_channels=unit_channels,
             out_channels=17,
+            level_indices=[0, 1, 2, 3],
             decoder=decoder_cfg)
 
         feats = self._get_feats(
@@ -331,6 +339,14 @@ class TestMSPNHead(TestCase):
 
     def test_errors(self):
         # Invalid arguments
+        with self.assertRaisesRegex(ValueError, 'The length of level_indices'):
+            _ = MSPNHead(
+                num_stages=2,
+                num_units=4,
+                out_shape=(64, 48),
+                unit_channels=256,
+                out_channels=17,
+                level_indices=[0])
         with self.assertRaisesRegex(ValueError, 'The length of loss_module'):
             _ = MSPNHead(
                 num_stages=2,
@@ -338,5 +354,6 @@ class TestMSPNHead(TestCase):
                 out_shape=(64, 48),
                 unit_channels=256,
                 out_channels=17,
+                level_indices=[0, 1, 2, 3, 1, 2, 3, 4],
                 loss=[dict(type='KeypointMSELoss', use_target_weight=True)] *
                 3)

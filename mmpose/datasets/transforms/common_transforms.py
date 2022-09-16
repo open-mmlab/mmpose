@@ -898,10 +898,10 @@ class GenerateTarget(BaseTransform):
 
             - ``'heatmap'``: The encoded should be instance-irrelevant
                 heatmaps and will be stored in ``results['heatmaps']``
-            - ``'multiscale_heatmap'`` The encoded should be a list of
-                heatmaps and will be stored in ``results['heatmaps']``. Note
-                that in this case ``self.encoder`` is also a list, each
-                encoder for a single scale of heatmaps
+            - ``'multilevel_heatmap'`` The encoded should be a list of
+                heatmaps and will be stored in ``results['heatmaps']``.
+                Note that in this case, ``self.encoder`` should also be
+                a list, and each encoder encodes a single-level heatmaps.
             - ``'keypoint_label'``: The encoded should be instance-level
                 labels and will be stored in ``results['keypoint_label']``
             - ``'keypoint_xy_label'``: The encoed should be instance-level
@@ -924,11 +924,11 @@ class GenerateTarget(BaseTransform):
         self.target_type = target_type
         self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
-        if self.target_type == 'multiscale_heatmap':
+        if self.target_type == 'multilevel_heatmap':
             if not isinstance(self.encoder_cfg, list):
                 raise ValueError(
                     'The encoder should be a list if target type is '
-                    '"multiscale_heatmap"')
+                    '"multilevel_heatmap"')
             self.encoder = [
                 KEYPOINT_CODECS.build(cfg) for cfg in self.encoder_cfg
             ]
@@ -980,7 +980,7 @@ class GenerateTarget(BaseTransform):
             results['keypoint_labels'] = keypoint_labels
             results['keypoint_weights'] = keypoint_weights
 
-        elif self.target_type == 'multiscale_heatmap':
+        elif self.target_type == 'multilevel_heatmap':
             heatmaps = []
             keypoint_weights = []
 
