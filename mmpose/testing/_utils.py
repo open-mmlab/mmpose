@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from mmengine.structures import InstanceData, PixelData
 
-from mmpose.structures import PoseDataSample
+from mmpose.structures import MultilevelPixelData, PoseDataSample
 from mmpose.structures.bbox import bbox_xyxy2cs
 
 
@@ -153,27 +153,27 @@ def get_packed_inputs(batch_size=2,
                 _rand_simcc_label(rng, num_instances, num_keypoints, len_y))
 
         # gt_fields
-        gt_fields = PixelData()
         if with_heatmap:
             if num_levels == 1:
-                # generate single-scale heatmaps
+                gt_fields = PixelData()
+                # generate single-level heatmaps
                 W, H = heatmap_size
                 heatmaps = rng.rand(num_keypoints, H, W)
                 gt_fields.heatmaps = torch.FloatTensor(heatmaps)
             else:
-                # generate multi-scale heatmaps
+                # generate multilevel heatmaps
                 heatmaps = []
                 for _ in range(num_levels):
                     W, H = heatmap_size
                     heatmaps_ = rng.rand(num_keypoints, H, W)
-                    heatmaps.append(heatmaps_)
+                    heatmaps.append(torch.FloatTensor(heatmaps_))
                 # [num_levels*K, H, W]
-                heatmaps = np.concatenate(heatmaps)
-                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
+                gt_fields = MultilevelPixelData()
+                gt_fields.heatmaps = heatmaps
+            data_sample.gt_fields = gt_fields
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
-        data_sample.gt_fields = gt_fields
 
         inputs['data_sample'] = data_sample
         packed_inputs.append(inputs)

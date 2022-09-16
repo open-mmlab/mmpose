@@ -8,7 +8,7 @@ from mmengine.structures import InstanceData, PixelData
 from mmengine.utils import is_seq_of
 
 from mmpose.registry import TRANSFORMS
-from mmpose.structures import PoseDataSample
+from mmpose.structures import MultilevelPixelData, PoseDataSample
 
 
 def image_to_tensor(img: Union[np.ndarray,
@@ -143,11 +143,28 @@ class PackPoseInputs(BaseTransform):
         data_sample.gt_instance_labels = gt_instance_labels.to_tensor()
 
         # pack fields
-        gt_fields = PixelData()
+        gt_fields = None
         for key, packed_key in self.field_mapping_table.items():
             if key in results:
+                if isinstance(results[key], list):
+                    if gt_fields is None:
+                        gt_fields = MultilevelPixelData()
+                    else:
+                        assert isinstance(
+                            gt_fields, MultilevelPixelData
+                        ), 'Got mixed single-level and multi-level pixel data.'
+                else:
+                    if gt_fields is None:
+                        gt_fields = PixelData()
+                    else:
+                        assert isinstance(
+                            gt_fields, PixelData
+                        ), 'Got mixed single-level and multi-level pixel data.'
+
                 gt_fields.set_field(results[key], packed_key)
-        data_sample.gt_fields = gt_fields.to_tensor()
+
+        if gt_fields:
+            data_sample.gt_fields = gt_fields.to_tensor()
 
         img_meta = {k: results[k] for k in self.meta_keys if k in results}
         data_sample.set_metainfo(img_meta)

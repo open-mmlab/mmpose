@@ -30,11 +30,15 @@ auto_scale_lr = dict(base_batch_size=256)
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
-codec = dict(
-    type='MegviiHeatmap',
-    input_size=(192, 256),
-    heatmap_size=(48, 64),
-    kernel_size=5)
+# multiple kernel_sizes of heatmap gaussian for 'Megvii' approach.
+kernel_sizes = [15, 11, 9, 7, 5]
+codec = [
+    dict(
+        type='MegviiHeatmap',
+        input_size=(192, 256),
+        heatmap_size=(48, 64),
+        kernel_size=kernel_size) for kernel_size in kernel_sizes
+]
 
 # model settings
 model = dict(
@@ -61,7 +65,11 @@ model = dict(
         unit_channels=256,
         out_channels=17,
         num_stages=3,
+        num_units=4,
         norm_cfg=dict(type='BN'),
+        # each sub list is for a stage
+        # and each element in each list is for a unit
+        level_indices=[0, 1, 2, 3] * 2 + [1, 2, 3, 4],
         loss=([
             dict(
                 type='KeypointMSELoss',
@@ -73,7 +81,7 @@ model = dict(
                 use_target_weight=True,
                 loss_weight=1.)
         ]) * 3,
-        decoder=codec),
+        decoder=codec[-1]),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
@@ -92,14 +100,16 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
-    dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='TopdownAffine', input_size=codec[0]['input_size']),
+    dict(
+        type='GenerateTarget', target_type='multilevel_heatmap',
+        encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
     dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale'),
-    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='TopdownAffine', input_size=codec[0]['input_size']),
     dict(type='PackPoseInputs')
 ]
 

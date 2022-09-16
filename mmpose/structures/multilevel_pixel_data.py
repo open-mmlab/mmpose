@@ -43,7 +43,7 @@ class MultilevelPixelData(BaseDataElement):
 
         >>> # get shape
         >>> data.shape
-        [(64, 48), (128, 96), (256, 192)]
+        ((64, 48), (128, 96), (256, 192))
 
         >>> # set
         >>> offset_maps = [torch.rand(2, h, w) for h, w in sizes]
@@ -137,7 +137,6 @@ class MultilevelPixelData(BaseDataElement):
                     f'Cannot set {name} to be a field of metainfo '
                     f'because {name} is already a data field')
             self._metainfo_fields.add(name)
-            super().__setattr__(name, value)
 
         else:
             if name in self._metainfo_fields:
@@ -171,6 +170,8 @@ class MultilevelPixelData(BaseDataElement):
                 self[i].set_field(v, name, field_type='data')
 
             self._data_fields.add(name)
+
+        object.__setattr__(self, name, value)
 
     def __delattr__(self, item: str):
         """delete the item in dataelement.
@@ -259,3 +260,14 @@ class MultilevelPixelData(BaseDataElement):
         """Convert all tensor to np.narray in data."""
         return self._convert(
             apply_to=np.ndarray, func=lambda x: torch.from_numpy(x))
+
+    # Tensor-like methods
+    def to(self, *args, **kwargs) -> 'MultilevelPixelData':
+        """Apply same name function to all tensors in data_fields."""
+        new_data = self.new()
+        for k, v in self.items():
+            if hasattr(v[0], 'to'):
+                v = [v_.to(*args, **kwargs) for v_ in v]
+                data = {k: v}
+                new_data.set_data(data)
+        return new_data

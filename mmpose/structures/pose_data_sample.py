@@ -1,5 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Union
+
 from mmengine.structures import BaseDataElement, InstanceData, PixelData
+
+from mmpose.structures import MultilevelPixelData
 
 
 class PoseDataSample(BaseDataElement):
@@ -76,12 +80,12 @@ class PoseDataSample(BaseDataElement):
         del self._pred_instances
 
     @property
-    def gt_fields(self) -> PixelData:
+    def gt_fields(self) -> Union[PixelData, MultilevelPixelData]:
         return self._gt_fields
 
     @gt_fields.setter
-    def gt_fields(self, value: PixelData):
-        self.set_field(value, '_gt_fields', dtype=PixelData)
+    def gt_fields(self, value: Union[PixelData, MultilevelPixelData]):
+        self.set_field(value, '_gt_fields', dtype=type(value))
 
     @gt_fields.deleter
     def gt_fields(self):
