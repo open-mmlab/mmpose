@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import time
 import unittest
 
 import mmcv
@@ -62,6 +63,9 @@ class TestObjectAssignerNode(unittest.TestCase):
                          object_msg.get_objects()[0]['_id_'])
 
         # object_message is None
+        # take a pause to increase the interval of messages' timestamp
+        # to avoid ZeroDivisionError when computing fps in `process`
+        time.sleep(1 / 30.0)
         frame_msg = self._get_input_msg()
         output_msg = node.process(dict(frame=frame_msg, object=None))
         objects = output_msg.get_objects()
@@ -70,6 +74,7 @@ class TestObjectAssignerNode(unittest.TestCase):
 
         # node.synchronous is True
         node.synchronous = True
+        time.sleep(1 / 30.0)
         frame_msg = self._get_input_msg()
         object_msg = self._get_input_msg(with_object=True)
         output_msg = node.process(dict(frame=frame_msg, object=object_msg))
