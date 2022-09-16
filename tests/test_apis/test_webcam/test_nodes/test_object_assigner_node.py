@@ -61,6 +61,13 @@ class TestObjectAssignerNode(unittest.TestCase):
         self.assertEqual(objects[0]['_id_'],
                          object_msg.get_objects()[0]['_id_'])
 
+        # object_message is None
+        frame_msg = self._get_input_msg()
+        output_msg = node.process(dict(frame=frame_msg, object=None))
+        objects = output_msg.get_objects()
+        self.assertEqual(objects[0]['_id_'],
+                         object_msg.get_objects()[0]['_id_'])
+
         # node.synchronous is True
         node.synchronous = True
         frame_msg = self._get_input_msg()

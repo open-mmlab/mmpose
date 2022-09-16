@@ -12,6 +12,10 @@ from mmpose.datasets.datasets.utils import parse_pose_metainfo
 
 class TestBigeyeEffectNode(unittest.TestCase):
 
+    def setUp(self) -> None:
+        self.node = BigeyeEffectNode(
+            name='big-eye', input_buffer='vis', output_buffer='vis_bigeye')
+
     def _get_input_msg(self):
 
         msg = FrameMessage(None)
@@ -23,6 +27,7 @@ class TestBigeyeEffectNode(unittest.TestCase):
 
         objects = [
             dict(
+                bbox=np.array([285.1, 44.4, 510.2, 387.7]),
                 keypoints=np.stack((np.random.rand(17) *
                                     (w - 1), np.random.rand(17) * (h - 1)),
                                    axis=1),
@@ -35,26 +40,22 @@ class TestBigeyeEffectNode(unittest.TestCase):
 
         return msg
 
-    def test_init(self):
-        node = BigeyeEffectNode(
-            name='big-eye', input_buffer='vis', output_buffer='vis_bigeye')
-
-        self.assertEqual(len(node._input_buffers), 1)
-        self.assertEqual(len(node._output_buffers), 1)
-        self.assertEqual(node._input_buffers[0].buffer_name, 'vis')
-        self.assertEqual(node._output_buffers[0].buffer_name, 'vis_bigeye')
-
-    def test_draw(self):
-        node = BigeyeEffectNode(
-            name='big-eye', input_buffer='vis', output_buffer='vis_bigeye')
+    def test_process(self):
         input_msg = self._get_input_msg()
         img_h, img_w = input_msg.get_image().shape[:2]
         self.assertEqual(len(input_msg.get_objects()), 1)
 
-        canvas = node.draw(input_msg)
+        output_msg = self.node.process(dict(input=input_msg))
+        canvas = output_msg.get_image()
         self.assertIsInstance(canvas, np.ndarray)
         self.assertEqual(canvas.shape[0], img_h)
         self.assertEqual(canvas.shape[1], img_w)
+
+    def test_bypass(self):
+        input_msg = self._get_input_msg()
+        img = input_msg.get_image().copy()
+        output_msg = self.node.bypass(dict(input=input_msg))
+        self.assertTrue((img == output_msg.get_image()).all())
 
 
 if __name__ == '__main__':

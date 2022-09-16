@@ -12,6 +12,12 @@ from mmpose.datasets.datasets.utils import parse_pose_metainfo
 
 class TestSunglassesEffectNode(unittest.TestCase):
 
+    def setUp(self) -> None:
+        self.node = SunglassesEffectNode(
+            name='sunglasses',
+            input_buffer='vis',
+            output_buffer='vis_sunglasses')
+
     def _get_input_msg(self):
 
         msg = FrameMessage(None)
@@ -35,31 +41,22 @@ class TestSunglassesEffectNode(unittest.TestCase):
 
         return msg
 
-    def test_init(self):
-        node = SunglassesEffectNode(
-            name='sunglasses',
-            input_buffer='vis',
-            output_buffer='vis_sunglasses')
-
-        self.assertEqual(len(node._input_buffers), 1)
-        self.assertEqual(len(node._output_buffers), 1)
-        self.assertEqual(node._input_buffers[0].buffer_name, 'vis')
-        self.assertEqual(node._output_buffers[0].buffer_name, 'vis_sunglasses')
-        self.assertIsInstance(node.resource_img, np.ndarray)
-
-    def test_draw(self):
-        node = SunglassesEffectNode(
-            name='sunglasses',
-            input_buffer='vis',
-            output_buffer='vis_sunglasses')
+    def test_process(self):
         input_msg = self._get_input_msg()
         img_h, img_w = input_msg.get_image().shape[:2]
         self.assertEqual(len(input_msg.get_objects()), 1)
 
-        canvas = node.draw(input_msg)
+        output_msg = self.node.process(dict(input=input_msg))
+        canvas = output_msg.get_image()
         self.assertIsInstance(canvas, np.ndarray)
         self.assertEqual(canvas.shape[0], img_h)
         self.assertEqual(canvas.shape[1], img_w)
+
+    def test_bypass(self):
+        input_msg = self._get_input_msg()
+        img = input_msg.get_image().copy()
+        output_msg = self.node.bypass(dict(input=input_msg))
+        self.assertTrue((img == output_msg.get_image()).all())
 
 
 if __name__ == '__main__':

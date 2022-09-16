@@ -10,36 +10,17 @@ from mmpose.apis.webcam import WebcamExecutor
 
 class TestWebcamExecutor(unittest.TestCase):
 
-    def _get_config(self):
+    def setUp(self) -> None:
         config = Config.fromfile('demo/webcam_cfg/test_camera.py').executor_cfg
-        config.synchronous = True
         config.camera_id = 'tests/data/posetrack18/videos/' \
                            '000001_mpiinew_test/000001_mpiinew_test.mp4'
-        return config
+        self.executor = WebcamExecutor(**config)
 
     def test_init(self):
 
-        executor = WebcamExecutor(**self._get_config())
-
-        self.assertEqual(len(executor.node_list), 2)
-        self.assertEqual(executor.node_list[0].name, 'monitor')
-        self.assertEqual(executor.node_list[1].name, 'recorder')
-
-    # def test_run(self):
-    #     executor = WebcamExecutor(**self._get_config())
-
-    #     if os.path.exists('webcam_output.mp4'):
-    #         os.remove('webcam_output.mp4')
-
-    #     executor.run()
-
-    #     # check the properties of output video
-    #     self.assertTrue(os.path.exists('webcam_output.mp4'))
-    #     video = mmcv.VideoReader('webcam_output.mp4')
-    #     self.assertGreaterEqual(video.frame_cnt, 1)
-    #     self.assertEqual(video.fps, 30)
-    #     video.vcap.release()
-    #     os.remove('webcam_output.mp4')
+        self.assertEqual(len(self.executor.node_list), 2)
+        self.assertEqual(self.executor.node_list[0].name, 'monitor')
+        self.assertEqual(self.executor.node_list[1].name, 'recorder')
 
 
 if __name__ == '__main__':
