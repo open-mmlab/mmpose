@@ -64,11 +64,9 @@ dataset_type = 'MpiiDataset'
 data_mode = 'topdown'
 data_root = 'data/mpii/'
 
-file_client_args = dict(backend='disk')
-
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', file_client_args=file_client_args),
+    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomBBoxTransform', shift_prob=0),
@@ -76,8 +74,8 @@ train_pipeline = [
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-test_pipeline = [
-    dict(type='LoadImage', file_client_args=file_client_args),
+val_pipeline = [
+    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
@@ -111,7 +109,7 @@ val_dataloader = dict(
         headbox_file='data/mpii/annotations/mpii_gt_val.mat',
         data_prefix=dict(img='images/'),
         test_mode=True,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader
 
