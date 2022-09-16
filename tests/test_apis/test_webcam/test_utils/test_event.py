@@ -23,7 +23,6 @@ class TestEventManager(unittest.TestCase):
 
         flag = event_manager.wait('q', is_keyboard=True)
         self.assertTrue(flag)
-        print(event_manager._events['_keyboard_q']._flag)
 
         event_manager.wait_and_handle('q', is_keyboard=True)
         event_manager.clear('q', is_keyboard=True)

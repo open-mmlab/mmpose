@@ -1,8 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-# import os
 import unittest
 
-# import mmcv
 from mmengine import Config
 
 from mmpose.apis.webcam import WebcamExecutor

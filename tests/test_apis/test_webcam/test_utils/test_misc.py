@@ -16,7 +16,7 @@ class TestMISC(unittest.TestCase):
     def test_get_cached_file_path(self):
         url = 'https://user-images.githubusercontent.com/15977946/' \
               '170850839-acc59e26-c6b3-48c9-a9ec-87556edb99ed.jpg'
-        cached_file = get_cached_file_path(url, file_name='subglasses.jpg')
+        cached_file = get_cached_file_path(url, file_name='sunglasses.jpg')
         self.assertTrue(os.path.exists(cached_file))
         # check if image is successfully cached
         img = mmcv.imread(cached_file)
@@ -37,7 +37,7 @@ class TestMISC(unittest.TestCase):
 
     def test_expand_and_clamp(self):
         img_shape = [125, 125, 3]
-        bbox = [0, 0, 40, 40]  # (x1, y1, x2, y2)
+        bbox = [0, 0, 40, 40]  # [x1, y1, x2, y2]
 
         expanded_bbox = expand_and_clamp(bbox, img_shape)
         self.assertListEqual(expanded_bbox, [0, 0, 45, 45])
@@ -45,11 +45,13 @@ class TestMISC(unittest.TestCase):
     def test_screen_matting(self):
         img = np.random.randint(0, 256, size=(100, 100, 3))
 
+        # test with supported colors
         for color in 'gbkw':
             img_mat = screen_matting(img, color=color)
             self.assertEqual(len(img_mat.shape), 2)
             self.assertTupleEqual(img_mat.shape, img.shape[:2])
 
+        # test with unsupported arguments
         with self.assertRaises(ValueError):
             screen_matting(img)
 
@@ -58,10 +60,8 @@ class TestMISC(unittest.TestCase):
 
     def test_copy_and_paste(self):
         img = np.random.randint(0, 256, size=(50, 50, 3))
-
         background_img = np.random.randint(0, 256, size=(200, 200, 3))
         mask = screen_matting(background_img, color='b')
-        # print(mask.shape)
 
         output_img = copy_and_paste(img, background_img, mask)
         self.assertTupleEqual(output_img.shape, background_img.shape)
