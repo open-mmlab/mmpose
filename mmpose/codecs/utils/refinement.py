@@ -41,7 +41,7 @@ def refine_keypoints(keypoints: np.ndarray,
         else:
             dy = 0.
 
-        keypoints[n] += np.sign([dx, dy], dtype=np.float32) * 0.25
+        keypoints[n, k] += np.sign([dx, dy], dtype=np.float32) * 0.25
 
     return keypoints
 
