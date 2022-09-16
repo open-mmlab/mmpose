@@ -65,7 +65,7 @@ mim install mmengine
 mim install "mmcv>=2.0.0rc1"
 ```
 
-Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can install mmdet as a dependency by running:
+Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can easily install mmdet as a dependency by running:
 
 ```shell
 mim install "mmdet>=3.0.0rc0"
@@ -94,13 +94,25 @@ mim install "mmpose>=1.0.0b0"
 
 ### Verify the installation
 
-To verify that MMPose is installed correctly, you can run the following inference demo script:
+To verify that MMPose is installed correctly, you can run an inference demo with the following steps.
+
+**Step 1.** We need to download config and checkpoint files.
+
+```shell
+mim download mmpose --config td-hm_hrnet-w48_8xb32-210e_coco-256x192  --dest .
+```
+
+The downloading will take several seconds or more, depending on your network environment. When it is done, you will find two files `td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` and `hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth` in your current folder.
+
+**Step 2.** Run the inference demo.
+
+Option (A). If you install mmpose from source, just run the following command under the folder `$MMPOSE`:
 
 ```shell
 python demo/image_demo.py \
     tests/data/coco/000000000785.jpg \
-    configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
-    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
+    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --out-file vis_results.jpg \
     --draw-heatmap
 ```
@@ -109,7 +121,27 @@ If everything goes fine, you will get this visualization result:
 
 ![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
 
-And the output will be saved as `$MMPOSE/vis_results.jpg`.
+And the visualization result will be saved as `vis_results.jpg` on your current folder, where the predicted keypoints and heatmaps are plotted on the person in the image.
+
+Option (B). If you install mmpose with pip, open you python interpreter and copy & paste the following codes.
+
+```python
+from mmpose.apis import inference_topdown, init_model
+from mmpose.utils import register_all_modules
+
+register_all_modules()
+
+config_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
+checkpoint_file = 'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
+model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
+
+# please prepare an image with person
+results = inference_topdown(model, 'demo.jpg')
+```
+
+The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/1.x/tests/data/coco/000000000785.jpg).
+
+The inference results will be a list of `PoseDataSample`, and the predictions are in the `pred_instances`, indicating the detected keypoint locations and scores.
 
 ### Customize Installation
 
