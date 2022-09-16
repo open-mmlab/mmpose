@@ -52,17 +52,17 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - **Support diverse tasks**
 
   We support a wide spectrum of mainstream pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, 3d human mesh recovery, fashion landmark detection and animal pose estimation.
-  See [demo.md](demo/README.md) for more information.
+  See [Demo](demo/docs/) for more information.
 
 - **Higher efficiency and higher accuracy**
 
   MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
-  See [benchmark.md](docs/en/benchmark.md) for more information.
+  See [benchmark.md](docs/en/notes/benchmark.md) for more information.
 
 - **Support for various datasets**
 
   The toolbox directly supports multiple popular and representative datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
-  See [data_preparation.md](docs/en/data_preparation.md) for more information.
+  See [dataset_zoo](docs/en/dataset_zoo) for more information.
 
 - **Well designed, tested and documented**
 
@@ -109,7 +109,7 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
 
 ## Model Zoo
 
-Results and models are available in the *README.md* of each method's config directory.
+Results and models are available in the **README.md** of each method's config directory.
 A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html) page.
 
 <details open>
