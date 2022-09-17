@@ -1,15 +1,12 @@
 ## 2D Face Keypoint Demo
 
-<img src="https://user-images.githubusercontent.com/11788150/109144943-ccd44900-779c-11eb-9e9d-8682e7629654.gif" width="600px" alt><br>
-
-We provide a demo script to test a single image or video with top-down pose estimators and face detectors.Please install `face_recognition` before running the demo, by `pip install face_recognition`. For more details, please refer to https://github.com/ageitgey/face_recognition.
+We provide a demo script to test a single image or video with face detectors and top-down pose estimators, Please install `face_recognition` before running the demo, by `pip install face_recognition`. For more details, please refer to https://github.com/ageitgey/face_recognition.
 
 ### 2D Face Image Demo
 
 ```shell
 python demo/topdown_face_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --input ${INPUT_PATH} [--output-root ${OUTPUT_DIR}] \
     [--show] [--device ${GPU_ID or CPU}] \
     [--draw-heatmap ${DRAW_HEATMAP}] [--radius ${KPT_RADIUS}] \
@@ -20,7 +17,7 @@ The pre-trained face keypoint estimation model can be found from [model zoo](htt
 Take [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth) as an example:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/topdown_face_demo.py \
     configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
     --input tests/data/cofw/001766.jpg \
@@ -36,7 +33,7 @@ If you use a heatmap-based model and set argument `--draw-heatmap`, the predicte
 To save visualized results on disk:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/topdown_face_demo.py \
     configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
     --input tests/data/cofw/001766.jpg \
@@ -46,7 +43,7 @@ python demo/top_down_img_demo.py \
 To run demos on CPU:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/topdown_face_demo.py \
     configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
     --input tests/data/cofw/001766.jpg \
@@ -58,7 +55,7 @@ python demo/top_down_img_demo.py \
 Videos share same interface with images. The difference is, the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/topdown_face_demo.py \
     configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
     --input demo/resources/<demo_face.mp4> \
