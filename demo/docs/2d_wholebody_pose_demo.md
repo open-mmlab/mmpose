@@ -1,7 +1,5 @@
 ## 2D Human Whole-Body Pose Demo
 
-<img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
-
 ### 2D Human Whole-Body Pose Top-Down Image Demo
 
 #### Use full image as input
@@ -84,6 +82,10 @@ python demo/topdown_demo_with_mmdet.py \
     --input https://user-images.githubusercontent.com/87690686/137440639-fb08603d-9a35-474e-b65f-46b5c06b68d6.mp4 \
     --output-root vis_results/ --show
 ```
+
+Visualization result:
+
+<img src="https://user-images.githubusercontent.com/87690686/190854069-634e1142-d13c-4863-9930-1120057ca77e.gif" height="350px" alt><br>
 
 ### Speed Up Inference
 
