@@ -26,7 +26,7 @@ python demo/topdown_face_demo.py \
 
 Visualization result:
 
-<img src="https://user-images.githubusercontent.com/26127467/187676149-97b36b55-94f3-4c2a-b831-c6d1b839f029.jpg" height="500px" alt><br>
+<img src="https://user-images.githubusercontent.com/87690686/190857851-8d5afe60-fadf-4aa8-9a1c-5b32aaec7c79.jpg" height="500px" alt><br>
 
 If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
 
@@ -62,7 +62,7 @@ python demo/topdown_face_demo.py \
     --show --draw-heatmap --output-root vis_results
 ```
 
-<img src="https://user-images.githubusercontent.com/26127467/187677697-ba44030e-e4d8-4cc4-b112-39d94bb3ef45.gif" height="500px" alt><br>
+<img src="https://user-images.githubusercontent.com/87690686/190858159-b224b06a-7d34-4716-a8bc-4d127a39b90c.gif" height="500px" alt><br>
 
 The original video can be downloaded from [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing).
 
