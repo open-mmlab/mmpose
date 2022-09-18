@@ -14,6 +14,31 @@ from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
 
 
+def _get_adaptive_scales(areas: np.ndarray,
+                         min_area: int = 800,
+                         max_area: int = 30000) -> np.ndarray:
+    """Get adaptive scales according to areas.
+
+    The scale range is [0.5, 1.0]. When the area is less than
+    ``min_area``, the scale is 0.5 while the area is larger than
+    ``max_area``, the scale is 1.0.
+
+    Args:
+        areas (ndarray): The areas of bboxes or masks with the
+            shape of (n, ).
+        min_area (int): Lower bound areas for adaptive scales.
+            Defaults to 800.
+        max_area (int): Upper bound areas for adaptive scales.
+            Defaults to 30000.
+
+    Returns:
+        ndarray: The adaotive scales with the shape of (n, ).
+    """
+    scales = 0.5 + (areas - min_area) / (max_area - min_area)
+    scales = np.clip(scales, 0.5, 1.0)
+    return scales
+
+
 @VISUALIZERS.register_module()
 class PoseLocalVisualizer(Visualizer):
     """MMPose Local Visualizer.
@@ -82,6 +107,8 @@ class PoseLocalVisualizer(Visualizer):
                  bbox_color: Optional[Union[str, Tuple[int]]] = 'green',
                  kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = 'red',
                  link_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
+                 text_color: Optional[Union[str,
+                                            Tuple[int]]] = (255, 255, 255),
                  skeleton: Optional[Union[List, Tuple]] = None,
                  line_width: Union[int, float] = 1,
                  radius: Union[int, float] = 3,
@@ -92,6 +119,7 @@ class PoseLocalVisualizer(Visualizer):
         self.kpt_color = kpt_color
         self.link_color = link_color
         self.line_width = line_width
+        self.text_color = text_color
         self.skeleton = skeleton
         self.radius = radius
         self.alpha = alpha
@@ -109,6 +137,7 @@ class PoseLocalVisualizer(Visualizer):
             dataset_meta (dict): meta information of dataset.
         """
         self.dataset_meta = dataset_meta
+        self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
         self.kpt_color = dataset_meta.get('keypoint_colors', self.kpt_color)
         self.link_color = dataset_meta.get('skeleton_link_colors',
                                            self.link_color)
@@ -116,7 +145,7 @@ class PoseLocalVisualizer(Visualizer):
 
     def _draw_instances_bbox(self, image: np.ndarray,
                              instances: InstanceData) -> np.ndarray:
-        """Draw bounding boxes of GT or prediction.
+        """Draw bounding boxes and corresponding labels of GT or prediction.
 
         Args:
             image (np.ndarray): The image to draw.
@@ -127,6 +156,7 @@ class PoseLocalVisualizer(Visualizer):
             np.ndarray: the drawn image which channel is RGB.
         """
         self.set_image(image)
+
         if 'bboxes' in instances:
             bboxes = instances.bboxes
             self.draw_bboxes(
@@ -134,6 +164,40 @@ class PoseLocalVisualizer(Visualizer):
                 edge_colors=self.bbox_color,
                 alpha=self.alpha,
                 line_widths=self.line_width)
+        else:
+            return self.get_image()
+
+        if 'labels' in instances and self.text_color is not None:
+            classes = self.dataset_meta.get('CLASSES', None)
+            labels = instances.labels
+
+            positions = bboxes[:, :2]
+            areas = (bboxes[:, 3] - bboxes[:, 1]) * (
+                bboxes[:, 2] - bboxes[:, 0])
+            scales = _get_adaptive_scales(areas)
+
+            for i, (pos, label) in enumerate(zip(positions, labels)):
+                label_text = classes[
+                    label] if classes is not None else f'class {label}'
+
+                if isinstance(self.bbox_color,
+                              tuple) and max(self.bbox_color) > 1:
+                    facecolor = [c / 255.0 for c in self.bbox_color]
+                else:
+                    facecolor = self.bbox_color
+
+                self.draw_texts(
+                    label_text,
+                    pos,
+                    colors=self.text_color,
+                    font_sizes=int(13 * scales[i]),
+                    vertical_alignments='bottom',
+                    bboxes=[{
+                        'facecolor': facecolor,
+                        'alpha': 0.8,
+                        'pad': 0.7,
+                        'edgecolor': 'none'
+                    }])
 
         return self.get_image()
 
