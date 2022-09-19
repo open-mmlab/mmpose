@@ -1,6 +1,12 @@
 ## 2D Face Keypoint Demo
 
-We provide a demo script to test a single image or video with face detectors and top-down pose estimators, Please install `face_recognition` before running the demo, by `pip install face_recognition`. For more details, please refer to https://github.com/ageitgey/face_recognition.
+We provide a demo script to test a single image or video with face detectors and top-down pose estimators, Please install `face_recognition` before running the demo, by:
+
+```
+pip install face_recognition
+```
+
+For more details, please refer to [face_recognition](https://github.com/ageitgey/face_recognition).
 
 ### 2D Face Image Demo
 
@@ -13,7 +19,7 @@ python demo/topdown_face_demo.py \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
-The pre-trained face keypoint estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/face_2d_keypoint.html).
+The pre-trained face keypoint estimation models can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/face_2d_keypoint.html).
 Take [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth) as an example:
 
 ```shell
@@ -52,7 +58,7 @@ python demo/topdown_face_demo.py \
 
 ### 2D Face Video Demo
 
-Videos share same interface with images. The difference is, the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
+Videos share the same interface with images. The difference is that the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
 
 ```shell
 python demo/topdown_face_demo.py \
@@ -68,4 +74,4 @@ The original video can be downloaded from [Google Drive](https://drive.google.co
 
 ### Speed Up Inference
 
-For 2D face keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [aflw_hrnetv2](../../configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py).
+For 2D face keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [aflw_hrnetv2](../../configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py#90).

@@ -62,7 +62,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 ### 2D Hand Keypoints Video Demo
 
-Videos share same interface with images. The difference is, the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
+Videos share the same interface with images. The difference is that the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -80,4 +80,4 @@ The original video can be downloaded from [Github](https://raw.githubusercontent
 
 ### Speed Up Inference
 
-For 2D hand keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb32-210e_onehand10k-256x256.py).
+For 2D hand keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py#90).
