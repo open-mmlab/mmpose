@@ -64,6 +64,12 @@ mim install mmengine
 mim install "mmcv>=2.0.0rc1"
 ```
 
+请注意，MMPose 中的一些推理示例脚本需要使用 [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet) 检测人体。如果您想运行这些示例脚本，可以通过运行以下命令安装 mmdet:
+
+```shell
+mim install "mmdet>=3.0.0rc0"
+```
+
 **第 2 步** 安装 MMPose
 
 根据具体需求，我们支持两种安装模式: 从源码安装（推荐）和作为 Python 包安装
@@ -92,7 +98,53 @@ mim install "mmpose>=1.0.0b0"
 
 ### 验证安装
 
-为了验证 MMPose 的安装是否正确，您可以运行我们提供的 [示例代码](/demo/docs/2d_human_pose_demo.md) 来执行模型推理。
+为了验证 MMPose 是否安装正确，您可以通过以下步骤运行模型推理。
+
+**第 1 步** 我们需要下载配置文件和模型权重文件
+
+```shell
+mim download mmpose --config td-hm_hrnet-w48_8xb32-210e_coco-256x192  --dest .
+```
+
+下载过程往往需要几秒或更多的时间，这取决于您的网络环境。完成之后，您会在当前目录下找到这两个文件：`td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` 和 `hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth`, 分别是配置文件和对应的模型权重文件。
+
+**第 2 步** 验证推理示例
+
+如果您是**从源码安装**的 mmpose，可以直接运行以下命令进行验证：
+
+```shell
+python demo/image_demo.py \
+    tests/data/coco/000000000785.jpg \
+    td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
+    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    --out-file vis_results.jpg \
+    --draw-heatmap
+```
+
+如果一切顺利，您将会得到这样的可视化结果：
+
+![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
+
+代码会将预测的关键点和热图绘制在图像中的人体上，并保存到当前文件夹下的 `vis_results.jpg`。
+
+如果您是**作为 Python 包安装**，可以打开您的 Python 解释器，复制并粘贴如下代码：
+
+```python
+from mmpose.apis import inference_topdown, init_model
+from mmpose.utils import register_all_modules
+
+register_all_modules()
+
+config_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
+checkpoint_file = 'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
+model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
+
+# 请准备好一张带有人体的图片
+results = inference_topdown(model, 'demo.jpg')
+```
+
+示例图片 `demo.jpg` 可以从 [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/1.x/tests/data/coco/000000000785.jpg) 下载。
+推理结果是一个 `PoseDataSample` 列表，预测结果将会保存在 `pred_instances` 中，包括检测到的关键点位置和置信度。
 
 ### 自定义安装
 

@@ -1,6 +1,6 @@
 ## 2D Human Pose Demo
 
-<img src="https://raw.githubusercontent.com/open-mmlab/mmpose/master/demo/resources/demo_coco.gif" width="600px" alt><br>
+We provide demo scripts to perform human pose estimation on images or videos.
 
 ### 2D Human Pose Top-Down Image Demo
 
@@ -18,7 +18,7 @@ python demo/image_demo.py \
 
 If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
 
-The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/body_2d_keypoint.html).
+The pre-trained human pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/body_2d_keypoint.html).
 Take [coco model](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth) as an example:
 
 ```shell
@@ -28,7 +28,6 @@ python demo/image_demo.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --out-file vis_results.jpg \
     --draw-heatmap
-
 ```
 
 To run this demo on CPU:
@@ -63,7 +62,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
-Examples:
+Example:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -85,7 +84,7 @@ The above demo script can also take video as input, and run mmdet for human dete
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) with version >= 3.0.
 
-Examples:
+Example:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -94,7 +93,7 @@ python demo/topdown_demo_with_mmdet.py \
     configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth \
     --input tests/data/posetrack18/videos/000001_mpiinew_test/000001_mpiinew_test.mp4 \
---output-root=vis_results/demo --show --draw-heatmap
+    --output-root=vis_results/demo --show --draw-heatmap
 ```
 
 ### Speed Up Inference
@@ -104,4 +103,4 @@ Some tips to speed up MMPose inference:
 For top-down models, try to edit the config file. For example,
 
 1. set `model.test_cfg.flip_test=False` in [topdown-res50](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py#L56).
-2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).

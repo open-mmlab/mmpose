@@ -134,4 +134,4 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
   For top-down models, try to edit the config file. For example,
 
   1. set `flip_test=False` in `init_cfg` in the config file.
-  2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+  2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html).
