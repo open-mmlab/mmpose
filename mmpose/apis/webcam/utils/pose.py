@@ -3,8 +3,8 @@ from typing import Dict, List, Tuple
 
 
 def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
-    """A help function to get the keypoint indices of left and right eyes
-    from the dataset meta information.
+    """A help function to get the keypoint indices of left and right eyes from
+    the dataset meta information.
 
     Args:
         dataset_meta (dict): dataset meta information.
@@ -37,8 +37,8 @@ def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
 
 
 def get_face_keypoint_ids(dataset_meta: Dict) -> List:
-    """A help function to get the keypoint indices of the face from the
-    dataset meta information.
+    """A help function to get the keypoint indices of the face from the dataset
+    meta information.
 
     Args:
         dataset_meta (dict): dataset meta information.
@@ -125,8 +125,8 @@ def get_mouth_keypoint_ids(dataset_meta: Dict) -> int:
 
 
 def get_hand_keypoint_ids(dataset_meta: Dict) -> List[int]:
-    """A help function to get the keypoint indices of left and right hand
-    from the dataset meta information.
+    """A help function to get the keypoint indices of left and right hand from
+    the dataset meta information.
 
     Args:
         dataset_meta (dict): dataset meta information.
