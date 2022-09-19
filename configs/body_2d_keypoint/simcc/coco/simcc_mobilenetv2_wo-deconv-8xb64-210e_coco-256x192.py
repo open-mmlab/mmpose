@@ -6,7 +6,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=1e-3,
+    lr=5e-4,
 ))
 
 # learning policy
@@ -14,7 +14,13 @@ param_scheduler = [
     dict(
         type='LinearLR', begin=0, end=500, start_factor=0.001,
         by_epoch=False),  # warm-up
-    dict(type='MultiStepLR', milestones=[170, 200], gamma=0.1, by_epoch=True)
+    dict(
+        type='MultiStepLR',
+        begin=0,
+        end=210,
+        milestones=[170, 200],
+        gamma=0.1,
+        by_epoch=True)
 ]
 
 # automatically scaling LR based on the actual training batch size
@@ -36,20 +42,28 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
-        depth=50,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
-    ),
+        type='MobileNetV2',
+        widen_factor=1.,
+        out_indices=(7, ),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='mmcls://mobilenet_v2',
+        )),
     head=dict(
         type='SimCCHead',
-        in_channels=2048,
+        in_channels=1280,
         out_channels=17,
         input_size=codec['input_size'],
         in_featuremap_size=(6, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
+        deconv_out_channels=None,
         loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
-    test_cfg=dict(flip_test=True))
+    test_cfg=dict(
+        flip_test=True,
+        flip_mode='heatmap',
+        shift_heatmap=True,
+    ))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -70,7 +84,7 @@ train_pipeline = [
         type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-test_pipeline = [
+val_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
@@ -106,7 +120,7 @@ val_dataloader = dict(
         'COCO_val2017_detections_AP_H_56_person.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader
 

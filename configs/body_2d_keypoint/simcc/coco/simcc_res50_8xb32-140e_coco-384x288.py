@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=128)
+auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -70,12 +70,10 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(
-        type='RandomBBoxTransform', scale_factor=(0.7, 1.3), rotate_factor=80),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(
         type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
-    # simcc needs transformed keypoints to calculate the training accuracy
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
