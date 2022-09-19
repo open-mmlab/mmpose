@@ -15,6 +15,7 @@ from .utils import (BufferManager, EventManager, FrameMessage, ImageCapture,
 try:
     from contextlib import nullcontext
 except ImportError:
+    # compatible with python3.6
     from contextlib import contextmanager
 
     @contextmanager
