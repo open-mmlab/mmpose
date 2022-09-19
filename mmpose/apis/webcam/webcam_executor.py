@@ -3,7 +3,6 @@ import logging
 import sys
 import time
 import warnings
-from contextlib import nullcontext
 from threading import Thread
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -12,6 +11,16 @@ import cv2
 from .nodes import NODES
 from .utils import (BufferManager, EventManager, FrameMessage, ImageCapture,
                     VideoEndingMessage, is_image_file, limit_max_fps)
+
+try:
+    from contextlib import nullcontext
+except ImportError:
+    from contextlib import contextmanager
+
+    @contextmanager
+    def nullcontext(enter_result=None):
+        yield enter_result
+
 
 DEFAULT_FRAME_BUFFER_SIZE = 1
 DEFAULT_INPUT_BUFFER_SIZE = 1
