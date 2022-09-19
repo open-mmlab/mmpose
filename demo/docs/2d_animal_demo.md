@@ -15,7 +15,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--device ${GPU_ID or CPU}]
 ```
 
-The pre-trained animal pose estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/animal.html).
+The pre-trained animal pose estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/animal_2d_keypoint.html).
 Take [animalpose model](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth) as an example:
 
 ```shell
@@ -39,7 +39,7 @@ The augement `--det-cat-id=15` selected detected bounding boxes with label 'cat'
 **COCO-animals**
 In COCO dataset, there are 80 object categories, including 10 common `animal` categories (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe').
 
-For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [det model zoo](/demo/docs/mmdet_modelzoo.md).
+For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [detection model zoo](/demo/docs/mmdet_modelzoo.md).
 
 To save visualized results on disk:
 
@@ -67,7 +67,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 ### 2D Animal Pose Video Demo
 
-Videos share same interface with images. The difference is, the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
+Videos share the same interface with images. The difference is that the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
 
 For example,
 
@@ -89,5 +89,5 @@ The original video can be downloaded from [Google Drive](https://drive.google.co
 
 Some tips to speed up MMPose inference:
 
-1. set `model.test_cfg.flip_test=False` in [animalpose_hrnet-w32](../../configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py).
-2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+1. set `model.test_cfg.flip_test=False` in [animalpose_hrnet-w32](../../configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py#85).
+2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).

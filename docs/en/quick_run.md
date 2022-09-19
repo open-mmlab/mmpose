@@ -179,7 +179,7 @@ model = dict(
 )
 ```
 
-or add `--cfg-options='model.test_cfg.output_heatmaps=True` at the end of your command.
+or add `--cfg-options='model.test_cfg.output_heatmaps=True'` at the end of your command.
 
 Visualization result (top: decoded keypoints; bottom: predicted heatmap):
 
