@@ -2,7 +2,7 @@
 
 ### Human Bounding Box Detection Models
 
-For human bounding box detection models, please download from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+For human bounding box detection models, please download from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).
 MMDetection provides 80-class COCO-pretrained models, which already includes the `person` category.
 
 ### Hand Bounding Box Detection Models
@@ -22,7 +22,7 @@ For hand bounding box detection, we simply train our hand box models on onehand1
 <!-- TODO: update link to the doc of MMDetection 3.0 -->
 
 In COCO dataset, there are 80 object categories, including 10 common `animal` categories (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe')
-For animals in the categories, please download from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+For animals in the categories, please download from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).
 
 #### Macaque detection results on MacaquePose test set
 

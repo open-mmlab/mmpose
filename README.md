@@ -27,10 +27,10 @@
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
 [📘Documentation](https://mmpose.readthedocs.io/en/1.x/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/1.x/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/1.x/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/1.x/changelog.html) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/1.x/installation.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/1.x/notes/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -52,17 +52,17 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - **Support diverse tasks**
 
   We support a wide spectrum of mainstream pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, 3d human mesh recovery, fashion landmark detection and animal pose estimation.
-  See [demo.md](demo/README.md) for more information.
+  See [Demo](demo/docs/) for more information.
 
 - **Higher efficiency and higher accuracy**
 
   MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
-  See [benchmark.md](docs/en/benchmark.md) for more information.
+  See [benchmark.md](docs/en/notes/benchmark.md) for more information.
 
 - **Support for various datasets**
 
   The toolbox directly supports multiple popular and representative datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
-  See [data_preparation.md](docs/en/data_preparation.md) for more information.
+  See [dataset_zoo](docs/en/dataset_zoo) for more information.
 
 - **Well designed, tested and documented**
 
@@ -99,17 +99,17 @@ Please refer to [installation.md](https://mmpose.readthedocs.io/en/1.x/installat
 
 We provided a series of tutorials about the basic usage of MMPose for new users:
 
-- [About Configs](https://mmpose.readthedocs.io/en/1.x/user_guides/configs.md)
-- [Add New Dataset](https://mmpose.readthedocs.io/en/1.x/user_guides/prepare_datasets.md)
-- [Keypoint Encoding & Decoding](https://mmpose.readthedocs.io/en/1.x/user_guides/codecs.md)
-- [Inference with Existing Models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.md)
-- [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.md)
-- [Visualization Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/visualization.md)
-- [Other Useful Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/useful_tools.md)
+- [About Configs](https://mmpose.readthedocs.io/en/1.x/user_guides/configs.html)
+- [Add New Dataset](https://mmpose.readthedocs.io/en/1.x/user_guides/prepare_datasets.html)
+- [Keypoint Encoding & Decoding](https://mmpose.readthedocs.io/en/1.x/user_guides/codecs.html)
+- [Inference with Existing Models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)
+- [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html)
+- [Visualization Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/visualization.html)
+- [Other Useful Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/useful_tools.html)
 
 ## Model Zoo
 
-Results and models are available in the *README.md* of each method's config directory.
+Results and models are available in the **README.md** of each method's config directory.
 A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html) page.
 
 <details open>
