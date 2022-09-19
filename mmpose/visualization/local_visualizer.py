@@ -136,12 +136,18 @@ class PoseLocalVisualizer(Visualizer):
         Args:
             dataset_meta (dict): meta information of dataset.
         """
-        self.dataset_meta = dataset_meta
-        self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
-        self.kpt_color = dataset_meta.get('keypoint_colors', self.kpt_color)
-        self.link_color = dataset_meta.get('skeleton_link_colors',
-                                           self.link_color)
-        self.skeleton = self.dataset_meta.get('skeleton_links', None)
+        if isinstance(dataset_meta, dict):
+            self.dataset_meta = dataset_meta.copy()
+            self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
+            self.kpt_color = dataset_meta.get('keypoint_colors',
+                                              self.kpt_color)
+            self.link_color = dataset_meta.get('skeleton_link_colors',
+                                               self.link_color)
+            self.skeleton = dataset_meta.get('skeleton_links', self.skeleton)
+        # sometimes self.dataset_meta is manually set, which might be None.
+        # it should be converted to a dict at these times
+        if self.dataset_meta is None:
+            self.dataset_meta = {}
 
     def _draw_instances_bbox(self, image: np.ndarray,
                              instances: InstanceData) -> np.ndarray:
