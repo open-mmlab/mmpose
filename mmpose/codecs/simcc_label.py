@@ -29,6 +29,8 @@ class SimCCLabel(BaseKeypointCodec):
         simcc_split_ratio (float): The ratio of the label size to the input
             size. For example, if the input width is ``w``, the x label size
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
+        label_smoothing (float): Label Smoothing weight. Defaults to 0.0
+        normalize (bool): Whether to normalize the heatmaps. Defaults to True.
 
     .. _`SimCC: a Simple Coordinate Classification Perspective for Human Pose
     Estimation`: https://arxiv.org/abs/2107.03332
@@ -39,7 +41,8 @@ class SimCCLabel(BaseKeypointCodec):
                  smoothing_type: str = 'gaussian',
                  sigma: float = 6.0,
                  simcc_split_ratio: float = 2.0,
-                 label_smoothing: float = 0.0) -> None:
+                 label_smoothing: float = 0.0,
+                 normalize: bool = True) -> None:
         super().__init__()
 
         self.input_size = input_size
@@ -47,6 +50,7 @@ class SimCCLabel(BaseKeypointCodec):
         self.sigma = sigma
         self.simcc_split_ratio = simcc_split_ratio
         self.label_smoothing = label_smoothing
+        self.normalize = normalize
 
         if self.smoothing_type not in {'gaussian', 'standard'}:
             raise ValueError(
@@ -232,11 +236,12 @@ class SimCCLabel(BaseKeypointCodec):
 
             mu_x, mu_y = mu
 
-            target_x[n,
-                     k] = (np.exp(-((x - mu_x)**2) / (2 * self.sigma**2))) / (
-                         self.sigma * np.sqrt(np.pi * 2))
-            target_y[n,
-                     k] = (np.exp(-((y - mu_y)**2) / (2 * self.sigma**2))) / (
-                         self.sigma * np.sqrt(np.pi * 2))
+            target_x[n, k] = np.exp(-((x - mu_x)**2) / (2 * self.sigma**2))
+            target_y[n, k] = np.exp(-((y - mu_y)**2) / (2 * self.sigma**2))
+
+            if self.normalized:
+                norm_value = self.sigma * np.sqrt(np.pi * 2)
+                target_x[n, k] /= norm_value
+                target_y[n, k] /= norm_value
 
         return target_x, target_y, keypoint_weights
