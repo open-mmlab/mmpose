@@ -464,11 +464,16 @@ class PoseLocalVisualizer(Visualizer):
         else:
             drawn_img = pred_img_data
 
-        # display & save visualized results
+        # It is convenient for users to obtain the drawn image.
+        # For example, the user wants to obtain the drawn image and
+        # save it as a video during video inference.
+        self.set_image(drawn_img)
+
         if show:
             self.show(drawn_img, win_name=name, wait_time=wait_time)
-        else:
-            self.add_image(name, drawn_img, step)
 
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
+        else:
+            # save drawn_img to backends
+            self.add_image(name, drawn_img, step)
