@@ -23,7 +23,7 @@ def generate_offset_heatmap(
             (N, K)
         radius_factor (float): The radius factor of the binary label
             map. The positive region is defined as the neighbor of the
-            keypoit with the radius :math:`r=radius_factor*max(W, H)`
+            keypoint with the radius :math:`r=radius_factor*max(W, H)`
 
     Returns:
         tuple:
