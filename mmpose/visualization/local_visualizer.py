@@ -225,8 +225,8 @@ class PoseLocalVisualizer(Visualizer):
             keypoints = instances.get('transformed_keypoints',
                                       instances.keypoints)
 
-            if 'scores' in instances and self.show_keypoint_weight:
-                scores = instances.scores
+            if 'keypoint_scores' in instances:
+                scores = instances.keypoint_scores
             else:
                 scores = [np.ones(len(kpts)) for kpts in keypoints]
 
