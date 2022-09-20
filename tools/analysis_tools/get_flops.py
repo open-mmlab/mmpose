@@ -92,8 +92,8 @@ def main():
     else:
         input_constructor = None
 
-    if hasattr(model, 'extract_feat'):
-        model.forward = model.extract_feat
+    if hasattr(model, '_forward'):
+        model.forward = model._forward
     else:
         raise NotImplementedError(
             'FLOPs counter is currently not currently supported with {}'.
