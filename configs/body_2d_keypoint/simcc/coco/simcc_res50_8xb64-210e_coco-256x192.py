@@ -20,9 +20,6 @@ param_scheduler = [
 # automatically scaling LR based on the actual training batch size
 auto_scale_lr = dict(base_batch_size=512)
 
-# hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
-
 # codec settings
 codec = dict(
     type='SimCCLabel', input_size=(192, 256), sigma=6.0, simcc_split_ratio=2.0)
@@ -109,6 +106,9 @@ val_dataloader = dict(
         pipeline=test_pipeline,
     ))
 test_dataloader = val_dataloader
+
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # evaluators
 val_evaluator = dict(
