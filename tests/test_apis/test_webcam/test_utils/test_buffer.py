@@ -70,6 +70,7 @@ class TestBufferManager(unittest.TestCase):
 
         # test get_sub_manager
         buffer_manager = buffer_manager.get_sub_manager(['example_buffer'])
+        self.assertIsInstance(buffer_manager, BufferManager)
         self.assertIn('example_buffer', buffer_manager)
         self.assertEqual(buffer_manager._buffers['example_buffer'].maxsize, 1)
 
