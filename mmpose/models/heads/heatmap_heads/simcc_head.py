@@ -12,7 +12,6 @@ from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
                                  OptSampleList)
 from ..base_head import BaseHead
-from .heatmap_head import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]
 
@@ -31,6 +30,13 @@ class SimCCHead(BaseHead):
         input_size (tuple): Input image size in shape [w, h]
         in_featuremap_size (int | sequence[int]): Size of input feature map
         simcc_split_ratio (float): Split ratio of pixels
+        deconv_type (str, optional): The type of deconv head which should
+            be one of the following options:
+
+                - ``'Heatmap'``: make deconv layers in `HeatmapHead`
+                - ``'ViPNAS'``: make deconv layers in `ViPNASHead`
+
+            Defaults to ``'Heatmap'``
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
@@ -38,6 +44,8 @@ class SimCCHead(BaseHead):
             both height and width dimensions, or a tuple of two integers for
             the height and the width dimension respectively.Defaults to
             ``(4, 4, 4)``
+        deconv_num_groups (Sequence[int], optional): The group number of each
+            deconv layer. Defaults to ``(16, 16, 16)``
         conv_out_channels (sequence[int], optional): The output channel number
             of each intermediate conv layer. ``None`` means no intermediate
             conv layer between deconv layers and the final conv layer.
@@ -79,8 +87,10 @@ class SimCCHead(BaseHead):
         input_size: Tuple[int, int],
         in_featuremap_size: Tuple[int, int],
         simcc_split_ratio: float = 2.0,
+        deconv_type: str = 'Heatmap',
         deconv_out_channels: OptIntSeq = (256, 256, 256),
         deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+        deconv_num_groups: OptIntSeq = (16, 16, 16),
         conv_out_channels: OptIntSeq = None,
         conv_kernel_sizes: OptIntSeq = None,
         has_final_layer: bool = True,
@@ -96,6 +106,12 @@ class SimCCHead(BaseHead):
             init_cfg = self.default_init_cfg
 
         super().__init__(init_cfg)
+
+        if deconv_type not in {'Heatmap', 'ViPNAS'}:
+            raise ValueError(
+                f'{self.__class__.__name__} got invalid `deconv_type` value'
+                f'{deconv_type}. Should be one of '
+                '{"Heatmap", "ViPNAS"}')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -117,11 +133,13 @@ class SimCCHead(BaseHead):
                 [s * (2**num_deconv) for s in in_featuremap_size])
 
             # deconv layers + 1x1 conv
-            self.simplebaseline_head = HeatmapHead(
+            self.deconv_head = self._make_deconv_head(
                 in_channels=in_channels,
                 out_channels=out_channels,
+                deconv_type=deconv_type,
                 deconv_out_channels=deconv_out_channels,
                 deconv_kernel_sizes=deconv_kernel_sizes,
+                deconv_num_groups=deconv_num_groups,
                 conv_out_channels=conv_out_channels,
                 conv_kernel_sizes=conv_kernel_sizes,
                 has_final_layer=has_final_layer,
@@ -136,7 +154,7 @@ class SimCCHead(BaseHead):
 
         else:
             in_channels = self._get_in_channels()
-            self.simplebaseline_head = None
+            self.deconv_head = None
 
             if has_final_layer:
                 cfg = dict(
@@ -173,6 +191,51 @@ class SimCCHead(BaseHead):
         self.mlp_head_x = nn.Linear(flatten_dims, W)
         self.mlp_head_y = nn.Linear(flatten_dims, H)
 
+    def _make_deconv_head(self,
+                          in_channels: Union[int, Sequence[int]],
+                          out_channels: int,
+                          deconv_type: str = 'Heatmap',
+                          deconv_out_channels: OptIntSeq = (256, 256, 256),
+                          deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+                          deconv_num_groups: OptIntSeq = (16, 16, 16),
+                          conv_out_channels: OptIntSeq = None,
+                          conv_kernel_sizes: OptIntSeq = None,
+                          has_final_layer: bool = True,
+                          input_transform: str = 'select',
+                          input_index: Union[int, Sequence[int]] = -1,
+                          align_corners: bool = False) -> nn.Module:
+
+        if deconv_type == 'Heatmap':
+            deconv_head = MODELS.build(
+                dict(
+                    type='HeatmapHead',
+                    in_channels=self.in_channels,
+                    out_channels=out_channels,
+                    deconv_out_channels=deconv_out_channels,
+                    deconv_kernel_sizes=deconv_kernel_sizes,
+                    conv_out_channels=conv_out_channels,
+                    conv_kernel_sizes=conv_kernel_sizes,
+                    has_final_layer=has_final_layer,
+                    input_transform=input_transform,
+                    input_index=input_index,
+                    align_corners=align_corners))
+        else:
+            deconv_head = MODELS.build(
+                dict(
+                    type='ViPNASHead',
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    deconv_out_channels=deconv_out_channels,
+                    deconv_num_groups=deconv_num_groups,
+                    conv_out_channels=conv_out_channels,
+                    conv_kernel_sizes=conv_kernel_sizes,
+                    has_final_layer=has_final_layer,
+                    input_transform=input_transform,
+                    input_index=input_index,
+                    align_corners=align_corners))
+
+        return deconv_head
+
     def forward(self, feats: Tuple[Tensor]) -> Tuple[Tensor, Tensor]:
         """Forward the network. The input is multi scale feature maps and the
         output is the heatmap.
@@ -184,12 +247,12 @@ class SimCCHead(BaseHead):
             pred_x (Tensor): 1d representation of x.
             pred_y (Tensor): 1d representation of y.
         """
-        if self.simplebaseline_head is None:
+        if self.deconv_head is None:
             feats = self._transform_inputs(feats)
             if self.final_layer is not None:
                 feats = self.final_layer(feats)
         else:
-            feats = self.simplebaseline_head(feats)
+            feats = self.deconv_head(feats)
 
         # flatten the output heatmap
         x = torch.flatten(feats, 2)

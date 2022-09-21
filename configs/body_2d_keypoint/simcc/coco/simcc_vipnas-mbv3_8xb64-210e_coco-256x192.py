@@ -38,22 +38,24 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
-    backbone=dict(
-        type='MobileNetV2',
-        widen_factor=1.,
-        out_indices=(7, ),
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint='mmcls://mobilenet_v2',
-        )),
+    backbone=dict(type='ViPNAS_MobileNetV3'),
+    neck=dict(
+        type='ViPNASHead',
+        in_channels=160,
+        out_channels=17,
+        deconv_out_channels=(160, 160, 160),
+        deconv_num_groups=(160, 160, 160),
+        has_final_layer=True,
+    ),
     head=dict(
         type='SimCCHead',
-        in_channels=1280,
+        in_channels=17,
         out_channels=17,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=(48, 64),
         simcc_split_ratio=codec['simcc_split_ratio'],
         deconv_out_channels=None,
+        has_final_layer=False,
         loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(flip_test=True, ))
@@ -109,7 +111,7 @@ val_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/person_keypoints_val2017.json',
-        bbox_file=f'{data_root}person_detection_results/'
+        bbox_file=data_root + 'person_detection_results/'
         'COCO_val2017_detections_AP_H_56_person.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
