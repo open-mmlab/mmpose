@@ -35,7 +35,7 @@ load_from = 'https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(288, 384), heatmap_size=(72, 96), sigma=2)
+    type='MSRAHeatmap', input_size=(288, 384), heatmap_size=(72, 96), sigma=3)
 
 # model settings
 norm_cfg = dict(type='SyncBN', requires_grad=True)
