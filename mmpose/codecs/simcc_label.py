@@ -239,7 +239,7 @@ class SimCCLabel(BaseKeypointCodec):
             target_x[n, k] = np.exp(-((x - mu_x)**2) / (2 * self.sigma**2))
             target_y[n, k] = np.exp(-((y - mu_y)**2) / (2 * self.sigma**2))
 
-        if self.normalized:
+        if self.normalize:
             norm_value = self.sigma * np.sqrt(np.pi * 2)
             target_x /= norm_value
             target_y /= norm_value
