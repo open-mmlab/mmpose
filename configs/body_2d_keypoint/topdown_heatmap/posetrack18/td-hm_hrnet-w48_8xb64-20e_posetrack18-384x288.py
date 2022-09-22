@@ -31,7 +31,7 @@ default_hooks = dict(
     checkpoint=dict(save_best='posetrack18/Total AP', rule='greater'))
 
 # load from the pretrained model
-load_from = 'https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288-314c8528_20200708.pth'  # noqa: E501
+load_from = 'https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-384x288-c161b7de_20220915.pth'  # noqa: E501
 
 # codec settings
 codec = dict(
@@ -137,6 +137,10 @@ val_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/posetrack18_val.json',
+        # comment `bbox_file` and '`filter_cfg` if use gt bbox for evaluation
+        bbox_file='data/posetrack18/annotations/'
+        'posetrack18_val_human_detections.json',
+        filter_cfg=dict(bbox_score_thr=0.4),
         data_prefix=dict(img=''),
         test_mode=True,
         pipeline=val_pipeline,
