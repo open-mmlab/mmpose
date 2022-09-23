@@ -84,6 +84,7 @@ model = dict(
         out_channels=3 * 17,
         deconv_out_channels=None,
         loss=dict(type='CombinedTargetMSELoss', use_target_weight=True),
+        print_acc_pose=False,
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
