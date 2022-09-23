@@ -33,8 +33,8 @@ class SimCCHead(BaseHead):
         deconv_type (str, optional): The type of deconv head which should
             be one of the following options:
 
-                - ``'Heatmap'``: make deconv layers in `HeatmapHead`
-                - ``'ViPNAS'``: make deconv layers in `ViPNASHead`
+                - ``'heatmap'``: make deconv layers in `HeatmapHead`
+                - ``'vipnas'``: make deconv layers in `ViPNASHead`
 
             Defaults to ``'Heatmap'``
         deconv_out_channels (sequence[int]): The output channel number of each
