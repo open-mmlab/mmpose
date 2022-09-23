@@ -80,6 +80,8 @@ def main():
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+    file_client_args = cfg.get('file_client_args', dict(backend='disk'))
+    file_client = mmengine.FileClient(**file_client_args)
 
     # register all modules in mmpose into the registries
     register_all_modules()
@@ -90,10 +92,6 @@ def main():
         # pack transformed keypoints for visualization
         cfg[f'{args.phase}_dataloader'].dataset.pipeline[
             -1].pack_transformed = True
-
-    # unset `bbox_file` to make dataset read in reasonable keypoints
-    if 'bbox_file' in cfg[f'{args.phase}_dataloader'].dataset:
-        cfg[f'{args.phase}_dataloader'].dataset.bbox_file = None
 
     dataset = build_from_cfg(cfg[f'{args.phase}_dataloader'].dataset, DATASETS)
 
@@ -123,8 +121,9 @@ def main():
                 progress_bar.update()
                 continue
             else:
-                img = mmcv.imread(item['img_path'])
                 img_path = item['img_path']
+                img_bytes = file_client.get(img_path)
+                img = mmcv.imfrombytes(img_bytes, channel_order='bgr')
 
                 # forge pseudo data_sample
                 gt_instances = InstanceData()
@@ -146,7 +145,7 @@ def main():
             osp.basename(img_path)) if args.output_dir is not None else None
         out_file = generate_dup_file_name(out_file)
 
-        img = img[..., [2, 1, 0]]  # bgr to rgb
+        img = mmcv.bgr2rgb(img)
 
         visualizer.add_datasample(
             osp.basename(img_path),
