@@ -169,9 +169,10 @@ def screen_matting(img: np.ndarray,
                 color_low = (230, 230, 230)
                 color_high = (255, 255, 255)
             else:
-                NotImplementedError(f'Not supported color: {color}.')
+                raise NotImplementedError(f'Not supported color: {color}.')
         else:
-            ValueError('color or color_high | color_low should be given.')
+            raise ValueError(
+                'color or color_high | color_low should be given.')
 
     mask = cv2.inRange(img, np.array(color_low), np.array(color_high)) == 0
 
@@ -302,10 +303,12 @@ def copy_and_paste(
 
         mask_inst = mask[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
         img_inst = img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
-        img_inst = cv2.resize(img_inst, (int(
-            resize_rate * instance_w), int(resize_rate * instance_h)))
+        img_inst = cv2.resize(
+            img_inst.astype('float32'),
+            (int(resize_rate * instance_w), int(resize_rate * instance_h)))
+        img_inst = img_inst.astype(background_img.dtype)
         mask_inst = cv2.resize(
-            mask_inst,
+            mask_inst.astype('float32'),
             (int(resize_rate * instance_w), int(resize_rate * instance_h)),
             interpolation=cv2.INTER_NEAREST)
 
