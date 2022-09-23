@@ -6,22 +6,12 @@
 <summary align="right"><a href="https://arxiv.org/abs/1711.08229">IPR (ECCV'2018)</a></summary>
 
 ```bibtex
-@article{DBLP:journals/corr/abs-1711-08229,
-  author    = {Xiao Sun and
-               Bin Xiao and
-               Shuang Liang and
-               Yichen Wei},
-  title     = {Integral Human Pose Regression},
-  journal   = {CoRR},
-  volume    = {abs/1711.08229},
-  year      = {2017},
-  url       = {http://arxiv.org/abs/1711.08229},
-  eprinttype = {arXiv},
-  eprint    = {1711.08229},
-  timestamp = {Mon, 13 Aug 2018 16:47:22 +0200},
-  biburl    = {https://dblp.org/rec/journals/corr/abs-1711-08229.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
-}
+@InProceedings{10.1007/978-3-030-01231-1_33,
+author={Sun, Xiao and Xiao, Bin and Wei, Fangyin and Liang, Shuang and Wei, Yichen},
+title={Integral Human Pose Regression},
+booktitle="Computer Vision -- ECCV 2018",
+year="2018",
+pages="536--553",
 ```
 
 </details>
