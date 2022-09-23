@@ -85,7 +85,7 @@ def refine_keypoints_dark(keypoints: np.ndarray, heatmaps: np.ndarray,
 
             dxx = 0.25 * (
                 heatmaps[k, y, x + 2] - 2 * heatmaps[k, y, x] +
-                heatmaps[k, y, x - 1])
+                heatmaps[k, y, x - 2])
             dxy = 0.25 * (
                 heatmaps[k, y + 1, x + 1] - heatmaps[k, y - 1, x + 1] -
                 heatmaps[k, y + 1, x - 1] + heatmaps[k, y - 1, x - 1])
