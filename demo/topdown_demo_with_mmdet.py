@@ -35,7 +35,7 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
         (pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
     bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
                                    pred_instance.scores > args.bbox_thr)]
-    bboxes = bboxes[nms(bboxes, 0.3)][:, :4]
+    bboxes = bboxes[nms(bboxes, args.nms_thr)][:, :4]
 
     # predict keypoints
     register_mmpose_modules()
@@ -99,12 +99,17 @@ def main():
         default=0.3,
         help='Bounding box score threshold')
     parser.add_argument(
+        '--nms-thr',
+        type=float,
+        default=0.3,
+        help='IoU threshold for bounding box NMS')
+    parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
         '--draw-heatmap',
         action='store_true',
         default=False,
-        help='whether to draw output heatmap')
+        help='Whether to draw output heatmap')
     parser.add_argument(
         '--radius',
         type=int,
