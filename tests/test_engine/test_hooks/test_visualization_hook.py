@@ -47,7 +47,8 @@ class TestVisualizationHook(TestCase):
     def test_after_val_iter(self):
         runner = MagicMock()
         runner.iter = 1
-        hook = PoseVisualizationHook()
+        runner.val_evaluator.dataset_meta = dict()
+        hook = PoseVisualizationHook(interval=1)
         hook.after_val_iter(runner, 1, self.data_batch, self.outputs)
 
     def test_after_test_iter(self):
