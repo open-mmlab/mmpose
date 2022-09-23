@@ -46,7 +46,7 @@ model = dict(
         input_size=codec['input_size'],
         in_featuremap_size=(6, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
-        deconv_type='ViPNAS',
+        deconv_type='vipnas',
         deconv_out_channels=(160, 160, 160),
         deconv_num_groups=(160, 160, 160),
         loss=dict(type='KLDiscretLoss', use_target_weight=True),

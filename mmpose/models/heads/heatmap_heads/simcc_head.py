@@ -87,7 +87,7 @@ class SimCCHead(BaseHead):
         input_size: Tuple[int, int],
         in_featuremap_size: Tuple[int, int],
         simcc_split_ratio: float = 2.0,
-        deconv_type: str = 'Heatmap',
+        deconv_type: str = 'heatmap',
         deconv_out_channels: OptIntSeq = (256, 256, 256),
         deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
         deconv_num_groups: OptIntSeq = (16, 16, 16),
@@ -107,11 +107,11 @@ class SimCCHead(BaseHead):
 
         super().__init__(init_cfg)
 
-        if deconv_type not in {'Heatmap', 'ViPNAS'}:
+        if deconv_type not in {'heatmap', 'vipnas'}:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `deconv_type` value'
                 f'{deconv_type}. Should be one of '
-                '{"Heatmap", "ViPNAS"}')
+                '{"heatmap", "vipnas"}')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -194,7 +194,7 @@ class SimCCHead(BaseHead):
     def _make_deconv_head(self,
                           in_channels: Union[int, Sequence[int]],
                           out_channels: int,
-                          deconv_type: str = 'Heatmap',
+                          deconv_type: str = 'heatmap',
                           deconv_out_channels: OptIntSeq = (256, 256, 256),
                           deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                           deconv_num_groups: OptIntSeq = (16, 16, 16),
@@ -205,7 +205,7 @@ class SimCCHead(BaseHead):
                           input_index: Union[int, Sequence[int]] = -1,
                           align_corners: bool = False) -> nn.Module:
 
-        if deconv_type == 'Heatmap':
+        if deconv_type == 'heatmap':
             deconv_head = MODELS.build(
                 dict(
                     type='HeatmapHead',

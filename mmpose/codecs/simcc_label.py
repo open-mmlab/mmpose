@@ -29,7 +29,7 @@ class SimCCLabel(BaseKeypointCodec):
         simcc_split_ratio (float): The ratio of the label size to the input
             size. For example, if the input width is ``w``, the x label size
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
-        label_smoothing (float): Label Smoothing weight. Defaults to 0.0
+        label_smooth_weight (float): Label Smoothing weight. Defaults to 0.0
         normalize (bool): Whether to normalize the heatmaps. Defaults to True.
 
     .. _`SimCC: a Simple Coordinate Classification Perspective for Human Pose
@@ -41,7 +41,7 @@ class SimCCLabel(BaseKeypointCodec):
                  smoothing_type: str = 'gaussian',
                  sigma: float = 6.0,
                  simcc_split_ratio: float = 2.0,
-                 label_smoothing: float = 0.0,
+                 label_smooth_weight: float = 0.0,
                  normalize: bool = True) -> None:
         super().__init__()
 
@@ -49,7 +49,7 @@ class SimCCLabel(BaseKeypointCodec):
         self.smoothing_type = smoothing_type
         self.sigma = sigma
         self.simcc_split_ratio = simcc_split_ratio
-        self.label_smoothing = label_smoothing
+        self.label_smooth_weight = label_smooth_weight
         self.normalize = normalize
 
         if self.smoothing_type not in {'gaussian', 'standard'}:
@@ -58,13 +58,12 @@ class SimCCLabel(BaseKeypointCodec):
                 f'{self.smoothing_type}. Should be one of '
                 '{"gaussian", "standard"}')
 
-        if self.smoothing_type == 'gaussian' and self.label_smoothing > 0.0:
-            raise ValueError(
-                'Attribute `label_smoothing` is only used for `standard` mode.'
-            )
+        if self.smoothing_type == 'gaussian' and self.label_smooth_weight > 0:
+            raise ValueError('Attribute `label_smooth_weight` is only '
+                             'used for `standard` mode.')
 
-        if self.label_smoothing < 0.0 or self.label_smoothing > 1.0:
-            raise ValueError('`label_smoothing` should be in range [0, 1]')
+        if self.label_smooth_weight < 0.0 or self.label_smooth_weight > 1.0:
+            raise ValueError('`label_smooth_weight` should be in range [0, 1]')
 
     def encode(
         self,
@@ -157,7 +156,7 @@ class SimCCLabel(BaseKeypointCodec):
         """Encoding keypoints into SimCC labels with Standard Label Smoothing
         strategy.
 
-        Labels will be one-hot vectors if self.label_smoothing==0.0
+        Labels will be one-hot vectors if self.label_smooth_weight==0.0
         """
 
         N, K, _ = keypoints.shape
@@ -184,12 +183,12 @@ class SimCCLabel(BaseKeypointCodec):
                 keypoint_weights[n, k] = 0
                 continue
 
-            if self.label_smoothing > 0:
-                target_x[n, k] = self.label_smoothing / (W - 1)
-                target_y[n, k] = self.label_smoothing / (H - 1)
+            if self.label_smooth_weight > 0:
+                target_x[n, k] = self.label_smooth_weight / (W - 1)
+                target_y[n, k] = self.label_smooth_weight / (H - 1)
 
-            target_x[n, k, mu_x] = 1.0 - self.label_smoothing
-            target_y[n, k, mu_y] = 1.0 - self.label_smoothing
+            target_x[n, k, mu_x] = 1.0 - self.label_smooth_weight
+            target_y[n, k, mu_y] = 1.0 - self.label_smooth_weight
 
         return target_x, target_y, keypoint_weights
 
