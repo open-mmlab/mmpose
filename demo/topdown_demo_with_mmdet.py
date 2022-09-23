@@ -102,14 +102,14 @@ def main():
         '--nms-thr',
         type=float,
         default=0.3,
-        help=' Person detection score threshold for NMS')
+        help='Person detection score threshold for NMS')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
         '--draw-heatmap',
         action='store_true',
         default=False,
-        help='whether to draw output heatmap')
+        help='Whether to draw output heatmap')
     parser.add_argument(
         '--radius',
         type=int,

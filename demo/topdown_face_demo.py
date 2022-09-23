@@ -47,7 +47,7 @@ def visualize_img(args, img_path, pose_estimator, visualizer, show_interval):
     bboxes = process_face_det_results(face_det_results)
 
     bboxes = np.concatenate((bboxes, np.ones((bboxes.shape[0], 1))), axis=1)
-    bboxes = bboxes[nms(bboxes, 0.3)][:, :4]
+    bboxes = bboxes[nms(bboxes, args.nms_thr)][:, :4]
 
     # predict keypoints
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
@@ -98,12 +98,17 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
+        '--nms-thr',
+        type=float,
+        default=0.3,
+        help='Face detection score threshold for NMS')
+    parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
         '--draw-heatmap',
         action='store_true',
         default=False,
-        help='whether to draw output heatmap')
+        help='Whether to draw output heatmap')
     parser.add_argument(
         '--radius',
         type=int,
