@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 
 def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of left and right eyes
+    """A helper function to get the keypoint indices of left and right eyes
     from the dataset meta information.
 
     Args:
@@ -37,7 +37,7 @@ def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
 
 
 def get_face_keypoint_ids(dataset_meta: Dict) -> List:
-    """A helpfer function to get the keypoint indices of the face from the
+    """A helper function to get the keypoint indices of the face from the
     dataset meta information.
 
     Args:
@@ -51,7 +51,7 @@ def get_face_keypoint_ids(dataset_meta: Dict) -> List:
     # try obtaining nose point ids from dataset_meta
     keypoint_name2id = dataset_meta.get('keypoint_name2id', {})
     for id in range(68):
-        face_indices.append(keypoint_name2id.get(f'face_{id}', None))
+        face_indices.append(keypoint_name2id.get(f'face-{id}', None))
 
     if None in face_indices:
         # Fall back to hard coded keypoint id
@@ -66,7 +66,7 @@ def get_face_keypoint_ids(dataset_meta: Dict) -> List:
 
 
 def get_wrist_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of left and right wrists
+    """A helper function to get the keypoint indices of left and right wrists
     from the dataset meta information.
 
     Args:
@@ -100,7 +100,7 @@ def get_wrist_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
 
 
 def get_mouth_keypoint_ids(dataset_meta: Dict) -> int:
-    """A helpfer function to get the mouth keypoint index from the dataset meta
+    """A helper function to get the mouth keypoint index from the dataset meta
     information.
 
     Args:
@@ -125,7 +125,7 @@ def get_mouth_keypoint_ids(dataset_meta: Dict) -> int:
 
 
 def get_hand_keypoint_ids(dataset_meta: Dict) -> List[int]:
-    """A helpfer function to get the keypoint indices of left and right hand
+    """A helper function to get the keypoint indices of left and right hand
     from the dataset meta information.
 
     Args:
