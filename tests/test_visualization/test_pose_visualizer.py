@@ -13,22 +13,38 @@ from mmpose.visualization import PoseLocalVisualizer
 
 class TestPoseLocalVisualizer(TestCase):
 
+    def setUp(self):
+        self.visualizer = PoseLocalVisualizer(show_keypoint_weight=True)
+
+    def _get_dataset_meta(self):
+        # None: kpt or link is hidden
+        pose_kpt_color = [None] + [(127, 127, 127)] * 2 + ['red']
+        pose_link_color = [(127, 127, 127)] * 2 + [None]
+        skeleton_links = [[0, 1], [1, 2], [2, 3]]
+        return {
+            'keypoint_colors': pose_kpt_color,
+            'skeleton_link_colors': pose_link_color,
+            'skeleton_links': skeleton_links
+        }
+
+    def test_set_dataset_meta(self):
+        dataset_meta = self._get_dataset_meta()
+        self.visualizer.set_dataset_meta(dataset_meta)
+        self.assertEqual(len(self.visualizer.kpt_color), 4)
+        self.assertEqual(self.visualizer.kpt_color[-1], 'red')
+        self.assertListEqual(self.visualizer.skeleton[-1], [2, 3])
+
+        self.visualizer.dataset_meta = None
+        self.visualizer.set_dataset_meta(dataset_meta)
+        self.assertIsNotNone(self.visualizer.dataset_meta)
+
     def test_add_datasample(self):
         h, w = 100, 100
         image = np.zeros((h, w, 3), dtype=np.uint8)
         out_file = 'out_file.jpg'
 
-        # None: kpt or link is hidden
-        pose_kpt_color = [None] + [(127, 127, 127)] * 2 + ['red']
-        pose_link_color = [(127, 127, 127)] * 2 + [None]
-        dataset_meta = {
-            'keypoint_colors': pose_kpt_color,
-            'skeleton_link_colors': pose_link_color,
-            'skeleton_links': [[0, 1], [1, 2], [2, 3]]
-        }
-
-        pose_local_visualizer = PoseLocalVisualizer(show_keypoint_weight=True)
-        pose_local_visualizer.set_dataset_meta(dataset_meta)
+        dataset_meta = self._get_dataset_meta()
+        self.visualizer.set_dataset_meta(dataset_meta)
 
         # setting keypoints
         gt_instances = InstanceData()
@@ -55,7 +71,7 @@ class TestPoseLocalVisualizer(TestCase):
                                          dtype=np.float32)
         pred_pose_data_sample.pred_instances = pred_instances
 
-        pose_local_visualizer.add_datasample(
+        self.visualizer.add_datasample(
             'image',
             image,
             data_sample=pred_pose_data_sample,
@@ -63,14 +79,8 @@ class TestPoseLocalVisualizer(TestCase):
             out_file=out_file)
         self._assert_image_and_shape(out_file, (h, w * 2, 3))
 
-        pose_local_visualizer = PoseLocalVisualizer(
-            kpt_color=pose_kpt_color,
-            link_color=pose_link_color,
-            show_keypoint_weight=True)
-        pose_local_visualizer.set_dataset_meta(dataset_meta)
-
-        pose_local_visualizer.show_keypoint_weight = False
-        pose_local_visualizer.add_datasample(
+        self.visualizer.show_keypoint_weight = False
+        self.visualizer.add_datasample(
             'image',
             image,
             data_sample=pred_pose_data_sample,
@@ -79,7 +89,7 @@ class TestPoseLocalVisualizer(TestCase):
             out_file=out_file)
         self._assert_image_and_shape(out_file, ((h * 2), w, 3))
 
-        pose_local_visualizer.add_datasample(
+        self.visualizer.add_datasample(
             'image',
             image,
             data_sample=pred_pose_data_sample,
@@ -87,10 +97,8 @@ class TestPoseLocalVisualizer(TestCase):
             out_file=out_file)
         self._assert_image_and_shape(out_file, ((h * 2), (w * 2), 3))
 
-        return pose_local_visualizer
-
     def _assert_image_and_shape(self, out_file, out_shape):
-        assert os.path.exists(out_file)
+        self.assertTrue(os.path.exists(out_file))
         drawn_img = cv2.imread(out_file)
-        assert drawn_img.shape == out_shape
+        self.assertTupleEqual(drawn_img.shape, out_shape)
         os.remove(out_file)

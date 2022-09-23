@@ -10,7 +10,7 @@ from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
 
 from mmpose.registry import HOOKS
-from mmpose.structures import PoseDataSample
+from mmpose.structures import PoseDataSample, merge_data_samples
 
 
 @HOOKS.register_module()
@@ -89,6 +89,8 @@ class PoseVisualizationHook(Hook):
         if self.file_client is None:
             self.file_client = mmengine.FileClient(**self.file_client_args)
 
+        self._visualizer.set_dataset_meta(runner.val_evaluator.dataset_meta)
+
         # There is no guarantee that the same batch of images
         # is visualized for each evaluation.
         total_curr_iter = runner.iter + batch_idx
@@ -133,12 +135,15 @@ class PoseVisualizationHook(Hook):
         if self.file_client is None:
             self.file_client = mmengine.FileClient(**self.file_client_args)
 
+        self._visualizer.set_dataset_meta(runner.test_evaluator.dataset_meta)
+
         for data_sample in outputs:
             self._test_index += 1
 
             img_path = data_sample.get('img_path')
             img_bytes = self.file_client.get(img_path)
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
+            data_sample = merge_data_samples([data_sample])
 
             out_file = None
             if self.out_dir is not None:
