@@ -259,7 +259,9 @@ class PoseLocalVisualizer(Visualizer):
                     color = kpt_color[kid]
                     if not isinstance(color, str):
                         color = tuple(int(c) for c in color)
-                    transparency = max(0, min(1, score[kid])) * self.alpha
+                    transparency = self.alpha
+                    if self.show_keypoint_weight:
+                        transparency *= max(0, min(1, score[kid]))
                     self.draw_circles(
                         kpt,
                         radius=np.array([self.radius]),
@@ -313,9 +315,9 @@ class PoseLocalVisualizer(Visualizer):
                                 (int(mX), int(mY)),
                                 (int(length / 2), int(stickwidth)), int(angle),
                                 0, 360, 1)
-                            transparency = max(
-                                0, min(1, 0.5 * (score[sk[0]] +
-                                                 score[sk[1]]))) * self.alpha
+                            transparency = self.alpha
+                            transparency *= max(
+                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
                             self.draw_polygons(
                                 polygons,
                                 edge_colors=color,
