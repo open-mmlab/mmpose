@@ -102,7 +102,7 @@ def main():
         '--nms-thr',
         type=float,
         default=0.3,
-        help='Person detection score threshold for NMS')
+        help='IoU threshold for bounding box NMS')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
