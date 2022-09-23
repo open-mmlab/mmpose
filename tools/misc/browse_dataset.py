@@ -80,7 +80,8 @@ def main():
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
-    file_client = mmengine.FileClient(**cfg.file_client_args)
+    file_client_args = cfg.get('file_client_args', dict(backend='disk'))
+    file_client = mmengine.FileClient(**file_client_args)
 
     # register all modules in mmpose into the registries
     register_all_modules()
