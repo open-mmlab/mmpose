@@ -136,12 +136,18 @@ class PoseLocalVisualizer(Visualizer):
         Args:
             dataset_meta (dict): meta information of dataset.
         """
-        self.dataset_meta = dataset_meta
-        self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
-        self.kpt_color = dataset_meta.get('keypoint_colors', self.kpt_color)
-        self.link_color = dataset_meta.get('skeleton_link_colors',
-                                           self.link_color)
-        self.skeleton = self.dataset_meta.get('skeleton_links', None)
+        if isinstance(dataset_meta, dict):
+            self.dataset_meta = dataset_meta.copy()
+            self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
+            self.kpt_color = dataset_meta.get('keypoint_colors',
+                                              self.kpt_color)
+            self.link_color = dataset_meta.get('skeleton_link_colors',
+                                               self.link_color)
+            self.skeleton = dataset_meta.get('skeleton_links', self.skeleton)
+        # sometimes self.dataset_meta is manually set, which might be None.
+        # it should be converted to a dict at these times
+        if self.dataset_meta is None:
+            self.dataset_meta = {}
 
     def _draw_instances_bbox(self, image: np.ndarray,
                              instances: InstanceData) -> np.ndarray:
@@ -458,11 +464,16 @@ class PoseLocalVisualizer(Visualizer):
         else:
             drawn_img = pred_img_data
 
-        # display & save visualized results
+        # It is convenient for users to obtain the drawn image.
+        # For example, the user wants to obtain the drawn image and
+        # save it as a video during video inference.
+        self.set_image(drawn_img)
+
         if show:
             self.show(drawn_img, win_name=name, wait_time=wait_time)
-        else:
-            self.add_image(name, drawn_img, step)
 
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
+        else:
+            # save drawn_img to backends
+            self.add_image(name, drawn_img, step)
