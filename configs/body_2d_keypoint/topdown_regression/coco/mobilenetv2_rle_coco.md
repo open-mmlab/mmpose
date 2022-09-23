@@ -69,6 +69,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                                                 | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [deeppose_mobilenetv2_rle_pretrained](/configs/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192.py) |  256x192   | 0.593 |      0.836      |      0.660      | 0.644 |      0.877      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [deeppose_mobilenetv2_rle_pretrained](/configs/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192.py) |  256x192   | 0.593 |      0.836      |      0.660      | 0.644 |      0.877      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.log.json) |

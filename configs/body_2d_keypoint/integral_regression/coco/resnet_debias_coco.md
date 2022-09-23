@@ -52,6 +52,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                                                 | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [debias-ipr_resnet_50](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_debias--8xb64-210e_coco-256x256.py) |  256x256   | 0.675 |      0.872      |      0.740      | 0.765 |      0.928      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [debias-ipr_resnet_50](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_debias--8xb64-210e_coco-256x256.py) |  256x256   | 0.675 |      0.872      |      0.740      | 0.765 |      0.928      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_debias-8xb64-210e_coco-256x256-055a7699_20220913.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_debias-8xb64-210e_coco-256x256-055a7699_20220913.log.json) |

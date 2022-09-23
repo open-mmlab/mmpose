@@ -49,6 +49,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                                            | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :-------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [simcc_S-ViPNAS-MobileNetV3](/configs/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192.py) |  256x192   | 0.695 |      0.883      |      0.772      | 0.755 |      0.927      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [simcc_S-ViPNAS-MobileNetV3](/configs/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192.py) |  256x192   | 0.695 |      0.883      |      0.772      | 0.755 |      0.927      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192-719f3489_20220922.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192-719f3489_20220922.log.json) |

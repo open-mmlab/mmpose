@@ -50,7 +50,7 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :--------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192.py) |  256x192   | 0.721 |      0.900      |      0.798      | 0.781 |      0.937      | [ckpt](<>) | [log](<>) |
-| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288.py) |  384x288   | 0.735 |      0.899      |      0.800      | 0.790 |      0.939      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192.py) |  256x192   | 0.721 |      0.900      |      0.798      | 0.781 |      0.937      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.log.json) |
+| [simcc_resnet_50](/configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288.py) |  384x288   | 0.735 |      0.899      |      0.800      | 0.790 |      0.939      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288-45c3ba34_20220913.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288-45c3ba34_20220913.log.json) |

@@ -51,6 +51,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                                               | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :----------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [ipr_resnet_50_dsnt](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256.py) |  256x256   | 0.674 |      0.870      |      0.744      | 0.764 |      0.928      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [ipr_resnet_50_dsnt](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256.py) |  256x256   | 0.674 |      0.870      |      0.744      | 0.764 |      0.928      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256-441eedc0_20220913.pth) | \[loghttps://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256-441eedc0_20220913.log.json) |
