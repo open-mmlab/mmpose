@@ -118,7 +118,14 @@ class BaseCocoStyleDataset(BaseDataset):
         Returns:
             dict: Parsed meta information.
         """
-        metainfo = super()._load_metainfo(metainfo)
+
+        if metainfo is None:
+            metainfo = deepcopy(cls.METAINFO)
+
+        if not isinstance(metainfo, dict):
+            raise TypeError(
+                f'metainfo should be a dict, but got {type(metainfo)}')
+
         # parse pose metainfo if it has been assigned
         if metainfo:
             metainfo = parse_pose_metainfo(metainfo)
