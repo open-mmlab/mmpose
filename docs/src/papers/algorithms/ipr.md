@@ -6,12 +6,13 @@
 <summary align="right"><a href="https://arxiv.org/abs/1711.08229">IPR (ECCV'2018)</a></summary>
 
 ```bibtex
-@InProceedings{10.1007/978-3-030-01231-1_33,
-author={Sun, Xiao and Xiao, Bin and Wei, Fangyin and Liang, Shuang and Wei, Yichen},
-title={Integral Human Pose Regression},
-booktitle="Computer Vision -- ECCV 2018",
-year="2018",
-pages="536--553",
+@inproceedings{sun2018integral,
+  title={Integral human pose regression},
+  author={Sun, Xiao and Xiao, Bin and Wei, Fangyin and Liang, Shuang and Wei, Yichen},
+  booktitle={Proceedings of the European conference on computer vision (ECCV)},
+  pages={529--545},
+  year={2018}
+}
 ```
 
 </details>
