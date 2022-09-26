@@ -2,7 +2,7 @@
 
 MMPose 1.0 has made significant BC-breaking changes, with modules redesigned and reorganized to reduce code redundancy and improve efficiency. For developers who have some deep-learning knowledge, this tutorial provides a migration guide.
 
-Whether you are **a user of the previous version of MMPose**, or **a new user wishing to migrate your Pytorch project to MMPose**, you can learn how to build a project based on MMpose 1.0 with this tutorial.
+Whether you are **a user of the previous version of MMPose**, or **a new user wishing to migrate your Pytorch project to MMPose**, you can learn how to build a project based on MMPose 1.0 with this tutorial.
 
 ```{note}
 This  tutorial covers what developers will concern when using MMPose 1.0:
@@ -123,9 +123,9 @@ dataset_info = dict(
 
 ### Dataset
 
-To use costom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
+To use custom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
 
-Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like style**. Thus we provide a base class [BaseCocoStyleDataset](mmpose/datasets/datasets/base/base_coco_style_dataset.py) for these datasets. We recommend that users subclass `BaseCocoStyleDataset` and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new costom 2D keypoint dataset.
+Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like style**. Thus we provide a base class [BaseCocoStyleDataset](mmpose/datasets/datasets/base/base_coco_style_dataset.py) for these datasets. We recommend that users subclass `BaseCocoStyleDataset` and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new custom 2D keypoint dataset.
 
 ```{note}
 Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
@@ -305,6 +305,14 @@ In MMPose, we collect Encoding and Decoding processes into a **Codec**, in which
 
 Currently we support the following types of Targets.
 
+- `heatmap`: Gaussian heatmaps
+- `keypoint_label`: keypoint representation (e.g. normalized coordinates)
+- `keypoint_xy_label`: axis-wise keypoint representation
+- `heatmap+keypoint_label`: Gaussian heatmaps and keypoint representation
+- `multiscale_heatmap`: multi-scale Gaussian heatmaps
+
+and the generated targets will be packed as follows.
+
 - `heatmaps`: Gaussian heatmaps
 - `keypoint_labels`: keypoint representation (e.g. normalized coordinates)
 - `keypoint_x_labels`: keypoint x-axis representation
@@ -345,8 +353,8 @@ The following is an example of the implementation of `PoseDataSample` under the 
 def get_pose_data_sample(self):
     # meta
     pose_meta = dict(
-        img_shape=(600, 900),  # [h, w, c]
-        crop_size=(256, 192),  # [h, w]
+        img_shape=(600, 900),   # [h, w, c]
+        crop_size=(256, 192),   # [h, w]
         heatmap_size=(64, 48),  # [h, w]
     )
 

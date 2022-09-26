@@ -24,8 +24,6 @@ class MultipleLossWrapper(nn.Module):
         self.loss_modules = nn.ModuleList(loss_modules)
 
     def forward(self, input_list, target_list, keypoint_weights=None):
-        assert isinstance(input_list, list), ''
-        assert isinstance(target_list, list), ''
         assert len(input_list) == len(target_list), ''
 
         losses = []

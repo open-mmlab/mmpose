@@ -17,7 +17,7 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=210,
+        end=train_cfg['max_epochs'],
         milestones=[170, 200],
         gamma=0.1,
         by_epoch=True)
@@ -25,9 +25,6 @@ param_scheduler = [
 
 # automatically scaling LR based on the actual training batch size
 auto_scale_lr = dict(base_batch_size=512)
-
-# hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
@@ -127,6 +124,9 @@ val_dataloader = dict(
         pipeline=test_pipeline,
     ))
 test_dataloader = val_dataloader
+
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # evaluators
 val_evaluator = dict(

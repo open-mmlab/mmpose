@@ -15,18 +15,35 @@
 
 </details>
 
+<!-- [ALGORITHM] -->
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2107.11291">RLE (ICCV'2021)</a></summary>
+
+```bibtex
+@inproceedings{li2021human,
+  title={Human pose regression with residual log-likelihood estimation},
+  author={Li, Jiefeng and Bian, Siyuan and Zeng, Ailing and Wang, Can and Pang, Bo and Liu, Wentao and Lu, Cewu},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={11025--11034},
+  year={2021}
+}
+```
+
+</details>
+
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html">ResNet (CVPR'2016)</a></summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html">MobilenetV2 (CVPR'2018)</a></summary>
 
 ```bibtex
-@inproceedings{he2016deep,
-  title={Deep residual learning for image recognition},
-  author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+@inproceedings{sandler2018mobilenetv2,
+  title={Mobilenetv2: Inverted residuals and linear bottlenecks},
+  author={Sandler, Mark and Howard, Andrew and Zhu, Menglong and Zhmoginov, Andrey and Chen, Liang-Chieh},
   booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
-  pages={770--778},
-  year={2016}
+  pages={4510--4520},
+  year={2018}
 }
 ```
 
@@ -54,6 +71,4 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 | Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
 | :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
-| [deeppose_resnet_50](/configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192.py) |  256x192   | 0.528 |      0.817      |      0.589      | 0.639 |      0.888      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192-72ef04f3_20220913.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192-72ef04f3_20220913.log.json) |
-| [deeppose_resnet_101](/configs/body_2d_keypoint/topdown_regression/coco/td-reg_res101_8xb64-210e_coco-256x192.py) |  256x192   | 0.562 |      0.831      |      0.629      | 0.67  |       0.9       | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192-2f247111_20210205.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192_20210205.log.json) |
-| [deeppose_resnet_152](/configs/body_2d_keypoint/topdown_regression/coco/td-reg_res152_8xb64-210e_coco-256x192.py) |  256x192   | 0.584 |      0.842      |      0.659      | 0.688 |      0.907      | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192-7df89a88_20210205.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192_20210205.log.json) |
+| [deeppose_mobilenetv2_rle_pretrained](/configs/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192.py) |  256x192   | 0.593 |      0.836      |      0.660      | 0.644 |      0.877      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.log.json) |
