@@ -8,7 +8,7 @@
 
 MMPose 是一款基于 Pytorch 的姿态估计开源工具箱，是 OpenMMLab 项目的成员之一，包含了丰富的 2D 多人姿态估计、2D 手部姿态估计、2D 人脸关键点检测、133关键点全身人体姿态估计、动物关键点检测、服饰关键点检测等算法以及相关的组件和模块，下面是它的整体框架：
 
-MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs、models、engine、评估和可视化。
+MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs、models、engine、evaluation 和 visualization。
 
 - **apis** 提供用于模型推理的高级 API
 
