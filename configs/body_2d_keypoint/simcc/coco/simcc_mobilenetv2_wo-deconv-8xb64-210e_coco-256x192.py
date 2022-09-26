@@ -1,12 +1,12 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=140, val_interval=10)
+train_cfg = dict(max_epochs=210, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=1e-3,
+    lr=5e-4,
 ))
 
 # learning policy
@@ -17,21 +17,18 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=140,
-        milestones=[90, 120],
+        end=train_cfg['max_epochs'],
+        milestones=[170, 200],
         gamma=0.1,
         by_epoch=True)
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=128)
-
-# hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+auto_scale_lr = dict(base_batch_size=512)
 
 # codec settings
 codec = dict(
-    type='SimCCLabel', input_size=(288, 384), sigma=6.0, simcc_split_ratio=2.0)
+    type='SimCCLabel', input_size=(192, 256), sigma=6.0, simcc_split_ratio=2.0)
 
 # model settings
 model = dict(
@@ -42,20 +39,24 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
-        depth=50,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
-    ),
+        type='MobileNetV2',
+        widen_factor=1.,
+        out_indices=(7, ),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='mmcls://mobilenet_v2',
+        )),
     head=dict(
         type='SimCCHead',
-        in_channels=2048,
+        in_channels=1280,
         out_channels=17,
         input_size=codec['input_size'],
-        in_featuremap_size=(9, 12),
+        in_featuremap_size=(6, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
+        deconv_out_channels=None,
         loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
-    test_cfg=dict(flip_test=True))
+    test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -70,15 +71,13 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(
-        type='RandomBBoxTransform', scale_factor=(0.7, 1.3), rotate_factor=80),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(
         type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
-    # simcc needs transformed keypoints to calculate the training accuracy
     dict(type='PackPoseInputs')
 ]
-test_pipeline = [
+val_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
@@ -114,9 +113,12 @@ val_dataloader = dict(
         'COCO_val2017_detections_AP_H_56_person.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader
+
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # evaluators
 val_evaluator = dict(
