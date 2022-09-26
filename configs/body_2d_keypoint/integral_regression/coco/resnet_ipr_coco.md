@@ -4,10 +4,11 @@
 <summary align="right"><a href="https://arxiv.org/abs/1711.08229">IPR (ECCV'2018)</a></summary>
 
 ```bibtex
-@article{sun2018integral,
-  title={An Integral Pose Regression System for the ECCV2018 PoseTrack Challenge},
-  author={Sun, Xiao and Li, Chuankang and Lin, Stephen},
-  journal={arXiv preprint arXiv:1809.06079},
+@inproceedings{sun2018integral,
+  title={Integral human pose regression},
+  author={Sun, Xiao and Xiao, Bin and Wei, Fangyin and Liang, Shuang and Wei, Yichen},
+  booktitle={Proceedings of the European conference on computer vision (ECCV)},
+  pages={529--545},
   year={2018}
 }
 ```
@@ -51,6 +52,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch                                                                                                     | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [ipr_resnet_50](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256.py) |  256x256   | 0.633 |      0.860      |      0.703      | 0.730 |      0.919      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [ipr_resnet_50](/configs/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256.py) |  256x256   | 0.633 |      0.860      |      0.703      | 0.730 |      0.919      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256-a3898a33_20220913.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256-a3898a33_20220913.log.json) |

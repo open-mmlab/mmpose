@@ -29,7 +29,7 @@ class TestSimCCLabel(TestCase):
                     smoothing_type='standard',
                     sigma=5.0,
                     simcc_split_ratio=3.0,
-                    label_smoothing=0.1),
+                    label_smooth_weight=0.1),
             ),
             (
                 'simcc one-hot',
@@ -112,26 +112,27 @@ class TestSimCCLabel(TestCase):
                                     'got invalid `smoothing_type`'):
             _ = KEYPOINT_CODECS.build(cfg)
 
-        # invalid label_smoothing in smoothing
+        # invalid label_smooth_weight in smoothing
         cfg = dict(
             type='SimCCLabel',
             input_size=(192, 256),
             smoothing_type='standard',
             sigma=1.0,
             simcc_split_ratio=2.0,
-            label_smoothing=1.1)
+            label_smooth_weight=1.1)
 
-        with self.assertRaisesRegex(ValueError, '`label_smoothing` should be'):
+        with self.assertRaisesRegex(ValueError,
+                                    '`label_smooth_weight` should be'):
             _ = KEYPOINT_CODECS.build(cfg)
 
-        # invalid label_smoothing for gaussian
+        # invalid label_smooth_weight for gaussian
         cfg = dict(
             type='SimCCLabel',
             input_size=(192, 256),
             smoothing_type='gaussian',
             sigma=1.0,
             simcc_split_ratio=2.0,
-            label_smoothing=0.1)
+            label_smooth_weight=0.1)
 
         with self.assertRaisesRegex(ValueError,
                                     'is only used for `standard` mode.'):

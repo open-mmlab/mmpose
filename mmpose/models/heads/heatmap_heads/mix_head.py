@@ -2,6 +2,7 @@
 from typing import Optional, Sequence, Tuple, Union
 
 import torch
+import torch.nn.functional as F
 from mmcv.cnn import build_conv_layer
 from torch import Tensor, nn
 
@@ -17,7 +18,7 @@ OptIntSeq = Optional[Sequence[int]]
 
 
 @MODELS.register_module()
-class SimCCHead(BaseHead):
+class MixHead(BaseHead):
     """Top-down heatmap head introduced in `SimCC`_ by Li et al (2022). The
     head is composed of a few deconvolutional layers followed by a fully-
     connected layer to generate 1d representation from low-resolution feature
@@ -33,8 +34,8 @@ class SimCCHead(BaseHead):
         deconv_type (str, optional): The type of deconv head which should
             be one of the following options:
 
-                - ``'heatmap'``: make deconv layers in `HeatmapHead`
-                - ``'vipnas'``: make deconv layers in `ViPNASHead`
+                - ``'Heatmap'``: make deconv layers in `HeatmapHead`
+                - ``'ViPNAS'``: make deconv layers in `ViPNASHead`
 
             Defaults to ``'Heatmap'``
         deconv_out_channels (sequence[int]): The output channel number of each
@@ -87,7 +88,9 @@ class SimCCHead(BaseHead):
         input_size: Tuple[int, int],
         in_featuremap_size: Tuple[int, int],
         simcc_split_ratio: float = 2.0,
-        deconv_type: str = 'heatmap',
+        debias: bool = False,
+        beta: float = 1.,
+        deconv_type: str = 'Heatmap',
         deconv_out_channels: OptIntSeq = (256, 256, 256),
         deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
         deconv_num_groups: OptIntSeq = (16, 16, 16),
@@ -107,11 +110,11 @@ class SimCCHead(BaseHead):
 
         super().__init__(init_cfg)
 
-        if deconv_type not in {'heatmap', 'vipnas'}:
+        if deconv_type not in {'Heatmap', 'ViPNAS'}:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `deconv_type` value'
                 f'{deconv_type}. Should be one of '
-                '{"heatmap", "vipnas"}')
+                '{"Heatmap", "ViPNAS"}')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -121,6 +124,8 @@ class SimCCHead(BaseHead):
         self.align_corners = align_corners
         self.input_transform = input_transform
         self.input_index = input_index
+        self.debias = debias
+        self.beta = beta
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
@@ -191,10 +196,16 @@ class SimCCHead(BaseHead):
         self.mlp_head_x = nn.Linear(flatten_dims, W)
         self.mlp_head_y = nn.Linear(flatten_dims, H)
 
+        self.linspace_x = torch.arange(0.0, 1.0 * W, 1).reshape(1, 1, W) / W
+        self.linspace_y = torch.arange(0.0, 1.0 * H, 1).reshape(1, 1, H) / H
+
+        self.linspace_x = nn.Parameter(self.linspace_x, requires_grad=False)
+        self.linspace_y = nn.Parameter(self.linspace_y, requires_grad=False)
+
     def _make_deconv_head(self,
                           in_channels: Union[int, Sequence[int]],
                           out_channels: int,
-                          deconv_type: str = 'heatmap',
+                          deconv_type: str = 'Heatmap',
                           deconv_out_channels: OptIntSeq = (256, 256, 256),
                           deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                           deconv_num_groups: OptIntSeq = (16, 16, 16),
@@ -205,7 +216,7 @@ class SimCCHead(BaseHead):
                           input_index: Union[int, Sequence[int]] = -1,
                           align_corners: bool = False) -> nn.Module:
 
-        if deconv_type == 'heatmap':
+        if deconv_type == 'Heatmap':
             deconv_head = MODELS.build(
                 dict(
                     type='HeatmapHead',
@@ -257,10 +268,24 @@ class SimCCHead(BaseHead):
         # flatten the output heatmap
         x = torch.flatten(feats, 2)
 
-        pred_x = self.mlp_head_x(x)
-        pred_y = self.mlp_head_y(x)
+        simcc_x = self.mlp_head_x(x)
+        simcc_y = self.mlp_head_y(x)
 
-        return pred_x, pred_y
+        pred_x = F.softmax(simcc_x * self.beta, dim=-1)
+        pred_x = (pred_x * self.linspace_x).sum(dim=-1, keepdim=True)
+
+        pred_y = F.softmax(simcc_y * self.beta, dim=-1)
+        pred_y = (pred_y * self.linspace_y).sum(dim=-1, keepdim=True)
+
+        if self.debias:
+            C_x = simcc_x.exp().sum(dim=-1, keepdim=True)
+            pred_x = C_x / (C_x - 1) * (pred_x - 1 / (2 * C_x))
+
+            C_y = simcc_y.exp().sum(dim=-1, keepdim=True)
+            pred_y = C_x / (C_y - 1) * (pred_y - 1 / (2 * C_y))
+
+        pred = torch.cat([pred_x, pred_y], dim=-1)
+        return pred, simcc_x, simcc_y
 
     def predict(
         self,

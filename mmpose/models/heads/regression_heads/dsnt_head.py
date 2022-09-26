@@ -30,7 +30,7 @@ class DSNTHead(IntegralRegressionHead):
         in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
         lambda_t (int): Discard heatmap-based loss when current
-            epoch > lambda_t
+            epoch > lambda_t. Defaults to -1.
         debias (bool): Whether to remove the bias of Integral Pose Regression.
             see `Removing the Bias of Integral Pose Regression`_ by Gu et al
             (2021). Defaults to ``False``.

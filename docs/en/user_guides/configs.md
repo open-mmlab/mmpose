@@ -128,6 +128,19 @@ General configuration is stored alone in the `$MMPOSE/configs/_base_`, and inher
 _base_ = ['../../../_base_/default_runtime.py'] # take the config file as the starting point of the relative path
 ```
 
+```{note}
+**Tips**
+
+CheckpointHook:
+
+- save_best: `'coco/AP'` for `CocoMetric`, `'pck/PCK@0.05'` for `PCKAccuracy`
+- max_keep_ckpts: the maximum checkpoints to keep. Defaults to -1, which means unlimited.
+
+Example:
+
+`default_hooks = dict(checkpoint=dict(save_best='pck/PCK@0.05', rule='greater', max_keep_ckpts=1))`
+```
+
 ### Data
 
 Data configuration refers to the data processing related settings, mainly including:
@@ -202,6 +215,13 @@ val_dataloader = dict(
         pipeline=test_pipeline
     ))
 test_dataloader = val_dataloader # use val as test by default
+```
+
+```{note}
+**Tips**
+
+You can set the random seed by doing: `randomness=dict(seed=0)`
+
 ```
 
 ### Training

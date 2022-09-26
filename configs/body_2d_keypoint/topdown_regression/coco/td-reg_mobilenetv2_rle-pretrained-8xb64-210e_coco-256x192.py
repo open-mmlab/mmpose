@@ -6,7 +6,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=5e-4,
+    lr=1e-3,
 ))
 
 # learning policy
@@ -17,7 +17,7 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=210,
+        end=train_cfg['max_epochs'],
         milestones=[170, 200],
         gamma=0.1,
         by_epoch=True)
@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # codec settings
-codec = dict(type='RegressionLabel', input_size=(256, 256))
+codec = dict(type='RegressionLabel', input_size=(192, 256))
 
 # model settings
 model = dict(
@@ -38,26 +38,31 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
-        depth=101,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet101'),
-    ),
+        type='MobileNetV2',
+        widen_factor=1.,
+        out_indices=(7, ),
+        init_cfg=dict(
+            type='Pretrained',
+            prefix='backbone.',
+            checkpoint='https://download.openmmlab.com/mmpose/top_down/'
+            'mobilenetv2/mobilenetv2_coco_256x192-d1e58e7b_20200727.pth')),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
-        type='RegressionHead',
-        in_channels=2048,
-        num_joints=16,
-        loss=dict(type='SmoothL1Loss', use_target_weight=True),
+        type='RLEHead',
+        in_channels=1280,
+        num_joints=17,
+        loss=dict(type='RLELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
         shift_coords=True,
-    ))
+    ),
+)
 
 # base dataset settings
-dataset_type = 'MpiiDataset'
+dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/mpii/'
+data_root = 'data/coco/'
 
 file_client_args = dict(backend='disk')
 
@@ -66,7 +71,8 @@ train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomBBoxTransform', shift_prob=0),
+    dict(type='RandomHalfBody'),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
     dict(type='PackPoseInputs')
@@ -88,8 +94,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/mpii_train.json',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/person_keypoints_train2017.json',
+        data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -102,17 +108,21 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/mpii_val.json',
-        headbox_file=f'{data_root}/annotations/mpii_gt_val.mat',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/person_keypoints_val2017.json',
+        bbox_file=f'{data_root}person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
+        data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # evaluators
-val_evaluator = dict(type='MpiiPCKAccuracy', norm_item='head')
+val_evaluator = dict(
+    type='CocoMetric',
+    ann_file=f'{data_root}annotations/person_keypoints_val2017.json',
+    score_mode='bbox_rle')
 test_evaluator = val_evaluator
