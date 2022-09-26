@@ -17,7 +17,7 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=210,
+        end=train_cfg['max_epochs'],
         milestones=[170, 200],
         gamma=0.1,
         by_epoch=True)
@@ -27,7 +27,8 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # codec settings
-codec = dict(type='RegressionLabel', input_size=(256, 256))
+codec = dict(
+    type='SimCCLabel', input_size=(256, 256), sigma=6.0, simcc_split_ratio=2.0)
 
 # model settings
 model = dict(
@@ -39,15 +40,18 @@ model = dict(
         bgr_to_rgb=True),
     backbone=dict(
         type='ResNet',
-        depth=101,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet101'),
+        depth=50,
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
     ),
-    neck=dict(type='GlobalAveragePooling'),
     head=dict(
-        type='RegressionHead',
+        type='SimCCHead',
         in_channels=2048,
-        num_joints=16,
-        loss=dict(type='SmoothL1Loss', use_target_weight=True),
+        out_channels=16,
+        input_size=codec['input_size'],
+        in_featuremap_size=(8, 8),
+        simcc_split_ratio=codec['simcc_split_ratio'],
+        deconv_out_channels=None,
+        loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -68,7 +72,8 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomBBoxTransform', shift_prob=0),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
+    dict(
+        type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

@@ -133,6 +133,19 @@ log_level = 'INFO' # 日志记录等级
 _base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位置为相对路径起点
 ```
 
+```{note}
+**Tips**
+
+CheckpointHook:
+
+- save_best: `'coco/AP'` 用于 `CocoMetric`, `'pck/PCK@0.05'` 用于 `PCKAccuracy`
+- max_keep_ckpts: 最大保留ckpt数量，默认为-1，代表不限制
+
+样例:
+
+`default_hooks = dict(checkpoint=dict(save_best='pck/PCK@0.05', rule='greater', max_keep_ckpts=1))`
+```
+
 ### 数据配置
 
 数据配置指数据处理相关的配置，主要包括：
@@ -207,6 +220,13 @@ val_dataloader = dict(
         pipeline=test_pipeline # 数据流水线
     ))
 test_dataloader = val_dataloader # 默认情况下不区分验证集和测试集，用户根据需要来自行定义
+```
+
+```{note}
+**Tips**
+
+设置随机种子： `randomness=dict(seed=0)`
+
 ```
 
 ### 训练配置

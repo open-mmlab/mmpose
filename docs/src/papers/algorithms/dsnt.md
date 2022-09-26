@@ -3,7 +3,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/1801.07372v2">DSNT (ECCV'2018)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/1801.07372v2">DSNT (2018)</a></summary>
 
 ```bibtex
 @article{nibali2018numerical,

@@ -302,7 +302,19 @@ test_pipeline = [
 
 在 MMPose 中，我们将编码和解码过程集合成一个编解码器（Codec），在其中实现 `encode()` 和 `decode()`。
 
-目前 MMPose 支持以下类型的监督目标：
+目前 MMPose 支持生成以下类型的监督目标：
+
+- `heatmap`: 高斯热图
+
+- `keypoint_label`: 关键点标签（如归一化的坐标值）
+
+- `keypoint_xy_label`: 单个坐标轴关键点标签
+
+- `heatmap+keypoint_label`: 同时生成高斯热图和关键点标签
+
+- `multiscale_heatmap`: 多尺度高斯热图
+
+生成的监督目标会按以下关键字进行封装：
 
 - `heatmaps`：高斯热图
 

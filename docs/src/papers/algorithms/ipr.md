@@ -1,4 +1,4 @@
-# DeepPose: Human pose estimation via deep neural networks
+# Integral Human Pose Regression
 
 <!-- [ALGORITHM] -->
 
@@ -6,10 +6,11 @@
 <summary align="right"><a href="https://arxiv.org/abs/1711.08229">IPR (ECCV'2018)</a></summary>
 
 ```bibtex
-@article{sun2018integral,
-  title={An Integral Pose Regression System for the ECCV2018 PoseTrack Challenge},
-  author={Sun, Xiao and Li, Chuankang and Lin, Stephen},
-  journal={arXiv preprint arXiv:1809.06079},
+@inproceedings{sun2018integral,
+  title={Integral human pose regression},
+  author={Sun, Xiao and Xiao, Bin and Wei, Fangyin and Liang, Shuang and Wei, Yichen},
+  booktitle={Proceedings of the European conference on computer vision (ECCV)},
+  pages={529--545},
   year={2018}
 }
 ```

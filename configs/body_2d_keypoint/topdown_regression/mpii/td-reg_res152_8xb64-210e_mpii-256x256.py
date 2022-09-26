@@ -26,9 +26,6 @@ param_scheduler = [
 # automatically scaling LR based on the actual training batch size
 auto_scale_lr = dict(base_batch_size=512)
 
-# hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
-
 # codec settings
 codec = dict(type='RegressionLabel', input_size=(256, 256))
 
@@ -62,9 +59,11 @@ dataset_type = 'MpiiDataset'
 data_mode = 'topdown'
 data_root = 'data/mpii/'
 
+file_client_args = dict(backend='disk')
+
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomBBoxTransform', shift_prob=0),
@@ -73,7 +72,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
@@ -110,6 +109,9 @@ val_dataloader = dict(
         pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader
+
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
 
 # evaluators
 val_evaluator = dict(type='MpiiPCKAccuracy', norm_item='head')

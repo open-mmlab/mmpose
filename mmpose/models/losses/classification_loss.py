@@ -8,7 +8,13 @@ from mmpose.registry import MODELS
 
 @MODELS.register_module()
 class BCELoss(nn.Module):
-    """Binary Cross Entropy loss."""
+    """Binary Cross Entropy loss.
+
+    Args:
+        use_target_weight (bool): Option to use weighted loss.
+            Different joint types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
+    """
 
     def __init__(self, use_target_weight=False, loss_weight=1.):
         super().__init__()
@@ -52,6 +58,7 @@ class JSDiscretLoss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
+        size_average (bool): Option to average the loss by the batch_size.
     """
 
     def __init__(
