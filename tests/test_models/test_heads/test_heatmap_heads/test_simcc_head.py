@@ -64,7 +64,7 @@ class TestSimCCHead(TestCase):
                 smoothing_type='standard',
                 sigma=6.,
                 simcc_split_ratio=3.0,
-                label_smoothing=0.1))
+                label_smooth_weight=0.1))
         self.assertIsNotNone(head.decoder)
 
         # w/ one-hot decoder
@@ -102,7 +102,7 @@ class TestSimCCHead(TestCase):
             smoothing_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0,
-            label_smoothing=0.1)
+            label_smooth_weight=0.1)
 
         for decoder_cfg in [decoder_cfg1, decoder_cfg2, decoder_cfg3]:
             # input transform: select
@@ -223,7 +223,7 @@ class TestSimCCHead(TestCase):
             smoothing_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0,
-            label_smoothing=0.1)
+            label_smooth_weight=0.1)
 
         # decoder
         for decoder_cfg in [decoder_cfg1, decoder_cfg2, decoder_cfg3]:
