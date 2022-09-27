@@ -11,7 +11,11 @@ We provide a webcam demo tool which integrartes detection and 2D pose estimation
 Launch the demo from the mmpose root directory:
 
 ```shell
+# Run webcam demo with GPU
 python demo/webcam_demo.py
+
+# Run webcam demo with CPU
+python demo/webcam_demo.py --cpu
 ```
 
 The command above will use the default config file `demo/webcam_cfg/pose_estimation.py`. You can also specify the config file in the command:
@@ -87,24 +91,6 @@ Detailed configurations can be found in the config file.
       labels=['cat', 'dog', 'horse', 'sheep', 'cow'],
       input_buffer='human_pose',
       output_buffer='animal_pose')
-  ```
-
-- **Run the demo without GPU**
-  If you don't have GPU and CUDA in your device, the demo can run with only CPU by setting `device='cpu'` in all model nodes. For example:
-
-  ```python
-  dict(
-      type='DetectorNode',
-      name='detector',
-      model_config='demo/mmdetection_cfg/'
-      'ssdlite_mobilenetv2_scratch_600e_coco.py',
-      model_checkpoint='https://download.openmmlab.com'
-      '/mmdetection/v2.0/ssd/'
-      'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
-      'scratch_600e_coco_20210629_110627-974d9307.pth',
-      device='cpu',
-      input_buffer='_input_',
-      output_buffer='det_result')
   ```
 
 - **Run the demo on a local video file**

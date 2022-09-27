@@ -52,7 +52,7 @@
 
 Results on COCO val2017 without multi-scale test
 
-| Arch                                                                                                     | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [LitePose-XS](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_XS_coco_256x256.py) |  256x256   | 0.412 |      0.681      |      0.420      | 0.472 |      0.711      | [ckpt](<>) | [log](<>) |
-| [LitePose-S](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_S_coco_448x448.py)   |  448x448   | 0.572 |      0.801      |      0.621      | 0.620 |      0.820      | [ckpt](<>) | [log](<>) |
+| Arch                                                            | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                              ckpt                               |    log    |
+| :-------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------------------------: | :-------: |
+| [LitePose-XS](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_XS_coco_256x256.py) |  256x256   | 0.412 |      0.681      |      0.420      | 0.472 |      0.711      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_xs_coco_256x256-02c29c82_20220714.pth) | [log](<>) |
+| [LitePose-S](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_S_coco_448x448.py) |  448x448   | 0.572 |      0.801      |      0.621      | 0.620 |      0.820      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_s_coco_448x448-2bd10ac6_20220714.pth) | [log](<>) |

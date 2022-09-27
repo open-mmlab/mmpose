@@ -1,0 +1,74 @@
+Collections:
+- Name: RLE
+  Paper:
+    Title: Human pose regression with residual log-likelihood estimation
+    URL: https://arxiv.org/abs/2107.11291
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/rle.md
+Models:
+- Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192_rle.py
+  In Collection: RLE
+  Metadata:
+    Architecture: &id001
+    - DeepPose
+    - RLE
+    - ResNet
+    Training Data: COCO
+  Name: deeppose_res50_coco_256x192_rle
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.704
+      AP@0.5: 0.883
+      AP@0.75: 0.777
+      AR: 0.751
+      AR@0.5: 0.92
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192_rle-2ea9bb4a_20220616.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res101_coco_256x192_rle.py
+  In Collection: RLE
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: deeppose_res101_coco_256x192_rle
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.722
+      AP@0.5: 0.894
+      AP@0.75: 0.794
+      AR: 0.768
+      AR@0.5: 0.93
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192_rle-16c3d461_20220615.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_256x192_rle.py
+  In Collection: RLE
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: deeppose_res152_coco_256x192_rle
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.731
+      AP@0.5: 0.897
+      AP@0.75: 0.805
+      AR: 0.777
+      AR@0.5: 0.933
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192_rle-c05bdccf_20220615.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_384x288_rle.py
+  In Collection: RLE
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: deeppose_res152_coco_384x288_rle
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.749
+      AP@0.5: 0.901
+      AP@0.75: 0.815
+      AR: 0.793
+      AR@0.5: 0.935
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_384x288_rle-b77c4c37_20220624.pth

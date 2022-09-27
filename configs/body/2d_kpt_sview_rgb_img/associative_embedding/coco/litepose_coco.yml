@@ -22,7 +22,7 @@ Models:
       AR: 0.472
       AR@0.5: 0.711
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_xs_coco_256x256-02c29c82_20220714.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_S_coco_448x448.py
   In Collection: LitePose
   Metadata:
@@ -38,4 +38,4 @@ Models:
       AR: 0.62
       AR@0.5: 0.82
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_s_coco_448x448-2bd10ac6_20220714.pth

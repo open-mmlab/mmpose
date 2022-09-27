@@ -50,7 +50,7 @@
 
 Results on CrowdPose test without multi-scale test
 
-| Arch                                                                                                               | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :----------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [LitePose-XS](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/litepose_XS_crowdpose_256x256.py) |  256x256   | 0.494 |      0.746      |      0.508      | 0.555 |      0.785      | [ckpt](<>) | [log](<>) |
-| [LitePose-S](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/litepose_S_crowdpose_448x448.py)   |  448x448   | 0.582 |      0.817      |      0.613      | 0.644 |      0.853      | [ckpt](<>) | [log](<>) |
+| Arch                                                            | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                              ckpt                               |    log    |
+| :-------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------------------------: | :-------: |
+| [LitePose-XS](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/litepose_XS_crowdpose_256x256.py) |  256x256   | 0.494 |      0.746      |      0.508      | 0.555 |      0.785      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_xs_crowdpose_256x256-84053659_20220714.pth) | [log](<>) |
+| [LitePose-S](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/litepose_S_crowdpose_448x448.py) |  448x448   | 0.582 |      0.817      |      0.613      | 0.644 |      0.853      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_s_crowdpose_448x448-ccd9f2a9_20220714.pth) | [log](<>) |

@@ -2,6 +2,7 @@
 import os
 from argparse import ArgumentParser
 
+import mmcv
 from xtcocotools.coco import COCO
 
 from mmpose.apis import (inference_mesh_model, init_pose_model,
@@ -50,7 +51,7 @@ def main():
     img_keys = list(coco.imgs.keys())
 
     # process each image
-    for i in range(len(img_keys)):
+    for i in mmcv.track_iter_progress(range(len(img_keys))):
         # get bounding box annotations
         image_id = img_keys[i]
         image = coco.loadImgs(image_id)[0]

@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘Documentation](https://mmpose.readthedocs.io/en/v0.27.0/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/v0.27.0/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.27.0/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/v0.27.0/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/v0.27.0/changelog.html) |
+[📘Documentation](https://mmpose.readthedocs.io/en/v0.28.0/) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/v0.28.0/install.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.28.0/modelzoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/v0.28.0/papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/v0.28.0/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -78,15 +78,10 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- 2022-06-07: MMPose [v0.27.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.27.0) is released. Major updates include:
-  - Support hand gesture recognition
-    - Try the [demo](/demo/docs/gesture_recognition_demo.md) for gesture recognition
-    - Learn more about the [algorithm](/docs/en/papers/algorithms/mtut.md), [dataset](/docs/en/papers/datasets/nvgesture.md) and [experiment results](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture.md)
-  - Major upgrade to MMPose Webcam API towards simpler and more efficient development of pose-empowered applications
-    - Tutorials ([EN](/docs/en/tutorials/7_webcam_api.md)|[zh_CN](/docs/zh_cn/tutorials/7_webcam_api.md))
-    - [API Reference](https://mmpose.readthedocs.io/en/latest/api.html#mmpose-apis-webcam)
-    - [Demo](/demo/docs/webcam_demo.md)
-- 2022-04: MMPose is available on [Gitee](https://gitee.com/open-mmlab/mmpose)
+- 2022-07-06: MMPose [v0.28.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.28.0) is released. Major updates include:
+  - Support [TCFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Zeng_Not_All_Tokens_Are_Equal_Human-Centric_Visual_Analysis_via_Token_CVPR_2022_paper.html) (CVPR'2022). See the [model page](/configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/tcformer_coco-wholebody.md)
+  - Add [RLE](https://arxiv.org/abs/2107.11291) pre-trained model on COCO dataset. See the [model page](/configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_rle_coco.md)
+  - Update [Swin](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_coco.md) models with better performance
 - 2022-02-28: MMPose model deployment is supported by [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0
   MMPose Webcam API is a simple yet powerful tool to develop interactive webcam applications with MMPose features.
 - 2021-12-29: OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)

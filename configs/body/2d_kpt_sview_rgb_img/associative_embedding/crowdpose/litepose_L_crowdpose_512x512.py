@@ -13,7 +13,6 @@ optimizer = dict(
     lr=0.008,
 )
 optimizer_config = dict(grad_clip=None)
-
 # learning policy
 lr_config = dict(
     policy='CosineAnnealing',

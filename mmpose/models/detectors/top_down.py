@@ -186,8 +186,10 @@ class TopDown(BasePose):
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
                     features_flipped, img_metas[0]['flip_pairs'])
-                output_heatmap = (output_heatmap +
-                                  output_flipped_heatmap) * 0.5
+                output_heatmap = (output_heatmap + output_flipped_heatmap)
+                if self.test_cfg.get('regression_flip_shift', False):
+                    output_heatmap[..., 0] -= 1.0 / img_width
+                output_heatmap = output_heatmap / 2
 
         if self.with_keypoint:
             keypoint_result = self.keypoint_head.decode(

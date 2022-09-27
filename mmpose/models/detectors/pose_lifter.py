@@ -296,6 +296,7 @@ class PoseLifter(BasePose):
                     thickness=2,
                     vis_height=400,
                     num_instances=-1,
+                    axis_azimuth=70,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -323,7 +324,13 @@ class PoseLifter(BasePose):
             vis_height (int): The image height of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
+            num_instances (int): Number of instances to be shown in 3D. If
+                smaller than 0, all the instances in the result will be shown.
+                Otherwise, pad or truncate the result to a length of
+                num_instances.
+            axis_azimuth (float): axis azimuth angle for 3D visualizations.
             win_name (str): The window name.
+            show (bool): Whether to directly show the visualization.
             wait_time (int): Value of waitKey param.
                 Default: 0.
             out_file (str or None): The filename to write the image.
@@ -383,7 +390,9 @@ class PoseLifter(BasePose):
             pose_kpt_color,
             pose_link_color,
             vis_height,
-            num_instances=num_instances)
+            num_instances=num_instances,
+            axis_azimuth=axis_azimuth,
+        )
 
         if show:
             mmcv.visualization.imshow(img_vis, win_name, wait_time)

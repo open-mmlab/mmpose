@@ -125,6 +125,9 @@ class DeepposeRegressionHead(nn.Module):
         """
         output = self.forward(x)
 
+        if self.out_sigma:
+            output[..., 2:] = output[..., 2:].sigmoid()
+
         if flip_pairs is not None:
             output_regression = fliplr_regression(
                 output.detach().cpu().numpy(), flip_pairs)
@@ -149,6 +152,7 @@ class DeepposeRegressionHead(nn.Module):
                 img_size (tuple(img_width, img_height)): input image size.
         """
         batch_size = len(img_metas)
+        sigma = output[..., 2:]
         output = output[..., :2]  # get prediction joint locations
 
         if 'bbox_id' in img_metas[0]:
@@ -172,6 +176,8 @@ class DeepposeRegressionHead(nn.Module):
 
         preds, maxvals = keypoints_from_regression(output, c, s,
                                                    kwargs['img_size'])
+        if self.out_sigma:
+            maxvals = (1 - sigma).mean(axis=2, keepdims=True)
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)

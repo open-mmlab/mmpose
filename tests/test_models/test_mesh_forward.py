@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.core.optimizer import build_optimizers
+from mmpose.core.optimizers import build_optimizers
 from mmpose.models.detectors.mesh import ParametricMesh
 from tests.utils.mesh_utils import generate_smpl_weight_file
 

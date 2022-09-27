@@ -364,7 +364,9 @@ def vis_3d_pose_result(model,
                        kpt_score_thr=0.3,
                        radius=8,
                        thickness=2,
+                       vis_height=400,
                        num_instances=-1,
+                       axis_azimuth=70,
                        show=False,
                        out_file=None):
     """Visualize the 3D pose estimation results.
@@ -459,7 +461,9 @@ def vis_3d_pose_result(model,
         thickness=thickness,
         pose_kpt_color=pose_kpt_color,
         pose_link_color=pose_link_color,
+        vis_height=vis_height,
         num_instances=num_instances,
+        axis_azimuth=axis_azimuth,
         show=show,
         out_file=out_file)
 
