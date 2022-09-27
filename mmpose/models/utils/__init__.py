@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .ckpt_convert import pvt_convert, tcformer_convert
+from .dekr_rescore import DekrRescoreNet
 from .geometry import batch_rodrigues, quat_to_rotmat, rot6d_to_rotmat
 from .misc import torch_meshgrid_ij
 from .ops import resize
@@ -15,5 +16,5 @@ __all__ = [
     'PatchMerging', 'batch_rodrigues', 'quat_to_rotmat', 'rot6d_to_rotmat',
     'resize', 'RealNVP', 'torch_meshgrid_ij', 'token2map', 'TokenConv',
     'TCFormerRegularBlock', 'TCFormerDynamicBlock', 'cluster_dpc_knn',
-    'merge_tokens', 'token_interp', 'tcformer_convert'
+    'merge_tokens', 'token_interp', 'tcformer_convert', 'DekrRescoreNet'
 ]
