@@ -2,6 +2,9 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/crowdpose.py'
 ]
+
+# load full pretrained model including backbone and head
+load_from = '/home/junyan/litepose/pretrain/crowdpose-M-2-mmpose.pth'
 checkpoint_config = dict(interval=50)
 evaluation = dict(interval=50, metric='mAP', save_best='AP')
 
@@ -10,14 +13,16 @@ optimizer = dict(
     lr=0.008,
 )
 optimizer_config = dict(grad_clip=None)
+
 # learning policy
 lr_config = dict(
-    policy='CosineAnnealing',
+    policy='step',
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    min_lr=0.00001)
-total_epochs = 500
+    step=[50, 180])
+total_epochs = 200
+
 channel_cfg = dict(
     dataset_joints=14,
     dataset_channel=[
@@ -38,9 +43,6 @@ data_cfg = dict(
 
 model = dict(
     type='AssociativeEmbedding',
-    # TODO: unify pretrained model path
-    pretrained='/home/junyan/litepose-model-zoo'
-    '/crowd/crowdpose-S-pretrain-epoch826-0628-mmpose.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,
@@ -137,29 +139,29 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/crowdpose'
+data_root = '/dev/shm/pose/data/crowdpose'
 data = dict(
     workers_per_gpu=4,
-    train_dataloader=dict(samples_per_gpu=32),
+    train_dataloader=dict(samples_per_gpu=4),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
         type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_trainval.json',
+        ann_file=f'{data_root}/json/crowdpose_trainval.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
+        ann_file=f'{data_root}/json/crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline,
         dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
+        ann_file=f'{data_root}/json/crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=test_pipeline,

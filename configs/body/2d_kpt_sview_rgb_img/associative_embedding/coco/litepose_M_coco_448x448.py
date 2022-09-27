@@ -11,12 +11,7 @@ optimizer = dict(
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
-lr_config = dict(
-    policy='step',
-    warmup='linear',
-    warmup_iters=500,
-    warmup_ratio=0.001,
-    step=[350, 480])
+lr_config = dict(policy='step', warmup=None, step=[350, 480])
 total_epochs = 500
 channel_cfg = dict(
     dataset_joints=17,
@@ -29,7 +24,7 @@ channel_cfg = dict(
 
 data_cfg = dict(
     image_size=448,
-    base_size=448,
+    base_size=224,
     base_sigma=2,
     heatmap_size=[112, 224],
     num_joints=channel_cfg['dataset_joints'],
@@ -41,9 +36,8 @@ data_cfg = dict(
 
 model = dict(
     type='AssociativeEmbedding',
-    # TODO: unify pretrained model path
-    pretrained='/home/junyan/litepose-model-zoo'
-    '/crowd/crowdpose-S-pretrain-epoch826-0628-mmpose.pth',
+    pretrained='/home/junyan/litepose/pretrain/'
+    'crowdpose-M-2-mmpose-nohead.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,
@@ -140,30 +134,30 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = '/dev/shm/pose/data/coco'
 data = dict(
     workers_per_gpu=4,
-    train_dataloader=dict(samples_per_gpu=32),
+    train_dataloader=dict(samples_per_gpu=16),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        img_prefix=f'{data_root}/images/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        img_prefix=f'{data_root}/images/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline,
         dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        img_prefix=f'{data_root}/images/val2017/',
         data_cfg=data_cfg,
         pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
