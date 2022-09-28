@@ -7,9 +7,9 @@ from mmcv.cnn import (ConvModule, build_activation_layer, build_conv_layer,
                       build_norm_layer, constant_init, normal_init)
 
 from mmpose.models.builder import build_loss
-from mmpose.models.utils.ops import resize
 from ..backbones.resnet import BasicBlock
 from ..builder import HEADS
+from .deconv_head import DeconvHead
 
 try:
     from mmcv.ops import DeformConv2d
@@ -92,7 +92,7 @@ class AdaptiveActivationBlock(nn.Module):
 
 
 @HEADS.register_module()
-class DEKRHead(nn.Module):
+class DEKRHead(DeconvHead):
     """DisEntangled Keypoint Regression head. "Bottom-up human pose estimation
     via disentangled keypoint regression", CVPR'2021.
 
@@ -119,23 +119,31 @@ class DEKRHead(nn.Module):
     """
 
     def __init__(self,
-                 in_channels=3,
-                 num_joints=17,
+                 in_channels,
+                 num_joints,
                  num_heatmap_filters=32,
                  num_offset_filters_per_joint=15,
                  in_index=0,
                  input_transform=None,
+                 num_deconv_layers=0,
+                 num_deconv_filters=None,
+                 num_deconv_kernels=None,
+                 extra=dict(final_conv_kernel=0),
                  align_corners=False,
                  heatmap_loss=None,
                  offset_loss=None):
-        super().__init__()
 
-        self.in_channels = in_channels
-
-        # set up input transform
-        self._init_inputs(in_channels, in_index, input_transform)
-        self.in_index = in_index
-        self.align_corners = align_corners
+        super().__init__(
+            in_channels,
+            out_channels=in_channels,
+            num_deconv_layers=num_deconv_layers,
+            num_deconv_filters=num_deconv_filters,
+            num_deconv_kernels=num_deconv_kernels,
+            align_corners=align_corners,
+            in_index=in_index,
+            input_transform=input_transform,
+            extra=extra,
+            loss_keypoint=heatmap_loss)
 
         # set up filters for heatmap
         self.heatmap_conv_layers = nn.Sequential(
@@ -172,78 +180,8 @@ class DEKRHead(nn.Module):
                 kernel_size=1,
                 groups=groups))
 
-        # set up losses
-        self.heatmap_loss = build_loss(copy.deepcopy(heatmap_loss))
+        # set up offset losses
         self.offset_loss = build_loss(copy.deepcopy(offset_loss))
-
-    def _init_inputs(self, in_channels, in_index, input_transform):
-        """Check and initialize input transforms.
-
-        The in_channels, in_index and input_transform must match.
-        Specifically, when input_transform is None, only single feature map
-        will be selected. So in_channels and in_index must be of type int.
-        When input_transform is not None, in_channels and in_index must be
-        list or tuple, with the same length.
-
-        Args:
-            in_channels (int|Sequence[int]): Input channels.
-            in_index (int|Sequence[int]): Input feature index.
-            input_transform (str|None): Transformation type of input features.
-                Options: 'resize_concat', 'multiple_select', None.
-
-                - 'resize_concat': Multiple feature maps will be resize to the
-                    same size as first one and than concat together.
-                    Usually used in FCN head of HRNet.
-                - 'multiple_select': Multiple feature maps will be bundle into
-                    a list and passed into decode head.
-                - None: Only one select feature map is allowed.
-        """
-
-        if input_transform is not None:
-            assert input_transform in ['resize_concat', 'multiple_select']
-        self.input_transform = input_transform
-        self.in_index = in_index
-        if input_transform is not None:
-            assert isinstance(in_channels, (list, tuple))
-            assert isinstance(in_index, (list, tuple))
-            assert len(in_channels) == len(in_index)
-            if input_transform == 'resize_concat':
-                self.in_channels = sum(in_channels)
-            else:
-                self.in_channels = in_channels
-        else:
-            assert isinstance(in_channels, int)
-            assert isinstance(in_index, int)
-            self.in_channels = in_channels
-
-    def _transform_inputs(self, inputs):
-        """Transform inputs for decoder.
-
-        Args:
-            inputs (list[Tensor] | Tensor): multi-level img features.
-
-        Returns:
-            Tensor: The transformed inputs
-        """
-        if not isinstance(inputs, list):
-            return inputs
-
-        if self.input_transform == 'resize_concat':
-            inputs = [inputs[i] for i in self.in_index]
-            upsampled_inputs = [
-                resize(
-                    input=x,
-                    size=inputs[0].shape[2:],
-                    mode='bilinear',
-                    align_corners=self.align_corners) for x in inputs
-            ]
-            inputs = torch.cat(upsampled_inputs, dim=1)
-        elif self.input_transform == 'multiple_select':
-            inputs = [inputs[i] for i in self.in_index]
-        else:
-            inputs = inputs[self.in_index]
-
-        return inputs
 
     def get_loss(self, outputs, heatmaps, masks, offsets, offset_weights):
         """Calculate the dekr loss.
@@ -273,7 +211,7 @@ class DEKRHead(nn.Module):
             pred_heatmap, pred_offset = outputs[idx]
             heatmap_weight = masks[idx].view(masks[idx].size(0),
                                              masks[idx].size(1), -1)
-            losses['loss_hms'] = losses.get('loss_hms', 0) + self.heatmap_loss(
+            losses['loss_hms'] = losses.get('loss_hms', 0) + self.loss(
                 pred_heatmap, heatmaps[idx], heatmap_weight)
             losses['loss_ofs'] = losses.get('loss_ofs', 0) + self.offset_loss(
                 pred_offset, offsets[idx], offset_weights[idx])
@@ -283,12 +221,15 @@ class DEKRHead(nn.Module):
     def forward(self, x):
         """Forward function."""
         x = self._transform_inputs(x)
+        x = self.deconv_layers(x)
+        x = self.final_layer(x)
         heatmap = self.heatmap_conv_layers(x)
         offset = self.offset_conv_layers(x)
         return [[heatmap, offset]]
 
     def init_weights(self):
         """Initialize model weights."""
+        super().init_weights()
         for name, m in self.named_modules():
             if isinstance(m, nn.Conv2d):
                 if 'transform_matrix_conv' not in name:

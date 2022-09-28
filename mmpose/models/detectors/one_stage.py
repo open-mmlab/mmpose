@@ -10,7 +10,8 @@ from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_scale, aggregate_stage_flip,
                                     flip_feature_maps, get_group_preds)
-from mmpose.core.post_processing import HeatmapOffsetParser, nearby_joints_nms
+from mmpose.core.post_processing import nearby_joints_nms
+from mmpose.core.post_processing.group import HeatmapOffsetParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
 from ..builder import POSENETS

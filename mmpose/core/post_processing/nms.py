@@ -228,6 +228,8 @@ def nearby_joints_nms(
     Returns:
         np.ndarray: indexes to keep.
     """
+
+    assert dist_thr > 0, '`dist_thr` must be greater than 0.'
     if len(kpts_db) == 0:
         return []
 
@@ -241,15 +243,19 @@ def nearby_joints_nms(
     num_people, num_joints, _ = kpts.shape
     if num_nearby_joints_thr is None:
         num_nearby_joints_thr = num_joints // 2
+    assert num_nearby_joints_thr < num_joints, '`num_nearby_joints_thr` must '\
+        'be less than the number of joints.'
 
     # compute distance threshold
-    pose_area = (kpts.max(dim=1)[0] - kpts.min(dim=1)[0]).norm(dim=1)
-    pose_area = pose_area.view(num_people, 1, 1)
-    pose_area = pose_area.expand(num_people, num_people, num_joints)
+    pose_area = kpts.max(axis=1) - kpts.min(axis=1)
+    pose_area = np.sqrt(np.power(pose_area, 2).sum(axis=1))
+    pose_area = pose_area.reshape(num_people, 1, 1)
+    pose_area = np.tile(pose_area, (num_people, num_joints))
     close_dist_thr = pose_area * dist_thr
 
     # count nearby joints between instances
-    instance_dist = (kpts.unsqueeze(1) - kpts).norm(dim=3)
+    instance_dist = kpts[:, None] - kpts
+    instance_dist = np.sqrt(np.power(instance_dist, 2).sum(axis=3))
     close_instance_num = (instance_dist < close_dist_thr).sum(2)
     close_instance = close_instance_num > num_nearby_joints_thr
 
@@ -259,8 +265,7 @@ def nearby_joints_nms(
     for i in indexes:
         if i in ignored_pose_inds:
             continue
-        keep_inds = close_instance[i].nonzero().squeeze(1)
-        keep_inds = keep_inds.cpu().numpy().tolist()
+        keep_inds = close_instance[i].nonzero()[0]
         keep_ind = keep_inds[np.argmax(scores[keep_inds])]
         if keep_ind not in ignored_pose_inds:
             keep_pose_inds.append(keep_ind)

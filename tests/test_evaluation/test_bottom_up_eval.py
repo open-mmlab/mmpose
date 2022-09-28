@@ -78,6 +78,12 @@ def test_aggregate_scale():
     assert output.shape == fake_outputs[0].shape
 
     output = aggregate_scale(
+        fake_outputs, size_projected=(4, 3), aggregate_scale='average')
+    assert isinstance(output, torch.Tensor)
+    assert output.shape[:2] == fake_outputs[0].shape[:2]
+    assert output.shape[2:] == (3, 4)
+
+    output = aggregate_scale(
         fake_outputs, align_corners=False, aggregate_scale='unsqueeze_concat')
 
     assert isinstance(output, torch.Tensor)

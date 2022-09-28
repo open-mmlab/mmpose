@@ -34,7 +34,8 @@ class DekrRescoreNet(torch.nn.Module):
         self.relu = torch.nn.ReLU()
 
     def make_feature(self, poses, skeleton):
-        """Combine poses, joint distance and relative distance to make feature.
+        """Combine original scores, joint distance and relative distance to
+        make feature.
 
         Args:
             poses (np.ndarray): predicetd poses
@@ -60,7 +61,9 @@ class DekrRescoreNet(torch.nn.Module):
         joint_relate = joint_relate / normalize.unsqueeze(-1)
         joint_relate = joint_relate.flatten(1)
 
-        return torch.cat((joint_relate, joint_length, poses[..., 2]), dim=1)
+        feature = torch.cat((joint_relate, joint_length, poses[..., 2]),
+                            dim=1).float()
+        return feature
 
     def forward(self, poses, skeleton):
         feature = self.make_feature(poses, skeleton).to(self.l1.weight.device)

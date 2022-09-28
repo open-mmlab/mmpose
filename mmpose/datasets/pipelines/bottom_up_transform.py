@@ -710,7 +710,7 @@ class BottomUpGenerateHeatmapTarget:
 
     Required key: 'joints', 'mask' and 'center'.
 
-    Modifies key: 'heatmaps' and 'masks'.
+    Modifies key: 'target', 'heatmaps' and 'masks'.
 
     Args:
         sigma (int or tuple): Sigma of heatmap Gaussian. If sigma is a tuple,
@@ -769,7 +769,7 @@ class BottomUpGenerateHeatmapTarget:
             if self.bg_weight != 1:
                 mask = mask_list[scale_id].copy().astype(np.float32)
                 mask = mask[None, ...].repeat(heatmaps.shape[0], axis=0)
-                mask = mask[None, ...] * self.bg_weight
+                mask = mask * self.bg_weight
                 mask[np.logical_and(heatmaps > 0, mask > 0)] = 1
                 output_mask_list.append(mask)
 
@@ -791,6 +791,7 @@ class BottomUpGenerateHeatmapTarget:
                     output_mask_list[scale_id] = np.concatenate(
                         (mask, output_mask_list[scale_id]), axis=0)
 
+        results['target'] = target_list
         results['heatmaps'] = target_list
         results['masks'] = output_mask_list
 
