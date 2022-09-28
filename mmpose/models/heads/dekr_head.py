@@ -232,7 +232,7 @@ class DEKRHead(DeconvHead):
         super().init_weights()
         for name, m in self.heatmap_conv_layers.named_modules():
             if isinstance(m, nn.Conv2d):
-                normal_init(m, std=0)
+                normal_init(m, std=0.001)
             elif isinstance(m, nn.BatchNorm2d):
                 constant_init(m, 1)
         for name, m in self.offset_conv_layers.named_modules():
