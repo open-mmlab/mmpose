@@ -116,6 +116,7 @@ class CrossResolutionWeighting(nn.Module):
 
     def forward(self, x):
         mini_size = x[-1].size()[-2:]
+        mini_size = [int(_) for _ in mini_size]
         out = [F.adaptive_avg_pool2d(s, mini_size) for s in x[:-1]] + [x[-1]]
         out = torch.cat(out, dim=1)
         out = self.conv1(out)
@@ -827,7 +828,8 @@ class LiteHRNet(nn.Module):
                 in_channels=num_channels_last,
                 norm_cfg=self.norm_cfg,
             )
-
+        self.multiscale_output = self.extra.get('multiscale_output', None)
+    
     def _make_transition_layer(self, num_channels_pre_layer,
                                num_channels_cur_layer):
         """Make transition layer."""
@@ -972,7 +974,10 @@ class LiteHRNet(nn.Module):
         x = y_list
         if self.with_head:
             x = self.head_layer(x)
-
+        
+        if self.multiscale_output:
+            return x
+        
         return [x[0]]
 
     def train(self, mode=True):

@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import math
+from functools import partial
 
 import torch
 import torch.nn as nn
@@ -100,9 +101,19 @@ class SmoothL1Loss(nn.Module):
         loss_weight (float): Weight of the loss. Default: 1.0.
     """
 
-    def __init__(self, use_target_weight=False, loss_weight=1.):
+    def __init__(self,
+                 use_target_weight=False,
+                 loss_weight=1.,
+                 supervise_empty=True,
+                 beta=1.0):
         super().__init__()
-        self.criterion = F.smooth_l1_loss
+        if supervise_empty:
+            self.criterion = partial(F.smooth_l1_loss, beta=beta)
+        else:
+            self.criterion = partial(
+                F.smooth_l1_loss, reduction='none', beta=beta)
+
+        self.supervise_empty = supervise_empty
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
@@ -124,6 +135,9 @@ class SmoothL1Loss(nn.Module):
             assert target_weight is not None
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
+            if not self.supervise_empty:
+                num_elements = torch.nonzero(target_weight > 0).size()[0]
+                loss = loss.sum() / max(num_elements, 1.0)
         else:
             loss = self.criterion(output, target)
 

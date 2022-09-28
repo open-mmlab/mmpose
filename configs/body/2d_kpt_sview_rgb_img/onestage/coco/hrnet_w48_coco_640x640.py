@@ -1,0 +1,214 @@
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/coco.py'
+]
+checkpoint_config = dict(interval=50)
+evaluation = dict(interval=5, metric='mAP', save_best='AP')
+
+log_config = dict(
+    interval=50,
+    hooks=[
+        dict(type='TextLoggerHook'),
+        dict(type='TensorboardLoggerHook')
+        # dict(type='PaviLoggerHook') # for internal services
+    ])
+
+optimizer = dict(
+    type='Adam',
+    lr=0.001,
+)
+optimizer_config = dict(grad_clip=None)
+# learning policy
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.001,
+    step=[90, 120])
+total_epochs = 140
+channel_cfg = dict(
+    dataset_joints=17,
+    dataset_channel=[
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    ],
+    inference_channel=[
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+    ])
+
+data_cfg = dict(
+    image_size=640,
+    base_size=320,
+    base_sigma=2,
+    heatmap_size=[160],
+    num_joints=channel_cfg['dataset_joints'],
+    dataset_channel=channel_cfg['dataset_channel'],
+    inference_channel=channel_cfg['inference_channel'],
+    num_scales=1,
+    scale_aware_sigma=False,
+)
+
+# model settings
+model = dict(
+    type='OneStage',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrnet_w48-8ef0771d.pth',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(48, 96)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(48, 96, 192)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(48, 96, 192, 384),
+                multiscale_output=True)),
+    ),
+    keypoint_head=dict(
+        type='OneStageHeatmapOffsetHead',
+        in_channels=(48, 96, 192, 384),
+        in_index=(0, 1, 2, 3),
+        num_joints=17,
+        use_keypoint_heatmap=True,
+        use_adapt_act=True,
+        input_transform='resize_concat',
+        heatmap_loss_cfg=dict(
+            type='JointsMSELoss',
+            loss_weight=1.0,
+        ),
+        offset_loss_cfg=dict(
+            type='SmoothL1Loss',
+            use_target_weight=True,
+            supervise_empty=False,
+            loss_weight=0.03,
+            beta=1 / 9.0,
+        )),
+    train_cfg=dict(),
+    test_cfg=dict(
+        num_joints=channel_cfg['dataset_joints'],
+        match_hmp=False,
+        rescore=dict(
+            valid=False,
+            model_file='/apdcephfs/share_1157267/louckszhang/work_dirs/DEKR/model/rescore/final_rescore_coco_kpt.pth'),
+        max_num_people=30,
+        max_absorb_distance=75,
+        decrease=0.9,
+        gaussian_kernel=6,
+        adjust_threshold=0.05,
+        scale_factor=[1],
+        use_keypoint_heatmap=True,
+        project2image=False,
+        align_corners=False,
+        nms_thre=0.05,
+        nms_num_thre=8,
+        nms_kernel=5,
+        nms_padding=2,
+        tag_per_joint=True,
+        detection_threshold=0.1,
+        keypoint_threshold=0.01,
+        tag_threshold=1,
+        use_detection_val=True,
+        ignore_too_much=False,
+        adjust=True,
+        refine=True,
+        flip_test=True))
+
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='BottomUpRandomAffine',
+        rot_factor=30,
+        scale_factor=[0.75, 1.5],
+        scale_type='short',
+        trans_factor=40),
+    dict(type='BottomUpRandomFlip', flip_prob=0.5),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
+    dict(type='OneStageGeneratePersonCenter'),
+    dict(
+        type='OneStageGenerateHeatmapTarget',
+        sigma=[4,2],
+        use_keypoint=True,
+    ),
+    dict(
+        type='OneStageUpGenerateOffsetTarget',
+        radius=4,
+    ),
+    dict(
+        type='Collect',
+        keys=['img', 'heatmaps', 'masks', 'offsets', 'offset_weights'],
+        meta_keys=[]),
+]
+
+val_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
+    dict(
+        type='BottomUpResizeAlign',
+        transforms=[
+            dict(type='ToTensor'),
+            dict(
+                type='NormalizeTensor',
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]),
+        ]),
+    dict(
+        type='Collect',
+        keys=['img'],
+        meta_keys=[
+            'image_file', 'aug_data', 'test_scale_factor', 'base_size',
+            'center', 'scale', 'flip_index', 'num_joints'
+        ]),
+]
+
+test_pipeline = val_pipeline
+
+data_root = 'data/coco'
+data = dict(
+    workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=12),
+    val_dataloader=dict(samples_per_gpu=1),
+    test_dataloader=dict(samples_per_gpu=1),
+    train=dict(
+        type='BottomUpCocoDataset',
+        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
+        img_prefix=f'{data_root}/train2017/',
+        data_cfg=data_cfg,
+        pipeline=train_pipeline,
+        dataset_info={{_base_.dataset_info}}),
+    val=dict(
+        type='BottomUpCocoDataset',
+        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
+        img_prefix=f'{data_root}/val2017/',
+        data_cfg=data_cfg,
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
+    test=dict(
+        type='BottomUpCocoDataset',
+        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
+        img_prefix=f'{data_root}/val2017/',
+        data_cfg=data_cfg,
+        pipeline=test_pipeline,
+        dataset_info={{_base_.dataset_info}}),
+)

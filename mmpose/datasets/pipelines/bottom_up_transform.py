@@ -36,7 +36,7 @@ def _get_multi_scale_size(image,
         tuple: A tuple containing multi-scale sizes.
 
         - (w_resized, h_resized) (tuple(int)): resized width/height
-        - center (np.ndarray)image center
+        - center (np.ndarray): image center
         - scale (np.ndarray): scales wrt width/height
     """
     assert len(input_size) == 2
@@ -586,7 +586,6 @@ class BottomUpGenerateHeatmapTarget:
 
     Args:
         sigma (int): Sigma of heatmap Gaussian
-        max_num_people (int): Maximum number of people in an image
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
