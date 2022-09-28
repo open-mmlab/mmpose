@@ -554,11 +554,30 @@ class SoftWeightSmoothL1Loss(nn.Module):
 
         reduction = 'none' if use_target_weight else 'mean'
         self.criterion = partial(
-            F.smooth_l1_loss, reduction=reduction, beta=beta)
+            self.smooth_l1_loss, reduction=reduction, beta=beta)
 
         self.supervise_empty = supervise_empty
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
+
+    @staticmethod
+    def smooth_l1_loss(input, target, reduction='none', beta=1.0):
+        """Re-implement torch.nn.functional.smooth_l1_loss with beta to support
+        pytorch <= 1.6."""
+        delta = input - target
+        mask = delta.abs() < beta
+        delta[mask] = (delta[mask]).pow(2) / (2 * beta)
+        delta[~mask] = delta[~mask].abs() - beta / 2
+
+        if reduction == 'mean':
+            return delta.mean()
+        elif reduction == 'sum':
+            return delta.sum()
+        elif reduction == 'none':
+            return delta
+        else:
+            raise ValueError(f'reduction must be \'mean\', \'sum\' or '
+                             f'\'none\', but got \'{reduction}\'')
 
     def forward(self, output, target, target_weight=None):
         """Forward function.
