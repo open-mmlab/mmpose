@@ -15,10 +15,10 @@ Models:
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.698
-      AP@0.5: 0.886
-      AP@0.75: 0.762
-      AR: 0.75
-      AR@0.5: 0.924
+      AP: 0.702
+      AP@0.5: 0.887
+      AP@0.75: 0.768
+      AR: 0.755
+      AR@0.5: 0.926
     Task: Body 2D Keypoint
-  Weights: https://1drv.ms/u/s!AhpKYLhXKpH7g4dWSAsyog1FFlRcqA?e=b1iOr2
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/cid/hrnet_w32_coco_512x512-867b9659_20220928.pth
