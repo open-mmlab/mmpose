@@ -5,14 +5,6 @@ _base_ = [
 checkpoint_config = dict(interval=20)
 evaluation = dict(interval=20, metric='mAP', save_best='AP')
 
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        dict(type='TensorboardLoggerHook')
-        # dict(type='PaviLoggerHook') # for internal services
-    ])
-
 optimizer = dict(
     type='Adam',
     lr=0.001,
@@ -103,26 +95,18 @@ model = dict(
     test_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
-        scale_factor=[1],
         project2image=False,
         align_corners=False,
-        nms_kernel=5,
-        nms_padding=2,
+        max_pool_kernel=5,
         use_nms=True,
         nms_dist_thr=0.05,
         nms_joints_thr=8,
-        tag_per_joint=True,
-        detection_threshold=0.1,
         keypoint_threshold=0.01,
-        tag_threshold=1,
-        use_detection_val=True,
-        ignore_too_much=False,
         rescore_cfg=dict(
             in_channels=59,
             norm_indexes=(0, 1),
-            pretrained='aux_model/final_rescore_crowd_pose_kpt_convert.pth'),
-        adjust=True,
-        refine=True,
+            pretrained='https://download.openmmlab.com/mmpose/'
+            'pretrain_models/kpt_rescore_crowdpose-300c7efe.pth'),
         flip_test=True))
 
 train_pipeline = [

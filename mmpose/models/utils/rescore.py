@@ -55,7 +55,7 @@ class DekrRescoreNet(torch.nn.Module):
         normalize = (joint_length[:, self.norm_indexes[0]] +
                      joint_length[:, self.norm_indexes[1]]) / 2
         normalize = normalize.unsqueeze(1).expand(normalize.size(0), num_link)
-        normalize = normalize.clip(min=1).contiguous()
+        normalize = normalize.clamp(min=1).contiguous()
 
         joint_length = joint_length / normalize[:, :]
         joint_relate = joint_relate / normalize.unsqueeze(-1)

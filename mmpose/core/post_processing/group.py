@@ -429,8 +429,8 @@ class HeatmapOffsetParser:
         self.max_num_people = cfg['max_num_people']
 
         # init pooling layer
-        self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
-                                       cfg['nms_kernel'] // 2)
+        kernel_size = cfg.get('max_pool_kernel', 5)
+        self.pool = torch.nn.MaxPool2d(kernel_size, 1, kernel_size // 2)
 
     def _offset_to_pose(self, offsets):
         """Convert offset maps to pose maps.

@@ -5,14 +5,14 @@ Collections:
     URL: https://arxiv.org/abs/2104.02300
   README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/dekr.md
 Models:
-- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_dekr.py
+- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512.py
   In Collection: DEKR
   Metadata:
     Architecture: &id001
     - DEKR
     - HRNet
     Training Data: CrowdPose
-  Name: disentangled_keypoint_regression_hrnet_w32_crowdpose_512x512_dekr
+  Name: disentangled_keypoint_regression_hrnet_w32_crowdpose_512x512
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -23,12 +23,12 @@ Models:
       AR@0.5: 0.893
     Task: Body 2D Keypoint
   Weights: <>
-- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640_dekr.py
+- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640.py
   In Collection: DEKR
   Metadata:
     Architecture: *id001
     Training Data: CrowdPose
-  Name: disentangled_keypoint_regression_hrnet_w48_crowdpose_640x640_dekr
+  Name: disentangled_keypoint_regression_hrnet_w48_crowdpose_640x640
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -39,12 +39,12 @@ Models:
       AR@0.5: 0.904
     Task: Body 2D Keypoint
   Weights: <>
-- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_dekr_multiscale.py
+- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_multiscale.py
   In Collection: DEKR
   Metadata:
     Architecture: *id001
     Training Data: CrowdPose
-  Name: disentangled_keypoint_regression_hrnet_w32_crowdpose_512x512_dekr_multiscale
+  Name: disentangled_keypoint_regression_hrnet_w32_crowdpose_512x512_multiscale
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -55,12 +55,12 @@ Models:
       AR@0.5: 0.926
     Task: Body 2D Keypoint
   Weights: <>
-- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640_dekr_multiscale.py
+- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640_multiscale.py
   In Collection: DEKR
   Metadata:
     Architecture: *id001
     Training Data: CrowdPose
-  Name: disentangled_keypoint_regression_hrnet_w48_crowdpose_640x640_dekr_multiscale
+  Name: disentangled_keypoint_regression_hrnet_w48_crowdpose_640x640_multiscale
   Results:
   - Dataset: CrowdPose
     Metrics:

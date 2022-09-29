@@ -5,14 +5,6 @@ _base_ = [
 checkpoint_config = dict(interval=20)
 evaluation = dict(interval=20, metric='mAP', save_best='AP')
 
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        dict(type='TensorboardLoggerHook')
-        # dict(type='PaviLoggerHook') # for internal services
-    ])
-
 optimizer = dict(
     type='Adam',
     lr=0.001,
@@ -104,39 +96,22 @@ model = dict(
     test_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
-        scale_factor=[1],
-        multi_scale_score_decrease=0.9,
         project2image=False,
         align_corners=False,
-        nms_kernel=5,
-        nms_padding=2,
+        max_pool_kernel=5,
         use_nms=True,
-        nms_dist_thr=0.1,
+        nms_dist_thr=0.05,
         nms_joints_thr=8,
-        tag_per_joint=True,
-        detection_threshold=0.1,
         keypoint_threshold=0.01,
-        tag_threshold=1,
-        use_detection_val=True,
-        ignore_too_much=False,
         rescore_cfg=dict(
             in_channels=74,
             norm_indexes=(5, 6),
-            pretrained='aux_model/final_rescore_coco_kpt_convert.pth'),
-        adjust=True,
-        refine=True,
+            pretrained='https://download.openmmlab.com/mmpose/'
+            'pretrain_models/kpt_rescore_coco-33d58c5c.pth'),
         flip_test=True))
 
-file_client_args = dict(backend='disk')
-# file_client_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         '.data/coco/': 'openmmlab:s3://openmmlab/datasets/pose/coco/',
-#         'data/coco/': 'openmmlab:s3://openmmlab/datasets/pose/coco/'
-#     }))
-
 train_pipeline = [
-    dict(type='LoadImageFromFile', file_client_args=file_client_args),
+    dict(type='LoadImageFromFile'),
     dict(
         type='BottomUpRandomAffine',
         rot_factor=30,
@@ -167,14 +142,10 @@ train_pipeline = [
 ]
 
 val_pipeline = [
-    dict(type='LoadImageFromFile', file_client_args=file_client_args),
-    dict(
-        type='BottomUpGetImgSize',
-        base_length=32,
-        test_scale_factor=[0.5, 1, 2]),
+    dict(type='LoadImageFromFile'),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
     dict(
         type='BottomUpResizeAlign',
-        base_length=32,
         transforms=[
             dict(type='ToTensor'),
             dict(

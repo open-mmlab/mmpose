@@ -52,13 +52,16 @@
 
 Results on COCO val2017 without multi-scale test
 
-| Arch                                                                                                                 | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_dekr.py) |  512x512   | 0.680 |      0.867      |      0.748      | 0.729 |      0.896      | [ckpt](<>) | [log](<>) |
-| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640_dekr.py) |  640x640   | 0.707 |      0.875      |      0.771      | 0.759 |      0.910      | [ckpt](<>) | [log](<>) |
+| Arch                                                                                                            | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
+| :-------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
+| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512.py) |  512x512   | 0.680 |      0.868      |      0.745      | 0.728 |      0.897      | [ckpt](<>) | [log](<>) |
+| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640.py) |  640x640   | 0.708 |      0.876      |      0.772      | 0.757 |      0.909      | [ckpt](<>) | [log](<>) |
 
 Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
-| Arch                                                                                                                 | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_dekr_multiscale.py) |  512x512   | 0.704 |      0.875      |      0.769      | 0.756 |      0.914      | [ckpt](<>) | [log](<>) |
+| Arch                                                                                                                         | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |
+| :--------------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: |
+| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_multiscale.py)\* |  512x512   | 0.704 |      0.878      |      0.766      | 0.759 |      0.921      | [ckpt](<>) |
+| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_multiscale.py)\* |  640x640   | 0.720 |      0.878      |      0.786      | 0.779 |      0.926      | [ckpt](<>) |
+
+\* these configs are generally used for evaluation. The training settings are identical to their single-scale counterparts.
