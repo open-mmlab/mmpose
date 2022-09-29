@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import AEHigherResolutionHead, AESimpleHead
+from mmpose.models import AEHigherResolutionHead, AESimpleHead, DEKRHead
 
 
 def test_ae_simple_head():
@@ -467,6 +467,46 @@ def test_ae_higherresolution_head():
     out = head([inputs])
     assert out[0].shape == torch.Size([1, 34, 32, 32])
     assert out[1].shape == torch.Size([1, 34, 64, 64])
+
+
+def test_DEKRHead():
+    head = DEKRHead(
+        in_channels=64,
+        num_joints=17,
+        num_heatmap_filters=32,
+        num_offset_filters_per_joint=15,
+        in_index=0,
+        heatmap_loss=dict(
+            type='JointsMSELoss',
+            use_target_weight=True,
+        ),
+        offset_loss=dict(
+            type='SoftWeightSmoothL1Loss',
+            use_target_weight=True,
+        ))
+    head.init_weights()
+    input_shape = (1, 64, 128, 128)
+    inputs = _demo_inputs(input_shape)
+
+    # test forward
+    output = head([inputs])
+    assert len(output) == 1
+    assert len(output[0]) == 2
+    heatmaps, offsets = output[0]
+    assert heatmaps.size(1) == 18
+    assert heatmaps.size(2) == 128
+    assert offsets.size(1) == 34
+    assert offsets.size(2) == 128
+
+    # test get_loss
+    heatmaps_target = torch.rand(heatmaps.size())
+    heatmaps_weight = torch.rand(heatmaps.size())
+    offsets_target = torch.rand(offsets.size())
+    offsets_weight = torch.rand(offsets.size())
+    loss = head.get_loss(output, [heatmaps_target], [heatmaps_weight],
+                         [offsets_target], [offsets_weight])
+    assert 'loss_hms' in loss
+    assert 'loss_ofs' in loss
 
 
 def _demo_inputs(input_shape=(1, 3, 64, 64)):

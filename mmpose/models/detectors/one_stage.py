@@ -2,9 +2,7 @@
 import warnings
 
 import mmcv
-from mmpose.core.evaluation.bottom_up_eval import aggregate_scale2
-from mmpose.core.post_processing.match import match_pose_to_heatmap
-from mmpose.core.post_processing.nms import pose_nms
+import numpy as np
 import torch
 from mmcv.image import imwrite
 from mmcv.utils.misc import deprecated_api_warning
@@ -12,10 +10,12 @@ from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_scale, aggregate_stage_flip,
                                     flip_feature_maps, get_group_preds)
+from mmpose.core.post_processing import nearby_joints_nms
 from mmpose.core.post_processing.group import HeatmapOffsetParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
 from ..builder import POSENETS
+from ..utils import DekrRescoreNet
 from .base import BasePose
 
 try:
@@ -27,8 +27,8 @@ except ImportError:
 
 
 @POSENETS.register_module()
-class OneStage(BasePose):
-    """Associative embedding pose detectors.
+class DisentangledKeypointRegressor(BasePose):
+    """Disentangled keypoint regression pose detector.
 
     Args:
         backbone (dict): Backbone modules to extract feature.
@@ -36,8 +36,6 @@ class OneStage(BasePose):
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained models.
-        loss_pose (None): Deprecated arguments. Please use
-            ``loss_keypoint`` for heads instead.
     """
 
     def __init__(self,
@@ -59,6 +57,11 @@ class OneStage(BasePose):
         self.use_udp = test_cfg.get('use_udp', False)
         self.parser = HeatmapOffsetParser(self.test_cfg)
         self.pretrained = pretrained
+
+        rescore_cfg = test_cfg.get('rescore_cfg', None)
+        if rescore_cfg is not None:
+            self.rescore_net = DekrRescoreNet(**rescore_cfg)
+
         self.init_weights()
 
     @property
@@ -73,6 +76,8 @@ class OneStage(BasePose):
         self.backbone.init_weights(self.pretrained)
         if self.with_keypoint:
             self.keypoint_head.init_weights()
+        if hasattr(self, 'rescore_net'):
+            self.rescore_net.init_weight()
 
     @auto_fp16(apply_to=('img', ))
     def forward(self,
@@ -99,7 +104,7 @@ class OneStage(BasePose):
             - max_num_people: M
 
         Args:
-            img (torch.Tensor[N,C,imgH,imgW]): Input image.
+            img (torch.Tensor[N,C,imgH,imgW]): # input image.
             targets (list(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
             masks (list(torch.Tensor[N,H,W])): Masks of multi-scale target
                 heatmaps
@@ -109,9 +114,9 @@ class OneStage(BasePose):
                 By default it includes:
 
                 - "image_file": image path
-                - "aug_data": input
+                - "aug_data": # input
                 - "test_scale_factor": test scale factor
-                - "base_size": base size of input
+                - "base_size": base size of # input
                 - "center": center of image
                 - "scale": scale of image
                 - "flip_index": flip index of keypoints
@@ -146,7 +151,7 @@ class OneStage(BasePose):
             max_num_people: M
 
         Args:
-            img (torch.Tensor[N,C,imgH,imgW]): Input image.
+            img (torch.Tensor[N,C,imgH,imgW]): # input image.
             targets (List(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
             masks (List(torch.Tensor[N,H,W])): Masks of multi-scale target
                                               heatmaps
@@ -155,9 +160,9 @@ class OneStage(BasePose):
             img_metas (dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
-                - "aug_data": input
+                - "aug_data": # input
                 - "test_scale_factor": test scale factor
-                - "base_size": base size of input
+                - "base_size": base size of # input
                 - "center": center of image
                 - "scale": scale of image
                 - "flip_index": flip index of keypoints
@@ -191,7 +196,7 @@ class OneStage(BasePose):
         See ``tools/get_flops.py``.
 
         Args:
-            img (torch.Tensor): Input image.
+            img (torch.Tensor): # input image.
 
         Returns:
             Tensor: Outputs.
@@ -202,7 +207,7 @@ class OneStage(BasePose):
         return output
 
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
-        """Inference the bottom-up model.
+        """Inference the one-stage model.
 
         Note:
             - Batchsize: N (currently support batchsize = 1)
@@ -213,80 +218,76 @@ class OneStage(BasePose):
         Args:
             flip_index (List(int)):
             aug_data (List(Tensor[NxCximgHximgW])): Multi-scale image
+            num_joints (int): Number of joints of an instsance.\
             test_scale_factor (List(float)): Multi-scale factor
             base_size (Tuple(int)): Base size of image when scale is 1
+            image_size (int): Short edge of images when scale is 1
+            heatmap_size (int): Short edge of outputs when scale is 1
             center (np.ndarray): center of image
             scale (np.ndarray): the scale of image
+            skeleton (List(List(int))): Links of joints
         """
         assert img.size(0) == 1
         assert len(img_metas) == 1
 
         img_metas = img_metas[0]
 
+        flip_index = img_metas['flip_index']
         aug_data = img_metas['aug_data']
-
+        num_joints = img_metas['num_joints']
         test_scale_factor = img_metas['test_scale_factor']
         base_size = img_metas['base_size']
+        image_size = img_metas['image_size']
+        heatmap_size = img_metas['heatmap_size'][0]
         center = img_metas['center']
         scale = img_metas['scale']
+        skeleton = img_metas['skeleton']
 
         result = {}
 
         scale_heatmaps_list = []
-        scale_offsets_list = []
+        scale_poses_dict = dict()
 
-        grouped = []
-        scores = []
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx].to(img.device)
 
             features = self.backbone(image_resized)
             if self.with_keypoint:
                 outputs = self.keypoint_head(features)
-
-            # heatmaps, tags = split_ae_outputs(
-            #     outputs, self.test_cfg['num_joints'],
-            #     self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'],
-            #     self.test_cfg.get('select_output_index',
-            #                       range(len(outputs))))
             heatmaps, offsets = outputs[0]
 
             if self.test_cfg.get('flip_test', True):
                 # use flip test
-                features_flipped = self.backbone(
-                    torch.flip(image_resized, [3]))
+                image_flipped = torch.flip(image_resized, [3])
+                features_flipped = self.backbone(image_flipped)
                 if self.with_keypoint:
                     outputs_flipped = self.keypoint_head(features_flipped)
-
-                # heatmaps_flipped, tags_flipped = split_ae_outputs(
-                #     outputs_flipped, self.test_cfg['num_joints'],
-                #     self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'],
-                #     self.test_cfg.get('select_output_index',
-                #                       range(len(outputs))))
                 heatmaps_flipped, offsets_flipped = outputs_flipped[0]
-                heatmaps_flipped_center = torch.flip(heatmaps_flipped, [3])[:, 0, ...].unsqueeze(1)
 
-                heatmaps_flipped = flip_feature_maps(
-                    [heatmaps_flipped],
-                    flip_index=img_metas['flip_index']
-                    if self.test_cfg['use_keypoint_heatmap'] else None)[0]
+                # compute heatmaps for flipped input image
+                center_heatmaps_flipped = flip_feature_maps(
+                    [heatmaps_flipped[:, :1]], None)[0]
+                keypoint_heatmaps_flipped = flip_feature_maps(
+                    [heatmaps_flipped[:, 1:]], flip_index=flip_index)[0]
+                heatmaps_flipped = torch.cat(
+                    [center_heatmaps_flipped, keypoint_heatmaps_flipped],
+                    dim=1)
 
-                heatmaps_flipped = torch.cat([heatmaps_flipped_center, heatmaps_flipped], dim=1)
-                
+                # compute offsets for flipped input image
                 h, w = offsets_flipped.shape[2], offsets_flipped.shape[3]
-                offsets_flipped = offsets_flipped.view(
-                    self.test_cfg['num_joints'], 2, h, w)
+                offsets_flipped = offsets_flipped.view(num_joints, 2, h, w)
                 offsets_flipped = offsets_flipped.transpose(1, 0).contiguous()
-                offsets_flipped[0] *= -1
-                offsets_flipped = flip_feature_maps(
-                    [offsets_flipped], flip_index=img_metas['flip_index'])[0]
-                offsets_flipped = offsets_flipped.transpose(
-                    1, 0).contiguous().view(1, -1, h, w)
+                offsets_flipped[0] = -offsets_flipped[0] - 1
+                offsets_flipped = flip_feature_maps([offsets_flipped],
+                                                    flip_index=flip_index)[0]
+                offsets_flipped = offsets_flipped.transpose(1, 0).reshape(
+                    1, -1, h, w)
 
             else:
                 heatmaps_flipped = None
                 offsets_flipped = None
 
+            # aggregate heatmaps and offsets
             aggregated_heatmaps = aggregate_stage_flip(
                 [heatmaps], [heatmaps_flipped],
                 index=-1,
@@ -294,7 +295,8 @@ class OneStage(BasePose):
                 size_projected=base_size,
                 align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
-                aggregate_flip='average')
+                aggregate_flip='average')[0]
+            scale_heatmaps_list.append(aggregated_heatmaps)
 
             aggregated_offsets = aggregate_stage_flip(
                 [offsets], [offsets_flipped],
@@ -303,80 +305,55 @@ class OneStage(BasePose):
                 size_projected=base_size,
                 align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
-                aggregate_flip='average')
+                aggregate_flip='average')[0]
 
-            # perform grouping
-            grouped_scale, scores_scale = self.parser.parse(aggregated_heatmaps,
-                                                aggregated_offsets, img_metas, idx)
-            grouped_scale = grouped_scale.cpu()
-            scores_scale = scores_scale.cpu().numpy().tolist()
+            poses = self.parser.decode(aggregated_heatmaps, aggregated_offsets)
+            # rescale pose coordinates to a unified scale
+            poses[..., :2] *= (image_size * 1.0 / heatmap_size) / s
+            scale_poses_dict[s] = poses
 
-            grouped.append(grouped_scale.squeeze(0))
-            scores.append(scores_scale)
-            
-            # if s == 1 or len(test_scale_factor) == 1:
-            #     if isinstance(aggregated_offsets, list):
-            #         scale_offsets_list.extend(aggregated_offsets)
-            #     else:
-            #         scale_offsets_list.append(aggregated_offsets)
-
-            if isinstance(aggregated_heatmaps, list):
-                scale_heatmaps_list.extend(aggregated_heatmaps)
-            else:
-                scale_heatmaps_list.append(aggregated_heatmaps)
-
-        aggregated_heatmaps = aggregate_scale2(
-            img_metas, 
+        # aggregate multi-scale heatmaps
+        aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
             align_corners=self.test_cfg.get('align_corners', True),
-            aggregate_scale='average')
+            aggregate_scale='average',
+            size_projected=base_size)
 
-        # aggregated_offsets = aggregate_scale(
-        #     scale_offsets_list,
-        #     align_corners=self.test_cfg.get('align_corners', True),
-        #     aggregate_scale='average')
+        # rescale the score of instances inferred from difference scales
+        max_score_ref = 1
+        if len(scale_poses_dict.get(1, [])) > 0:
+            max_score_ref = scale_poses_dict[1][..., 2].max()
 
-        # NMS
-        poses, scores_nms = pose_nms(self.test_cfg, img_metas, aggregated_heatmaps.cpu(), grouped)
-        
-        # heatmap_size = aggregated_heatmaps.shape[2:4]
-        # offset_size = aggregated_offsets.shape[2:4]
-        # if heatmap_size != offset_size:
-        #     raise ValueError('inconsistant shape of heatmaps and offsets.')
-            # tmp = []
-            # for idx in range(aggregated_tags.shape[-1]):
-            #     tmp.append(
-            #         torch.nn.functional.interpolate(
-            #             aggregated_tags[..., idx],
-            #             size=heatmap_size,
-            #             mode='bilinear',
-            #             align_corners=self.test_cfg.get('align_corners',
-            #                                             True)).unsqueeze(-1))
-            # aggregated_tags = torch.cat(tmp, dim=-1)
+        for s, poses in scale_poses_dict.items():
+            if s != 1.0 and poses.shape[0]:
+                rescale_factor = max_score_ref / poses[..., 2].max()
+                poses[..., 2] *= rescale_factor * self.test_cfg.get(
+                    'multi_scale_score_decrease', 1.0)
 
-        # # perform grouping
-        # grouped, scores = self.parser.parse(aggregated_heatmaps,
-        #                                     aggregated_offsets, img_metas)
-        # grouped = grouped.cpu()
-        # scores = scores.cpu().numpy().tolist()
-        if not len(poses) == 0:
-            if self.test_cfg['match_hmp']:
-                poses = match_pose_to_heatmap(self.test_cfg, poses, aggregated_heatmaps)
-            
-            if self.test_cfg['rescore']['valid']:
-                raise NotImplementedError(f'rescore net is not implemented.')
-            
-            poses = [torch.cat([torch.tensor(poses[0]), torch.ones_like(torch.tensor(poses[0][..., 0]).unsqueeze(-1))], dim=-1).numpy()]
-        
-            # recover size
-            preds = get_group_preds(
-                poses,
-                center,
-                scale, base_size,
-                use_udp=self.use_udp)
-        else:
-            print('\npreds is None!!!!!!')
-            preds = []
+        poses = torch.cat(tuple(scale_poses_dict.values()))
+        # refine keypoint scores using keypoint heatmaps
+        poses = self.parser.refine_score(aggregated_heatmaps, poses)
+        poses = poses.cpu().numpy()
+
+        # nms
+        if poses.shape[0] and self.test_cfg.get('use_nms', False):
+            kpts_db = []
+            for i in range(len(poses)):
+                kpts_db.append(
+                    dict(keypoints=poses[i, :, :2], score=poses[i, :, 3]))
+
+            keep_pose_inds = nearby_joints_nms(
+                kpts_db,
+                self.test_cfg['nms_dist_thr'],
+                self.test_cfg['nms_joints_thr'],
+                score_per_joint=True,
+                max_dets=self.test_cfg['max_num_people'])
+            poses = poses[keep_pose_inds]
+        scores = poses[..., 2].mean(axis=1)
+
+        # recover the pose to match the size of original image
+        preds = get_group_preds(
+            poses[None], center, scale, base_size, use_udp=self.use_udp)
 
         image_paths = []
         image_paths.append(img_metas['image_file'])
@@ -386,13 +363,18 @@ class OneStage(BasePose):
         else:
             output_heatmap = None
 
-        result['preds'] = preds  # [[17, 5], [17, 5], ... [17, 5]]
-        result['scores'] = scores_nms  # [score1, score2, ..., scoreN]
+        # rescore each instance with a pretrained rescore net
+        if hasattr(self, 'rescore_net') and len(preds) > 0:
+            re_scores = self.rescore_net(np.stack(preds, axis=0), skeleton)
+            re_scores = re_scores.cpu().numpy()
+            re_scores[np.isnan(re_scores)] = 0
+            scores *= re_scores
+
+        result['preds'] = preds
+        result['scores'] = scores
         result['image_paths'] = image_paths
         result['output_heatmap'] = output_heatmap
 
-        # torch.cuda.empty_cache()
-        
         return result
 
     @deprecated_api_warning({'pose_limb_color': 'pose_link_color'},

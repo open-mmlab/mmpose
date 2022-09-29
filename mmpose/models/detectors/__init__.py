@@ -7,7 +7,7 @@ from .mesh import ParametricMesh
 from .multi_task import MultiTask
 from .multiview_pose import (DetectAndRegress, VoxelCenterDetector,
                              VoxelSinglePose)
-from .one_stage import OneStage
+from .one_stage import DisentangledKeypointRegressor
 from .pose_lifter import PoseLifter
 from .posewarper import PoseWarper
 from .top_down import TopDown
@@ -15,5 +15,6 @@ from .top_down import TopDown
 __all__ = [
     'TopDown', 'AssociativeEmbedding', 'CID', 'ParametricMesh', 'MultiTask',
     'PoseLifter', 'Interhand3D', 'PoseWarper', 'DetectAndRegress',
-    'VoxelCenterDetector', 'VoxelSinglePose', 'GestureRecognizer', 'OneStage'
+    'VoxelCenterDetector', 'VoxelSinglePose', 'GestureRecognizer',
+    'DisentangledKeypointRegressor'
 ]

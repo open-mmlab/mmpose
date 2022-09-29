@@ -74,7 +74,7 @@ def _resize_average(feature_maps, align_corners, index=-1, resize_size=None):
         index (int): Only used when `resize_size' is None.
             If `resize_size' is None, the target size is the size
             of the indexed feature maps.
-        resize_size (list[int, int]): The target size [w, h].
+        resize_size (list[int, int]): The target size [h, w].
 
     Returns:
         list[Tensor]: Averaged feature_maps.
@@ -105,7 +105,7 @@ def _resize_unsqueeze_concat(feature_maps,
         index (int): Only used when `resize_size' is None.
             If `resize_size' is None, the target size is the size
             of the indexed feature maps.
-        resize_size (list[int, int]): The target size [w, h].
+        resize_size (list[int, int]): The target size [h, w].
 
     Returns:
         list[Tensor]: Averaged feature_maps.
@@ -131,7 +131,7 @@ def _resize_concate(feature_maps, align_corners, index=-1, resize_size=None):
         index (int): Only used when `resize_size' is None.
             If `resize_size' is None, the target size is the size
             of the indexed feature maps.
-        resize_size (list[int, int]): The target size [w, h].
+        resize_size (list[int, int]): The target size [h, w].
 
     Returns:
         list[Tensor]: Averaged feature_maps.
@@ -253,6 +253,8 @@ def aggregate_stage_flip(feature_maps,
 
 def aggregate_scale(feature_maps_list,
                     align_corners=False,
+                    project2image=True,
+                    size_projected=None,
                     aggregate_scale='average'):
     """Aggregate multi-scale outputs.
 
@@ -265,6 +267,7 @@ def aggregate_scale(feature_maps_list,
     Args:
         feature_maps_list (list[Tensor]): Aggregated feature maps.
         project2image (bool): Option to resize to base scale.
+        size_projected (list[int, int]): Base size of heatmaps [w, h].
         align_corners (bool): Align corners when performing interpolation.
         aggregate_scale (str): Methods to aggregate multi-scale feature maps.
             Options: 'average', 'unsqueeze_concat'.
@@ -277,66 +280,21 @@ def aggregate_scale(feature_maps_list,
         Tensor: Aggregated feature maps.
     """
 
+    resize_size = None
+    if project2image and size_projected:
+        resize_size = (size_projected[1], size_projected[0])
+
     if aggregate_scale == 'average':
         output_feature_maps = _resize_average(
-            feature_maps_list, align_corners, index=0, resize_size=None)
+            feature_maps_list, align_corners, index=0, resize_size=resize_size)
 
     elif aggregate_scale == 'unsqueeze_concat':
         output_feature_maps = _resize_unsqueeze_concat(
-            feature_maps_list, align_corners, index=0, resize_size=None)
+            feature_maps_list, align_corners, index=0, resize_size=resize_size)
     else:
         NotImplementedError()
 
     return output_feature_maps[0]
-
-def up_interpolate(x,size,mode='bilinear'):
-    H=x.size()[2]
-    W=x.size()[3]
-    scale_h=int(size[0]/H)
-    scale_w=int(size[1]/W)
-    inter_x= torch.nn.functional.interpolate(x,size=[size[0]-scale_h+1,size[1]-scale_w+1],align_corners=True,mode='bilinear')
-    padd= torch.nn.ReplicationPad2d((0,scale_w-1,0,scale_h-1))
-    return padd(inter_x)
-
-def aggregate_scale2(img_metas, feature_maps_list,
-                    align_corners=False,
-                    aggregate_scale='average'):
-    """Aggregate multi-scale outputs.
-
-    Note:
-        batch size: N
-        keypoints num : K
-        heatmap width: W
-        heatmap height: H
-
-    Args:
-        feature_maps_list (list[Tensor]): Aggregated feature maps.
-        project2image (bool): Option to resize to base scale.
-        align_corners (bool): Align corners when performing interpolation.
-        aggregate_scale (str): Methods to aggregate multi-scale feature maps.
-            Options: 'average', 'unsqueeze_concat'.
-
-            - 'average': Get the average of the feature maps.
-            - 'unsqueeze_concat': Concatenate the feature maps along new axis.
-                Default: 'average.
-
-    Returns:
-        Tensor: Aggregated feature maps.
-    """
-    heatmap_sum = 0
-    for idx, heatmap in enumerate(feature_maps_list):
-        ratio = 4.0
-        reverse_scale = ratio/sorted(img_metas['test_scale_factor'], reverse=True)[idx]
-        h, w = heatmap[0].size(-1), heatmap[0].size(-2)
-        heatmap_sum += up_interpolate(
-            heatmap,
-            size=(int(reverse_scale*w), int(reverse_scale*h)),
-            mode='bilinear'
-        )
-    
-    aggregated_heatmaps = heatmap_sum / len(feature_maps_list)
-    
-    return aggregated_heatmaps
 
 
 def get_group_preds(grouped_joints,

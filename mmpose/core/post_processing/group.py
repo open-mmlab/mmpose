@@ -419,6 +419,7 @@ class HeatmapParser:
 
 
 class HeatmapOffsetParser:
+    """The heatmap&offset parser for post processing."""
 
     def __init__(self, cfg):
         super(HeatmapOffsetParser, self).__init__()
@@ -426,27 +427,57 @@ class HeatmapOffsetParser:
         self.num_joints = cfg['num_joints']
         self.keypoint_threshold = cfg['keypoint_threshold']
         self.max_num_people = cfg['max_num_people']
-        self.use_refine = False
 
         # init pooling layer
         self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
                                        cfg['nms_kernel'] // 2)
 
-    @staticmethod
-    def _generate_coordinate(offsets):
+    def _offset_to_pose(self, offsets):
+        """Convert offset maps to pose maps.
+
+        Note:
+            batch size: N
+            number of keypoints: K
+            offset maps height: H
+            offset maps width: W
+
+        Args:
+            offsets (torch.Tensor[NxKxHxW]): model output offset maps.
+
+        Returns:
+            torch.Tensor[NxKxHxW]: A tensor containing pose for each pixel.
+        """
+        h, w = offsets.shape[-2:]
+        offsets = offsets.view(self.num_joints, -1, h, w)
+
+        # generate regular coordinates
         x = torch.arange(0, offsets.shape[-1]).float()
         y = torch.arange(0, offsets.shape[-2]).float()
         y, x = torch.meshgrid(y, x)
-        return torch.stack((x, y), dim=0).unsqueeze(0).to(offsets)
+        regular_coords = torch.stack((x, y), dim=0).unsqueeze(0)
 
-    def offset_to_pose(self, offsets):
-        num_offset, h, w = offsets.shape[1:]
-        offsets = offsets.view(self.num_joints, -1, h, w)
-        poses = self._generate_coordinate(offsets) - offsets
-        poses = poses.view(1, -1, h, w)
-        return poses
+        posemaps = regular_coords.to(offsets) - offsets
+        posemaps = posemaps.view(1, -1, h, w)
+        return posemaps
 
-    def get_maximum_from_heatmap(self, heatmap):
+    def _get_maximum_from_heatmap(self, heatmap):
+        """Find local maximum of heatmap to localize instances.
+
+        Note:
+            batch size: N
+            heatmap height: H
+            heatmap width: W
+
+        Args:
+            heatmap (torch.Tensor[Nx1xHxW]): model output center heatmap.
+
+        Returns:
+            tuple: A tuple containing instances detection results.
+
+            - pos_idx (torch.Tensor): Index of pixels which have detected
+                instances.
+            - score (torch.Tensor): Score of detected instances.
+        """
         assert heatmap.size(0) == 1 and heatmap.size(1) == 1
         max_map = torch.eq(heatmap, self.pool(heatmap)).float()
         heatmap = heatmap * max_map
@@ -458,31 +489,69 @@ class HeatmapOffsetParser:
         pos_idx = pos_idx[mask]
         return pos_idx, score
 
-    def parse(self, heatmaps, offsets, img_metas, idx):
-        ratio = 4.0
-        reverse_scale = ratio/img_metas['test_scale_factor'][idx]
-        
-        if isinstance(offsets, list):
-            offsets = offsets[0]
-        if isinstance(heatmaps, list):
-            heatmaps = heatmaps[0]
-            
-        posemap = self.offset_to_pose(offsets)
-        person_indexs, scores = self.get_maximum_from_heatmap(heatmaps[:, :1])
-        
-        # poses = posemap.view(posemap.size(1), -1)[..., person_indexs]
-        posemap = posemap.view(posemap.size(1), -1)
-        poses = reverse_scale*posemap[..., person_indexs]
-        poses = poses.view(1, self.num_joints, 2, -1)
-        _scores = scores.view(1, 1, 1, -1).expand(1, self.num_joints, 1, -1)
-        poses = torch.cat(
-            (poses, _scores), dim=2)
-        poses = poses.permute(0, 3, 1, 2).contiguous()      # [1, N, joints, 2]
+    def decode(self, heatmaps, offsets):
+        """Convert center heatmaps and offset maps to poses.
 
-        if self.use_refine:
-            raise NotImplementedError
-            keypoints, keypoints_score = self.get_maximum_from_heatmap(
-                heatmaps[:, 1:])
-            poses = self.refine(poses, keypoints)
+        Note:
+            batch size: N
+            number of keypoints: K
+            offset maps height: H
+            offset maps width: W
 
-        return poses, scores
+        Args:
+            heatmaps (torch.Tensor[Nx(1+K)xHxW]): model output heatmaps.
+            offsets (torch.Tensor[NxKxHxW]): model output offset maps.
+
+        Returns:
+            torch.Tensor[NxKx4]: A tensor containing predicted pose and
+                score for each instance.
+        """
+
+        posemap = self._offset_to_pose(offsets)
+        inst_indexs, inst_scores = self._get_maximum_from_heatmap(
+            heatmaps[:, :1])
+
+        poses = posemap.view(posemap.size(1), -1)[..., inst_indexs]
+        poses = poses.view(self.num_joints, 2, -1).permute(2, 0,
+                                                           1).contiguous()
+        inst_scores = inst_scores.unsqueeze(1).unsqueeze(2).expand(
+            poses.size())
+        poses = torch.cat((poses, inst_scores), dim=2)
+        return poses.clone()
+
+    def refine_score(self, heatmaps, poses):
+        """Refine instance scores with keypoint heatmaps.
+
+        Note:
+            batch size: N
+            number of keypoints: K
+            offset maps height: H
+            offset maps width: W
+
+        Args:
+            heatmaps (torch.Tensor[Nx(1+K)xHxW]): model output heatmaps.
+            poses (torch.Tensor[NxKx4]): decoded pose and score for each
+                instance.
+
+        Returns:
+            torch.Tensor[NxKx4]: poses with refined scores.
+        """
+        normed_poses = poses.unsqueeze(0).permute(2, 0, 1, 3).contiguous()
+        normed_poses = torch.cat((
+            normed_poses.narrow(3, 0, 1) / (heatmaps.size(3) - 1) * 2 - 1,
+            normed_poses.narrow(3, 1, 1) / (heatmaps.size(2) - 1) * 2 - 1,
+        ),
+                                 dim=3)
+        kpt_scores = torch.nn.functional.grid_sample(
+            heatmaps[:, 1:].view(self.num_joints, 1, heatmaps.size(2),
+                                 heatmaps.size(3)),
+            normed_poses,
+            padding_mode='border').view(self.num_joints, -1)
+        kpt_scores = kpt_scores.transpose(0, 1).contiguous()
+
+        # scores only from keypoint heatmaps
+        poses[..., 3] = kpt_scores
+        # combine center and keypoint heatmaps
+        poses[..., 2] = poses[..., 2] * kpt_scores
+
+        return poses

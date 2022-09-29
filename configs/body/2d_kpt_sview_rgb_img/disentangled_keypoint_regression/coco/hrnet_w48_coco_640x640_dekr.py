@@ -2,8 +2,8 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/coco.py'
 ]
-checkpoint_config = dict(interval=50)
-evaluation = dict(interval=5, metric='mAP', save_best='AP')
+checkpoint_config = dict(interval=20)
+evaluation = dict(interval=20, metric='mAP', save_best='AP')
 
 log_config = dict(
     interval=50,
@@ -49,7 +49,7 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='OneStage',
+    type='DisentangledKeypointRegressor',
     pretrained='https://download.openmmlab.com/mmpose/'
     'pretrain_models/hrnet_w48-8ef0771d.pth',
     backbone=dict(
@@ -83,50 +83,45 @@ model = dict(
                 multiscale_output=True)),
     ),
     keypoint_head=dict(
-        type='OneStageHeatmapOffsetHead',
+        type='DEKRHead',
         in_channels=(48, 96, 192, 384),
         in_index=(0, 1, 2, 3),
-        num_joints=17,
-        use_keypoint_heatmap=True,
-        use_adapt_act=True,
+        num_joints=channel_cfg['dataset_joints'],
         input_transform='resize_concat',
-        heatmap_loss_cfg=dict(
+        heatmap_loss=dict(
             type='JointsMSELoss',
+            use_target_weight=True,
             loss_weight=1.0,
         ),
-        offset_loss_cfg=dict(
-            type='SmoothL1Loss',
+        offset_loss=dict(
+            type='SoftWeightSmoothL1Loss',
             use_target_weight=True,
             supervise_empty=False,
-            loss_weight=0.03,
+            loss_weight=0.002,
             beta=1 / 9.0,
         )),
     train_cfg=dict(),
     test_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
-        match_hmp=False,
-        rescore=dict(
-            valid=False,
-            model_file='/apdcephfs/share_1157267/louckszhang/work_dirs/DEKR/model/rescore/final_rescore_coco_kpt.pth'),
         max_num_people=30,
-        max_absorb_distance=75,
-        decrease=0.9,
-        gaussian_kernel=6,
-        adjust_threshold=0.05,
         scale_factor=[1],
-        use_keypoint_heatmap=True,
         project2image=False,
         align_corners=False,
-        nms_thre=0.05,
-        nms_num_thre=8,
         nms_kernel=5,
         nms_padding=2,
+        use_nms=True,
+        nms_dist_thr=0.05,
+        nms_joints_thr=8,
         tag_per_joint=True,
         detection_threshold=0.1,
         keypoint_threshold=0.01,
         tag_threshold=1,
         use_detection_val=True,
         ignore_too_much=False,
+        rescore_cfg=dict(
+            in_channels=74,
+            norm_indexes=(5, 6),
+            pretrained='aux_model/final_rescore_coco_kpt_convert.pth'),
         adjust=True,
         refine=True,
         flip_test=True))
@@ -145,14 +140,15 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='OneStageGeneratePersonCenter'),
+    dict(type='GetKeypointCenterArea'),
     dict(
-        type='OneStageGenerateHeatmapTarget',
-        sigma=[4,2],
-        use_keypoint=True,
+        type='BottomUpGenerateHeatmapTarget',
+        sigma=(2, 4),
+        gen_center_heatmap=True,
+        bg_weight=0.1,
     ),
     dict(
-        type='OneStageUpGenerateOffsetTarget',
+        type='BottomUpGenerateOffsetTarget',
         radius=4,
     ),
     dict(
@@ -178,7 +174,8 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
-            'center', 'scale', 'flip_index', 'num_joints'
+            'center', 'scale', 'flip_index', 'num_joints', 'skeleton',
+            'image_size', 'heatmap_size'
         ]),
 ]
 
@@ -186,8 +183,8 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    workers_per_gpu=2,
-    train_dataloader=dict(samples_per_gpu=12),
+    workers_per_gpu=4,
+    train_dataloader=dict(samples_per_gpu=5),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
