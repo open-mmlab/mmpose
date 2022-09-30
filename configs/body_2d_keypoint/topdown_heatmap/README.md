@@ -106,6 +106,7 @@ Results on AIC val set with ground-truth bounding boxes.
 
 Results on PoseTrack2018 val with ground-truth bounding boxes.
 | Model | Input Size | AP | Details and Download |
+| :--------: | :--------: | :---: | :----------------------------------------------------: |
 | HRNet-w48 | 256x192 | 84.6 | [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md) |
 | HRNet-w32 | 256x192 | 83.4 | [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md) |
 | ResNet-50 | 256x192 | 81.2 | [resnet_posetrack18.md](./posetrack18/resnet_posetrack18.md) |
