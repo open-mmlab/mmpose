@@ -84,8 +84,8 @@ model = dict(
         out_channels=3 * 17,
         deconv_out_channels=None,
         loss=dict(type='CombinedTargetMSELoss', use_target_weight=True),
-        print_acc_pose=False,
         decoder=codec),
+    train_cfg=dict(compute_acc=False),
     test_cfg=dict(
         flip_test=True,
         flip_mode='udp_combined',

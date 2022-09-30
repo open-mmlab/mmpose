@@ -64,8 +64,6 @@ class HeatmapHead(BaseHead):
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
-        print_acc_pose(bool): Whether to print the `acc_pose` during training.
-            Defaults to ``True``
 
     .. _`Simple Baselines`: https://arxiv.org/abs/1804.06208
     """
@@ -86,8 +84,7 @@ class HeatmapHead(BaseHead):
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
-                 init_cfg: OptConfigType = None,
-                 print_acc_pose: bool = True):
+                 init_cfg: OptConfigType = None):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
@@ -99,7 +96,6 @@ class HeatmapHead(BaseHead):
         self.align_corners = align_corners
         self.input_transform = input_transform
         self.input_index = input_index
-        self.print_acc_pose = print_acc_pose
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
@@ -336,7 +332,7 @@ class HeatmapHead(BaseHead):
         losses.update(loss_kpt=loss)
 
         # calculate accuracy
-        if self.print_acc_pose:
+        if train_cfg.get('compute_acc', True):
             _, avg_acc, _ = pose_pck_accuracy(
                 output=to_numpy(pred_fields),
                 target=to_numpy(gt_heatmaps),
