@@ -22,7 +22,7 @@ Models:
       AR: 0.719
       AR@0.5: 0.893
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_crowdpose_512x512-685aff75_20220924.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640.py
   In Collection: DEKR
   Metadata:
@@ -38,7 +38,7 @@ Models:
       AR: 0.731
       AR@0.5: 0.904
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-mdc1179d_20220922.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_multiscale.py
   In Collection: DEKR
   Metadata:
@@ -54,7 +54,7 @@ Models:
       AR: 0.755
       AR@0.5: 0.926
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_crowdpose_512x512-685aff75_20220924.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640_multiscale.py
   In Collection: DEKR
   Metadata:
@@ -70,4 +70,4 @@ Models:
       AR: 0.762
       AR@0.5: 0.93
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-mdc1179d_20220922.pth

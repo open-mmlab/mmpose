@@ -22,7 +22,7 @@ Models:
       AR: 0.728
       AR@0.5: 0.897
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-2a3056de_20220928.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640.py
   In Collection: DEKR
   Metadata:
@@ -38,7 +38,7 @@ Models:
       AR: 0.757
       AR@0.5: 0.909
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-d98f01ff_20220922.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_multiscale.py
   In Collection: DEKR
   Metadata:
@@ -48,26 +48,26 @@ Models:
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.704
+      AP: 0.705
       AP@0.5: 0.878
-      AP@0.75: 0.766
+      AP@0.75: 0.767
       AR: 0.759
       AR@0.5: 0.921
     Task: Body 2D Keypoint
-  Weights: <>
-- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_multiscale.py
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-2a3056de_20220928.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640_multiscale.py
   In Collection: DEKR
   Metadata:
     Architecture: *id001
     Training Data: COCO
-  Name: disentangled_keypoint_regression_hrnet_w32_coco_512x512_multiscale
+  Name: disentangled_keypoint_regression_hrnet_w48_coco_640x640_multiscale
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.72
-      AP@0.5: 0.878
+      AP: 0.722
+      AP@0.5: 0.879
       AP@0.75: 0.786
       AR: 0.779
-      AR@0.5: 0.926
+      AR@0.5: 0.925
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-d98f01ff_20220922.pth

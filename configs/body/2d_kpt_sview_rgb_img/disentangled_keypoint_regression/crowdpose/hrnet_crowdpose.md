@@ -50,16 +50,16 @@
 
 Results on CrowdPose test without multi-scale test
 
-| Arch                                                                                                                 | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: | :-------: |
-| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512.py) |  512x512   | 0.663 |      0.857      |      0.715      | 0.719 |      0.893      | [ckpt](<>) | [log](<>) |
-| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640.py) |  640x640   | 0.674 |      0.866      |      0.725      | 0.731 |      0.904      | [ckpt](<>) | [log](<>) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512.py) |  512x512   | 0.663 |      0.857      |      0.715      | 0.719 |      0.893      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_crowdpose_512x512-685aff75_20220924.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_crowdpose_512x512-20220924.log.json) |
+| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640.py) |  640x640   | 0.674 |      0.866      |      0.725      | 0.731 |      0.904      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-mdc1179d_20220922.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-20220922.log.json) |
 
 Results on CrowdPose test with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
-| Arch                                                                                                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |
-| :---------------------------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------: |
-| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_multiscale.py)\* |  512x512   | 0.692 |      0.874      |      0.748      | 0.755 |      0.926      | [ckpt](<>) |
-| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640_multiscale.py)\* |  640x640   | 0.692 |      0.871      |      0.746      | 0.762 |      0.930      | [ckpt](<>) |
+| Arch                                                                | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                                 ckpt                                 |
+| :------------------------------------------------------------------ | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :------------------------------------------------------------------: |
+| [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_multiscale.py)\* |  512x512   | 0.692 |      0.874      |      0.748      | 0.755 |      0.926      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_crowdpose_512x512-685aff75_20220924.pth) |
+| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w48_crowdpose_640x640_multiscale.py)\* |  640x640   | 0.692 |      0.871      |      0.746      | 0.762 |      0.930      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-mdc1179d_20220922.pth) |
 
 \* these configs are generally used for evaluation. The training settings are identical to their single-scale counterparts.
