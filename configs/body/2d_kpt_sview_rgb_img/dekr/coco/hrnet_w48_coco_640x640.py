@@ -28,10 +28,10 @@ channel_cfg = dict(
     ])
 
 data_cfg = dict(
-    image_size=512,
-    base_size=256,
+    image_size=640,
+    base_size=320,
     base_sigma=2,
-    heatmap_size=[128],
+    heatmap_size=[160],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -43,7 +43,7 @@ data_cfg = dict(
 model = dict(
     type='DisentangledKeypointRegressor',
     pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/hrnet_w32-36af842e.pth',
+    'pretrain_models/hrnet_w48-8ef0771d.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -59,25 +59,26 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(32, 64)),
+                num_channels=(48, 96)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(32, 64, 128)),
+                num_channels=(48, 96, 192)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(32, 64, 128, 256),
+                num_channels=(48, 96, 192, 384),
                 multiscale_output=True)),
     ),
     keypoint_head=dict(
         type='DEKRHead',
-        in_channels=(32, 64, 128, 256),
+        in_channels=(48, 96, 192, 384),
         in_index=(0, 1, 2, 3),
+        num_heatmap_filters=48,
         num_joints=channel_cfg['dataset_joints'],
         input_transform='resize_concat',
         heatmap_loss=dict(
@@ -168,7 +169,7 @@ test_pipeline = val_pipeline
 data_root = 'data/coco'
 data = dict(
     workers_per_gpu=4,
-    train_dataloader=dict(samples_per_gpu=10),
+    train_dataloader=dict(samples_per_gpu=5),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(

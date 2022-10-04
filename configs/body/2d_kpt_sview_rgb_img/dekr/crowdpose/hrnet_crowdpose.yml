@@ -32,13 +32,13 @@ Models:
   Results:
   - Dataset: CrowdPose
     Metrics:
-      AP: 0.674
-      AP@0.5: 0.866
-      AP@0.75: 0.725
-      AR: 0.731
-      AR@0.5: 0.904
+      AP: 0.682
+      AP@0.5: 0.869
+      AP@0.75: 0.736
+      AR: 0.742
+      AR@0.5: 0.911
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-mdc1179d_20220922.pth
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-ef6b6040_20220922.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_w32_crowdpose_512x512_multiscale.py
   In Collection: DEKR
   Metadata:
@@ -64,10 +64,10 @@ Models:
   Results:
   - Dataset: CrowdPose
     Metrics:
-      AP: 0.692
-      AP@0.5: 0.871
-      AP@0.75: 0.746
-      AR: 0.762
-      AR@0.5: 0.93
+      AP: 0.696
+      AP@0.5: 0.869
+      AP@0.75: 0.749
+      AR: 0.769
+      AR@0.5: 0.933
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-mdc1179d_20220922.pth
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-ef6b6040_20220922.pth

@@ -27,14 +27,14 @@ channel_cfg = dict(
     inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
 data_cfg = dict(
-    image_size=640,
-    base_size=320,
+    image_size=512,
+    base_size=256,
     base_sigma=2,
-    heatmap_size=[160],
+    heatmap_size=[128, 256],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    num_scales=1,
+    num_scales=2,
     scale_aware_sigma=False,
 )
 
@@ -42,7 +42,7 @@ data_cfg = dict(
 model = dict(
     type='DisentangledKeypointRegressor',
     pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/hrnet_w48-8ef0771d.pth',
+    'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -58,25 +58,26 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(48, 96)),
+                num_channels=(32, 64)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(48, 96, 192)),
+                num_channels=(32, 64, 128)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(48, 96, 192, 384),
+                num_channels=(32, 64, 128, 256),
                 multiscale_output=True)),
     ),
     keypoint_head=dict(
         type='DEKRHead',
-        in_channels=(48, 96, 192, 384),
+        in_channels=(32, 64, 128, 256),
         in_index=(0, 1, 2, 3),
+        num_heatmap_filters=32,
         num_joints=channel_cfg['dataset_joints'],
         input_transform='resize_concat',
         heatmap_loss=dict(
@@ -88,7 +89,7 @@ model = dict(
             type='SoftWeightSmoothL1Loss',
             use_target_weight=True,
             supervise_empty=False,
-            loss_weight=0.002,
+            loss_weight=0.004,
             beta=1 / 9.0,
         )),
     train_cfg=dict(),
@@ -100,7 +101,7 @@ model = dict(
         max_pool_kernel=5,
         use_nms=True,
         nms_dist_thr=0.05,
-        nms_joints_thr=8,
+        nms_joints_thr=7,
         keypoint_threshold=0.01,
         rescore_cfg=dict(
             in_channels=59,
@@ -167,7 +168,7 @@ test_pipeline = val_pipeline
 data_root = 'data/crowdpose'
 data = dict(
     workers_per_gpu=4,
-    train_dataloader=dict(samples_per_gpu=5),
+    train_dataloader=dict(samples_per_gpu=10),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(

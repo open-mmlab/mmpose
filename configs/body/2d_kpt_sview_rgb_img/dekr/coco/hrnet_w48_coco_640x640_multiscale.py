@@ -1,11 +1,9 @@
 _base_ = ['hrnet_w48_coco_640x640.py']
 
-model = dict(
-    test_cfg=dict(
-        multi_scale_score_decrease=1.0,
-        nms_dist_thr=0.1,
-        max_pool_kernel=11,
-    ))
+model = dict(test_cfg=dict(
+    nms_dist_thr=0.1,
+    max_pool_kernel=11,
+))
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),

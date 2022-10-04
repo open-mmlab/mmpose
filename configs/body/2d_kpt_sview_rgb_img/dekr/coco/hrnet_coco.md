@@ -55,13 +55,24 @@ Results on COCO val2017 without multi-scale test
 | Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
 | :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
 | [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512.py) |  512x512   | 0.680 |      0.868      |      0.745      | 0.728 |      0.897      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-2a3056de_20220928.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-20220928.log.json) |
-| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640.py) |  640x640   | 0.708 |      0.876      |      0.772      | 0.757 |      0.909      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-d98f01ff_20220922.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-20220922.log.json) |
+| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640.py) |  640x640   | 0.708 |      0.876      |      0.772      | 0.757 |      0.909      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-8854b2f1_20220922.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-20220930.log.json) |
 
 Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
 | Arch                                                                | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                                 ckpt                                 |
 | :------------------------------------------------------------------ | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :------------------------------------------------------------------: |
 | [HRNet-w32](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w32_coco_512x512_multiscale.py)\* |  512x512   | 0.705 |      0.878      |      0.767      | 0.759 |      0.921      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-2a3056de_20220928.pth) |
-| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640_multiscale.py)\* |  640x640   | 0.722 |      0.879      |      0.786      | 0.779 |      0.925      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-d98f01ff_20220922.pth) |
+| [HRNet-w48](/configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_w48_coco_640x640_multiscale.py)\* |  640x640   | 0.722 |      0.882      |      0.785      | 0.778 |      0.928      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_coco_640x640-8854b2f1_20220922.pth) |
 
 \* these configs are generally used for evaluation. The training settings are identical to their single-scale counterparts.
+
+The results of models provided by the authors on COCO val2017 using the same evaluation protocol
+
+| Arch      | Input Size |   Setting    |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                             ckpt                             |
+| :-------- | :--------: | :----------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :----------------------------------------------------------: |
+| HRNet-w32 |  512x512   | single-scale | 0.678 |      0.868      |      0.744      | 0.728 |      0.897      | see [official implementation](https://github.com/HRNet/DEKR) |
+| HRNet-w48 |  640x640   | single-scale | 0.707 |      0.876      |      0.773      | 0.757 |      0.909      | see [official implementation](https://github.com/HRNet/DEKR) |
+| HRNet-w32 |  512x512   | multi-scale  | 0.708 |      0.880      |      0.773      | 0.763 |      0.921      | see [official implementation](https://github.com/HRNet/DEKR) |
+| HRNet-w48 |  640x640   | multi-scale  | 0.721 |      0.881      |      0.786      | 0.779 |      0.927      | see [official implementation](https://github.com/HRNet/DEKR) |
+
+The discrepancy between these results and that shown in paper is attributed to the differences in implementation details in evaluation process.

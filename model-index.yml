@@ -28,8 +28,8 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_rle_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/resnet_mpii.yml
 - configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/resnet_rle_mpii.yml
-- configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/coco/hrnet_coco.yml
-- configs/body/2d_kpt_sview_rgb_img/disentangled_keypoint_regression/crowdpose/hrnet_crowdpose.yml
+- configs/body/2d_kpt_sview_rgb_img/dekr/coco/hrnet_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/dekr/crowdpose/hrnet_crowdpose.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/hrnet_aic.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/resnet_aic.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.yml
