@@ -1,20 +1,25 @@
 import torch
 import torch.nn as nn
-
+from typing import List
 from ..registry import LOSSES
 
 
 @LOSSES.register_module()
 class SymmetryLoss(nn.Module):
-    """MSE loss for heatmaps.
+    """MSE loss for heatmaps, considering rotational symmetry. Takes the minimum loss
+    of all group members in the given symmetry group. Each group member is given as a
+    permutation of the target heatmaps in the keypoint dimension. Example:
+
+        Given the permuations: [[0, 1, 2, 3], [1, 0, 2, 3]], The first permutation is
+        the identity and thus yields the same value as JointsMSELoss. The second perm-
+        utation, swaps the keypoints 0 and 1 and then calculates JointsMSELoss. The
+        final loss will be the minimum of these two values (for each batch sample).
 
     Args:
-        use_target_weight (bool): Option to use weighted MSE loss.
-            Different joint types may have different target weights.
-        loss_weight (float): Weight of the loss. Default: 1.0.
+        symmetry group (list): List of permutations that define the symmetry group.
     """
 
-    def __init__(self, symmetry_group):
+    def __init__(self, symmetry_group: List[List]):
         super().__init__()
         self.criterion = nn.MSELoss(reduction="none")
         self.symmetry_group = symmetry_group
@@ -31,6 +36,12 @@ class SymmetryLoss(nn.Module):
         return loss
 
     def symmetry_loss(self, pred, gt):
+        """
+        1. Apply each permutation to the ground truth.
+        2. Calculate loss without dimension reduction for each permutated GT and stack
+            them in a new dimension.
+        3.
+        """
         symm_group_losses = []
         for permutation in self.symmetry_group:
             permutated_gt = gt[:, permutation]
@@ -40,8 +51,6 @@ class SymmetryLoss(nn.Module):
         symmetry_minimum_loss, _ = torch.min(reduced_loss, dim=1)
         batch_average_loss = torch.mean(symmetry_minimum_loss)
         return batch_average_loss
-
-
 
 
 @LOSSES.register_module()
@@ -64,7 +73,6 @@ class JointsMSELoss(nn.Module):
         """Forward function."""
         batch_size = output.size(0)
         num_joints = output.size(1)
-
         heatmaps_pred = output.reshape(
             (batch_size, num_joints, -1)).split(1, 1)
         heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)

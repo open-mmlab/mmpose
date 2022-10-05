@@ -28,7 +28,7 @@ ENV FORCE_CUDA="1"
 RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
 
-RUN pip install --upgrade torch torchvision
+RUN pip install torch==1.9.0 torchvision==0.10.0
 RUN pip install -r requirements.txt
 RUN pip install --upgrade numpy
 RUN pip uninstall -y mmcv-full

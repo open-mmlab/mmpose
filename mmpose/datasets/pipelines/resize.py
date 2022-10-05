@@ -27,7 +27,15 @@ class Resize:
         img = cv2.resize(img, (int(target_x), int(target_y)))
         results["img"] = img
         upscale_factor = np.array([target_x / img_x, target_y / img_y])
-        results["center"] *= upscale_factor
-        results["scale"] *= upscale_factor
-        # img = cv2.resize(img, (img_x, img_y))
+        if "center" in results:
+            results["center"] *= upscale_factor
+        if "scale" in results:
+            results["scale"] *= upscale_factor
+        if "bbox" in results:
+            results["bbox"] = [results["bbox"][0] * upscale_factor[0],
+                               results["bbox"][1] * upscale_factor[1],
+                               results["bbox"][2] * upscale_factor[0],
+                               results["bbox"][3] * upscale_factor[1]]
+        if "joints_3d" in results:
+            results["joints_3d"][:, :2] = results["joints_3d"][:, :2] * upscale_factor
         return results
