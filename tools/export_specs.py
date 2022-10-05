@@ -112,7 +112,7 @@ def export_for_lv(args):
     export_folder = os.path.join(cfg.work_dir, "export")
     recreate_dir(export_folder)
     coco_file = read_json(cfg["data"]["train"]["ann_file"])
-    model_name = f"keypoint_detector_{cfg.project_name}"
+    model_name = f"keypoint_detector_{cfg.project_name}_{time.strftime('%y%m%d')}"
     write_detector_yaml(cfg=cfg, coco_file=coco_file, write_dir=export_folder, name=model_name)
     write_info_file(cfg=cfg, write_dir=export_folder)
     copy_training_specs(cfg=cfg, write_dir=export_folder)
