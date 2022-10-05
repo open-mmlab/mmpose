@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=200)
+checkpoint_config = dict(interval=400)
 evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
@@ -71,8 +71,8 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='Resize', resize_shape=(800, 600)),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
-    dict(type='Resize', resize_shape = (800, 600)),
     # dict(
     #     type='TopDownHalfBodyTransform',
     #     num_joints_half_body=8,
@@ -98,6 +98,8 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='Resize', resize_shape=(800, 600)),
+    dict(type='Resize', resize_shape=(1024, 768)),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
