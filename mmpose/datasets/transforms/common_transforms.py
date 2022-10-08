@@ -1015,3 +1015,149 @@ class GenerateTarget(BaseTransform):
         repr_str += ('use_dataset_keypoint_weights='
                      f'{self.use_dataset_keypoint_weights})')
         return repr_str
+
+
+@TRANSFORMS.register_module()
+class Cutout(BaseTransform):
+    """Augmentation by informantion dropping in Cutout paradigm.
+
+        `AID`_ by Huang et al(2020). AID: Pushing the Performance Boundary of
+        Human Pose Estimation with Information Dropping Augmentation.
+
+    Args:
+        prob (float): Probability of performing cutout.
+        radius_factor (float): Size factor of cutout area.
+        num_patch (int): Number of patches to be cutout.
+
+    .. _`AID (2020)`: https://arxiv.org/abs/2008.07139v2
+    """
+
+    def __init__(self,
+                 prob: float = 0.5,
+                 radius_factor: float = 0.1,
+                 num_patch: int = 1) -> None:
+        super().__init__()
+
+        self.prob = prob
+        self.radius_factor = radius_factor
+        self.num_patch = num_patch
+
+    def _cutout(self, img):
+        """Perform single-area information dropping."""
+        height, width, _ = img.shape
+        img = img.reshape(height * width, -1)
+        feat_x_int = np.arange(0, width)
+        feat_y_int = np.arange(0, height)
+        feat_x_int, feat_y_int = np.meshgrid(feat_x_int, feat_y_int)
+        feat_x_int = feat_x_int.flatten()
+        feat_y_int = feat_y_int.flatten()
+        for _ in range(self.num_patch):
+            center = [np.random.rand() * width, np.random.rand() * height]
+            radius = self.radius_factor * (1 + np.random.rand(2)) * width
+            x_offset = (center[0] - feat_x_int) / radius[0]
+            y_offset = (center[1] - feat_y_int) / radius[1]
+            dis = x_offset**2 + y_offset**2
+            indexes = np.where(dis <= 1)[0]
+            img[indexes, :] = 0
+        img = img.reshape(height, width, -1)
+        return img
+
+    def transform(self, results: Dict) -> Optional[dict]:
+        """The transform function of :class:`Cutout`.
+
+        See ``transform()`` method of :class:`BaseTransform` for details.
+        Args:
+            results (dict): The result dict
+        Returns:
+            dict: The result dict.
+        """
+
+        if np.random.rand() < self.prob:
+            results['img'] = self._cutout(results['img'].copy())
+
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'prob={self.prob}, '
+        repr_str += f'radius_factor={self.radius_factor}, '
+        repr_str += f'num_patch={self.num_patch}, '
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class HideAndSeek(BaseTransform):
+    """Augmentation by informantion dropping in Hide-and-Seek paradigm.
+
+        `AID`_ by Huang et al(2020). AID: Pushing the Performance Boundary of
+        Human Pose Estimation with Information Dropping Augmentation.
+
+    Args:
+        prob (float | Sequence[float]): Probability of performing HaS.
+        prob_hiding_patches (float): Probability of hiding patches.
+        grid_sizes (Sequence[int]): List of optional grid sizes.
+
+    .. _`AID (2020)`: https://arxiv.org/abs/2008.07139v2
+    """
+
+    def __init__(
+        self,
+        prob: float = 1.0,
+        prob_hiding_patches: float = 0.1,
+        grid_sizes: Sequence[int] = (0, 16, 32, 44, 56)
+    ) -> None:
+        super().__init__()
+
+        self.prob = prob
+        self.prob_hiding_patches = prob_hiding_patches
+        self.grid_sizes = grid_sizes
+
+    def _hide_and_seek(self, img):
+        # get width and height of the image
+        height, width, _ = img.shape
+
+        # randomly choose one grid size
+        index = np.random.randint(0, len(self.grid_sizes) - 1)
+        grid_size = self.grid_sizes[index]
+
+        # hide the patches
+        if grid_size != 0:
+            for x in range(0, width, grid_size):
+                for y in range(0, height, grid_size):
+                    x_end = min(width, x + grid_size)
+                    y_end = min(height, y + grid_size)
+                    if np.random.rand() <= self.prob_hiding_patches:
+                        img[x:x_end, y:y_end, :] = 0
+        return img
+
+    def transform(self, results: dict):
+        """The transform function of :class:`HideAndSeek`.
+
+        See ``transform()`` method of :class:`BaseTransform` for details.
+        Args:
+            results (dict): The result dict
+        Returns:
+            dict: The result dict.
+        """
+
+        if np.random.rand() < self.prob:
+            results['img'] = self._hide_and_seek(results['img'].copy())
+
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'prob={self.prob}, '
+        repr_str += f'prob_hiding_patches={self.prob_hiding_patches}, '
+        repr_str += f'grid_sizes={self.grid_sizes}, '
+        return repr_str
