@@ -1,10 +1,6 @@
 # Top-down heatmap-based pose estimation
 
-Top-down methods divide the task into two stages: object detection and pose estimation.
-
-They perform object detection first, followed by single-object pose estimation given object bounding boxes.
-Instead of estimating keypoint coordinates directly, the pose estimator will produce heatmaps which represent the
-likelihood of being a keypoint.
+Top-down methods divide the task into two stages: object detection, followed by single-object pose estimation given object bounding boxes. Instead of estimating keypoint coordinates directly, the pose estimator will produce heatmaps which represent the likelihood of being a keypoint, following the paradigm introduced in [Simple Baselines for Human Pose Estimation and Tracking](http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html).
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/146522977-5f355832-e9c1-442f-a34f-9d24fb0aefa8.png" height=400>
@@ -105,8 +101,9 @@ Results on AIC val set with ground-truth bounding boxes.
 ### PoseTrack2018 Dataset
 
 Results on PoseTrack2018 val with ground-truth bounding boxes.
-| Model | Input Size | AP | Details and Download |
-| :--------: | :--------: | :---: | :----------------------------------------------------: |
-| HRNet-w48 | 256x192 | 84.6 | [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md) |
-| HRNet-w32 | 256x192 | 83.4 | [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md) |
-| ResNet-50 | 256x192 | 81.2 | [resnet_posetrack18.md](./posetrack18/resnet_posetrack18.md) |
+
+|   Model   | Input Size |  AP  |                     Details and Download                     |
+| :-------: | :--------: | :--: | :----------------------------------------------------------: |
+| HRNet-w48 |  256x192   | 84.6 |  [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md)  |
+| HRNet-w32 |  256x192   | 83.4 |  [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md)  |
+| ResNet-50 |  256x192   | 81.2 | [resnet_posetrack18.md](./posetrack18/resnet_posetrack18.md) |
