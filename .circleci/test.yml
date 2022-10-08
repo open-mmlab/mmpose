@@ -63,6 +63,7 @@ jobs:
             python -m pip install mmdet
             python -m pip install mmtrack
             python -m pip install -r requirements.txt
+            python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
       - run:
           name: Build and install
           command: |
@@ -115,6 +116,7 @@ jobs:
             python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/<< parameters.cuda >>/torch<< parameters.torch >>/index.html
             python -m pip install mmdet
             python -m pip install -r requirements.txt
+            python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
       - run:
           name: Build and install
           command: |
