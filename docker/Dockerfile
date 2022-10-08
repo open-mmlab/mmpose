@@ -22,7 +22,7 @@ RUN pip install xtcocotools
 
 # Install MMEngine and MMCV
 RUN pip install openmim
-RUN mim install mmengine "mmcv-full>=2.0rc0"
+RUN mim install mmengine "mmcv>=2.0.0rc1"
 
 # Install MMPose
 RUN conda clean --all
