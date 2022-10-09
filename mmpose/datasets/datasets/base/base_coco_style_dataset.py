@@ -388,7 +388,7 @@ class BaseCocoStyleDataset(BaseDataset):
         ``data_list``.
 
         If 'bbox_score_thr` in filter_cfg, the annotation with bbox_score below
-        the threshold `bbox_thr` will be filtered out.
+        the threshold `bbox_score_thr` will be filtered out.
         """
 
         data_list = self.data_list
