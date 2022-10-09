@@ -14,3 +14,5 @@ Please follow [DATA Preparation](/docs/en/dataset_zoo/2d_hand_keypoint.md) to pr
 Please follow [Demo](/demo/docs/2d_hand_demo.md) to run demos.
 
 <img src="https://user-images.githubusercontent.com/11788150/109098558-8c54db00-775c-11eb-8966-85df96b23dc5.gif" width="600px" alt><br>
+
+<img src="https://user-images.githubusercontent.com/26127467/187664103-cfbe0c4e-5876-42f9-9023-5fb58ce00d7b.jpg" height="500px" alt><br>
