@@ -31,7 +31,8 @@ codec = dict(
     type='IntegralRegressionLabel',
     input_size=(256, 256),
     heatmap_size=(64, 64),
-    sigma=2)
+    sigma=2.0,
+    normalize=True)
 
 # model settings
 model = dict(
@@ -41,7 +42,10 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
-    backbone=dict(type='ResNet', depth=50),
+    backbone=dict(
+        type='ResNet',
+        depth=50,
+    ),
     head=dict(
         type='DSNTHead',
         in_channels=2048,
