@@ -508,10 +508,10 @@ class HeatmapOffsetParser:
         """
 
         posemap = self._offset_to_pose(offsets)
-        inst_indexs, inst_scores = self._get_maximum_from_heatmap(
+        inst_indexes, inst_scores = self._get_maximum_from_heatmap(
             heatmaps[:, :1])
 
-        poses = posemap.view(posemap.size(1), -1)[..., inst_indexs]
+        poses = posemap.view(posemap.size(1), -1)[..., inst_indexes]
         poses = poses.view(self.num_joints, 2, -1).permute(2, 0,
                                                            1).contiguous()
         inst_scores = inst_scores.unsqueeze(1).unsqueeze(2).expand(

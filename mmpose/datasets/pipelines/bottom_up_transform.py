@@ -1161,7 +1161,7 @@ class BottomUpGetImgSize:
 
         base_size, center, scale = _get_multi_scale_size(
             img, input_size, self.current_scale, self.min_scale,
-            self.base_length)
+            self.base_length, self.use_udp)
         results['ann_info']['test_scale_factor'] = self.test_scale_factor
         results['ann_info']['base_size'] = base_size
         results['ann_info']['center'] = center
