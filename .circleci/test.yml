@@ -108,6 +108,7 @@ jobs:
           name: Install mmpose dependencies
           command: |
             docker exec mmpose apt install git -y
+            docker exec mmpose pip install -U numpy
             docker exec mmpose pip install -e /mmengine
             docker exec mmpose pip install -U openmim
             docker exec mmpose mim install 'mmcv >= 2.0.0rc1'
