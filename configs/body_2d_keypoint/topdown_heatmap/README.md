@@ -14,13 +14,13 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 |      Model      | Input Size |  AP   |  AR   |                Details and Download                 |
 | :-------------: | :--------: | :---: | :---: | :-------------------------------------------------: |
-|  HRNet-w48+UDP  |  256x192   | 0.773 | 0.820 |    [hrnet_udp_coco.md](./coco/hrnet_udp_coco.md)    |
+|  HRNet-w48+UDP  |  256x192   | 0.768 | 0.817 |    [hrnet_udp_coco.md](./coco/hrnet_udp_coco.md)    |
 |   MSPN 4-stg    |  256x192   | 0.765 | 0.826 |         [mspn_coco.md](./coco/mspn_coco.md)         |
 | HRNet-w48+Dark  |  256x192   | 0.764 | 0.814 |   [hrnet_dark_coco.md](./coco/hrnet_dark_coco.md)   |
-|    HRNet-w48    |  256x192   | 0.756 | 0.806 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
+|    HRNet-w48    |  256x192   | 0.756 | 0.809 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |   HRFormer-B    |  256x192   | 0.754 | 0.807 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
 |    RSN-50-3x    |  256x192   | 0.749 | 0.812 |          [rsn_coco.md](./coco/rsn_coco.md)          |
-|    HRNet-w32    |  256x192   | 0.746 | 0.799 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
+|    HRNet-w32    |  256x192   | 0.749 | 0.804 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |     Swin-L      |  256x192   | 0.743 | 0.798 |         [swin_coco.md](./coco/swin_coco.md)         |
 |   HRFormer-S    |  256x192   | 0.738 | 0.793 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
 |     Swin-B      |  256x192   | 0.737 | 0.794 |         [swin_coco.md](./coco/swin_coco.md)         |
