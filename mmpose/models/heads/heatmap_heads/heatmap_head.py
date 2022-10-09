@@ -332,13 +332,14 @@ class HeatmapHead(BaseHead):
         losses.update(loss_kpt=loss)
 
         # calculate accuracy
-        _, avg_acc, _ = pose_pck_accuracy(
-            output=to_numpy(pred_fields),
-            target=to_numpy(gt_heatmaps),
-            mask=to_numpy(keypoint_weights) > 0)
+        if train_cfg.get('compute_acc', True):
+            _, avg_acc, _ = pose_pck_accuracy(
+                output=to_numpy(pred_fields),
+                target=to_numpy(gt_heatmaps),
+                mask=to_numpy(keypoint_weights) > 0)
 
-        acc_pose = torch.tensor(avg_acc, device=gt_heatmaps.device)
-        losses.update(acc_pose=acc_pose)
+            acc_pose = torch.tensor(avg_acc, device=gt_heatmaps.device)
+            losses.update(acc_pose=acc_pose)
 
         return losses
 
