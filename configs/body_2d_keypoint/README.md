@@ -16,4 +16,6 @@ Please follow [DATA Preparation](/docs/en/dataset_zoo/2d_body_keypoint.md) to pr
 
 Please follow [Demo](/demo/docs/2d_human_pose_demo.md#2d-human-pose-demo) to run demos.
 
-<img src="/demo/resources/demo_coco.gif" width="600px" alt>
+<div align=center>
+<img src="https://user-images.githubusercontent.com/87690686/187824368-1f1631c3-52bf-4b45-bf9a-a70cd6551e1a.jpg" height="500px" alt><br>
+</div>
