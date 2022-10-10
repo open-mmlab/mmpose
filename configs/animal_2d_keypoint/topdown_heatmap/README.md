@@ -36,18 +36,18 @@ Results on AP-10K validation set
 
 Results on Desert Locust test set
 
-|   Model    | Input Size | PCK@0.2 |  AUC  | EPE  |             Details and Download              |
-| :--------: | :--------: | :-----: | :---: | :--: | :-------------------------------------------: |
-| ResNet-152 |  160x160   |  1.000  | 0.925 | 1.49 | [resnet_locust.md](./locust/resnet_locust.md) |
-| ResNet-101 |  160x160   |  1.000  | 0.907 | 2.03 | [resnet_locust.md](./locust/resnet_locust.md) |
-| ResNet-50  |  160x160   |  1.000  | 0.900 | 2.27 | [resnet_locust.md](./locust/resnet_locust.md) |
+|   Model    | Input Size |  AUC  | EPE  |             Details and Download              |
+| :--------: | :--------: | :---: | :--: | :-------------------------------------------: |
+| ResNet-152 |  160x160   | 0.925 | 1.49 | [resnet_locust.md](./locust/resnet_locust.md) |
+| ResNet-101 |  160x160   | 0.907 | 2.03 | [resnet_locust.md](./locust/resnet_locust.md) |
+| ResNet-50  |  160x160   | 0.900 | 2.27 | [resnet_locust.md](./locust/resnet_locust.md) |
 
 ### Grévy’s Zebra Dataset
 
 Results on Grévy’s Zebra test set
 
-|   Model    | Input Size | PCK@0.2 |  AUC  | EPE  |            Details and Download            |
-| :--------: | :--------: | :-----: | :---: | :--: | :----------------------------------------: |
-| ResNet-152 |  160x160   |  1.000  | 0.921 | 1.67 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
-| ResNet-101 |  160x160   |  1.000  | 0.915 | 1.83 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
-| ResNet-50  |  160x160   |  1.000  | 0.914 | 1.87 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
+|   Model    | Input Size |  AUC  | EPE  |            Details and Download            |
+| :--------: | :--------: | :---: | :--: | :----------------------------------------: |
+| ResNet-152 |  160x160   | 0.921 | 1.67 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
+| ResNet-101 |  160x160   | 0.915 | 1.83 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
+| ResNet-50  |  160x160   | 0.914 | 1.87 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
