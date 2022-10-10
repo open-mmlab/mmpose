@@ -1,4 +1,4 @@
-# Simple Coordinate Classification Perspective for Human Pose Estimation
+# SimCC: a Simple Coordinate Classification Perspective for Human Pose Estimation
 
 <!-- [ALGORITHM] -->
 
