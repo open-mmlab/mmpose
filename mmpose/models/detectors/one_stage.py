@@ -283,13 +283,17 @@ class DisentangledKeypointRegressor(BasePose):
                 offsets_flipped = offsets_flipped.transpose(1, 0).reshape(
                     1, -1, h, w)
 
+                heatmaps_flipped = [heatmaps_flipped]
+                offsets_flipped = [offsets_flipped]
+
             else:
                 heatmaps_flipped = None
                 offsets_flipped = None
 
             # aggregate heatmaps and offsets
             aggregated_heatmaps = aggregate_stage_flip(
-                [heatmaps], [heatmaps_flipped],
+                [heatmaps],
+                heatmaps_flipped,
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
@@ -299,7 +303,8 @@ class DisentangledKeypointRegressor(BasePose):
             scale_heatmaps_list.append(aggregated_heatmaps)
 
             aggregated_offsets = aggregate_stage_flip(
-                [offsets], [offsets_flipped],
+                [offsets],
+                offsets_flipped,
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
