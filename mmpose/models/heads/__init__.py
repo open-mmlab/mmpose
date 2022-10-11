@@ -2,6 +2,7 @@
 from .ae_higher_resolution_head import AEHigherResolutionHead
 from .ae_multi_stage_head import AEMultiStageHead
 from .ae_simple_head import AESimpleHead
+from .cid_head import CIDHead
 from .deconv_head import DeconvHead
 from .deeppose_regression_head import DeepposeRegressionHead
 from .hmr_head import HMRMeshHead
@@ -18,7 +19,7 @@ from .voxelpose_head import CuboidCenterHead, CuboidPoseHead
 __all__ = [
     'TopdownHeatmapSimpleHead', 'TopdownHeatmapMultiStageHead',
     'TopdownHeatmapMSMUHead', 'TopdownHeatmapBaseHead',
-    'AEHigherResolutionHead', 'AESimpleHead', 'AEMultiStageHead',
+    'AEHigherResolutionHead', 'AESimpleHead', 'AEMultiStageHead', 'CIDHead',
     'DeepposeRegressionHead', 'TemporalRegressionHead', 'Interhand3DHead',
     'HMRMeshHead', 'DeconvHead', 'ViPNASHeatmapSimpleHead', 'CuboidCenterHead',
     'CuboidPoseHead', 'MultiModalSSAHead'

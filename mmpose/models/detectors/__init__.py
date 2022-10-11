@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .associative_embedding import AssociativeEmbedding
+from .cid import CID
 from .gesture_recognizer import GestureRecognizer
 from .interhand_3d import Interhand3D
 from .mesh import ParametricMesh
@@ -11,7 +12,7 @@ from .posewarper import PoseWarper
 from .top_down import TopDown
 
 __all__ = [
-    'TopDown', 'AssociativeEmbedding', 'ParametricMesh', 'MultiTask',
+    'TopDown', 'AssociativeEmbedding', 'CID', 'ParametricMesh', 'MultiTask',
     'PoseLifter', 'Interhand3D', 'PoseWarper', 'DetectAndRegress',
     'VoxelCenterDetector', 'VoxelSinglePose', 'GestureRecognizer'
 ]

@@ -1,0 +1,24 @@
+Collections:
+- Name: CID
+  Paper:
+    Title: Contextual Instance Decoupling for Robust Multi-Person Pose Estimation
+    URL: https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/cid.md
+Models:
+- Config: configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_w32_coco_512x512.py
+  In Collection: CID
+  Metadata:
+    Architecture:
+    - CID
+    Training Data: COCO
+  Name: cid_hrnet_w32_coco_512x512
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.702
+      AP@0.5: 0.887
+      AP@0.75: 0.768
+      AR: 0.755
+      AR@0.5: 0.926
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/cid/hrnet_w32_coco_512x512-867b9659_20220928.pth

@@ -62,6 +62,7 @@ class Kpt2dSviewRgbImgBottomUpDataset(Dataset, metaclass=ABCMeta):
         self.ann_info['inference_channel'] = data_cfg['inference_channel']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
 
+        self.with_bbox = data_cfg.get('with_bbox', False)
         self.use_nms = data_cfg.get('use_nms', False)
         self.soft_nms = data_cfg.get('soft_nms', True)
         self.oks_thr = data_cfg.get('oks_thr', 0.9)
