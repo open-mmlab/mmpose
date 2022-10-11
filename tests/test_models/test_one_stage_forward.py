@@ -111,6 +111,10 @@ def test_dekr_forward():
         preds = np.random.rand(2, 17, 3)
         _ = detector.rescore_net(preds, img_metas[0]['skeleton'])
 
+        # test without flip_test
+        detector.test_cfg['flip_test'] = False
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+
 
 def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
     """Create a superset of inputs needed to run test or train batches.

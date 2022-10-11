@@ -86,6 +86,11 @@ def test_oks_iou():
 def test_nearby_joints_nms():
 
     kpts_db = []
+    keep_pose_inds = nearby_joints_nms(
+        kpts_db, 0.05, score_per_joint=True, max_dets=1)
+    assert len(keep_pose_inds) == 0
+
+    kpts_db = []
     for _ in range(5):
         kpts_db.append(
             dict(keypoints=np.random.rand(3, 2), score=np.random.rand(3)))

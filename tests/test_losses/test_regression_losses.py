@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import pytest
 import torch
 
 from mmpose.models import build_loss
@@ -272,3 +273,9 @@ def test_soft_weight_smooth_l1_loss():
     loss = build_loss(loss_cfg)
     assert torch.allclose(
         loss(fake_pred, fake_label, fake_weight), torch.tensor(1.5))
+
+    with pytest.raises(ValueError):
+        _ = loss.smooth_l1_loss(fake_pred, fake_label, reduction='fake')
+
+    output = loss.smooth_l1_loss(fake_pred, fake_label, reduction='sum')
+    assert torch.allclose(output, torch.tensor(3.0))

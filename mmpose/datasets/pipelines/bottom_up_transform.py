@@ -246,8 +246,8 @@ class OffsetGenerator:
             self.output_size = np.array([output_size, output_size],
                                         dtype=np.int)
         self.num_joints = num_joints
-        if radius < 0:
-            radius = self.output_size.prod()**0.5 / 32
+        assert radius > 0, f'`radius` must be a positive value, ' \
+                           f'but got {radius}'
         self.radius = radius
 
     def __call__(self, center, joints, area):

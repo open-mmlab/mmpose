@@ -442,6 +442,12 @@ def test_GetKeypointCenterArea():
                ) == results['ann_info']['num_scales']
     assert len(results_get_kpt_center_area['area'][0]) == 1
 
+    for joints in results['joints']:
+        joints[..., 2] = 0
+    results_get_kpt_center_area = get_kpt_center_area(results)
+    assert len(results_get_kpt_center_area['center']) > 0
+    assert results_get_kpt_center_area['center'][0][..., 2] == 0
+
 
 def test_BottomUpGenerateOffsetTarget():
     data_prefix = 'tests/data/coco/'
@@ -449,7 +455,7 @@ def test_BottomUpGenerateOffsetTarget():
     coco = COCO(ann_file)
 
     ann_info = {}
-    ann_info['heatmap_size'] = np.array([128, 256])
+    ann_info['heatmap_size'] = [[512, 512], 256]
     ann_info['num_joints'] = 17
     ann_info['num_scales'] = 2
     ann_info['scale_aware_sigma'] = False
