@@ -15,6 +15,13 @@
         <i>TRY IT OUT</i>
       </a>
     </sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <b>MMPose 1.0 Public Beta</b>
+    <sup>
+      <a href="https://mmpose.readthedocs.io/en/1.x/overview.html">
+        <i>JOIN</i>
+      </a>
+    </sup>
   </div>
   <div>&nbsp;</div>
 
@@ -26,11 +33,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘Documentation](https://mmpose.readthedocs.io/en/v0.28.0/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/v0.28.0/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.28.0/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/v0.28.0/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/v0.28.0/changelog.html) |
+[📘Documentation](https://mmpose.readthedocs.io/en/v0.29.0/) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/v0.29.0/install.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.29.0/modelzoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/v0.29.0/papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/v0.29.0/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -78,10 +85,10 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- 2022-07-06: MMPose [v0.28.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.28.0) is released. Major updates include:
-  - Support [TCFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Zeng_Not_All_Tokens_Are_Equal_Human-Centric_Visual_Analysis_via_Token_CVPR_2022_paper.html) (CVPR'2022). See the [model page](/configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/tcformer_coco-wholebody.md)
-  - Add [RLE](https://arxiv.org/abs/2107.11291) pre-trained model on COCO dataset. See the [model page](/configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_rle_coco.md)
-  - Update [Swin](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_coco.md) models with better performance
+- 2022-10-14: MMPose [v0.29.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.29.0) is released. Major updates include:
+  - Support [DEKR](https://arxiv.org/abs/2104.02300) (CVPR'2021). See the [model page](/configs/body/2d_kpt_sview_rgb_img/dekr/coco/hrnet_coco.md)
+  - Support [CID](https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html) (CVPR'2022). See the [model page](/configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_coco.md)
+- 2022-09-01: **MMPose v1.0.0** beta has been released \[ [Code](https://github.com/open-mmlab/mmpose/tree/1.x) | [Docs](https://mmpose.readthedocs.io/en/1.x/) \]. Welcome to try it and your feedback will be greatly appreciated!
 - 2022-02-28: MMPose model deployment is supported by [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0
   MMPose Webcam API is a simple yet powerful tool to develop interactive webcam applications with MMPose features.
 - 2021-12-29: OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
@@ -141,6 +148,8 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [VoxelPose](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020)
 - [x] [LiteHRNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
 - [x] [ViPNAS](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
+- [x] [DEKR](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#dekr-cvpr-2021) (CVPR'2021)
+- [x] [CID](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#cid-cvpr-2022) (CVPR'2022)
 
 </details>
 
