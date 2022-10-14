@@ -31,7 +31,6 @@
 - Fix incorrect flops calculation ([#1669](https://github.com/open-mmlab/mmpose/pull/1669)) @liqikai9
 - Fix `tensor.tile` compatibility issue for pytorch 1.6 ([#1658](https://github.com/open-mmlab/mmpose/pull/1658)) @ly015
 - Fix compatibility with `MultilevelPixelData` ([#1647](https://github.com/open-mmlab/mmpose/pull/1647)) @liqikai9
--
 
 ## **v1.0.0beta (1/09/2022)**
 

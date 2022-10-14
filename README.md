@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- 2022-10-14: MMPose \[v1.0.0rc0\] is released. Major updates include:
+- 2022-10-14: MMPose [v1.0.0rc0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc0) is released. Major updates include:
 
   - Support 4 light-weight pose estimation algorithms
     - SimCC (ECCV'22): [paper](https://doi.org/10.48550/arxiv.2107.03332) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/simcc/README.md)
@@ -135,7 +135,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/m
 - [x] [HRNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#hrnet-cvpr-2019) (CVPR'2019)
 - [x] [IPR](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#ipr-eccv-2018) (ECCV'2018)
 - [ ] [VideoPose3D](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
-- [ ] [HRNetv2](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
+- [x] [HRNetv2](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
 - [x] [MSPN](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#mspn-arxiv-2019) (ArXiv'2019)
 - [x] [SCNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
 - [ ] [HigherHRNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)

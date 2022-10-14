@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 2022-10-14: MMPose \[v1.0.0rc0\] is released. 已经发布. 主要更新包括:
+- 2022-10-14: MMPose [v1.0.0rc0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc0) 已经发布. 主要更新包括:
 
   - 增加了 4 个轻量化姿态估计算法
     - SimCC (ECCV'22): [论文链接](https://doi.org/10.48550/arxiv.2107.03332) | [模型](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/simcc/README.md)
@@ -88,7 +88,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - 对 MMPose 进行了重大重构，旨在提升算法库性能和可扩展性，并使其更容易上手。
   - 基于一个全新的，可扩展性强的训练和测试引擎，但目前仍在开发中。欢迎根据[文档](https://mmpose.readthedocs.io/zh_CN/1.x/)进行试用。
   - 新版本中存在一些与旧版本不兼容的修改。请查看[迁移文档](https://mmpose.readthedocs.io/zh_CN/1.x/migration.html)来详细了解这些变动。
-    -新版本的公测将持续到 2022 年末，在此期间，我们将基于 `1.x` 分支进行更新，不会合入到 `master` 分支。另外，至少
+  - 新版本的公测将持续到 2022 年末，在此期间，我们将基于 `1.x` 分支进行更新，不会合入到 `master` 分支。另外，至少
     到 2023 年末，我们会保持对 0.x 版本的维护。
 
 发布历史和更新细节请参考 [更新日志](https://mmpose.readthedocs.io/zh_CN/1.x/notes/changelog.html)
@@ -138,7 +138,7 @@ mim install -e
 - [x] [HRNet](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#hrnet-cvpr-2019) (CVPR'2019)
 - [x] [IPR](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/algorithms.html#ipr-eccv-2018) (ECCV'2018)
 - [ ] [VideoPose3D](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
-- [ ] [HRNetv2](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
+- [x] [HRNetv2](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
 - [x] [MSPN](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#mspn-arxiv-2019) (ArXiv'2019)
 - [x] [SCNet](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
 - [ ] [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
