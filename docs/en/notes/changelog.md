@@ -1,5 +1,38 @@
 # Changelog
 
+## **v1.0.0rc0 (14/10/2022)**
+
+**New Features**
+
+- Support 4 light-weight pose estimation algorithms: [SimCC](https://doi.org/10.48550/arxiv.2107.03332) (ECCV'2022), [Debias-IPR](https://openaccess.thecvf.com/content/ICCV2021/papers/Gu_Removing_the_Bias_of_Integral_Pose_Regression_ICCV_2021_paper.pdf) (ICCV'2021), [IPR](https://arxiv.org/abs/1711.08229) (ECCV'2018), and [DSNT](https://arxiv.org/abs/1801.07372v2) (ArXiv'2018) ([#1628](https://github.com/open-mmlab/mmpose/pull/1628))
+
+**Migrations**
+
+- Add Webcam API in MMPose 1.0 ([#1638](https://github.com/open-mmlab/mmpose/pull/1638), [#1662](https://github.com/open-mmlab/mmpose/pull/1662)) @Ben-Louis
+- Add codec for Associative Embedding (beta) ([#1603](https://github.com/open-mmlab/mmpose/pull/1603)) @ly015
+
+**Improvements**
+
+- Add a colab tutorial for MMPose 1.0 ([#1660](https://github.com/open-mmlab/mmpose/pull/1660)) @Tau-J
+- Add model index in config folder ([#1710](https://github.com/open-mmlab/mmpose/pull/1710), [#1709](https://github.com/open-mmlab/mmpose/pull/1709), [#1627](https://github.com/open-mmlab/mmpose/pull/1627)) @ly015, @Tau-J, @Ben-Louis
+- Improve documentation quality ([#1692](https://github.com/open-mmlab/mmpose/pull/1692), [#1656](https://github.com/open-mmlab/mmpose/pull/1656)) @Tau-J, @Ben-Louis
+- Update and improve documentation ([#1681](https://github.com/open-mmlab/mmpose/pull/1681), [#1677](https://github.com/open-mmlab/mmpose/pull/1677), [#1664](https://github.com/open-mmlab/mmpose/pull/1664), [#1659](https://github.com/open-mmlab/mmpose/pull/1659)) @liqikai9
+- Improve config structures and formats ([#1651](https://github.com/open-mmlab/mmpose/pull/1651)) @liqikai9
+
+**Bug Fixes**
+
+- Update mmengine version requirements ([#1715](https://github.com/open-mmlab/mmpose/pull/1715)) @Ben-Louis
+- Update dependencies of pre-commit hooks ([#1705](https://github.com/open-mmlab/mmpose/pull/1705)) @Ben-Louis
+- Fix mmcv version in DockerFile ([#1704](https://github.com/open-mmlab/mmpose/pull/1704))
+- Fix a bug in setting dataset metainfo in configs ([#1684](https://github.com/open-mmlab/mmpose/pull/1684)) @ly015
+- Fix a bug in UDP training ([#1682](https://github.com/open-mmlab/mmpose/pull/1682)) @liqikai9
+- Fix a bug in Dark decoding ([#1676](https://github.com/open-mmlab/mmpose/pull/1676)) @liqikai9
+- Fix bugs in visualization ([#1671](https://github.com/open-mmlab/mmpose/pull/1671), [#1668](https://github.com/open-mmlab/mmpose/pull/1668), [#1657](https://github.com/open-mmlab/mmpose/pull/1657)) @liqikai9, @Ben-Louis
+- Fix incorrect flops calculation ([#1669](https://github.com/open-mmlab/mmpose/pull/1669)) @liqikai9
+- Fix `tensor.tile` compatibility issue for pytorch 1.6 ([#1658](https://github.com/open-mmlab/mmpose/pull/1658)) @ly015
+- Fix compatibility with `MultilevelPixelData` ([#1647](https://github.com/open-mmlab/mmpose/pull/1647)) @liqikai9
+-
+
 ## **v1.0.0beta (1/09/2022)**
 
 We are excited to announce the release of MMPose 1.0.0beta.
