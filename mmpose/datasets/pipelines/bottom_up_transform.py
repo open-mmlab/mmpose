@@ -20,6 +20,7 @@ def _get_multi_scale_size(image,
                           input_size,
                           current_scale,
                           min_scale,
+                          base_length=64,
                           use_udp=False):
     """Get the size for multi-scale training.
 
@@ -28,6 +29,8 @@ def _get_multi_scale_size(image,
         input_size (np.ndarray[2]): Size (w, h) of the image input.
         current_scale (float): Scale factor.
         min_scale (float): Minimal scale.
+        base_length (int): The width and height should be multiples of
+            base_length. Default: 64.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
@@ -36,20 +39,20 @@ def _get_multi_scale_size(image,
         tuple: A tuple containing multi-scale sizes.
 
         - (w_resized, h_resized) (tuple(int)): resized width/height
-        - center (np.ndarray)image center
+        - center (np.ndarray): image center
         - scale (np.ndarray): scales wrt width/height
     """
     assert len(input_size) == 2
     h, w, _ = image.shape
 
     # calculate the size for min_scale
-    min_input_w = _ceil_to_multiples_of(min_scale * input_size[0], 64)
-    min_input_h = _ceil_to_multiples_of(min_scale * input_size[1], 64)
+    min_input_w = _ceil_to_multiples_of(min_scale * input_size[0], base_length)
+    min_input_h = _ceil_to_multiples_of(min_scale * input_size[1], base_length)
     if w < h:
         w_resized = int(min_input_w * current_scale / min_scale)
         h_resized = int(
-            _ceil_to_multiples_of(min_input_w / w * h, 64) * current_scale /
-            min_scale)
+            _ceil_to_multiples_of(min_input_w / w * h, base_length) *
+            current_scale / min_scale)
         if use_udp:
             scale_w = w - 1.0
             scale_h = (h_resized - 1.0) / (w_resized - 1.0) * (w - 1.0)
@@ -59,8 +62,8 @@ def _get_multi_scale_size(image,
     else:
         h_resized = int(min_input_h * current_scale / min_scale)
         w_resized = int(
-            _ceil_to_multiples_of(min_input_h / h * w, 64) * current_scale /
-            min_scale)
+            _ceil_to_multiples_of(min_input_h / h * w, base_length) *
+            current_scale / min_scale)
         if use_udp:
             scale_h = h - 1.0
             scale_w = (w_resized - 1.0) / (h_resized - 1.0) * (h - 1.0)
@@ -74,7 +77,11 @@ def _get_multi_scale_size(image,
     return (w_resized, h_resized), center, np.array([scale_w, scale_h])
 
 
-def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
+def _resize_align_multi_scale(image,
+                              input_size,
+                              current_scale,
+                              min_scale,
+                              base_length=64):
     """Resize the images for multi-scale training.
 
     Args:
@@ -82,6 +89,8 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
         input_size (np.ndarray[2]): Size (w, h) of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
+        base_length (int): The width and height should be multiples of
+            base_length. Default: 64.
 
     Returns:
         tuple: A tuple containing image info.
@@ -92,7 +101,7 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
     """
     assert len(input_size) == 2
     size_resized, center, scale = _get_multi_scale_size(
-        image, input_size, current_scale, min_scale)
+        image, input_size, current_scale, min_scale, base_length)
 
     trans = get_affine_transform(center, scale, 0, size_resized)
     image_resized = cv2.warpAffine(image, trans, size_resized)
@@ -100,7 +109,11 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
     return image_resized, center, scale
 
 
-def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
+def _resize_align_multi_scale_udp(image,
+                                  input_size,
+                                  current_scale,
+                                  min_scale,
+                                  base_length=64):
     """Resize the images for multi-scale training.
 
     Args:
@@ -108,6 +121,8 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
         input_size (np.ndarray[2]): Size (w, h) of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
+        base_length (int): The width and height should be multiples of
+            base_length. Default: 64.
 
     Returns:
         tuple: A tuple containing image info.
@@ -118,10 +133,11 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
     """
     assert len(input_size) == 2
     size_resized, _, _ = _get_multi_scale_size(image, input_size,
-                                               current_scale, min_scale, True)
+                                               current_scale, min_scale,
+                                               base_length, True)
 
     _, center, scale = _get_multi_scale_size(image, input_size, min_scale,
-                                             min_scale, True)
+                                             min_scale, base_length, True)
 
     trans = get_warp_matrix(
         theta=0,
@@ -209,6 +225,77 @@ class HeatmapGenerator:
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
         return hms
+
+
+class OffsetGenerator:
+    """Generate offset maps for bottom-up models.
+
+    Args:
+        num_joints (int): Number of keypoints
+        output_size (np.ndarray): Size (w, h) of feature map
+        radius (int): Radius of area assigned with valid offset
+    """
+
+    def __init__(self, output_size, num_joints, radius=4):
+        if not isinstance(output_size, np.ndarray):
+            output_size = np.array(output_size)
+        if output_size.size > 1:
+            assert len(output_size) == 2
+            self.output_size = output_size
+        else:
+            self.output_size = np.array([output_size, output_size],
+                                        dtype=np.int)
+        self.num_joints = num_joints
+        assert radius > 0, f'`radius` must be a positive value, ' \
+                           f'but got {radius}'
+        self.radius = radius
+
+    def __call__(self, center, joints, area):
+        """Generate offset maps."""
+
+        offset_map = np.zeros(
+            (self.num_joints * 2, self.output_size[1], self.output_size[0]),
+            dtype=np.float32)
+        weight_map = np.zeros(
+            (self.num_joints * 2, self.output_size[1], self.output_size[0]),
+            dtype=np.float32)
+        area_map = np.zeros((self.output_size[1], self.output_size[0]),
+                            dtype=np.float32)
+
+        for i in range(len(center)):
+            x_center, y_center = center[i, 0, 0], center[i, 0, 1]
+            if center[i, 0, 2] < 1 or x_center < 0 or y_center < 0 \
+                    or x_center >= self.output_size[0] \
+                    or y_center >= self.output_size[1]:
+                continue
+
+            for j in range(self.num_joints):
+                x, y = joints[i, j, :2]
+                if joints[i, j, 2] < 1 or x >= self.output_size[0] \
+                        or y >= self.output_size[1] or x < 0 or y < 0:
+                    continue
+
+                start_x = max(int(x_center - self.radius), 0)
+                start_y = max(int(y_center - self.radius), 0)
+                end_x = min(int(x_center + self.radius), self.output_size[0])
+                end_y = min(int(y_center + self.radius), self.output_size[1])
+
+                for pos_x in range(start_x, end_x):
+                    for pos_y in range(start_y, end_y):
+                        offset_x = pos_x - x
+                        offset_y = pos_y - y
+                        if offset_map[j*2, pos_y, pos_x] != 0 \
+                                or offset_map[j*2+1, pos_y, pos_x] != 0:
+                            if area_map[pos_y, pos_x] < area[i]:
+                                continue
+                        offset_map[j * 2, pos_y, pos_x] = offset_x
+                        offset_map[j * 2 + 1, pos_y, pos_x] = offset_y
+                        weight_map[j * 2, pos_y, pos_x] = 1. / np.sqrt(area[i])
+                        weight_map[j * 2 + 1, pos_y,
+                                   pos_x] = 1. / np.sqrt(area[i])
+                        area_map[pos_y, pos_x] = area[i]
+
+        return offset_map, weight_map
 
 
 class JointsEncoder:
@@ -357,6 +444,55 @@ class PAFGenerator:
             pafs[2 * idx:2 * idx + 2] /= np.maximum(count, 1)
 
         return pafs
+
+
+@PIPELINES.register_module()
+class GetKeypointCenterArea:
+    """Copmute center and area from keypoitns for each instance.
+
+    Required key: 'joints'.
+
+    Modifies key: 'center' and 'area'.
+
+    Args:
+        minimal_area (float): Minimum of allowed area. Instance with
+            smaller area will be ignored in training. Default: 32.
+    """
+
+    def __init__(self, minimal_area=32):
+        self.minimal_area = minimal_area
+
+    def __call__(self, results):
+        """Copmute center and area from keypoitns for each instance."""
+
+        center_list = []
+        area_list = []
+
+        for joints in results['joints']:
+
+            area = np.zeros((joints.shape[0]), dtype=np.float32)
+            center = np.zeros((joints.shape[0], 1, 3), dtype=np.float32)
+            for i in range(joints.shape[0]):
+                visible_joints = joints[i][joints[i][..., 2] > 0][..., :2]
+                if visible_joints.size == 0:
+                    continue
+
+                center[i, 0, :2] = visible_joints.mean(axis=0, keepdims=True)
+                center[i, 0, 2] = 1
+
+                area[i] = np.power(
+                    visible_joints.max(axis=0) - visible_joints.min(axis=0),
+                    2)[:2].sum()
+                if area[i] < self.minimal_area:
+                    center[i, 0, 2] = 0
+
+            center_list.append(center)
+            area_list.append(area)
+
+        results['center'] = center_list
+        results['area'] = area_list
+
+        return results
 
 
 @PIPELINES.register_module()
@@ -584,38 +720,138 @@ class BottomUpRandomAffine:
 class BottomUpGenerateHeatmapTarget:
     """Generate multi-scale heatmap target for bottom-up.
 
+    Required key: 'joints', 'mask' and 'center'.
+
+    Modifies key: 'target', 'heatmaps' and 'masks'.
+
     Args:
-        sigma (int): Sigma of heatmap Gaussian
-        max_num_people (int): Maximum number of people in an image
+        sigma (int or tuple): Sigma of heatmap Gaussian. If sigma is a tuple,
+            the first item should be the sigma of keypoints and the second
+            item should be the sigma of center.
+        bg_weight (float): Weight for background. Default: 1.0.
+        gen_center_heatmap (bool): Whether to generate heatmaps for instance
+            centers. Default: False.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, sigma, use_udp=False):
+    def __init__(self,
+                 sigma,
+                 bg_weight=1.0,
+                 gen_center_heatmap=False,
+                 use_udp=False):
+
+        if isinstance(sigma, int):
+            sigma = (sigma, )
+        if gen_center_heatmap:
+            assert len(sigma) == 2, 'sigma for centers must be given if ' \
+                                    '`gen_center_heatmap` is True. ' \
+                                    'e.g. sigma=(2, 4)'
+
         self.sigma = sigma
+        self.bg_weight = bg_weight
+        self.gen_center_heatmap = gen_center_heatmap
         self.use_udp = use_udp
 
-    def _generate(self, num_joints, heatmap_size):
+    def _generate(self, num_joints, sigma, heatmap_size):
         """Get heatmap generator."""
         heatmap_generator = [
-            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp)
+            HeatmapGenerator(output_size, num_joints, sigma, self.use_udp)
             for output_size in heatmap_size
         ]
         return heatmap_generator
 
     def __call__(self, results):
         """Generate multi-scale heatmap target for bottom-up."""
-        heatmap_generator = \
-            self._generate(results['ann_info']['num_joints'],
-                           results['ann_info']['heatmap_size'])
         target_list = list()
         joints_list = results['joints']
+        mask_list = results['mask']
+        output_mask_list = []
+
+        heatmap_generator = \
+            self._generate(results['ann_info']['num_joints'],
+                           self.sigma[0],
+                           results['ann_info']['heatmap_size'])
 
         for scale_id in range(results['ann_info']['num_scales']):
             heatmaps = heatmap_generator[scale_id](joints_list[scale_id])
             target_list.append(heatmaps.astype(np.float32))
+
+            if self.bg_weight != 1:
+                mask = mask_list[scale_id].copy().astype(np.float32)
+                mask = mask[None, ...].repeat(heatmaps.shape[0], axis=0)
+                mask = mask * self.bg_weight
+                mask[np.logical_and(heatmaps > 0, mask > 0)] = 1
+                output_mask_list.append(mask)
+
+        if self.gen_center_heatmap:
+            center_list = results['center']
+            heatmap_generator = self._generate(
+                1, self.sigma[1], results['ann_info']['heatmap_size'])
+
+            for scale_id in range(results['ann_info']['num_scales']):
+                heatmaps = heatmap_generator[scale_id](
+                    center_list[scale_id]).astype(np.float32)
+                target_list[scale_id] = np.concatenate(
+                    (heatmaps, target_list[scale_id]), axis=0)
+
+                if self.bg_weight != 1:
+                    mask = mask_list[scale_id].copy().astype(np.float32)
+                    mask = mask[None, ...] * self.bg_weight
+                    mask[np.logical_and(heatmaps > 0, mask > 0)] = 1
+                    output_mask_list[scale_id] = np.concatenate(
+                        (mask, output_mask_list[scale_id]), axis=0)
+
         results['target'] = target_list
+        results['heatmaps'] = target_list
+        results['masks'] = output_mask_list
+
+        return results
+
+
+@PIPELINES.register_module()
+class BottomUpGenerateOffsetTarget:
+    """Generate multi-scale offset target for bottom-up.
+
+    Required key: 'center', 'joints and 'area'.
+
+    Modifies key: 'offsets', 'offset_weights.
+
+    Args:
+        radius (int): Radius of labeled area for each instance.
+    """
+
+    def __init__(self, radius=4):
+        self.radius = radius
+
+    def _generate(self, num_joints, heatmap_size):
+        """Get offset generator."""
+        offset_generator = [
+            OffsetGenerator(output_size, num_joints, self.radius)
+            for output_size in heatmap_size
+        ]
+        return offset_generator
+
+    def __call__(self, results):
+        """Generate multi-scale offset target for bottom-up."""
+        target_list = list()
+        weight_list = list()
+        center_list = results['center']
+        joints_list = results['joints']
+        area_list = results['area']
+
+        offset_generator = self._generate(results['ann_info']['num_joints'],
+                                          results['ann_info']['heatmap_size'])
+
+        for scale_id in range(results['ann_info']['num_scales']):
+            offset, offset_weight = offset_generator[scale_id](
+                center_list[scale_id], joints_list[scale_id],
+                area_list[scale_id])
+            target_list.append(offset.astype(np.float32))
+            weight_list.append(offset_weight)
+        results['offsets'] = target_list
+        results['offset_weights'] = weight_list
 
         return results
 
@@ -894,15 +1130,22 @@ class BottomUpGetImgSize:
     Args:
         test_scale_factor (List[float]): Multi scale
         current_scale (int): default 1
+        base_length (int): The width and height should be multiples of
+            base_length. Default: 64.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, test_scale_factor, current_scale=1, use_udp=False):
+    def __init__(self,
+                 test_scale_factor,
+                 current_scale=1,
+                 base_length=64,
+                 use_udp=False):
         self.test_scale_factor = test_scale_factor
         self.min_scale = min(test_scale_factor)
         self.current_scale = current_scale
+        self.base_length = base_length
         self.use_udp = use_udp
 
     def __call__(self, results):
@@ -916,41 +1159,13 @@ class BottomUpGetImgSize:
             input_size = np.array([input_size, input_size], dtype=np.int)
         img = results['img']
 
-        h, w, _ = img.shape
-
-        # calculate the size for min_scale
-        min_input_w = _ceil_to_multiples_of(self.min_scale * input_size[0], 64)
-        min_input_h = _ceil_to_multiples_of(self.min_scale * input_size[1], 64)
-        if w < h:
-            w_resized = int(min_input_w * self.current_scale / self.min_scale)
-            h_resized = int(
-                _ceil_to_multiples_of(min_input_w / w * h, 64) *
-                self.current_scale / self.min_scale)
-            if self.use_udp:
-                scale_w = w - 1.0
-                scale_h = (h_resized - 1.0) / (w_resized - 1.0) * (w - 1.0)
-            else:
-                scale_w = w / 200.0
-                scale_h = h_resized / w_resized * w / 200.0
-        else:
-            h_resized = int(min_input_h * self.current_scale / self.min_scale)
-            w_resized = int(
-                _ceil_to_multiples_of(min_input_h / h * w, 64) *
-                self.current_scale / self.min_scale)
-            if self.use_udp:
-                scale_h = h - 1.0
-                scale_w = (w_resized - 1.0) / (h_resized - 1.0) * (h - 1.0)
-            else:
-                scale_h = h / 200.0
-                scale_w = w_resized / h_resized * h / 200.0
-        if self.use_udp:
-            center = (scale_w / 2.0, scale_h / 2.0)
-        else:
-            center = np.array([round(w / 2.0), round(h / 2.0)])
+        base_size, center, scale = _get_multi_scale_size(
+            img, input_size, self.current_scale, self.min_scale,
+            self.base_length, self.use_udp)
         results['ann_info']['test_scale_factor'] = self.test_scale_factor
-        results['ann_info']['base_size'] = (w_resized, h_resized)
+        results['ann_info']['base_size'] = base_size
         results['ann_info']['center'] = center
-        results['ann_info']['scale'] = np.array([scale_w, scale_h])
+        results['ann_info']['scale'] = scale
 
         return results
 
@@ -961,13 +1176,16 @@ class BottomUpResizeAlign:
 
     Args:
         transforms (List): ToTensor & Normalize
+        base_length (int): The width and height should be multiples of
+            base_length. Default: 64.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, transforms, use_udp=False):
+    def __init__(self, transforms, base_length=64, use_udp=False):
         self.transforms = Compose(transforms)
+        self.base_length = base_length
         if use_udp:
             self._resize_align_multi_scale = _resize_align_multi_scale_udp
         else:
@@ -988,7 +1206,8 @@ class BottomUpResizeAlign:
         for _, s in enumerate(sorted(test_scale_factor, reverse=True)):
             _results = results.copy()
             image_resized, _, _ = self._resize_align_multi_scale(
-                _results['img'], input_size, s, min(test_scale_factor))
+                _results['img'], input_size, s, min(test_scale_factor),
+                self.base_length)
             _results['img'] = image_resized
             _results = self.transforms(_results)
             transformed_img = _results['img'].unsqueeze(0)

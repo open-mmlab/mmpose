@@ -1,7 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
+import pytest
 
-from mmpose.core.post_processing.nms import nms, oks_iou, oks_nms, soft_oks_nms
+from mmpose.core.post_processing.nms import (nearby_joints_nms, nms, oks_iou,
+                                             oks_nms, soft_oks_nms)
 
 
 def test_soft_oks_nms():
@@ -79,3 +81,33 @@ def test_oks_iou():
     assert result[0] == 1.
     result = oks_iou(np.zeros([17 * 3]), np.ones([1, 17 * 3]), 1, [1])
     assert result[0] < 0.01
+
+
+def test_nearby_joints_nms():
+
+    kpts_db = []
+    keep_pose_inds = nearby_joints_nms(
+        kpts_db, 0.05, score_per_joint=True, max_dets=1)
+    assert len(keep_pose_inds) == 0
+
+    kpts_db = []
+    for _ in range(5):
+        kpts_db.append(
+            dict(keypoints=np.random.rand(3, 2), score=np.random.rand(3)))
+    keep_pose_inds = nearby_joints_nms(
+        kpts_db, 0.05, score_per_joint=True, max_dets=1)
+    assert len(keep_pose_inds) == 1
+    assert keep_pose_inds[0] < 5
+
+    kpts_db = []
+    for _ in range(5):
+        kpts_db.append(
+            dict(keypoints=np.random.rand(3, 2), score=np.random.rand()))
+    keep_pose_inds = nearby_joints_nms(kpts_db, 0.05, num_nearby_joints_thr=2)
+    assert len(keep_pose_inds) <= 5 and len(keep_pose_inds) > 0
+
+    with pytest.raises(AssertionError):
+        _ = nearby_joints_nms(kpts_db, 0, num_nearby_joints_thr=2)
+
+    with pytest.raises(AssertionError):
+        _ = nearby_joints_nms(kpts_db, 0.05, num_nearby_joints_thr=3)

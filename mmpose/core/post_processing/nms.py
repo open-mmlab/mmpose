@@ -161,7 +161,7 @@ def soft_oks_nms(kpts_db,
     """Soft OKS NMS implementations.
 
     Args:
-        kpts_db
+        kpts_db: keypoints and scores.
         thr: retain oks overlap < thr.
         max_dets: max number of detections to keep.
         sigmas: Keypoint labelling uncertainty.
@@ -205,3 +205,75 @@ def soft_oks_nms(kpts_db,
     keep = keep[:keep_cnt]
 
     return keep
+
+
+def nearby_joints_nms(
+    kpts_db,
+    dist_thr,
+    num_nearby_joints_thr=None,
+    score_per_joint=False,
+    max_dets=-1,
+):
+    """Nearby joints NMS implementations.
+
+    Args:
+        kpts_db (list[dict]): keypoints and scores.
+        dist_thr (float): threshold for judging whether two joints are close.
+        num_nearby_joints_thr (int): threshold for judging whether two
+            instances are close.
+        max_dets (int): max number of detections to keep.
+        score_per_joint (bool): the input scores (in kpts_db) are per joint
+            scores.
+
+    Returns:
+        np.ndarray: indexes to keep.
+    """
+
+    assert dist_thr > 0, '`dist_thr` must be greater than 0.'
+    if len(kpts_db) == 0:
+        return []
+
+    if score_per_joint:
+        scores = np.array([k['score'].mean() for k in kpts_db])
+    else:
+        scores = np.array([k['score'] for k in kpts_db])
+
+    kpts = np.array([k['keypoints'] for k in kpts_db])
+
+    num_people, num_joints, _ = kpts.shape
+    if num_nearby_joints_thr is None:
+        num_nearby_joints_thr = num_joints // 2
+    assert num_nearby_joints_thr < num_joints, '`num_nearby_joints_thr` must '\
+        'be less than the number of joints.'
+
+    # compute distance threshold
+    pose_area = kpts.max(axis=1) - kpts.min(axis=1)
+    pose_area = np.sqrt(np.power(pose_area, 2).sum(axis=1))
+    pose_area = pose_area.reshape(num_people, 1, 1)
+    pose_area = np.tile(pose_area, (num_people, num_joints))
+    close_dist_thr = pose_area * dist_thr
+
+    # count nearby joints between instances
+    instance_dist = kpts[:, None] - kpts
+    instance_dist = np.sqrt(np.power(instance_dist, 2).sum(axis=3))
+    close_instance_num = (instance_dist < close_dist_thr).sum(2)
+    close_instance = close_instance_num > num_nearby_joints_thr
+
+    # apply nms
+    ignored_pose_inds, keep_pose_inds = set(), list()
+    indexes = np.argsort(scores)[::-1]
+    for i in indexes:
+        if i in ignored_pose_inds:
+            continue
+        keep_inds = close_instance[i].nonzero()[0]
+        keep_ind = keep_inds[np.argmax(scores[keep_inds])]
+        if keep_ind not in ignored_pose_inds:
+            keep_pose_inds.append(keep_ind)
+            ignored_pose_inds = ignored_pose_inds.union(set(keep_inds))
+
+    # limit the number of output instances
+    if max_dets > 0 and len(keep_pose_inds) > max_dets:
+        sub_inds = np.argsort(scores[keep_pose_inds])[-1:-max_dets - 1:-1]
+        keep_pose_inds = [keep_pose_inds[i] for i in sub_inds]
+
+    return keep_pose_inds

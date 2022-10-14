@@ -2,17 +2,20 @@
 import copy
 import os.path as osp
 
+import cv2
 import numpy as np
 import pytest
 import xtcocotools
 from xtcocotools.coco import COCO
 
-from mmpose.datasets.pipelines import (BottomUpGenerateHeatmapTarget,
+from mmpose.datasets.pipelines import BottomUpGenerateHeatmapTarget  # noqa
+from mmpose.datasets.pipelines import (BottomUpGenerateOffsetTarget,
                                        BottomUpGeneratePAFTarget,
                                        BottomUpGenerateTarget,
                                        BottomUpGetImgSize,
                                        BottomUpRandomAffine,
                                        BottomUpRandomFlip, BottomUpResizeAlign,
+                                       GetKeypointCenterArea,
                                        LoadImageFromFile)
 
 
@@ -34,7 +37,7 @@ def _get_mask(coco, anno, img_id):
             for rle in rles:
                 m += xtcocotools.mask.decode(rle)
 
-    return m < 0.5
+    return (m < 0.5).astype(np.float32)
 
 
 def _get_joints(anno, ann_info, int_sigma):
@@ -155,7 +158,7 @@ def test_bottomup_pipeline():
         results_horizontal_flip = random_horizontal_flip(
             copy.deepcopy(results_copy))
 
-    # test TopDownAffine
+    # test BottomUpRandomAffine
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short', 0)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
     assert results_affine_transform['img'].shape == (512, 384, 3)
@@ -372,21 +375,121 @@ def test_BottomUpGenerateHeatmapTarget():
     ]
     joints = _get_joints(anno, ann_info, False)
 
-    mask_list = [mask.copy() for _ in range(ann_info['num_scales'])]
+    mask_list = [
+        cv2.resize(mask.copy(), (size, size))
+        for size in ann_info['heatmap_size']
+    ]
     joints_list = [joints.copy() for _ in range(ann_info['num_scales'])]
+    center_list = [
+        joints.mean(axis=1, keepdims=True) for joints in joints_list
+    ]
 
     results = {}
     results['dataset'] = 'coco'
     results['image_file'] = osp.join(data_prefix, '000000000785.jpg')
     results['mask'] = mask_list
     results['joints'] = joints_list
+    results['center'] = center_list
     results['ann_info'] = ann_info
 
-    generate_heatmap_target = BottomUpGenerateHeatmapTarget(2)
+    generate_heatmap_target = BottomUpGenerateHeatmapTarget((2, 4), 0.1, True)
     results_generate_heatmap_target = generate_heatmap_target(results)
     assert 'target' in results_generate_heatmap_target
+    assert 'heatmaps' in results_generate_heatmap_target
+    assert 'masks' in results_generate_heatmap_target
     assert len(results_generate_heatmap_target['target']
                ) == results['ann_info']['num_scales']
+    assert len(results_generate_heatmap_target['heatmaps']
+               ) == results['ann_info']['num_scales']
+    assert len(results_generate_heatmap_target['masks']
+               ) == results['ann_info']['num_scales']
+
+
+def test_GetKeypointCenterArea():
+    data_prefix = 'tests/data/coco/'
+    ann_file = osp.join(data_prefix, 'test_coco.json')
+    coco = COCO(ann_file)
+
+    ann_info = {}
+    ann_info['num_joints'] = 17
+    ann_info['num_scales'] = 2
+    ann_info['scale_aware_sigma'] = False
+
+    ann_ids = coco.getAnnIds(785)
+    anno = coco.loadAnns(ann_ids)
+
+    anno = [
+        obj for obj in anno if obj['iscrowd'] == 0 or obj['num_keypoints'] > 0
+    ]
+    joints = _get_joints(anno, ann_info, False)
+
+    joints_list = [joints.copy() for _ in range(ann_info['num_scales'])]
+
+    results = {}
+    results['dataset'] = 'coco'
+    results['image_file'] = osp.join(data_prefix, '000000000785.jpg')
+    results['joints'] = joints_list
+    results['ann_info'] = ann_info
+
+    get_kpt_center_area = GetKeypointCenterArea(minimal_area=32)
+    results_get_kpt_center_area = get_kpt_center_area(results)
+    assert 'center' in results_get_kpt_center_area
+    assert 'area' in results_get_kpt_center_area
+    assert len(results_get_kpt_center_area['center']
+               ) == results['ann_info']['num_scales']
+    assert len(results_get_kpt_center_area['center'][0]) == 1
+    assert len(results_get_kpt_center_area['area']
+               ) == results['ann_info']['num_scales']
+    assert len(results_get_kpt_center_area['area'][0]) == 1
+
+    for joints in results['joints']:
+        joints[..., 2] = 0
+    results_get_kpt_center_area = get_kpt_center_area(results)
+    assert len(results_get_kpt_center_area['center']) > 0
+    assert results_get_kpt_center_area['center'][0][..., 2] == 0
+
+
+def test_BottomUpGenerateOffsetTarget():
+    data_prefix = 'tests/data/coco/'
+    ann_file = osp.join(data_prefix, 'test_coco.json')
+    coco = COCO(ann_file)
+
+    ann_info = {}
+    ann_info['heatmap_size'] = [[512, 512], 256]
+    ann_info['num_joints'] = 17
+    ann_info['num_scales'] = 2
+    ann_info['scale_aware_sigma'] = False
+
+    ann_ids = coco.getAnnIds(785)
+    anno = coco.loadAnns(ann_ids)
+
+    anno = [
+        obj for obj in anno if obj['iscrowd'] == 0 or obj['num_keypoints'] > 0
+    ]
+    joints = _get_joints(anno, ann_info, False)
+
+    joints_list = [joints.copy() for _ in range(ann_info['num_scales'])]
+
+    results = {}
+    results['dataset'] = 'coco'
+    results['image_file'] = osp.join(data_prefix, '000000000785.jpg')
+    results['joints'] = joints_list
+    results['ann_info'] = ann_info
+
+    get_kpt_center_area = GetKeypointCenterArea(minimal_area=32)
+    results = get_kpt_center_area(results)
+    generate_offset_target = BottomUpGenerateOffsetTarget(radius=4)
+    results_generate_offset_target = generate_offset_target(results)
+    assert 'offsets' in results_generate_offset_target
+    assert 'offset_weights' in results_generate_offset_target
+    assert len(results_generate_offset_target['offsets']
+               ) == results['ann_info']['num_scales']
+    assert len(results_generate_offset_target['offsets']
+               [1]) == results['ann_info']['num_joints'] * 2
+    assert len(results_generate_offset_target['offset_weights']
+               ) == results['ann_info']['num_scales']
+    assert len(results_generate_offset_target['offset_weights']
+               [1]) == results['ann_info']['num_joints'] * 2
 
 
 def test_BottomUpGeneratePAFTarget():
