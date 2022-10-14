@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.28.0 (06/07/2022)
+## v0.29.0 (14/10/2022)
 
 **Highlights**
 
@@ -24,6 +24,10 @@
 - Fix a bug in pose tracking demo with non-COCO dataset ([#1504](https://github.com/open-mmlab/mmpose/pull/1504)) @daixinghome
 - Fix typos and unused contents in configs ([#1499](https://github.com/open-mmlab/mmpose/pull/1499), [#1496](https://github.com/open-mmlab/mmpose/pull/1496)) @liqikai9
 - Fix a bug in the mesh demo ([#1482](https://github.com/open-mmlab/mmpose/pull/1482)) @zengwang430521
+
+## **v0.28.1 (28/07/2022)**
+
+This release is meant to fix the compatibility with the latest mmcv v1.6.1
 
 ## v0.28.0 (06/07/2022)
 
