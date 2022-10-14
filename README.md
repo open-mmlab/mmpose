@@ -16,7 +16,7 @@
       </a>
     </sup>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <b>MMPose 1.0 Public Beta</b>
+    <b>MMPose 1.0 Open Beta</b>
     <sup>
       <a href="https://mmpose.readthedocs.io/en/1.x/overview.html">
         <i>JOIN</i>
