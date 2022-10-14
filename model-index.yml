@@ -23,7 +23,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.yml
 - configs/body/2d_kpt_sview_rgb_img/associative_embedding/mhp/hrnet_mhp.yml
-- configs/body/2d_kpt_sview_rgb_img/cid/coco/cid_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_rle_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/resnet_mpii.yml

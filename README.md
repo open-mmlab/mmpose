@@ -87,7 +87,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-10-14: MMPose [v0.29.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.29.0) is released. Major updates include:
   - Support [DEKR](https://arxiv.org/abs/2104.02300) (CVPR'2021). See the [model page](/configs/body/2d_kpt_sview_rgb_img/dekr/coco/hrnet_coco.md)
-  - Support [CID](https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html) (CVPR'2022). See the [model page](/configs/body/2d_kpt_sview_rgb_img/cid/coco/cid_coco.md)
+  - Support [CID](https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html) (CVPR'2022). See the [model page](/configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_coco.md)
 - 2022-09-01: **MMPose v1.0.0** beta has been released \[ [Code](https://github.com/open-mmlab/mmpose/tree/1.x) | [Docs](https://mmpose.readthedocs.io/en/1.x/) \]. Welcome to try it and your feedback will be greatly appreciated!
 - 2022-02-28: MMPose model deployment is supported by [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0
   MMPose Webcam API is a simple yet powerful tool to develop interactive webcam applications with MMPose features.

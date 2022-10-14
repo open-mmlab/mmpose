@@ -87,7 +87,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-10-14: MMPose [v0.29.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.29.0) 已经发布，主要更新包括：
   - 新增算法 [DEKR](https://arxiv.org/abs/2104.02300) (CVPR'2021). 详情请见 [模型页面](/configs/body/2d_kpt_sview_rgb_img/dekr/coco/hrnet_coco.md)
-  - 新增算法 [CID](https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html) (CVPR'2022). 详情请见 [模型页面](/configs/body/2d_kpt_sview_rgb_img/cid/coco/cid_coco.md)
+  - 新增算法 [CID](https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html) (CVPR'2022). 详情请见 [模型页面](/configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_coco.md)
 - 2022-09-01: **MMPose v1.0.0** 公测版本已经发布 \[ [Code](https://github.com/open-mmlab/mmpose/tree/1.x) | [Docs](https://mmpose.readthedocs.io/en/1.x/) \]，欢迎尝试并提出宝贵意见
 - 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
 - 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
@@ -144,7 +144,7 @@ MMPose 也提供了其他更详细的教程:
 - [x] [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
 - [x] [RSN](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#rsn-eccv-2020) (ECCV'2020)
 - [x] [InterNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
-- [x] [VoxelPose](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020
+- [x] [VoxelPose](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020)
 - [x] [LiteHRNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
 - [x] [ViPNAS](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
 - [x] [DEKR](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#dekr-cvpr-2021) (CVPR'2021)
