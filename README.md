@@ -74,7 +74,17 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
+- 2022-10-14: MMPose [v1.0.0rc0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc0) is released. Major updates include:
+
+  - Support 4 light-weight pose estimation algorithms
+    - SimCC (ECCV'22): [paper](https://doi.org/10.48550/arxiv.2107.03332) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/simcc/README.md)
+    - Debias-IPR (ICCV'21): [paper](https://openaccess.thecvf.com/content/ICCV2021/papers/Gu_Removing_the_Bias_of_Integral_Pose_Regression_ICCV_2021_paper.pdf) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
+    - IPR (ECCV'18): [paper](https://arxiv.org/abs/1711.08229) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
+    - DSNT (ArXiv'18): [paper](https://arxiv.org/abs/1801.07372v2) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
+  - Add [Colab tutorial](https://github.com/open-mmlab/mmpose/blob/1.x/demo/MMPose_Tutorial.ipynb) for MMPose v1.0
+
 - 2022-09-01: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0b0) is released!
+
   - This release introduced major refactoring to MMPose towards better performance, extensibility and user-friendliness.
   - Built upon a brand new and flexible training & test engine, which is still in progress. Welcome to try according to [the documentation](https://mmpose.readthedocs.io/en/1.x/).
   - There are BC-breaking changes. Please check [the migration tutorial](https://mmpose.readthedocs.io/en/1.x/migration.html).
@@ -118,35 +128,38 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/m
 - [x] [DeepPose](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
 - [x] [CPM](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#cpm-cvpr-2016) (CVPR'2016)
 - [x] [Hourglass](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#hourglass-eccv-2016) (ECCV'2016)
-- [x] [SimpleBaseline3D](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#simplebaseline3d-iccv-2017) (ICCV'2017)
-- [x] [Associative Embedding](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#associative-embedding-nips-2017) (NeurIPS'2017)
-- [x] [HMR](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#hmr-cvpr-2018) (CVPR'2018)
+- [ ] [SimpleBaseline3D](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#simplebaseline3d-iccv-2017) (ICCV'2017)
+- [ ] [Associative Embedding](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#associative-embedding-nips-2017) (NeurIPS'2017)
 - [x] [SimpleBaseline2D](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#simplebaseline2d-eccv-2018) (ECCV'2018)
+- [x] [DSNT](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#dsnt-2018) (ArXiv'2021)
 - [x] [HRNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#hrnet-cvpr-2019) (CVPR'2019)
-- [x] [VideoPose3D](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
+- [x] [IPR](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#ipr-eccv-2018) (ECCV'2018)
+- [ ] [VideoPose3D](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
 - [x] [HRNetv2](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
 - [x] [MSPN](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#mspn-arxiv-2019) (ArXiv'2019)
 - [x] [SCNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
-- [x] [HigherHRNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
+- [ ] [HigherHRNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
 - [x] [RSN](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#rsn-eccv-2020) (ECCV'2020)
-- [x] [InterNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
-- [x] [VoxelPose](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020)
+- [ ] [InterNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
+- [ ] [VoxelPose](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020)
 - [x] [LiteHRNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
 - [x] [ViPNAS](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
+- [x] [Debias-IPR](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#debias-ipr-iccv-2021) (ICCV'2021)
+- [x] [SimCC](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#simcc-eccv-2022) (ECCV'2022)
 
 </details>
 
 <details open>
 <summary><b>Supported techniques:</b></summary>
 
-- [x] [FPN](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
-- [x] [FP16](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
-- [x] [Wingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
-- [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
+- [ ] [FPN](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
+- [ ] [FP16](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
+- [ ] [Wingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
+- [ ] [AdaptiveWingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
 - [x] [DarkPose](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#darkpose-cvpr-2020) (CVPR'2020)
 - [x] [UDP](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
-- [x] [Albumentations](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#albumentations-information-2020) (Information'2020)
-- [x] [SoftWingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
+- [ ] [Albumentations](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#albumentations-information-2020) (Information'2020)
+- [ ] [SoftWingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 - [x] [RLE](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#rle-iccv-2021) (ICCV'2021)
 
 </details>
