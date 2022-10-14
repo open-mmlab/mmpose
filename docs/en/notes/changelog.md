@@ -15,8 +15,7 @@
 
 - Add a colab tutorial for MMPose 1.0 ([#1660](https://github.com/open-mmlab/mmpose/pull/1660)) @Tau-J
 - Add model index in config folder ([#1710](https://github.com/open-mmlab/mmpose/pull/1710), [#1709](https://github.com/open-mmlab/mmpose/pull/1709), [#1627](https://github.com/open-mmlab/mmpose/pull/1627)) @ly015, @Tau-J, @Ben-Louis
-- Improve documentation quality ([#1692](https://github.com/open-mmlab/mmpose/pull/1692), [#1656](https://github.com/open-mmlab/mmpose/pull/1656)) @Tau-J, @Ben-Louis
-- Update and improve documentation ([#1681](https://github.com/open-mmlab/mmpose/pull/1681), [#1677](https://github.com/open-mmlab/mmpose/pull/1677), [#1664](https://github.com/open-mmlab/mmpose/pull/1664), [#1659](https://github.com/open-mmlab/mmpose/pull/1659)) @liqikai9
+- Update and improve documentation ([#1692](https://github.com/open-mmlab/mmpose/pull/1692), [#1656](https://github.com/open-mmlab/mmpose/pull/1656), [#1681](https://github.com/open-mmlab/mmpose/pull/1681), [#1677](https://github.com/open-mmlab/mmpose/pull/1677), [#1664](https://github.com/open-mmlab/mmpose/pull/1664), [#1659](https://github.com/open-mmlab/mmpose/pull/1659)) @Tau-J, @Ben-Louis, @liqikai9
 - Improve config structures and formats ([#1651](https://github.com/open-mmlab/mmpose/pull/1651)) @liqikai9
 
 **Bug Fixes**
