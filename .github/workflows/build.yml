@@ -66,6 +66,7 @@ jobs:
       - name: Install other dependencies
         run: |
           pip install -r requirements.txt
+          python -m pip install -r requirements/poseval.txt
           pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
@@ -124,6 +125,7 @@ jobs:
           python -V
           python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
+          python -m pip install -r requirements/poseval.txt
           python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
@@ -188,6 +190,7 @@ jobs:
           python -V
           python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
+          python -m pip install -r requirements/poseval.txt
           python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
@@ -233,7 +236,7 @@ jobs:
         run: |
           python -V
           python -m pip install xtcocotools
-          python -m pip install -r requirements/tests.txt -r requirements/optional.txt
+          python -m pip install -r requirements/tests.txt -r requirements/optional.txt -r requirements/poseval.txt
           python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Show pip list
