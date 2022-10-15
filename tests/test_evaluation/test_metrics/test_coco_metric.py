@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import os.path as osp
 import tempfile
 from collections import defaultdict
@@ -6,6 +7,7 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import dump, load
+from xtcocotools.coco import COCO
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.metrics import CocoMetric
@@ -23,6 +25,9 @@ class TestCocoMetric(TestCase):
         self.ann_file = 'tests/data/coco/test_coco.json'
         coco_meta_info = dict(from_file='configs/_base_/datasets/coco.py')
         self.coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
+        self.coco = COCO(self.ann_file)
+        self.coco_dataset_meta['CLASSES'] = self.coco.loadCats(
+            self.coco.getCatIds())
 
         self.db = load(self.ann_file)
 
@@ -67,7 +72,11 @@ class TestCocoMetric(TestCase):
                 'id': ann['id'],
                 'img_id': ann['image_id'],
                 'gt_instances': gt_instances,
-                'pred_instances': pred_instances
+                'pred_instances': pred_instances,
+                # dummy image_shape for testing
+                'ori_shape': [640, 480],
+                # store the raw annotation info to test without ann_file
+                'raw_ann_info': copy.deepcopy(ann),
             }
             # batch size = 1
             data_batch = [data]
@@ -184,6 +193,20 @@ class TestCocoMetric(TestCase):
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
         self.assertDictEqual(eval_results, self.target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+        # case 4: test without providing ann_file
+        coco_metric = CocoMetric(outfile_prefix=f'{self.tmp_dir.name}/test', )
+        coco_metric.dataset_meta = self.coco_dataset_meta
+        # process samples
+        for data_batch, data_samples in self.topdown_data:
+            coco_metric.process(data_batch, data_samples)
+        eval_results = coco_metric.evaluate(size=len(self.topdown_data))
+        self.assertDictEqual(eval_results, self.target)
+        # test whether convert the annotation to COCO format
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.gt.json')))
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
 

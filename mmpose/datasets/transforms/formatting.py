@@ -63,6 +63,8 @@ class PackPoseInputs(BaseTransform):
 
         - ``flip_indices``: the indices of each keypoint's symmetric keypoint
 
+        - ``raw_ann_info``: raw annotation of the instance(s)
+
     Args:
         meta_keys (Sequence[str], optional): Meta keys which will be stored in
             :obj: `PoseDataSample` as meta info. Defaults to ``('id',
@@ -96,7 +98,7 @@ class PackPoseInputs(BaseTransform):
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'input_size', 'flip',
-                            'flip_direction', 'flip_indices'),
+                            'flip_direction', 'flip_indices', 'raw_ann_info'),
                  pack_transformed=False):
         self.meta_keys = meta_keys
         self.pack_transformed = pack_transformed

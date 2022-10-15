@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import datetime
 import os.path as osp
 import tempfile
 from collections import OrderedDict, defaultdict
@@ -25,7 +26,9 @@ class CocoMetric(BaseMetric):
     for more details.
 
     Args:
-        ann_file (str): Path to the coco format annotation file.
+        ann_file (str, optional): Path to the coco format annotation file.
+            If not specified, ground truth annotations from the dataset will
+            be converted to coco format. Defaults to None.
         use_area (bool): Whether to use ``'area'`` message in the annotations.
             If the ground truth annotations (e.g. CrowdPose, AIC) do not have
             the field ``'area'``, please set ``use_area=False``.
@@ -83,7 +86,7 @@ class CocoMetric(BaseMetric):
     default_prefix: Optional[str] = 'coco'
 
     def __init__(self,
-                 ann_file: str,
+                 ann_file: Optional[str] = None,
                  use_area: bool = True,
                  iou_type: str = 'keypoints',
                  score_mode: str = 'bbox_keypoint',
@@ -95,9 +98,13 @@ class CocoMetric(BaseMetric):
                  collect_device: str = 'cpu',
                  prefix: Optional[str] = None) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
-        # initialize coco helper with the annotation json file
         self.ann_file = ann_file
-        self.coco = COCO(ann_file)
+        # initialize coco helper with the annotation json file
+        # if ann_file is not specified, initialize with the converted dataset
+        if ann_file is not None:
+            self.coco = COCO(ann_file)
+        else:
+            self.coco = None
 
         self.use_area = use_area
         self.iou_type = iou_type
@@ -123,13 +130,13 @@ class CocoMetric(BaseMetric):
                 'None when `format_only` is True, otherwise the result file '\
                 'will be saved to a temp directory which will be cleaned up '\
                 'in the end.'
-        else:
+        elif ann_file is not None:
             # do evaluation only if the ground truth annotations exist
             assert 'annotations' in load(ann_file), \
                 'Ground truth annotations are required for evaluation '\
                 'when `format_only` is False.'
-        self.format_only = format_only
 
+        self.format_only = format_only
         self.outfile_prefix = outfile_prefix
 
     def process(self, data_batch: Sequence[dict],
@@ -163,19 +170,139 @@ class CocoMetric(BaseMetric):
             keypoint_scores = data_sample['pred_instances']['keypoint_scores']
             assert keypoint_scores.shape == keypoints.shape[:2]
 
-            result = dict()
-            result['id'] = data_sample['id']
-            result['img_id'] = data_sample['img_id']
-            result['keypoints'] = keypoints
-            result['keypoint_scores'] = keypoint_scores
-            result['bbox_scores'] = data_sample['gt_instances']['bbox_scores']
+            # parse prediction results
+            pred = dict()
+            pred['id'] = data_sample['id']
+            pred['img_id'] = data_sample['img_id']
+            pred['keypoints'] = keypoints
+            pred['keypoint_scores'] = keypoint_scores
+            pred['bbox_scores'] = data_sample['gt_instances']['bbox_scores']
 
             # get area information
             if 'bbox_scales' in data_sample['gt_instances']:
-                result['areas'] = np.prod(
+                pred['areas'] = np.prod(
                     data_sample['gt_instances']['bbox_scales'], axis=1)
+
+            # parse gt
+            gt = dict()
+            if self.coco is None:
+                gt['width'] = data_sample['ori_shape'][1]
+                gt['height'] = data_sample['ori_shape'][0]
+                gt['img_id'] = data_sample['img_id']
+                gt['crowdIndex'] = data_sample.get('crowdIndex', 0.0)
+                assert 'raw_ann_info' in data_sample, \
+                    'The row ground truth annotations are required for ' \
+                    'evaluation when `ann_file` is not provided'
+                anns = data_sample['raw_ann_info']
+                gt['raw_ann_info'] = anns if isinstance(anns, list) else [anns]
+
             # add converted result to the results list
-            self.results.append(result)
+            self.results.append((gt, pred))
+
+    def gt_to_coco_json(self, gt_dicts: Sequence[dict],
+                        outfile_prefix: str) -> str:
+        """Convert ground truth to coco format json file.
+
+        Args:
+            gt_dicts (Sequence[dict]): Ground truth of the dataset. Each dict
+                contains the ground truth information about the data sample.
+
+                Required keys of the each `gt_dict` in `gt_dicts`:
+
+                    - `img_id`: image id of the data sample
+
+                    - `width`: original image width
+
+                    - `height`: original image height
+
+                    - `raw_ann_info`: the raw annotation information
+
+                Optional keys:
+
+                    - `crowdIndex`: measure the crowding level of an image,
+                        defined in CrowdPose dataset
+
+                It is worth mentioning that, in order to compute CocoMetric,
+                there are some required keys in the `raw_ann_info`:
+
+                    - `id`: the id to distinguish different GT annotations
+
+                    - `image_id`: the image id of this annotation
+
+                    - `category_id`: the category of the object. Since most
+                        pose estimation datasets only contain one category,
+                        if it is missed, set it as `1` by default.
+
+                    - `bbox`: the object bounding box
+
+                    - `keypoints`: the keypoints cooridinates along with their
+                        visibilities. Note that it need to be aligned
+                        with the official COCO format, e.g., a list with length
+                        N * 3, in which N is the number of keypoints. And each
+                        triplet represent the [x, y, visible] of the keypoint.
+
+                There are some optional keys as well:
+
+                    - `area`: it is necessary when `self.use_area` is `True`
+
+                    - `iscrowd`: indicating whether the annotation is a crowd.
+                        It is useful when matching the detection results to
+                        the ground truth. Set it as `0` by default.
+
+                    - `num_keypoints`: it is necessary when `self.iou_type`
+                        is set as `keypoints_crowd`.
+
+            outfile_prefix (str): The filename prefix of the json files. If the
+                prefix is "somepath/xxx", the json file will be named
+                "somepath/xxx.gt.json".
+        Returns:
+            str: The filename of the json file.
+        """
+        image_infos = []
+        annotations = []
+        img_ids = []
+        ann_ids = []
+
+        for gt_dict in gt_dicts:
+            # filter duplicate image_info
+            if gt_dict['img_id'] not in img_ids:
+                image_info = dict(
+                    id=gt_dict['img_id'],
+                    width=gt_dict['width'],
+                    height=gt_dict['height'],
+                    crowdIndex=gt_dict.get('crowdIndex', 0.0),
+                )
+                image_infos.append(image_info)
+                img_ids.append(gt_dict['img_id'])
+
+            # filter duplicate annotations
+            for ann in gt_dict['raw_ann_info']:
+                ann = dict(
+                    id=ann['id'],
+                    image_id=ann['image_id'],
+                    bbox=ann['bbox'],
+                    keypoints=ann['keypoints'],
+                    area=ann.get('area', 0),
+                    category_id=ann.get('category_id', 1),
+                    iscrowd=ann.get('iscrowd', 0),
+                    num_keypoints=ann.get('num_keypoints', 0),
+                )
+                annotations.append(ann)
+                ann_ids.append(ann['id'])
+
+        info = dict(
+            date_created=str(datetime.datetime.now()),
+            description='Coco json file converted by mmpose CocoMetric.')
+        coco_json = dict(
+            info=info,
+            images=image_infos,
+            categories=self.dataset_meta['CLASSES'],
+            licenses=None,
+            annotations=annotations,
+        )
+        converted_json_path = f'{outfile_prefix}.gt.json'
+        dump(coco_json, converted_json_path, sort_keys=True, indent=4)
+        return converted_json_path
 
     def compute_metrics(self, results: list) -> Dict[str, float]:
         """Compute the metrics from processed results.
@@ -189,6 +316,9 @@ class CocoMetric(BaseMetric):
         """
         logger: MMLogger = MMLogger.get_current_instance()
 
+        # split gt and prediction list
+        gts, preds = zip(*results)
+
         tmp_dir = None
         if self.outfile_prefix is None:
             tmp_dir = tempfile.TemporaryDirectory()
@@ -196,25 +326,32 @@ class CocoMetric(BaseMetric):
         else:
             outfile_prefix = self.outfile_prefix
 
+        if self.coco is None:
+            # use converted gt json file to initialize coco helper
+            logger.info('Converting ground truth to coco format...')
+            coco_json_path = self.gt_to_coco_json(
+                gt_dicts=gts, outfile_prefix=outfile_prefix)
+            self.coco = COCO(coco_json_path)
+
         kpts = defaultdict(list)
 
-        # group the results by img_id
-        for result in results:
-            img_id = result['img_id']
-            for idx in range(len(result['bbox_scores'])):
+        # group the preds by img_id
+        for pred in preds:
+            img_id = pred['img_id']
+            for idx in range(len(pred['bbox_scores'])):
                 instance = {
-                    'id': result['id'],
-                    'img_id': result['img_id'],
-                    'keypoints': result['keypoints'][idx],
-                    'keypoint_scores': result['keypoint_scores'][idx],
-                    'bbox_score': result['bbox_scores'][idx],
+                    'id': pred['id'],
+                    'img_id': pred['img_id'],
+                    'keypoints': pred['keypoints'][idx],
+                    'keypoint_scores': pred['keypoint_scores'][idx],
+                    'bbox_score': pred['bbox_scores'][idx],
                 }
 
-                if 'areas' in result:
-                    instance['area'] = result['areas'][idx]
+                if 'areas' in pred:
+                    instance['area'] = pred['areas'][idx]
                 else:
                     # use keypoint to calculate bbox and get area
-                    keypoints = result['keypoints'][idx]
+                    keypoints = pred['keypoints'][idx]
                     area = (
                         np.max(keypoints[:, 0]) - np.min(keypoints[:, 0])) * (
                             np.max(keypoints[:, 1]) - np.min(keypoints[:, 1]))
