@@ -267,7 +267,6 @@ class BaseCocoStyleDataset(BaseDataset):
             # store the raw annotation of the instance
             # it is useful for evaluation without providing ann_file
             'raw_ann_info': copy.deepcopy(ann),
-            'raw_img_info': copy.deepcopy(img),
         }
 
         return data_info

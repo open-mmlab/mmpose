@@ -69,7 +69,7 @@ class PackPoseInputs(BaseTransform):
         meta_keys (Sequence[str], optional): Meta keys which will be stored in
             :obj: `PoseDataSample` as meta info. Defaults to ``('id',
             'img_id', 'img_path', 'ori_shape', 'img_shape', 'input_size',
-            'flip', 'flip_direction', 'flip_indices)``
+            'flip', 'flip_direction', 'flip_indices', 'raw_ann_info')``
     """
 
     # items in `instance_mapping_table` will be directly packed into
