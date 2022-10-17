@@ -1,4 +1,6 @@
 assign:
+  issues: enable
+  pull_requests: disable
   strategy:
     # random
     daily-shift-based
