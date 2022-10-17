@@ -1,0 +1,14 @@
+assign:
+  issues: enable
+  pull_requests: disable
+  strategy:
+    # random
+    daily-shift-based
+  scedule:
+    '*/1 * * * *'
+  assignees:
+    - ly015
+    - Tau-J
+    - liqikai9
+    - Ben-Louis
+    - Tau-J
