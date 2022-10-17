@@ -461,6 +461,7 @@ def inference_bottom_up_pose_model(model,
         dataset_name = dataset_info.dataset_name
         flip_index = dataset_info.flip_index
         sigmas = getattr(dataset_info, 'sigmas', None)
+        skeleton = getattr(dataset_info, 'skeleton', None)
     else:
         warnings.warn(
             'dataset is deprecated.'
@@ -471,6 +472,7 @@ def inference_bottom_up_pose_model(model,
         dataset_name = dataset
         flip_index = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
         sigmas = None
+        skeleton = None
 
     pose_results = []
     returned_outputs = []
@@ -489,8 +491,10 @@ def inference_bottom_up_pose_model(model,
         'dataset': dataset_name,
         'ann_info': {
             'image_size': np.array(cfg.data_cfg['image_size']),
+            'heatmap_size': cfg.data_cfg.get('heatmap_size', None),
             'num_joints': cfg.data_cfg['num_joints'],
             'flip_index': flip_index,
+            'skeleton': skeleton,
         }
     }
     if isinstance(img_or_path, np.ndarray):
