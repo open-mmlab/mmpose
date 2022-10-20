@@ -261,8 +261,8 @@ class Albumentation:
             if albumentations is None:
                 raise RuntimeError('albumentations is not installed')
             if not hasattr(albumentations.augmentations.transforms, obj_type):
-                warnings.warn('{obj_type} is not pixel-level transformations. '
-                              'Please use with caution.')
+                warnings.warn(f'{obj_type} is not pixel-level transformations.'
+                              ' Please use with caution.')
             obj_cls = getattr(albumentations, obj_type)
         else:
             raise TypeError(f'type must be a str, but got {type(obj_type)}')
