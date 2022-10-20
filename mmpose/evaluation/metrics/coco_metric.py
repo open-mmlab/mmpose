@@ -189,7 +189,11 @@ class CocoMetric(BaseMetric):
                 gt['width'] = data_sample['ori_shape'][1]
                 gt['height'] = data_sample['ori_shape'][0]
                 gt['img_id'] = data_sample['img_id']
-                gt['crowdIndex'] = data_sample.get('crowdIndex', 0.0)
+                if self.iou_type == 'keypoints_crowd':
+                    assert 'crowdIndex' in data_sample, \
+                        '`crowdIndex` is required when `self.iou_type` is ' \
+                        '`keypoints_crowd`'
+                    gt['crowdIndex'] = data_sample['crowdIndex']
                 assert 'raw_ann_info' in data_sample, \
                     'The row ground truth annotations are required for ' \
                     'evaluation when `ann_file` is not provided'
@@ -229,9 +233,7 @@ class CocoMetric(BaseMetric):
 
                     - `image_id`: the image id of this annotation
 
-                    - `category_id`: the category of the object. Since most
-                        pose estimation datasets only contain one category,
-                        if it is missed, set it as `1` by default.
+                    - `category_id`: the category of the object.
 
                     - `bbox`: the object bounding box
 
@@ -241,13 +243,13 @@ class CocoMetric(BaseMetric):
                         N * 3, in which N is the number of keypoints. And each
                         triplet represent the [x, y, visible] of the keypoint.
 
-                There are some optional keys as well:
-
-                    - `area`: it is necessary when `self.use_area` is `True`
-
                     - `iscrowd`: indicating whether the annotation is a crowd.
                         It is useful when matching the detection results to
                         the ground truth. Set it as `0` by default.
+
+                There are some optional keys as well:
+
+                    - `area`: it is necessary when `self.use_area` is `True`
 
                     - `num_keypoints`: it is necessary when `self.iou_type`
                         is set as `keypoints_crowd`.
@@ -270,24 +272,35 @@ class CocoMetric(BaseMetric):
                     id=gt_dict['img_id'],
                     width=gt_dict['width'],
                     height=gt_dict['height'],
-                    crowdIndex=gt_dict.get('crowdIndex', 0.0),
                 )
+                if self.iou_type == 'keypoints_crowd':
+                    image_info['crowdIndex'] = gt_dict['crowdIndex']
+
                 image_infos.append(image_info)
                 img_ids.append(gt_dict['img_id'])
 
             # filter duplicate annotations
             for ann in gt_dict['raw_ann_info']:
-                ann = dict(
+                annotation = dict(
                     id=ann['id'],
                     image_id=ann['image_id'],
+                    category_id=ann['category_id'],
                     bbox=ann['bbox'],
                     keypoints=ann['keypoints'],
-                    area=ann.get('area', 0),
-                    category_id=ann.get('category_id', 1),
-                    iscrowd=ann.get('iscrowd', 0),
-                    num_keypoints=ann.get('num_keypoints', 0),
+                    iscrowd=ann['iscrowd'],
                 )
-                annotations.append(ann)
+                if self.use_area:
+                    assert 'area' in ann, \
+                        '`area` is required when `self.use_area` is `True`'
+                    annotation['area'] = ann['area']
+
+                if self.iou_type == 'keypoints_crowd':
+                    assert 'num_keypoints' in ann, \
+                        '`num_keypoints` is required when `self.iou_type` ' \
+                        'is `keypoints_crowd`'
+                    annotation['num_keypoints'] = ann['num_keypoints']
+
+                annotations.append(annotation)
                 ann_ids.append(ann['id'])
 
         info = dict(
@@ -484,10 +497,16 @@ class CocoMetric(BaseMetric):
         coco_eval.accumulate()
         coco_eval.summarize()
 
-        stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
-            'AR .75', 'AR (M)', 'AR (L)'
-        ]
+        if self.iou_type == 'keypoints_crowd':
+            stats_names = [
+                'AP', 'AP .5', 'AP .75', 'AR', 'AR .5', 'AR .75', 'AP(E)',
+                'AP(M)', 'AP(H)'
+            ]
+        else:
+            stats_names = [
+                'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
+                'AR .75', 'AR (M)', 'AR (L)'
+            ]
 
         info_str = list(zip(stats_names, coco_eval.stats))
 

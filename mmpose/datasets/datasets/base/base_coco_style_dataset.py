@@ -269,6 +269,9 @@ class BaseCocoStyleDataset(BaseDataset):
             'raw_ann_info': copy.deepcopy(ann),
         }
 
+        if 'crowdIndex' in img:
+            data_info['crowdIndex'] = img['crowdIndex']
+
         return data_info
 
     @staticmethod
