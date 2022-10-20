@@ -13,6 +13,7 @@ from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
+from mmpose.structures.pose_data_sample import PoseDataSample
 from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
@@ -29,18 +30,22 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
 
     # predict bbox
     register_mmdet_modules()
-    detect_result = inference_detector(detector, img_path)
-    pred_instance = detect_result.pred_instances.cpu().numpy()
+    det_result = inference_detector(detector, img_path)
+    pred_instance = det_result.pred_instances.cpu().numpy()
     bboxes = np.concatenate(
         (pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
     bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
                                    pred_instance.scores > args.bbox_thr)]
-    bboxes = bboxes[nms(bboxes, args.nms_thr)][:, :4]
-
+    bboxes = bboxes[nms(bboxes, args.nms_thr), :4]
     # predict keypoints
     register_mmpose_modules()
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
-    data_samples = merge_data_samples(pose_results)
+
+    if len(pose_results) > 0:
+        print(type(pose_results))
+        data_samples = merge_data_samples(pose_results)
+    else:
+        data_samples = PoseDataSample()
 
     # show the results
     img = mmcv.imread(img_path)
@@ -56,7 +61,7 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
         data_sample=data_samples,
         draw_gt=False,
         draw_heatmap=args.draw_heatmap,
-        draw_bbox=False,
+        draw_bbox=args.draw_bbox,
         show=args.show,
         wait_time=show_interval,
         out_file=out_file,
@@ -109,7 +114,7 @@ def main():
         '--draw-heatmap',
         action='store_true',
         default=False,
-        help='Whether to draw output heatmap')
+        help='Draw heatmap predicted by the model')
     parser.add_argument(
         '--radius',
         type=int,
@@ -120,6 +125,8 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--draw-bbox', action='store_true', help='Draw bboxes of instances')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
