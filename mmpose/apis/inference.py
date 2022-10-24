@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import torch
@@ -13,6 +13,7 @@ from PIL import Image
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.models.builder import build_pose_estimator
+from mmpose.structures import PoseDataSample
 from mmpose.structures.bbox import bbox_xywh2xyxy
 
 
@@ -123,8 +124,8 @@ def init_model(config: Union[str, Path, Config],
 
 def inference_topdown(model: nn.Module,
                       img: Union[np.ndarray, str],
-                      bboxes: Optional[np.ndarray] = None,
-                      bbox_format: str = 'xyxy'):
+                      bboxes: Optional[Union[List, np.ndarray]] = None,
+                      bbox_format: str = 'xyxy') -> List[PoseDataSample]:
     """Inference image with the top-down pose estimator.
 
     Args:
@@ -137,10 +138,10 @@ def inference_topdown(model: nn.Module,
             and ``'xyxy'``. Defaults to ``'xyxy'``
 
     Returns:
-        :obj:`PoseDataSample`: The inference results. Specifically, the
+        List[:obj:`PoseDataSample`]: The inference results. Specifically, the
         predicted keypoints and scores are saved at
-        ``data_samples.pred_instances.keypoints`` and
-        ``data_samples.pred_instances.keypoint_scores``.
+        ``data_sample.pred_instances.keypoints`` and
+        ``data_sample.pred_instances.keypoint_scores``.
     """
     cfg = model.cfg
     pipeline = Compose(cfg.test_dataloader.dataset.pipeline)
@@ -154,6 +155,9 @@ def inference_topdown(model: nn.Module,
 
         bboxes = np.array([[0, 0, w, h]], dtype=np.float32)
     else:
+        if isinstance(bboxes, list):
+            bboxes = np.array(bboxes)
+
         assert bbox_format in {'xyxy', 'xywh'}, \
             f'Invalid bbox_format "{bbox_format}".'
 
@@ -161,24 +165,25 @@ def inference_topdown(model: nn.Module,
             bboxes = bbox_xywh2xyxy(bboxes)
 
     # construct batch data samples
-    data = []
+    data_list = []
     for bbox in bboxes:
-
         if isinstance(img, str):
-            _data = dict(img_path=img)
+            data_info = dict(img_path=img)
         else:
-            _data = dict(img=img)
+            data_info = dict(img=img)
+        data_info['bbox'] = bbox[None]  # shape (1, 4)
+        data_info['bbox_score'] = np.ones(1, dtype=np.float32)  # shape (1,)
+        data_info.update(model.dataset_meta)
+        data_list.append(pipeline(data_info))
 
-        _data['bbox'] = bbox[None]  # shape (1, 4)
-        _data['bbox_score'] = np.ones(1, dtype=np.float32)  # shape (1,)
-        _data.update(model.dataset_meta)
-        data.append(pipeline(_data))
+    # collate
+    if data_list:
+        batch = dict(
+            inputs=[data['inputs'] for data in data_list],
+            data_samples=[data['data_samples'] for data in data_list])
 
-    data_ = dict()
-    data_['inputs'] = [_data['inputs'] for _data in data]
-    data_['data_samples'] = [_data['data_samples'] for _data in data]
-
-    with torch.no_grad():
-        results = model.test_step(data_)
-
+        with torch.no_grad():
+            results = model.test_step(batch)
+    else:
+        results = []
     return results

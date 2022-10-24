@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
 from typing import List
 
 import cv2
@@ -31,7 +32,9 @@ def merge_data_samples(data_samples: List[PoseDataSample]) -> PoseDataSample:
         raise ValueError('Invalid input type, should be a list of '
                          ':obj:`PoseDataSample`')
 
-    assert len(data_samples) > 0
+    if len(data_samples) == 0:
+        warnings.warn('Try to merge an empty list of data samples.')
+        return PoseDataSample()
 
     merged = PoseDataSample(metainfo=data_samples[0].metainfo)
 
