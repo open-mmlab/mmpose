@@ -58,14 +58,14 @@ class TestPCKAccuracy(TestCase):
         pck_metric = PCKAccuracy(thr=0.5, norm_item='bbox')
         pck_metric.process(self.data_batch, self.data_samples)
         pck = pck_metric.evaluate(self.batch_size)
-        target = {'pck/PCK@0.5': 1.0}
+        target = {'PCK@0.5': 1.0}
         self.assertDictEqual(pck, target)
 
         # test normalized by 'head_size'
         pckh_metric = PCKAccuracy(thr=0.3, norm_item='head')
         pckh_metric.process(self.data_batch, self.data_samples)
         pckh = pckh_metric.evaluate(self.batch_size)
-        target = {'pck/PCKh@0.3': 1.0}
+        target = {'PCKh@0.3': 1.0}
         self.assertDictEqual(pckh, target)
 
         # test normalized by 'torso_size'
@@ -74,8 +74,8 @@ class TestPCKAccuracy(TestCase):
         tpck = tpck_metric.evaluate(self.batch_size)
         self.assertIsInstance(tpck, dict)
         target = {
-            'pck/PCK@0.05': 1.0,
-            'pck/tPCK@0.05': 1.0,
+            'PCK@0.05': 1.0,
+            'tPCK@0.05': 1.0,
         }
         self.assertDictEqual(tpck, target)
 
@@ -128,7 +128,7 @@ class TestAUCandEPE(TestCase):
         auc_metric = AUC(norm_factor=20, num_thrs=4)
         auc_metric.process(self.data_batch, self.data_samples)
         auc = auc_metric.evaluate(1)
-        target = {'auc/@4thrs': 0.375}
+        target = {'auc': 0.375}
         self.assertDictEqual(auc, target)
 
     def test_epe_evaluate(self):
@@ -136,7 +136,7 @@ class TestAUCandEPE(TestCase):
         epe_metric = EPE()
         epe_metric.process(self.data_batch, self.data_samples)
         epe = epe_metric.evaluate(1)
-        self.assertAlmostEqual(epe['epe/epe'], 11.5355339)
+        self.assertAlmostEqual(epe['epe'], 11.5355339)
 
 
 class TestNME(TestCase):
@@ -187,7 +187,7 @@ class TestNME(TestCase):
             batch_size=4, num_keypoints=19, norm_item=norm_item)
         nme_metric.process(data_batch, data_samples)
         nme = nme_metric.evaluate(4)
-        target = {'nme/@box_size': 0.0}
+        target = {'nme': 0.0}
         self.assertDictEqual(nme, target)
 
         # test when norm_mode = 'keypoint_distance'
@@ -204,7 +204,7 @@ class TestNME(TestCase):
         nme_metric.process(data_batch, data_samples)
         nme = nme_metric.evaluate(4)
 
-        target = {'nme/@[0, 1]': 0.0}
+        target = {'nme': 0.0}
         self.assertDictEqual(nme, target)
 
         # test when norm_mode = 'keypoint_distance'
@@ -221,7 +221,7 @@ class TestNME(TestCase):
         nme_metric.process(data_batch, data_samples)
         nme = nme_metric.evaluate(2)
 
-        target = {f'nme/@{keypoint_indices}': 0.0}
+        target = {'nme': 0.0}
         self.assertDictEqual(nme, target)
 
     def test_exceptions_and_warnings(self):

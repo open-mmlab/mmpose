@@ -38,7 +38,6 @@ class PCKAccuracy(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'pck'
 
     def __init__(self,
                  thr: float = 0.05,
@@ -204,7 +203,6 @@ class MpiiPCKAccuracy(PCKAccuracy):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'pck'
 
     def __init__(self,
                  thr: float = 0.5,
@@ -329,7 +327,6 @@ class JhmdbPCKAccuracy(PCKAccuracy):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'pck'
 
     def __init__(self,
                  thr: float = 0.05,
@@ -373,8 +370,6 @@ class JhmdbPCKAccuracy(PCKAccuracy):
 
             pck_p, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                   self.thr, norm_size_bbox)
-            metrics[f'@{self.thr}'] = pck
-
             stats = {
                 'Head': pck_p[2],
                 'Sho': 0.5 * pck_p[3] + 0.5 * pck_p[4],
@@ -443,7 +438,6 @@ class AUC(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'auc'
 
     def __init__(self,
                  norm_factor: float = 30,
@@ -510,7 +504,7 @@ class AUC(BaseMetric):
                            self.num_thrs)
 
         metrics = dict()
-        metrics[f'@{self.num_thrs}thrs'] = auc
+        metrics['auc'] = auc
 
         return metrics
 
@@ -535,7 +529,6 @@ class EPE(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'epe'
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
@@ -635,7 +628,6 @@ class NME(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'nme'
 
     DEFAULT_KEYPOINT_INDICES = {
         # horse10: corresponding to `nose` and `eye` keypoints
@@ -748,7 +740,7 @@ class NME(BaseMetric):
             # normalize_factor: [N, 2]
             normalize_factor = np.tile(normalize_factor_, [1, 2])
             nme = keypoint_nme(pred_coords, gt_coords, mask, normalize_factor)
-            metrics[f'@{self.norm_item}'] = nme
+            metrics['nme'] = nme
 
         else:
             if self.keypoint_indices is None:
@@ -774,7 +766,7 @@ class NME(BaseMetric):
             # normalize_factor: [N, 2]
             normalize_factor = self._get_normalize_factor(gt_coords=gt_coords)
             nme = keypoint_nme(pred_coords, gt_coords, mask, normalize_factor)
-            metrics[f'@{self.keypoint_indices}'] = nme
+            metrics['nme'] = nme
 
         return metrics
 
