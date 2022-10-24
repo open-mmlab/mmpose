@@ -13,7 +13,6 @@ from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
-from mmpose.structures.pose_data_sample import PoseDataSample
 from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
@@ -40,12 +39,7 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
     # predict keypoints
     register_mmpose_modules()
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
-
-    if len(pose_results) > 0:
-        print(type(pose_results))
-        data_samples = merge_data_samples(pose_results)
-    else:
-        data_samples = PoseDataSample()
+    data_samples = merge_data_samples(pose_results)
 
     # show the results
     img = mmcv.imread(img_path)
