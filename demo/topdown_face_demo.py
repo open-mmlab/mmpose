@@ -47,7 +47,7 @@ def visualize_img(args, img_path, pose_estimator, visualizer, show_interval):
     bboxes = process_face_det_results(face_det_results)
 
     bboxes = np.concatenate((bboxes, np.ones((bboxes.shape[0], 1))), axis=1)
-    bboxes = bboxes[nms(bboxes, args.nms_thr)][:, :4]
+    bboxes = bboxes[nms(bboxes, args.nms_thr), :4]
 
     # predict keypoints
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
@@ -67,7 +67,7 @@ def visualize_img(args, img_path, pose_estimator, visualizer, show_interval):
         data_sample=data_samples,
         draw_gt=False,
         draw_heatmap=args.draw_heatmap,
-        draw_bbox=False,
+        draw_bbox=args.draw_bbox,
         show=args.show,
         wait_time=show_interval,
         out_file=out_file,
@@ -108,7 +108,7 @@ def main():
         '--draw-heatmap',
         action='store_true',
         default=False,
-        help='Whether to draw output heatmap')
+        help='Draw heatmap predicted by the model')
     parser.add_argument(
         '--radius',
         type=int,
@@ -119,6 +119,8 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--draw-bbox', action='store_true', help='Draw bboxes of instances')
 
     assert has_face_det, 'Please install face_recognition to run the demo. ' \
                          '"pip install face_recognition", For more details, ' \
