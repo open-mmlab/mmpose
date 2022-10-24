@@ -279,13 +279,13 @@ class MpiiPCKAccuracy(PCKAccuracy):
             #   lkne 4   rkne 1
             #   lank 5   rank 0
             stats = {
-                'Head': PCKh[9],
-                'Shoulder': 0.5 * (PCKh[13] + PCKh[12]),
-                'Elbow': 0.5 * (PCKh[14] + PCKh[11]),
-                'Wrist': 0.5 * (PCKh[15] + PCKh[10]),
-                'Hip': 0.5 * (PCKh[3] + PCKh[2]),
-                'Knee': 0.5 * (PCKh[4] + PCKh[1]),
-                'Ankle': 0.5 * (PCKh[5] + PCKh[0]),
+                'Head PCK': PCKh[9],
+                'Shoulder PCK': 0.5 * (PCKh[13] + PCKh[12]),
+                'Elbow PCK': 0.5 * (PCKh[14] + PCKh[11]),
+                'Wrist PCK': 0.5 * (PCKh[15] + PCKh[10]),
+                'Hip PCK': 0.5 * (PCKh[3] + PCKh[2]),
+                'Knee PCK': 0.5 * (PCKh[4] + PCKh[1]),
+                'Ankle PCK': 0.5 * (PCKh[5] + PCKh[0]),
                 'PCKh': np.sum(PCKh * jnt_ratio),
                 'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
             }
@@ -371,19 +371,19 @@ class JhmdbPCKAccuracy(PCKAccuracy):
             pck_p, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                   self.thr, norm_size_bbox)
             stats = {
-                'Head': pck_p[2],
-                'Sho': 0.5 * pck_p[3] + 0.5 * pck_p[4],
-                'Elb': 0.5 * pck_p[7] + 0.5 * pck_p[8],
-                'Wri': 0.5 * pck_p[11] + 0.5 * pck_p[12],
-                'Hip': 0.5 * pck_p[5] + 0.5 * pck_p[6],
-                'Knee': 0.5 * pck_p[9] + 0.5 * pck_p[10],
-                'Ank': 0.5 * pck_p[13] + 0.5 * pck_p[14],
-                'Mean': pck
+                'Head PCK': pck_p[2],
+                'Sho PCK': 0.5 * pck_p[3] + 0.5 * pck_p[4],
+                'Elb PCK': 0.5 * pck_p[7] + 0.5 * pck_p[8],
+                'Wri PCK': 0.5 * pck_p[11] + 0.5 * pck_p[12],
+                'Hip PCK': 0.5 * pck_p[5] + 0.5 * pck_p[6],
+                'Knee PCK': 0.5 * pck_p[9] + 0.5 * pck_p[10],
+                'Ank PCK': 0.5 * pck_p[13] + 0.5 * pck_p[14],
+                'PCK': pck
             }
 
             del metrics[f'PCK@{self.thr}']
             for stats_name, stat in stats.items():
-                metrics[f'{stats_name} PCK'] = stat
+                metrics[stats_name] = stat
 
         if 'torso' in self.norm_item:
             norm_size_torso = np.concatenate(

@@ -6,7 +6,8 @@ import torch
 from mmengine.structures import InstanceData
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
-from mmpose.evaluation.metrics import AUC, EPE, NME, PCKAccuracy
+from mmpose.evaluation.metrics import (AUC, EPE, NME, JhmdbPCKAccuracy,
+                                       MpiiPCKAccuracy, PCKAccuracy)
 
 
 class TestPCKAccuracy(TestCase):
@@ -78,6 +79,147 @@ class TestPCKAccuracy(TestCase):
             'tPCK@0.05': 1.0,
         }
         self.assertDictEqual(tpck, target)
+
+
+class TestMpiiPCKAccuracy(TestCase):
+
+    def setUp(self):
+        """Setup some variables which are used in every test method.
+
+        TestCase calls functions in this order: setUp() -> testMethod() ->
+        tearDown() -> cleanUp()
+        """
+        self.batch_size = 8
+        num_keypoints = 16
+        self.data_batch = []
+        self.data_samples = []
+
+        for i in range(self.batch_size):
+            gt_instances = InstanceData()
+            keypoints = np.zeros((1, num_keypoints, 2))
+            keypoints[0, i] = [0.5 * i, 0.5 * i]
+            gt_instances.keypoints = keypoints + 1.0
+            gt_instances.keypoints_visible = np.ones(
+                (1, num_keypoints, 1)).astype(bool)
+            gt_instances.keypoints_visible[0, (2 * i) % 8, 0] = False
+            gt_instances.bboxes = np.random.random((1, 4)) * 20 * i
+            gt_instances.head_size = np.random.random((1, 1)) * 10 * i
+
+            pred_instances = InstanceData()
+            pred_instances.keypoints = torch.from_numpy(keypoints)
+
+            data = {'inputs': None}
+            data_sample = {
+                'gt_instances': gt_instances.to_dict(),
+                'pred_instances': pred_instances.to_dict(),
+            }
+
+            self.data_batch.append(data)
+            self.data_samples.append(data_sample)
+
+    def test_init(self):
+        """test metric init method."""
+        # test invalid normalized_items
+        with self.assertRaisesRegex(
+                KeyError, "Should be one of 'bbox', 'head', 'torso'"):
+            MpiiPCKAccuracy(norm_item='invalid')
+
+    def test_evaluate(self):
+        """test PCK accuracy evaluation metric."""
+        # test normalized by 'head_size'
+        mpii_pck_metric = MpiiPCKAccuracy(thr=0.3, norm_item='head')
+        mpii_pck_metric.process(self.data_batch, self.data_samples)
+        pck_results = mpii_pck_metric.evaluate(self.batch_size)
+        target = {
+            'Head PCK': 100.0,
+            'Shoulder PCK': 100.0,
+            'Elbow PCK': 100.0,
+            'Wrist PCK': 100.0,
+            'Hip PCK': 100.0,
+            'Knee PCK': 100.0,
+            'Ankle PCK': 100.0,
+            'PCKh': 100.0,
+            'PCKh@0.1': 100.0,
+        }
+        self.assertDictEqual(pck_results, target)
+
+
+class TestJhmdbPCKAccuracy(TestCase):
+
+    def setUp(self):
+        """Setup some variables which are used in every test method.
+
+        TestCase calls functions in this order: setUp() -> testMethod() ->
+        tearDown() -> cleanUp()
+        """
+        self.batch_size = 8
+        num_keypoints = 15
+        self.data_batch = []
+        self.data_samples = []
+
+        for i in range(self.batch_size):
+            gt_instances = InstanceData()
+            keypoints = np.zeros((1, num_keypoints, 2))
+            keypoints[0, i] = [0.5 * i, 0.5 * i]
+            gt_instances.keypoints = keypoints
+            gt_instances.keypoints_visible = np.ones(
+                (1, num_keypoints, 1)).astype(bool)
+            gt_instances.keypoints_visible[0, (2 * i) % 8, 0] = False
+            gt_instances.bboxes = np.random.random((1, 4)) * 20 * i
+            gt_instances.head_size = np.random.random((1, 1)) * 10 * i
+
+            pred_instances = InstanceData()
+            pred_instances.keypoints = torch.from_numpy(keypoints)
+
+            data = {'inputs': None}
+            data_sample = {
+                'gt_instances': gt_instances.to_dict(),
+                'pred_instances': pred_instances.to_dict(),
+            }
+
+            self.data_batch.append(data)
+            self.data_samples.append(data_sample)
+
+    def test_init(self):
+        """test metric init method."""
+        # test invalid normalized_items
+        with self.assertRaisesRegex(
+                KeyError, "Should be one of 'bbox', 'head', 'torso'"):
+            JhmdbPCKAccuracy(norm_item='invalid')
+
+    def test_evaluate(self):
+        """test PCK accuracy evaluation metric."""
+        # test normalized by 'bbox_size'
+        jhmdb_pck_metric = JhmdbPCKAccuracy(thr=0.5, norm_item='bbox')
+        jhmdb_pck_metric.process(self.data_batch, self.data_samples)
+        pck_results = jhmdb_pck_metric.evaluate(self.batch_size)
+        target = {
+            'Head PCK': 1.0,
+            'Sho PCK': 1.0,
+            'Elb PCK': 1.0,
+            'Wri PCK': 1.0,
+            'Hip PCK': 1.0,
+            'Knee PCK': 1.0,
+            'Ank PCK': 1.0,
+            'PCK': 1.0,
+        }
+        self.assertDictEqual(pck_results, target)
+
+        # test normalized by 'torso_size'
+        jhmdb_tpck_metric = JhmdbPCKAccuracy(thr=0.2, norm_item='torso')
+        jhmdb_tpck_metric.process(self.data_batch, self.data_samples)
+        tpck_results = jhmdb_tpck_metric.evaluate(self.batch_size)
+        target = {
+            'Head tPCK': 1.0,
+            'Sho tPCK': 1.0,
+            'Elb tPCK': 1.0,
+            'Wri tPCK': 1.0,
+            'Hip tPCK': 1.0,
+            'Knee tPCK': 1.0,
+            'Ank tPCK': 1.0,
+            'Mean tPCK': 1.0,
+        }
+        self.assertDictEqual(tpck_results, target)
 
 
 class TestAUCandEPE(TestCase):
