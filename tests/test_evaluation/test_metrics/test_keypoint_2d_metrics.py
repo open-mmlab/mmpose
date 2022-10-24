@@ -138,7 +138,7 @@ class TestMpiiPCKAccuracy(TestCase):
             'Hip PCK': 100.0,
             'Knee PCK': 100.0,
             'Ankle PCK': 100.0,
-            'PCKh': 100.0,
+            'PCK': 100.0,
             'PCKh@0.1': 100.0,
         }
         self.assertDictEqual(pck_results, target)

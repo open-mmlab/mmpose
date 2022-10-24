@@ -286,8 +286,8 @@ class MpiiPCKAccuracy(PCKAccuracy):
                 'Hip PCK': 0.5 * (PCKh[3] + PCKh[2]),
                 'Knee PCK': 0.5 * (PCKh[4] + PCKh[1]),
                 'Ankle PCK': 0.5 * (PCKh[5] + PCKh[0]),
-                'PCKh': np.sum(PCKh * jnt_ratio),
-                'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
+                'PCK': np.sum(PCKh * jnt_ratio),
+                'PCK@0.1': np.sum(pckAll[10, :] * jnt_ratio)
             }
 
             del metrics[f'PCKh@{self.thr}']
