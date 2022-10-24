@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='nme/@bbox_size', rule='less'))
+default_hooks = dict(checkpoint=dict(save_best='nme', rule='less'))
 
 # codec settings
 codec = dict(
