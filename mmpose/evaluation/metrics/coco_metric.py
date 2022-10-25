@@ -28,15 +28,15 @@ class CocoMetric(BaseMetric):
     Args:
         ann_file (str, optional): Path to the coco format annotation file.
             If not specified, ground truth annotations from the dataset will
-            be converted to coco format. Defaults to None.
+            be converted to coco format. Defaults to None
         use_area (bool): Whether to use ``'area'`` message in the annotations.
             If the ground truth annotations (e.g. CrowdPose, AIC) do not have
             the field ``'area'``, please set ``use_area=False``.
-            Default: ``True``.
+            Default: ``True``
         iou_type (str): The same parameter as `iouType` in
             :class:`xtcocotools.COCOeval`, which can be ``'keypoints'``, or
             ``'keypoints_crowd'`` (used in CrowdPose dataset).
-            Defaults to ``'keypoints'``.
+            Defaults to ``'keypoints'``
         score_mode (str): The mode to score the prediction results which
             should be one of the following options:
 
@@ -71,17 +71,18 @@ class CocoMetric(BaseMetric):
             doing quantitative evaluation. This is designed for the need of
             test submission when the ground truth annotations are absent. If
             set to ``True``, ``outfile_prefix`` should specify the path to
-            store the output results. Default: ``False``.
-        outfile_prefix (str | None): The prefix of json files. It includes
+            store the output results. Defaults to ``False``
+        outfile_prefix (str, optional): The prefix of json files. It includes
             the file path and the prefix of filename, e.g., ``'a/b/prefix'``.
-            If not specified, a temp file will be created. Default: ``None``.
+            If not specified, a temp file will be created.
+            Defaults to ``None``
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
-            ``'gpu'``. Default: ``'cpu'``.
+            ``'gpu'``. Defaults to ``'cpu'``
         prefix (str, optional): The prefix that will be added in the metric
             names to disambiguate homonymous metrics of different evaluators.
             If prefix is not provided in the argument, ``self.default_prefix``
-            will be used instead. Default: ``None``.
+            will be used instead. Defaults to ``None``
     """
     default_prefix: Optional[str] = 'coco'
 
@@ -190,10 +191,10 @@ class CocoMetric(BaseMetric):
                 gt['height'] = data_sample['ori_shape'][0]
                 gt['img_id'] = data_sample['img_id']
                 if self.iou_type == 'keypoints_crowd':
-                    assert 'crowdIndex' in data_sample, \
-                        '`crowdIndex` is required when `self.iou_type` is ' \
+                    assert 'crowd_index' in data_sample, \
+                        '`crowd_index` is required when `self.iou_type` is ' \
                         '`keypoints_crowd`'
-                    gt['crowdIndex'] = data_sample['crowdIndex']
+                    gt['crowd_index'] = data_sample['crowd_index']
                 assert 'raw_ann_info' in data_sample, \
                     'The row ground truth annotations are required for ' \
                     'evaluation when `ann_file` is not provided'
@@ -201,7 +202,7 @@ class CocoMetric(BaseMetric):
                 gt['raw_ann_info'] = anns if isinstance(anns, list) else [anns]
 
             # add converted result to the results list
-            self.results.append((gt, pred))
+            self.results.append((pred, gt))
 
     def gt_to_coco_json(self, gt_dicts: Sequence[dict],
                         outfile_prefix: str) -> str:
@@ -210,50 +211,32 @@ class CocoMetric(BaseMetric):
         Args:
             gt_dicts (Sequence[dict]): Ground truth of the dataset. Each dict
                 contains the ground truth information about the data sample.
-
                 Required keys of the each `gt_dict` in `gt_dicts`:
-
                     - `img_id`: image id of the data sample
-
                     - `width`: original image width
-
                     - `height`: original image height
-
                     - `raw_ann_info`: the raw annotation information
-
                 Optional keys:
-
-                    - `crowdIndex`: measure the crowding level of an image,
+                    - `crowd_index`: measure the crowding level of an image,
                         defined in CrowdPose dataset
-
-                It is worth mentioning that, in order to compute CocoMetric,
+                It is worth mentioning that, in order to compute `CocoMetric`,
                 there are some required keys in the `raw_ann_info`:
-
-                    - `id`: the id to distinguish different GT annotations
-
+                    - `id`: the id to distinguish different annotations
                     - `image_id`: the image id of this annotation
-
-                    - `category_id`: the category of the object.
-
+                    - `category_id`: the category of the instance.
                     - `bbox`: the object bounding box
-
                     - `keypoints`: the keypoints cooridinates along with their
                         visibilities. Note that it need to be aligned
                         with the official COCO format, e.g., a list with length
                         N * 3, in which N is the number of keypoints. And each
                         triplet represent the [x, y, visible] of the keypoint.
-
                     - `iscrowd`: indicating whether the annotation is a crowd.
                         It is useful when matching the detection results to
-                        the ground truth. Set it as `0` by default.
-
+                        the ground truth.
                 There are some optional keys as well:
-
                     - `area`: it is necessary when `self.use_area` is `True`
-
                     - `num_keypoints`: it is necessary when `self.iou_type`
                         is set as `keypoints_crowd`.
-
             outfile_prefix (str): The filename prefix of the json files. If the
                 prefix is "somepath/xxx", the json file will be named
                 "somepath/xxx.gt.json".
@@ -274,7 +257,7 @@ class CocoMetric(BaseMetric):
                     height=gt_dict['height'],
                 )
                 if self.iou_type == 'keypoints_crowd':
-                    image_info['crowdIndex'] = gt_dict['crowdIndex']
+                    image_info['crowdIndex'] = gt_dict['crowd_index']
 
                 image_infos.append(image_info)
                 img_ids.append(gt_dict['img_id'])
@@ -329,8 +312,8 @@ class CocoMetric(BaseMetric):
         """
         logger: MMLogger = MMLogger.get_current_instance()
 
-        # split gt and prediction list
-        gts, preds = zip(*results)
+        # split prediction and gt list
+        preds, gts = zip(*results)
 
         tmp_dir = None
         if self.outfile_prefix is None:
@@ -609,6 +592,8 @@ class AP10KCocoMetric(CocoMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
+
+    default_prefix: Optional[str] = 'ap10k'
 
     def process(self, data_batch: Sequence[dict],
                 predictions: Sequence[dict]) -> None:

@@ -49,7 +49,7 @@ class PackPoseInputs(BaseTransform):
 
         - ``img_path``: path to the image file
 
-        - ``crowdIndex`` (optional): measure the crowding level of an image,
+        - ``crowd_index`` (optional): measure the crowding level of an image,
             defined in CrowdPose dataset
 
         - ``ori_shape``: original shape of the image as a tuple (h, w, c)
@@ -71,7 +71,7 @@ class PackPoseInputs(BaseTransform):
     Args:
         meta_keys (Sequence[str], optional): Meta keys which will be stored in
             :obj: `PoseDataSample` as meta info. Defaults to ``('id',
-            'img_id', 'img_path', 'crowdIndex, 'ori_shape', 'img_shape',
+            'img_id', 'img_path', 'crowd_index, 'ori_shape', 'img_shape',
             'input_size', 'flip', 'flip_direction', 'flip_indices',
             'raw_ann_info')``
     """
@@ -100,7 +100,7 @@ class PackPoseInputs(BaseTransform):
     }
 
     def __init__(self,
-                 meta_keys=('id', 'img_id', 'img_path', 'crowdIndex',
+                 meta_keys=('id', 'img_id', 'img_path', 'crowd_index',
                             'ori_shape', 'img_shape', 'input_size', 'flip',
                             'flip_direction', 'flip_indices', 'raw_ann_info'),
                  pack_transformed=False):
