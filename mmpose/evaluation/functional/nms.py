@@ -8,11 +8,11 @@ from typing import List, Optional
 import numpy as np
 
 
-def nms(dets: List[list], thr: float) -> List[int]:
+def nms(dets: np.ndarray, thr: float) -> List[int]:
     """Greedily select boxes with high confidence and overlap <= thr.
 
     Args:
-        dets (List[list]): [[x1, y1, x2, y2, score]].
+        dets (np.ndarray): [[x1, y1, x2, y2, score]].
         thr (float): Retain overlap < thr.
 
     Returns:
