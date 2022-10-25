@@ -58,7 +58,7 @@ class CombinedDataset(BaseDataset):
         self.datasets = []
 
         for cfg in datasets:
-            dataset = build_from_cfg(cfg['dataset'], DATASETS)
+            dataset = build_from_cfg(cfg, DATASETS)
             self.datasets.append(dataset)
 
         self._lens = [len(dataset) for dataset in self.datasets]
@@ -116,6 +116,7 @@ class CombinedDataset(BaseDataset):
         subset_idx, sample_idx = self._get_subset_index(idx)
         # Get data sample from the subset
         data_info = self.datasets[subset_idx].get_data_info(sample_idx)
+        data_info = self.datasets[subset_idx].pipeline(data_info)
 
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [
