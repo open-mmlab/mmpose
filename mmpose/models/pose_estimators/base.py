@@ -5,8 +5,9 @@ import torch
 from mmengine.model import BaseModel
 from torch import Tensor
 
-from mmpose.utils.typing import (ForwardResults, OptConfigType, OptMultiConfig,
-                                 OptSampleList, SampleList)
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
+from mmpose.utils.typing import (ForwardResults, OptConfigType, Optional,
+                                 OptMultiConfig, OptSampleList, SampleList)
 
 
 class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
@@ -17,13 +18,19 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
             config of :class:`BaseDataPreprocessor`. Defaults to ``None``.
         init_cfg (dict | ConfigDict): The model initialization config.
             Defaults to ``None``
+        metainfo (dict): Meta information for dataset, such as keypoints
+            information. Default: ``None``.
     """
 
-    def __init__(self,
-                 data_preprocessor: OptConfigType = None,
-                 init_cfg: OptMultiConfig = None):
+    def __init__(
+        self,
+        data_preprocessor: OptConfigType = None,
+        init_cfg: OptMultiConfig = None,
+        metainfo: Optional[dict] = None,
+    ):
         super().__init__(
             data_preprocessor=data_preprocessor, init_cfg=init_cfg)
+        self.metainfo = self._load_metainfo(metainfo)
 
     @property
     def with_neck(self) -> bool:
@@ -34,6 +41,27 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
     def with_head(self) -> bool:
         """bool: whether the pose estimator has a head."""
         return hasattr(self, 'head') and self.head is not None
+
+    @staticmethod
+    def _load_metainfo(metainfo: dict = None) -> dict:
+        """Collect meta information from the dictionary of meta.
+
+        Args:
+            metainfo (dict): Raw data of pose meta information.
+
+        Returns:
+            dict: Parsed meta information.
+        """
+
+        if metainfo is None:
+            return None
+
+        if not isinstance(metainfo, dict):
+            raise TypeError(
+                f'metainfo should be a dict, but got {type(metainfo)}')
+
+        metainfo = parse_pose_metainfo(metainfo)
+        return metainfo
 
     def forward(self,
                 inputs: torch.Tensor,
@@ -73,6 +101,10 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         if mode == 'loss':
             return self.loss(inputs, data_samples)
         elif mode == 'predict':
+            # use customed metainfo to override the default metainfo
+            if self.metainfo is not None:
+                for data_sample in data_samples:
+                    data_sample.set_metainfo(self.metainfo)
             return self.predict(inputs, data_samples)
         elif mode == 'tensor':
             return self._forward(inputs)

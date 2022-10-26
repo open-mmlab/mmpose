@@ -27,19 +27,24 @@ class TopdownPoseEstimator(BasePoseEstimator):
             ``None``.
         init_cfg (dict, optional): The config to control the initialization.
             Defaults to ``None``
+        metainfo (dict): Meta information for dataset, such as keypoints
+            information. Default: ``None``
     """
 
     _version = 2
 
-    def __init__(self,
-                 backbone: ConfigType,
-                 neck: OptConfigType = None,
-                 head: OptConfigType = None,
-                 train_cfg: OptConfigType = None,
-                 test_cfg: OptConfigType = None,
-                 data_preprocessor: OptConfigType = None,
-                 init_cfg: OptMultiConfig = None):
-        super().__init__(data_preprocessor, init_cfg)
+    def __init__(
+        self,
+        backbone: ConfigType,
+        neck: OptConfigType = None,
+        head: OptConfigType = None,
+        train_cfg: OptConfigType = None,
+        test_cfg: OptConfigType = None,
+        data_preprocessor: OptConfigType = None,
+        init_cfg: OptMultiConfig = None,
+        metainfo: Optional[dict] = None,
+    ):
+        super().__init__(data_preprocessor, init_cfg, metainfo)
 
         self.backbone = MODELS.build(backbone)
 
@@ -178,6 +183,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
         assert len(batch_pred_instances) == len(batch_data_samples)
         if batch_pred_fields is None:
             batch_pred_fields = []
+        kpt_indices = self.test_cfg.get('out_keypoint_indices', None)
 
         for pred_instances, pred_fields, data_sample in zip_longest(
                 batch_pred_instances, batch_pred_fields, batch_data_samples):
@@ -192,6 +198,13 @@ class TopdownPoseEstimator(BasePoseEstimator):
             pred_instances.keypoints = pred_instances.keypoints / input_size \
                 * bbox_scales + bbox_centers - 0.5 * bbox_scales
 
+            if kpt_indices is not None:
+                # select output keypoints with given indices
+                num_keypoints = pred_instances.keypoints.shape[1]
+                for key, value in pred_instances.all_items():
+                    if key.startswith('keypoint'):
+                        setattr(pred_instances, key, value[:, kpt_indices])
+
             # add bbox information into pred_instances
             pred_instances.bboxes = gt_instances.bboxes
             pred_instances.bbox_scores = gt_instances.bbox_scores
@@ -199,6 +212,18 @@ class TopdownPoseEstimator(BasePoseEstimator):
             data_sample.pred_instances = pred_instances
 
             if pred_fields is not None:
+                if kpt_indices is not None:
+                    # select output heatmap channels with keypoint indices
+                    for key, value in pred_fields.all_items():
+                        if value.shape[0] % num_keypoints != 0:
+                            continue
+                        field_size = value.shape[1:]
+                        # in some cases, such as UDP-regress, the number of
+                        # heatmap channels is a multiply of the number of
+                        # keypoints.
+                        value = value.reshape(num_keypoints, -1, *field_size)
+                        value = value[kpt_indices].reshape(-1, *field_size)
+                        setattr(pred_fields, key, value)
                 data_sample.pred_fields = pred_fields
 
         return batch_data_samples

@@ -27,11 +27,50 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(
+    checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=3))
 
 # codec settings
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+
+# keypoint mappings
+keypoint_mapping_coco = [
+    (0, 0),
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    (11, 11),
+    (12, 12),
+    (13, 13),
+    (14, 14),
+    (15, 15),
+    (16, 16),
+]
+
+keypoint_mapping_aic = [
+    (0, 6),
+    (1, 8),
+    (2, 10),
+    (3, 5),
+    (4, 7),
+    (5, 9),
+    (6, 12),
+    (7, 14),
+    (8, 16),
+    (9, 11),
+    (10, 13),
+    (11, 15),
+    (12, 17),
+    (13, 18),
+]
 
 # model settings
 model = dict(
@@ -41,6 +80,7 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
+    metainfo=dict(from_file='configs/_base_/datasets/coco_aic.py'),
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -85,7 +125,7 @@ model = dict(
         flip_test=True,
         flip_mode='heatmap',
         shift_heatmap=True,
-    ))
+        out_keypoint_indices=[target for _, target in keypoint_mapping_coco]))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -121,25 +161,7 @@ dataset_coco = dict(
         dict(
             type='KeypointConverter',
             num_keypoints=19,
-            mapping=[
-                (0, 0),
-                (1, 1),
-                (2, 2),
-                (3, 3),
-                (4, 4),
-                (5, 5),
-                (6, 6),
-                (7, 7),
-                (8, 8),
-                (9, 9),
-                (10, 10),
-                (11, 11),
-                (12, 12),
-                (13, 13),
-                (14, 14),
-                (15, 15),
-                (16, 16),
-            ])
+            mapping=keypoint_mapping_coco)
     ],
 )
 
@@ -154,22 +176,7 @@ dataset_aic = dict(
         dict(
             type='KeypointConverter',
             num_keypoints=19,
-            mapping=[
-                (0, 6),
-                (1, 8),
-                (2, 10),
-                (3, 5),
-                (4, 7),
-                (5, 9),
-                (6, 12),
-                (7, 14),
-                (8, 16),
-                (9, 11),
-                (10, 13),
-                (11, 15),
-                (12, 17),
-                (13, 18),
-            ])
+            mapping=keypoint_mapping_aic)
     ],
 )
 
