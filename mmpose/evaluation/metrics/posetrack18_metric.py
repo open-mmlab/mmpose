@@ -8,7 +8,7 @@ from mmengine.fileio import dump, load
 from mmengine.logging import MMLogger
 
 from mmpose.registry import METRICS
-from .coco_metric import CocoMetric
+from .coco_metric_old import CocoMetric
 
 try:
     from poseval import eval_helpers

@@ -6,7 +6,7 @@ from mmengine.fileio import dump
 from xtcocotools.cocoeval import COCOeval
 
 from mmpose.registry import METRICS
-from .coco_metric import CocoMetric
+from .coco_metric_old import CocoMetric
 
 
 @METRICS.register_module()
