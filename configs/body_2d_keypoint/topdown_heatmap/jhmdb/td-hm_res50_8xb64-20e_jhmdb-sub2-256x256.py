@@ -114,7 +114,6 @@ test_dataloader = val_dataloader
 
 # evaluators
 val_evaluator = [
-    dict(type='JhmdbPCKAccuracy', thr=0.2),
-    dict(type='JhmdbPCKAccuracy', thr=0.2, norm_item='torso'),
+    dict(type='JhmdbPCKAccuracy', thr=0.2, norm_item=['bbox', 'torso']),
 ]
 test_evaluator = val_evaluator
