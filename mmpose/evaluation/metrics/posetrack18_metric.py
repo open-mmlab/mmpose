@@ -90,39 +90,16 @@ class PoseTrack18Metric(CocoMetric):
             raise ImportError('Please install ``poseval`` package for '
                               'evaluation on PoseTrack dataset '
                               '(see `requirements/optional.txt`)')
-        super(CocoMetric, self).__init__(
-            collect_device=collect_device, prefix=prefix)
-        self.ann_file = ann_file
-
-        allowed_score_modes = ['bbox', 'bbox_keypoint']
-        if score_mode not in allowed_score_modes:
-            raise ValueError(
-                "`score_mode` should be one of 'bbox', 'bbox_keypoint', "
-                f"'bbox_rle', but got {score_mode}")
-        self.score_mode = score_mode
-        self.keypoint_score_thr = keypoint_score_thr
-
-        allowed_nms_modes = ['oks_nms', 'soft_oks_nms', 'none']
-        if nms_mode not in allowed_nms_modes:
-            raise ValueError(
-                "`nms_mode` should be one of 'oks_nms', 'soft_oks_nms', "
-                f"'none', but got {nms_mode}")
-        self.nms_mode = nms_mode
-        self.nms_thr = nms_thr
-
-        if format_only:
-            assert outfile_prefix is not None, '`outfile_prefix` can not be '\
-                'None when `format_only` is True, otherwise the result file '\
-                'will be saved to a temp directory which will be cleaned up '\
-                'in the end.'
-        else:
-            # do evaluation only if the ground truth annotations exist
-            assert 'annotations' in load(ann_file), \
-                'Ground truth annotations are required for evaluation '\
-                'when `format_only` is False.'
-        self.format_only = format_only
-
-        self.outfile_prefix = outfile_prefix
+        super().__init__(
+            ann_file=ann_file,
+            score_mode=score_mode,
+            keypoint_score_thr=keypoint_score_thr,
+            nms_mode=nms_mode,
+            nms_thr=nms_thr,
+            format_only=format_only,
+            outfile_prefix=outfile_prefix,
+            collect_device=collect_device,
+            prefix=prefix)
 
     def results2json(self, keypoints: Dict[int, list],
                      outfile_prefix: str) -> str:

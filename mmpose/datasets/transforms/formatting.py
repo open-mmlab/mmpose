@@ -49,6 +49,9 @@ class PackPoseInputs(BaseTransform):
 
         - ``img_path``: path to the image file
 
+        - ``crowd_index`` (optional): measure the crowding level of an image,
+            defined in CrowdPose dataset
+
         - ``ori_shape``: original shape of the image as a tuple (h, w, c)
 
         - ``img_shape``: shape of the image input to the network as a tuple \
@@ -63,11 +66,14 @@ class PackPoseInputs(BaseTransform):
 
         - ``flip_indices``: the indices of each keypoint's symmetric keypoint
 
+        - ``raw_ann_info`` (optional): raw annotation of the instance(s)
+
     Args:
         meta_keys (Sequence[str], optional): Meta keys which will be stored in
             :obj: `PoseDataSample` as meta info. Defaults to ``('id',
-            'img_id', 'img_path', 'ori_shape', 'img_shape', 'input_size',
-            'flip', 'flip_direction', 'flip_indices)``
+            'img_id', 'img_path', 'crowd_index, 'ori_shape', 'img_shape',
+            'input_size', 'flip', 'flip_direction', 'flip_indices',
+            'raw_ann_info')``
     """
 
     # items in `instance_mapping_table` will be directly packed into
@@ -94,9 +100,9 @@ class PackPoseInputs(BaseTransform):
     }
 
     def __init__(self,
-                 meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
-                            'img_shape', 'input_size', 'flip',
-                            'flip_direction', 'flip_indices'),
+                 meta_keys=('id', 'img_id', 'img_path', 'crowd_index',
+                            'ori_shape', 'img_shape', 'input_size', 'flip',
+                            'flip_direction', 'flip_indices', 'raw_ann_info'),
                  pack_transformed=False):
         self.meta_keys = meta_keys
         self.pack_transformed = pack_transformed
