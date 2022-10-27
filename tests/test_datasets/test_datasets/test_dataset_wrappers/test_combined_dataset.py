@@ -30,8 +30,7 @@ class TestCombinedDataset(TestCase):
 
         cfg = dict(
             metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
-            datasets=[dict(dataset=coco_cfg),
-                      dict(dataset=aic_cfg)],
+            datasets=[coco_cfg, aic_cfg],
             pipeline=[])
         cfg.update(kwargs)
         return CombinedDataset(**cfg)
