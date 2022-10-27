@@ -98,6 +98,8 @@ def main():
     for folder in glob.glob(root+'/*'):
         print(folder)
         for img_name in glob.glob(folder+'/*.jpg'):
+            if os.path.exists(img_name+'.npy'):
+                continue
             args.img = img_name
             if '.npy' in img_name:
                 continue
