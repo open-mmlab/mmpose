@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
 # codec settings
 codec = dict(
@@ -111,7 +111,7 @@ val_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=16,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -124,7 +124,7 @@ train_dataloader = dict(
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=16,
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
