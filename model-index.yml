@@ -2,3 +2,7 @@ Import:
 - configs/body_2d_keypoint/topdown_heatmap/coco/hrnet_coco.yml
 - configs/body_2d_keypoint/topdown_heatmap/coco/litehrnet_coco.yml
 - configs/body_2d_keypoint/topdown_heatmap/coco/mspn_coco.yml
+- configs/body_2d_keypoint/topdown_heatmap/coco/hourglass_coco.yml
+- configs/body_2d_keypoint/simcc/coco/resnet_coco.yml
+- configs/body_2d_keypoint/simcc/coco/mobilenetv2_coco.yml
+- configs/body_2d_keypoint/simcc/coco/vipnas_coco.yml
