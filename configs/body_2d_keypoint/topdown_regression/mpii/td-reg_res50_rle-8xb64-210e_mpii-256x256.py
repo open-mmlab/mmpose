@@ -111,8 +111,8 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
 # evaluators
-val_evaluator = dict(type='MpiiPCKAccuracy', norm_item='head')
+val_evaluator = dict(type='MpiiPCKAccuracy')
 test_evaluator = val_evaluator

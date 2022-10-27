@@ -138,12 +138,12 @@ _base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位
 
 CheckpointHook:
 
-- save_best: `'coco/AP'` 用于 `CocoMetric`, `'pck/PCK@0.05'` 用于 `PCKAccuracy`
+- save_best: `'coco/AP'` 用于 `CocoMetric`, `'PCK'` 用于 `PCKAccuracy`
 - max_keep_ckpts: 最大保留ckpt数量，默认为-1，代表不限制
 
 样例:
 
-`default_hooks = dict(checkpoint=dict(save_best='pck/PCK@0.05', rule='greater', max_keep_ckpts=1))`
+`default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1))`
 ```
 
 ### 数据配置

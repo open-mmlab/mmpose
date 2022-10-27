@@ -37,8 +37,35 @@ class PCKAccuracy(BaseMetric):
             names to disambiguate homonymous metrics of different evaluators.
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
+
+    Examples:
+
+        >>> from mmpose.evaluation.metrics import PCKAccuracy
+        >>> import numpy as np
+        >>> from mmengine.structures import InstanceData
+        >>> num_keypoints = 15
+        >>> keypoints = np.random.random((1, num_keypoints, 2)) * 10
+        >>> gt_instances = InstanceData()
+        >>> gt_instances.keypoints = keypoints
+        >>> gt_instances.keypoints_visible = np.ones(
+        ...     (1, num_keypoints, 1)).astype(bool)
+        >>> gt_instances.bboxes = np.random.random((1, 4)) * 20
+        >>> pred_instances = InstanceData()
+        >>> pred_instances.keypoints = keypoints
+        >>> data_sample = {
+        ...     'gt_instances': gt_instances.to_dict(),
+        ...     'pred_instances': pred_instances.to_dict(),
+        ... }
+        >>> data_samples = [data_sample]
+        >>> data_batch = [{'inputs': None}]
+        >>> pck_metric = PCKAccuracy(thr=0.5, norm_item='bbox')
+        ...: UserWarning: The prefix is not set in metric class PCKAccuracy.
+        >>> pck_metric.process(data_batch, data_samples)
+        >>> pck_metric.evaluate(1)
+        10/26 15:37:57 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...  # noqa
+        {'PCK': 1.0}
+
     """
-    default_prefix: Optional[str] = 'pck'
 
     def __init__(self,
                  thr: float = 0.05,
@@ -126,6 +153,10 @@ class PCKAccuracy(BaseMetric):
         Returns:
             Dict[str, float]: The computed metrics. The keys are the names of
             the metrics, and the values are corresponding results.
+            The returned result dict may have the following keys:
+                - 'PCK': The pck accuracy normalized by `bbox_size`.
+                - 'PCKh': The pck accuracy normalized by `head_size`.
+                - 'tPCK': The pck accuracy normalized by `torso_size`.
         """
         logger: MMLogger = MMLogger.get_current_instance()
 
@@ -147,7 +178,7 @@ class PCKAccuracy(BaseMetric):
 
             _, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                               self.thr, norm_size_bbox)
-            metrics[f'PCK@{self.thr}'] = pck
+            metrics['PCK'] = pck
 
         if 'head' in self.norm_item:
             norm_size_head = np.concatenate(
@@ -158,7 +189,7 @@ class PCKAccuracy(BaseMetric):
 
             _, pckh, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                self.thr, norm_size_head)
-            metrics[f'PCKh@{self.thr}'] = pckh
+            metrics['PCKh'] = pckh
 
         if 'torso' in self.norm_item:
             norm_size_torso = np.concatenate(
@@ -169,7 +200,7 @@ class PCKAccuracy(BaseMetric):
 
             _, tpck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                self.thr, norm_size_torso)
-            metrics[f'tPCK@{self.thr}'] = tpck
+            metrics['tPCK'] = tpck
 
         return metrics
 
@@ -195,7 +226,7 @@ class MpiiPCKAccuracy(PCKAccuracy):
         thr(float): Threshold of PCK calculation. Default: 0.05.
         norm_item (str | Sequence[str]): The item used for normalization.
             Valid items include 'bbox', 'head', 'torso', which correspond
-            to 'PCK', 'PCKh' and 'tPCK' respectively. Default: ``'bbox'``.
+            to 'PCK', 'PCKh' and 'tPCK' respectively. Default: ``'head'``.
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
             ``'gpu'``. Default: ``'cpu'``.
@@ -203,8 +234,36 @@ class MpiiPCKAccuracy(PCKAccuracy):
             names to disambiguate homonymous metrics of different evaluators.
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
+
+    Examples:
+
+        >>> from mmpose.evaluation.metrics import MpiiPCKAccuracy
+        >>> import numpy as np
+        >>> from mmengine.structures import InstanceData
+        >>> num_keypoints = 16
+        >>> keypoints = np.random.random((1, num_keypoints, 2)) * 10
+        >>> gt_instances = InstanceData()
+        >>> gt_instances.keypoints = keypoints + 1.0
+        >>> gt_instances.keypoints_visible = np.ones(
+        ...     (1, num_keypoints, 1)).astype(bool)
+        >>> gt_instances.head_size = np.random.random((1, 1)) * 10
+        >>> pred_instances = InstanceData()
+        >>> pred_instances.keypoints = keypoints
+        >>> data_sample = {
+        ...     'gt_instances': gt_instances.to_dict(),
+        ...     'pred_instances': pred_instances.to_dict(),
+        ... }
+        >>> data_samples = [data_sample]
+        >>> data_batch = [{'inputs': None}]
+        >>> mpii_pck_metric = MpiiPCKAccuracy(thr=0.3, norm_item='head')
+        ... UserWarning: The prefix is not set in metric class MpiiPCKAccuracy.
+        >>> mpii_pck_metric.process(data_batch, data_samples)
+        >>> mpii_pck_metric.evaluate(1)
+        10/26 17:43:39 - mmengine - INFO - Evaluating MpiiPCKAccuracy (normalized by ``"head_size"``)...  # noqa
+        {'Head PCK': 100.0, 'Shoulder PCK': 100.0, 'Elbow PCK': 100.0,
+        Wrist PCK': 100.0, 'Hip PCK': 100.0, 'Knee PCK': 100.0,
+        'Ankle PCK': 100.0, 'PCK': 100.0, 'PCK@0.1': 100.0}
     """
-    default_prefix: Optional[str] = 'pck'
 
     def __init__(self,
                  thr: float = 0.5,
@@ -226,6 +285,17 @@ class MpiiPCKAccuracy(PCKAccuracy):
         Returns:
             Dict[str, float]: The computed metrics. The keys are the names of
             the metrics, and the values are corresponding results.
+            If `'head'` in `self.norm_item`, the returned results are the pck
+            accuracy normalized by `head_size`, which have the following keys:
+                - 'Head PCK': The PCK of head
+                - 'Shoulder PCK': The PCK of shoulder
+                - 'Elbow PCK': The PCK of elbow
+                - 'Wrist PCK': The PCK of wrist
+                - 'Hip PCK': The PCK of hip
+                - 'Knee PCK': The PCK of knee
+                - 'Ankle PCK': The PCK of ankle
+                - 'PCK': The mean PCK over all keypoints
+                - 'PCK@0.1': The mean PCK at threshold 0.1
         """
         logger: MMLogger = MMLogger.get_current_instance()
 
@@ -241,8 +311,7 @@ class MpiiPCKAccuracy(PCKAccuracy):
         # convert 0-based index to 1-based index
         pred_coords = pred_coords + 1.0
 
-        metrics = super().compute_metrics(results)
-
+        metrics = {}
         if 'head' in self.norm_item:
             norm_size_head = np.concatenate(
                 [result['head_size'] for result in results])
@@ -281,18 +350,17 @@ class MpiiPCKAccuracy(PCKAccuracy):
             #   lkne 4   rkne 1
             #   lank 5   rank 0
             stats = {
-                'Head': PCKh[9],
-                'Shoulder': 0.5 * (PCKh[13] + PCKh[12]),
-                'Elbow': 0.5 * (PCKh[14] + PCKh[11]),
-                'Wrist': 0.5 * (PCKh[15] + PCKh[10]),
-                'Hip': 0.5 * (PCKh[3] + PCKh[2]),
-                'Knee': 0.5 * (PCKh[4] + PCKh[1]),
-                'Ankle': 0.5 * (PCKh[5] + PCKh[0]),
-                'PCKh': np.sum(PCKh * jnt_ratio),
-                'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
+                'Head PCK': PCKh[9],
+                'Shoulder PCK': 0.5 * (PCKh[13] + PCKh[12]),
+                'Elbow PCK': 0.5 * (PCKh[14] + PCKh[11]),
+                'Wrist PCK': 0.5 * (PCKh[15] + PCKh[10]),
+                'Hip PCK': 0.5 * (PCKh[3] + PCKh[2]),
+                'Knee PCK': 0.5 * (PCKh[4] + PCKh[1]),
+                'Ankle PCK': 0.5 * (PCKh[5] + PCKh[0]),
+                'PCK': np.sum(PCKh * jnt_ratio),
+                'PCK@0.1': np.sum(pckAll[10, :] * jnt_ratio)
             }
 
-            del metrics[f'PCKh@{self.thr}']
             for stats_name, stat in stats.items():
                 metrics[stats_name] = stat
 
@@ -328,8 +396,39 @@ class JhmdbPCKAccuracy(PCKAccuracy):
             names to disambiguate homonymous metrics of different evaluators.
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
+
+    Examples:
+
+        >>> from mmpose.evaluation.metrics import JhmdbPCKAccuracy
+        >>> import numpy as np
+        >>> from mmengine.structures import InstanceData
+        >>> num_keypoints = 15
+        >>> keypoints = np.random.random((1, num_keypoints, 2)) * 10
+        >>> gt_instances = InstanceData()
+        >>> gt_instances.keypoints = keypoints
+        >>> gt_instances.keypoints_visible = np.ones(
+        ...     (1, num_keypoints, 1)).astype(bool)
+        >>> gt_instances.bboxes = np.random.random((1, 4)) * 20
+        >>> gt_instances.head_size = np.random.random((1, 1)) * 10
+        >>> pred_instances = InstanceData()
+        >>> pred_instances.keypoints = keypoints
+        >>> data_sample = {
+        ...     'gt_instances': gt_instances.to_dict(),
+        ...     'pred_instances': pred_instances.to_dict(),
+        ... }
+        >>> data_samples = [data_sample]
+        >>> data_batch = [{'inputs': None}]
+        >>> jhmdb_pck_metric = JhmdbPCKAccuracy(thr=0.2, norm_item=['bbox', 'torso'])
+        ... UserWarning: The prefix is not set in metric class JhmdbPCKAccuracy.
+        >>> jhmdb_pck_metric.process(data_batch, data_samples)
+        >>> jhmdb_pck_metric.evaluate(1)
+        10/26 17:48:09 - mmengine - INFO - Evaluating JhmdbPCKAccuracy (normalized by ``"bbox_size"``)...  # noqa
+        10/26 17:48:09 - mmengine - INFO - Evaluating JhmdbPCKAccuracy (normalized by ``"torso_size"``)...  # noqa
+        {'Head PCK': 1.0, 'Sho PCK': 1.0, 'Elb PCK': 1.0, 'Wri PCK': 1.0,
+        'Hip PCK': 1.0, 'Knee PCK': 1.0, 'Ank PCK': 1.0, 'PCK': 1.0,
+        'Head tPCK': 1.0, 'Sho tPCK': 1.0, 'Elb tPCK': 1.0, 'Wri tPCK': 1.0,
+        'Hip tPCK': 1.0, 'Knee tPCK': 1.0, 'Ank tPCK': 1.0, 'tPCK': 1.0}
     """
-    default_prefix: Optional[str] = 'pck'
 
     def __init__(self,
                  thr: float = 0.05,
@@ -351,6 +450,26 @@ class JhmdbPCKAccuracy(PCKAccuracy):
         Returns:
             Dict[str, float]: The computed metrics. The keys are the names of
             the metrics, and the values are corresponding results.
+            If `'bbox'` in `self.norm_item`, the returned results are the pck
+            accuracy normalized by `bbox_size`, which have the following keys:
+                - 'Head PCK': The PCK of head
+                - 'Sho PCK': The PCK of shoulder
+                - 'Elb PCK': The PCK of elbow
+                - 'Wri PCK': The PCK of wrist
+                - 'Hip PCK': The PCK of hip
+                - 'Knee PCK': The PCK of knee
+                - 'Ank PCK': The PCK of ankle
+                - 'PCK': The mean PCK over all keypoints
+            If `'torso'` in `self.norm_item`, the returned results are the pck
+            accuracy normalized by `torso_size`, which have the following keys:
+                - 'Head tPCK': The PCK of head
+                - 'Sho tPCK': The PCK of shoulder
+                - 'Elb tPCK': The PCK of elbow
+                - 'Wri tPCK': The PCK of wrist
+                - 'Hip tPCK': The PCK of hip
+                - 'Knee tPCK': The PCK of knee
+                - 'Ank tPCK': The PCK of ankle
+                - 'tPCK': The mean PCK over all keypoints
         """
         logger: MMLogger = MMLogger.get_current_instance()
 
@@ -362,8 +481,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
         # mask: [N, K]
         mask = np.concatenate([result['mask'] for result in results])
 
-        metrics = super().compute_metrics(results)
-
+        metrics = dict()
         if 'bbox' in self.norm_item:
             norm_size_bbox = np.concatenate(
                 [result['bbox_size'] for result in results])
@@ -373,22 +491,19 @@ class JhmdbPCKAccuracy(PCKAccuracy):
 
             pck_p, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                   self.thr, norm_size_bbox)
-            metrics[f'@{self.thr}'] = pck
-
             stats = {
-                'Head': pck_p[2],
-                'Sho': 0.5 * pck_p[3] + 0.5 * pck_p[4],
-                'Elb': 0.5 * pck_p[7] + 0.5 * pck_p[8],
-                'Wri': 0.5 * pck_p[11] + 0.5 * pck_p[12],
-                'Hip': 0.5 * pck_p[5] + 0.5 * pck_p[6],
-                'Knee': 0.5 * pck_p[9] + 0.5 * pck_p[10],
-                'Ank': 0.5 * pck_p[13] + 0.5 * pck_p[14],
-                'Mean': pck
+                'Head PCK': pck_p[2],
+                'Sho PCK': 0.5 * pck_p[3] + 0.5 * pck_p[4],
+                'Elb PCK': 0.5 * pck_p[7] + 0.5 * pck_p[8],
+                'Wri PCK': 0.5 * pck_p[11] + 0.5 * pck_p[12],
+                'Hip PCK': 0.5 * pck_p[5] + 0.5 * pck_p[6],
+                'Knee PCK': 0.5 * pck_p[9] + 0.5 * pck_p[10],
+                'Ank PCK': 0.5 * pck_p[13] + 0.5 * pck_p[14],
+                'PCK': pck
             }
 
-            del metrics[f'PCK@{self.thr}']
             for stats_name, stat in stats.items():
-                metrics[f'{stats_name} PCK'] = stat
+                metrics[stats_name] = stat
 
         if 'torso' in self.norm_item:
             norm_size_torso = np.concatenate(
@@ -401,19 +516,18 @@ class JhmdbPCKAccuracy(PCKAccuracy):
                                                   self.thr, norm_size_torso)
 
             stats = {
-                'Head': pck_p[2],
-                'Sho': 0.5 * pck_p[3] + 0.5 * pck_p[4],
-                'Elb': 0.5 * pck_p[7] + 0.5 * pck_p[8],
-                'Wri': 0.5 * pck_p[11] + 0.5 * pck_p[12],
-                'Hip': 0.5 * pck_p[5] + 0.5 * pck_p[6],
-                'Knee': 0.5 * pck_p[9] + 0.5 * pck_p[10],
-                'Ank': 0.5 * pck_p[13] + 0.5 * pck_p[14],
-                'Mean': pck
+                'Head tPCK': pck_p[2],
+                'Sho tPCK': 0.5 * pck_p[3] + 0.5 * pck_p[4],
+                'Elb tPCK': 0.5 * pck_p[7] + 0.5 * pck_p[8],
+                'Wri tPCK': 0.5 * pck_p[11] + 0.5 * pck_p[12],
+                'Hip tPCK': 0.5 * pck_p[5] + 0.5 * pck_p[6],
+                'Knee tPCK': 0.5 * pck_p[9] + 0.5 * pck_p[10],
+                'Ank tPCK': 0.5 * pck_p[13] + 0.5 * pck_p[14],
+                'tPCK': pck
             }
 
-            del metrics[f'tPCK@{self.thr}']
             for stats_name, stat in stats.items():
-                metrics[f'{stats_name} tPCK'] = stat
+                metrics[stats_name] = stat
 
         return metrics
 
@@ -443,7 +557,6 @@ class AUC(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'auc'
 
     def __init__(self,
                  norm_factor: float = 30,
@@ -510,7 +623,7 @@ class AUC(BaseMetric):
                            self.num_thrs)
 
         metrics = dict()
-        metrics[f'@{self.num_thrs}thrs'] = auc
+        metrics['AUC'] = auc
 
         return metrics
 
@@ -535,7 +648,6 @@ class EPE(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'epe'
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
@@ -592,7 +704,7 @@ class EPE(BaseMetric):
         epe = keypoint_epe(pred_coords, gt_coords, mask)
 
         metrics = dict()
-        metrics['epe'] = epe
+        metrics['EPE'] = epe
 
         return metrics
 
@@ -635,7 +747,6 @@ class NME(BaseMetric):
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
     """
-    default_prefix: Optional[str] = 'nme'
 
     DEFAULT_KEYPOINT_INDICES = {
         # horse10: corresponding to `nose` and `eye` keypoints
@@ -748,7 +859,7 @@ class NME(BaseMetric):
             # normalize_factor: [N, 2]
             normalize_factor = np.tile(normalize_factor_, [1, 2])
             nme = keypoint_nme(pred_coords, gt_coords, mask, normalize_factor)
-            metrics[f'@{self.norm_item}'] = nme
+            metrics['NME'] = nme
 
         else:
             if self.keypoint_indices is None:
@@ -774,7 +885,7 @@ class NME(BaseMetric):
             # normalize_factor: [N, 2]
             normalize_factor = self._get_normalize_factor(gt_coords=gt_coords)
             nme = keypoint_nme(pred_coords, gt_coords, mask, normalize_factor)
-            metrics[f'@{self.keypoint_indices}'] = nme
+            metrics['NME'] = nme
 
         return metrics
 

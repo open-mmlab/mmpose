@@ -133,12 +133,12 @@ _base_ = ['../../../_base_/default_runtime.py'] # take the config file as the st
 
 CheckpointHook:
 
-- save_best: `'coco/AP'` for `CocoMetric`, `'pck/PCK@0.05'` for `PCKAccuracy`
+- save_best: `'coco/AP'` for `CocoMetric`, `'PCK'` for `PCKAccuracy`
 - max_keep_ckpts: the maximum checkpoints to keep. Defaults to -1, which means unlimited.
 
 Example:
 
-`default_hooks = dict(checkpoint=dict(save_best='pck/PCK@0.05', rule='greater', max_keep_ckpts=1))`
+`default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1))`
 ```
 
 ### Data
