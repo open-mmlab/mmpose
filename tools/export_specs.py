@@ -93,6 +93,40 @@ def write_info_file(cfg: Config, write_dir: str) -> None:
     write_path = os.path.join(write_dir, "model_info.txt")
     write_string_as_file(write_path, info_file)
 
+def write_gstreamer_config(cfg: Config, write_dir: str, model_name: str) -> None:
+    input_shape = cfg["data_cfg"]["image_size"]
+    gstreamer_config =  f"[property]\n" \
+                        f"gpu-id=0\n" \
+                        f"\n" \
+                        f"# preprocessing parameters.\n" \
+                        f"net-scale-factor=0.01742919389\n" \
+                        f"offsets=123.675;116.128;103.53\n" \
+                        f"model-color-format=0\n" \
+                        f"scaling-filter=1 # 0=Nearest, 1=Bilinear\n" \
+                        f"\n" \
+                        f"# model loading.\n" \
+                        f"# if the engine file does not exist onnx-file is used to create the engine\n" \
+                        f"model-engine-file={model_name}.onnx_b8_gpu0_fp16.engine\n" \
+                        f"onnx-file={model_name}.onnx\n" \
+                        f"\n" \
+                        f"# model config\n" \
+                        f"infer-dims={3};{input_shape[1]};{input_shape[0]}\n" \
+                        f"batch-size=8\n" \
+                        f"network-mode=2 # 0=FP32, 1=INT8, 2=FP16\n" \
+                        f"network-type=100 # >3 disables post-processing\n" \
+                        f"cluster-mode=4 # 1=DBSCAN 4=No Clustering\n" \
+                        f"gie-unique-id=2\n" \
+                        f"process-mode=2 # 1=Primary, 2=Secondary\n" \
+                        f"output-tensor-meta=1\n" \
+                        f"\n" \
+                        f"operate-on-class-ids=0;1;2;3;\n" \
+                        f"\n" \
+                        f"[custom]\n" \
+                        f"min-kp-score=0.0\n"
+    write_path = os.path.join(write_dir, "gstreamer_config.txt")
+    write_string_as_file(write_path, gstreamer_config)
+    
+
 def copy_training_specs(cfg, write_dir):
     shutil.copy(cfg.filename, os.path.join(write_dir, "config.txt"))
 
@@ -115,6 +149,7 @@ def export_for_lv(args):
     model_name = f"keypoint_detector_{cfg.project_name}_{time.strftime('%y%m%d')}"
     write_detector_yaml(cfg=cfg, coco_file=coco_file, write_dir=export_folder, name=model_name)
     write_info_file(cfg=cfg, write_dir=export_folder)
+    write_gstreamer_config(cfg=cfg, write_dir=export_folder, model_name=model_name)
     copy_training_specs(cfg=cfg, write_dir=export_folder)
     print(f"Training info exported successfully to: {export_folder}")
     model_output_path = os.path.join(export_folder, f"{model_name}.onnx")
