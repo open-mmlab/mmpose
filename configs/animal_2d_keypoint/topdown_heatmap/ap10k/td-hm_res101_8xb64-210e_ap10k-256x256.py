@@ -81,7 +81,7 @@ val_pipeline = [
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'input_size', 'flip_indices', 'category'))
+                   'input_size', 'flip_indices', 'category_id'))
 ]
 
 # data loaders
@@ -131,8 +131,8 @@ test_dataloader = dict(
 
 # evaluators
 val_evaluator = dict(
-    type='AP10KCocoMetric',
+    type='CocoMetric',
     ann_file=data_root + 'annotations/ap10k-val-split1.json')
 test_evaluator = dict(
-    type='AP10KCocoMetric',
+    type='CocoMetric',
     ann_file=data_root + 'annotations/ap10k-test-split1.json')
