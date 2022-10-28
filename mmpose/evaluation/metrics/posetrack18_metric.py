@@ -8,7 +8,7 @@ from mmengine.fileio import dump, load
 from mmengine.logging import MMLogger
 
 from mmpose.registry import METRICS
-from .coco_metric_old import CocoMetric
+from .coco_metric import COCOMetric
 
 try:
     from poseval import eval_helpers
@@ -19,7 +19,7 @@ except (ImportError, ModuleNotFoundError):
 
 
 @METRICS.register_module()
-class PoseTrack18Metric(CocoMetric):
+class PoseTrack18Metric(COCOMetric):
     """PoseTrack18 evaluation metric.
 
     Evaluate AP, and mAP for keypoint detection tasks.
@@ -28,7 +28,9 @@ class PoseTrack18Metric(CocoMetric):
     for more details.
 
     Args:
-        ann_file (str): Path to the annotation file.
+        ann_file (str, optional): Path to the coco format annotation file.
+            If not specified, ground truth annotations from the dataset will
+            be converted to coco format. Defaults to None
         score_mode (str): The mode to score the prediction results which
             should be one of the following options:
 
@@ -37,7 +39,7 @@ class PoseTrack18Metric(CocoMetric):
                 - ``'bbox_keypoint'``: Use keypoint score to rescore the
                     prediction results.
 
-            Defaults to ``'bbox'`
+            Defaults to ``'bbox_keypoint'`
         keypoint_score_thr (float): The threshold of keypoint score. The
             keypoints with score lower than it will not be included to
             rescore the prediction results. Valid only when ``score_mode`` is
@@ -61,30 +63,22 @@ class PoseTrack18Metric(CocoMetric):
             doing quantitative evaluation. This is designed for the need of
             test submission when the ground truth annotations are absent. If
             set to ``True``, ``outfile_prefix`` should specify the path to
-            store the output results. Default: ``False``.
+            store the output results. Defaults to ``False``
         outfile_prefix (str | None): The prefix of json files. It includes
             the file path and the prefix of filename, e.g., ``'a/b/prefix'``.
-            If not specified, a temp file will be created. Default: ``None``.
-        collect_device (str): Device name used for collecting results from
-            different ranks during distributed training. Must be ``'cpu'`` or
-            ``'gpu'``. Default: ``'cpu'``.
-        prefix (str, optional): The prefix that will be added in the metric
-            names to disambiguate homonymous metrics of different evaluators.
-            If prefix is not provided in the argument, ``self.default_prefix``
-            will be used instead. Default: ``None``.
+            If not specified, a temp file will be created. Defaults to ``None``
+        **kwargs: Keyword parameters passed to :class:`mmeval.BaseMetric`
     """
-    default_prefix: Optional[str] = 'posetrack18'
 
     def __init__(self,
-                 ann_file: str,
+                 ann_file: Optional[str] = None,
                  score_mode: str = 'bbox_keypoint',
                  keypoint_score_thr: float = 0.2,
                  nms_mode: str = 'oks_nms',
                  nms_thr: float = 0.9,
                  format_only: bool = False,
                  outfile_prefix: Optional[str] = None,
-                 collect_device: str = 'cpu',
-                 prefix: Optional[str] = None) -> None:
+                 **kwargs) -> None:
         # raise an error to avoid long time running without getting results
         if not has_poseval:
             raise ImportError('Please install ``poseval`` package for '
@@ -98,8 +92,7 @@ class PoseTrack18Metric(CocoMetric):
             nms_thr=nms_thr,
             format_only=format_only,
             outfile_prefix=outfile_prefix,
-            collect_device=collect_device,
-            prefix=prefix)
+            **kwargs)
 
     def results2json(self, keypoints: Dict[int, list],
                      outfile_prefix: str) -> str:
@@ -216,7 +209,7 @@ class PoseTrack18Metric(CocoMetric):
 
         stats_names = [
             'Head AP', 'Shou AP', 'Elb AP', 'Wri AP', 'Hip AP', 'Knee AP',
-            'Ankl AP', 'Total AP'
+            'Ankl AP', 'AP'
         ]
 
         info_str = list(zip(stats_names, stats))

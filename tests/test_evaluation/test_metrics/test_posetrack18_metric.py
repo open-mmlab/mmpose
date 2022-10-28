@@ -34,14 +34,14 @@ class TestPoseTrack18Metric(TestCase):
         self.bottomup_data = self._convert_ann_to_bottomup_batch_data()
         assert len(self.bottomup_data) == 3
         self.target = {
-            'posetrack18/Head AP': 100.0,
-            'posetrack18/Shou AP': 100.0,
-            'posetrack18/Elb AP': 100.0,
-            'posetrack18/Wri AP': 100.0,
-            'posetrack18/Hip AP': 100.0,
-            'posetrack18/Knee AP': 100.0,
-            'posetrack18/Ankl AP': 100.0,
-            'posetrack18/Total AP': 100.0,
+            'Head AP': 100.0,
+            'Shou AP': 100.0,
+            'Elb AP': 100.0,
+            'Wri AP': 100.0,
+            'Hip AP': 100.0,
+            'Knee AP': 100.0,
+            'Ankl AP': 100.0,
+            'AP': 100.0,
         }
 
     def _convert_ann_to_topdown_batch_data(self):
@@ -301,14 +301,14 @@ class TestPoseTrack18Metric(TestCase):
         eval_results = posetrack18_metric.evaluate(size=len(topdown_data))
 
         target = {
-            'posetrack18/Head AP': 84.6677132391418,
-            'posetrack18/Shou AP': 80.86734693877551,
-            'posetrack18/Elb AP': 83.0204081632653,
-            'posetrack18/Wri AP': 85.12396694214877,
-            'posetrack18/Hip AP': 75.14792899408285,
-            'posetrack18/Knee AP': 66.76515151515152,
-            'posetrack18/Ankl AP': 71.78571428571428,
-            'posetrack18/Total AP': 78.62827822638012,
+            'Head AP': 84.6677132391418,
+            'Shou AP': 80.86734693877551,
+            'Elb AP': 83.0204081632653,
+            'Wri AP': 85.12396694214877,
+            'Hip AP': 75.14792899408285,
+            'Knee AP': 66.76515151515152,
+            'Ankl AP': 71.78571428571428,
+            'AP': 78.62827822638012,
         }
 
         for key in eval_results.keys():
@@ -395,14 +395,14 @@ class TestPoseTrack18Metric(TestCase):
         eval_results = posetrack18_metric.evaluate(size=len(topdown_data) * 2)
 
         target = {
-            'posetrack18/Head AP': 27.1062271062271068,
-            'posetrack18/Shou AP': 25.918367346938776,
-            'posetrack18/Elb AP': 22.67857142857143,
-            'posetrack18/Wri AP': 29.090909090909093,
-            'posetrack18/Hip AP': 18.40659340659341,
-            'posetrack18/Knee AP': 32.0,
-            'posetrack18/Ankl AP': 20.0,
-            'posetrack18/Total AP': 25.167170924313783,
+            'Head AP': 27.1062271062271068,
+            'Shou AP': 25.918367346938776,
+            'Elb AP': 22.67857142857143,
+            'Wri AP': 29.090909090909093,
+            'Hip AP': 18.40659340659341,
+            'Knee AP': 32.0,
+            'Ankl AP': 20.0,
+            'AP': 25.167170924313783,
         }
 
         for key in eval_results.keys():
