@@ -271,7 +271,7 @@ class BaseCocoStyleDataset(BaseDataset):
         }
 
         if 'crowdIndex' in img:
-            data_info['crowdIndex'] = img['crowdIndex']
+            data_info['crowd_index'] = img['crowdIndex']
 
         return data_info
 

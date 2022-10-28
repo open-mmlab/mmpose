@@ -107,10 +107,7 @@ val_pipeline = [
     dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(
-        type='PackPoseInputs',
-        meta_keys=('id', 'img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'input_size', 'flip_indices', 'category_id'))
+    dict(type='PackPoseInputs')
 ]
 
 # data loaders
