@@ -95,7 +95,6 @@ def write_info_file(cfg: Config, write_dir: str) -> None:
 
 def write_gstreamer_config(cfg: Config, write_dir: str, model_name: str) -> None:
     input_shape = cfg["data_cfg"]["image_size"]
-    print(input_shape)
     gstreamer_config =  f"[property]\n" \
                         f"gpu-id=0\n" \
                         f"\n" \
