@@ -1,9 +1,12 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: Common Issues
-    url: https://mmpose.readthedocs.io/en/latest/faq.html
-    about: Check if your issue already has solutions
-  - name: MMPose Documentation
+  - name: 💬 Forum
+    url: https://github.com/open-mmlab/mmpose/discussions
+    about: Ask general questions and discuss with other MMPose community members
+  - name: 📘 MMPose Documentation
     url: https://mmpose.readthedocs.io/en/latest/
     about: Check if your question is answered in docs
+  - name: 🌐 Explore OpenMMLab
+    url: https://openmmlab.com/
+    about: Get to know more about OpenMMLab
