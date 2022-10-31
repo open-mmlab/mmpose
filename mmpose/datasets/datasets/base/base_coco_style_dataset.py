@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import os.path as osp
 from copy import deepcopy
 from itertools import filterfalse, groupby
@@ -184,6 +185,10 @@ class BaseCocoStyleDataset(BaseDataset):
         check_file_exist(self.ann_file)
 
         coco = COCO(self.ann_file)
+        # set the metainfo about categories, which is a list of dict
+        # and each dict contains the 'id', 'name', etc. about this category
+        self._metainfo['CLASSES'] = coco.loadCats(coco.getCatIds())
+
         data_list = []
 
         for img_id in coco.getImgIds():
@@ -259,7 +264,13 @@ class BaseCocoStyleDataset(BaseDataset):
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
+            # store the raw annotation of the instance
+            # it is useful for evaluation without providing ann_file
+            'raw_ann_info': copy.deepcopy(ann),
         }
+
+        if 'crowdIndex' in img:
+            data_info['crowdIndex'] = img['crowdIndex']
 
         return data_info
 
@@ -347,6 +358,9 @@ class BaseCocoStyleDataset(BaseDataset):
 
         # load coco annotations to build image id-to-name index
         coco = COCO(self.ann_file)
+        # set the metainfo about categories, which is a list of dict
+        # and each dict contains the 'id', 'name', etc. about this category
+        self._metainfo['CLASSES'] = coco.loadCats(coco.getCatIds())
 
         num_keypoints = self.metainfo['num_keypoints']
         data_list = []

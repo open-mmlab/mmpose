@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import os.path as osp
 import tempfile
 from collections import defaultdict
@@ -6,9 +7,10 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import dump, load
+from xtcocotools.coco import COCO
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
-from mmpose.evaluation.metrics import CocoMetric
+from mmpose.evaluation.metrics import AP10KCocoMetric, CocoMetric
 
 
 class TestCocoMetric(TestCase):
@@ -23,6 +25,9 @@ class TestCocoMetric(TestCase):
         self.ann_file = 'tests/data/coco/test_coco.json'
         coco_meta_info = dict(from_file='configs/_base_/datasets/coco.py')
         self.coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
+        self.coco = COCO(self.ann_file)
+        self.coco_dataset_meta['CLASSES'] = self.coco.loadCats(
+            self.coco.getCatIds())
 
         self.db = load(self.ann_file)
 
@@ -42,6 +47,77 @@ class TestCocoMetric(TestCase):
             'coco/AR (M)': 1.0,
             'coco/AR (L)': 1.0,
         }
+
+        self.crowdpose_coco = COCO(self.ann_file)
+        self.crowdpose_ann_file = 'tests/data/crowdpose/test_crowdpose.json'
+        crowdpose_meta_info = dict(
+            from_file='configs/_base_/datasets/crowdpose.py')
+        self.crowdpose_dataset_meta = parse_pose_metainfo(crowdpose_meta_info)
+        self.crowdpose_dataset_meta['CLASSES'] = self.crowdpose_coco.loadCats(
+            self.crowdpose_coco.getCatIds())
+
+        self.crowdpose_db = load(self.crowdpose_ann_file)
+
+        self.crowdpose_topdown_data = self._convert_ann_to_topdown_batch_data()
+        assert len(self.topdown_data) == 14
+        self.bottomup_data = self._convert_ann_to_bottomup_batch_data()
+        assert len(self.bottomup_data) == 4
+
+        self.crowdpose_target = {
+            'crowdpose/AP': 1.0,
+            'crowdpose/AP .5': 1.0,
+            'crowdpose/AP .75': 1.0,
+            'crowdpose/AR': 1.0,
+            'crowdpose/AR .5': 1.0,
+            'crowdpose/AR .75': 1.0,
+            'crowdpose/AP(E)': -1.0,
+            'crowdpose/AP(M)': 1.0,
+            'crowdpose/AP(H)': -1.0,
+        }
+        self.crowdpose_data = self._collect_crowdpose_data()
+        assert len(self.topdown_data) == 14
+
+    def _collect_crowdpose_data(self):
+        """Collect crowdpose annotations to batch data."""
+        crowdpose_data = []
+        img_crowdIndex = dict()
+        for img in self.crowdpose_db['images']:
+            img_crowdIndex[img['id']] = img['crowdIndex']
+        for ann in self.crowdpose_db['annotations']:
+            w, h = ann['bbox'][2], ann['bbox'][3]
+            bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
+            bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
+            keypoints = np.array(ann['keypoints']).reshape((1, -1, 3))
+
+            gt_instances = {
+                'bbox_scales': bbox_scales,
+                'bbox_scores': np.ones((1, ), dtype=np.float32),
+                'bboxes': bboxes,
+            }
+            pred_instances = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+            }
+
+            data = {'inputs': None}
+            data_sample = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'gt_instances': gt_instances,
+                'pred_instances': pred_instances,
+                # record the 'crowd_index' information
+                'crowd_index': img_crowdIndex[ann['image_id']],
+                # dummy image_shape for testing
+                'ori_shape': [640, 480],
+                # store the raw annotation info to test without ann_file
+                'raw_ann_info': copy.deepcopy(ann),
+            }
+            # batch size = 1
+            data_batch = [data]
+            data_samples = [data_sample]
+            crowdpose_data.append((data_batch, data_samples))
+
+        return crowdpose_data
 
     def _convert_ann_to_topdown_batch_data(self):
         """Convert annotations to topdown-style batch data."""
@@ -67,7 +143,11 @@ class TestCocoMetric(TestCase):
                 'id': ann['id'],
                 'img_id': ann['image_id'],
                 'gt_instances': gt_instances,
-                'pred_instances': pred_instances
+                'pred_instances': pred_instances,
+                # dummy image_shape for testing
+                'ori_shape': [640, 480],
+                # store the raw annotation info to test without ann_file
+                'raw_ann_info': copy.deepcopy(ann),
             }
             # batch size = 1
             data_batch = [data]
@@ -184,6 +264,54 @@ class TestCocoMetric(TestCase):
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
         self.assertDictEqual(eval_results, self.target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+        # case 4: test without providing ann_file
+        coco_metric = CocoMetric(outfile_prefix=f'{self.tmp_dir.name}/test', )
+        coco_metric.dataset_meta = self.coco_dataset_meta
+        # process samples
+        for data_batch, data_samples in self.topdown_data:
+            coco_metric.process(data_batch, data_samples)
+        eval_results = coco_metric.evaluate(size=len(self.topdown_data))
+        self.assertDictEqual(eval_results, self.target)
+        # test whether convert the annotation to COCO format
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.gt.json')))
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+        # case 5: test Crowdpose dataset
+        crowdpose_metric = CocoMetric(
+            ann_file=self.crowdpose_ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            use_area=False,
+            iou_type='keypoints_crowd',
+            prefix='crowdpose')
+        crowdpose_metric.dataset_meta = self.crowdpose_dataset_meta
+        # process samples
+        for data_batch, data_samples in self.crowdpose_data:
+            crowdpose_metric.process(data_batch, data_samples)
+        eval_results = crowdpose_metric.evaluate(size=len(self.crowdpose_data))
+        self.assertDictEqual(eval_results, self.crowdpose_target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+        # case 6: test Crowdpose dataset + without ann_file
+        crowdpose_metric = CocoMetric(
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            use_area=False,
+            iou_type='keypoints_crowd',
+            prefix='crowdpose')
+        crowdpose_metric.dataset_meta = self.crowdpose_dataset_meta
+        # process samples
+        for data_batch, data_samples in self.crowdpose_data:
+            crowdpose_metric.process(data_batch, data_samples)
+        eval_results = crowdpose_metric.evaluate(size=len(self.crowdpose_data))
+        self.assertDictEqual(eval_results, self.crowdpose_target)
+        # test whether convert the annotation to COCO format
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.gt.json')))
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
 
@@ -446,5 +574,90 @@ class TestCocoMetric(TestCase):
         for key in eval_results.keys():
             self.assertAlmostEqual(eval_results[key], target[key])
 
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+
+class TestAP10KCocoMetric(TestCase):
+
+    def setUp(self):
+        """Setup some variables which are used in every test method.
+
+        TestCase calls functions in this order: setUp() -> testMethod() ->
+        tearDown() -> cleanUp()
+        """
+        self.tmp_dir = tempfile.TemporaryDirectory()
+        self.ann_file = 'tests/data/ap10k/test_ap10k.json'
+        ap10k_meta_info = dict(from_file='configs/_base_/datasets/ap10k.py')
+        self.ap10k_meta_info = parse_pose_metainfo(ap10k_meta_info)
+
+        self.db = load(self.ann_file)
+
+        self.topdown_data = self._convert_ann_to_topdown_batch_data()
+        assert len(self.topdown_data) == 2
+        self.target = {
+            'ap10k/AP': 1.0,
+            'ap10k/AP .5': 1.0,
+            'ap10k/AP .75': 1.0,
+            'ap10k/AP (M)': -1.0,
+            'ap10k/AP (L)': 1.0,
+            'ap10k/AR': 1.0,
+            'ap10k/AR .5': 1.0,
+            'ap10k/AR .75': 1.0,
+            'ap10k/AR (M)': -1.0,
+            'ap10k/AR (L)': 1.0,
+        }
+
+    def _convert_ann_to_topdown_batch_data(self):
+        """Convert annotations to topdown-style batch data."""
+        topdown_data = []
+        for ann in self.db['annotations']:
+            w, h = ann['bbox'][2], ann['bbox'][3]
+            bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
+            bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
+            keypoints = np.array(ann['keypoints']).reshape((1, -1, 3))
+
+            gt_instances = {
+                'bbox_scales': bbox_scales,
+                'bboxes': bboxes,
+            }
+            pred_instances = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+                'bbox_scores': np.ones((1, ), dtype=np.float32),
+            }
+
+            data = {'inputs': None}
+            data_sample = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'category': ann['category_id'],
+                'gt_instances': gt_instances,
+                'pred_instances': pred_instances
+            }
+            # batch size = 1
+            data_batch = [data]
+            data_samples = [data_sample]
+            topdown_data.append((data_batch, data_samples))
+
+        return topdown_data
+
+    def test_topdown_evaluate(self):
+        """test topdown-style COCO metric evaluation."""
+        # case 1: score_mode='bbox', nms_mode='none'
+        ap10k_metric = AP10KCocoMetric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox',
+            nms_mode='none')
+        ap10k_metric.dataset_meta = self.ap10k_meta_info
+
+        # process samples
+        for data_batch, data_samples in self.topdown_data:
+            ap10k_metric.process(data_batch, data_samples)
+
+        eval_results = ap10k_metric.evaluate(size=len(self.topdown_data))
+        for key in self.target:
+            self.assertTrue(abs(eval_results[key] - self.target[key]) < 1e-7)
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
