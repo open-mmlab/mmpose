@@ -17,7 +17,18 @@ class IntegralRegressionLabel(BaseKeypointCodec):
 
     Note:
 
-        - input image size: [w, h]
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: D
+        - image size: [w, h]
+
+    Encoded:
+
+        - keypoint_labels (np.ndarray): The normalized regression labels in
+            shape (N, K, D) where D is 2 for 2d coordinates
+        - heatmaps (np.ndarray): The generated heatmap in shape (K, H, W) where
+            [W, H] is the `heatmap_size`
+        - keypoint_weights (np.ndarray): The target weights in shape (N, K)
 
     Args:
         input_size (tuple): Input image size in [w, h]
@@ -48,11 +59,9 @@ class IntegralRegressionLabel(BaseKeypointCodec):
         self.keypoint_codec = RegressionLabel(input_size)
         self.normalize = normalize
 
-    def encode(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encoding keypoints to regression labels and heatmaps.
 
         Args:
@@ -61,8 +70,8 @@ class IntegralRegressionLabel(BaseKeypointCodec):
                 (N, K)
 
         Returns:
-            tuple:
-            - reg_labels (np.ndarray): The normalized regression labels in
+            dict:
+            - keypoint_labels (np.ndarray): The normalized regression labels in
                 shape (N, K, D) where D is 2 for 2d coordinates
             - heatmaps (np.ndarray): The generated heatmap in shape
                 (K, H, W) where [W, H] is the `heatmap_size`
@@ -71,14 +80,19 @@ class IntegralRegressionLabel(BaseKeypointCodec):
         """
         heatmaps, keypoint_weights = self.heatmap_codec.encode(
             keypoints, keypoints_visible)
-        reg_labels, keypoint_weights = self.keypoint_codec.encode(
+        keypoint_labels, keypoint_weights = self.keypoint_codec.encode(
             keypoints, keypoint_weights)
 
         if self.normalize:
             val_sum = heatmaps.sum(axis=(-1, -2)).reshape(-1, 1, 1) + 1e-24
             heatmaps = heatmaps / val_sum
 
-        return heatmaps, reg_labels, keypoint_weights
+        encoded = dict(
+            keypoint_labels=keypoint_labels,
+            heatmaps=heatmaps,
+            keypoint_weights=keypoint_weights)
+
+        return encoded
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image

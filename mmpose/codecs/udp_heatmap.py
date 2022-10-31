@@ -24,6 +24,16 @@ class UDPHeatmap(BaseKeypointCodec):
         - image size: [w, h]
         - heatmap size: [W, H]
 
+    Encoded:
+
+        - heatmap (np.ndarray): The generated heatmap in shape (C_out, H, W)
+            where [W, H] is the `heatmap_size`, and the C_out is the output
+            channel number which depends on the `heatmap_type`. If
+            `heatmap_type=='gaussian'`, C_out equals to keypoint number K;
+            if `heatmap_type=='combined'`, C_out equals to K*3
+            (x_offset, y_offset and class label)
+        - keypoint_weights (np.ndarray): The target weights in shape (K,)
+
     Args:
         input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
@@ -70,11 +80,9 @@ class UDPHeatmap(BaseKeypointCodec):
                 f'{self.heatmap_type}. Should be one of '
                 '{"gaussian", "combined"}')
 
-    def encode(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encode keypoints into heatmaps. Note that the original keypoint
         coordinates should be in the input image space.
 
@@ -84,7 +92,7 @@ class UDPHeatmap(BaseKeypointCodec):
                 (N, K)
 
         Returns:
-            tuple:
+            dict:
             - heatmap (np.ndarray): The generated heatmap in shape
                 (C_out, H, W) where [W, H] is the `heatmap_size`, and the
                 C_out is the output channel number which depends on the
@@ -119,7 +127,9 @@ class UDPHeatmap(BaseKeypointCodec):
                 f'{self.heatmap_type}. Should be one of '
                 '{"gaussian", "combined"}')
 
-        return heatmaps, keypoint_weights
+        encoded = dict(heatmaps=heatmaps, keypoint_weights=keypoint_weights)
+
+        return encoded
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from heatmaps. The decoded keypoint
