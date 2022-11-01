@@ -57,16 +57,15 @@ class TestSimCCLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            target_x, target_y, keypoint_weights = codec.encode(
-                keypoints, keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
 
-            self.assertEqual(target_x.shape,
+            self.assertEqual(encoded['keypoint_x_labels'].shape,
                              (1, 17, int(192 * codec.simcc_split_ratio)),
                              f'Failed case: "{name}"')
-            self.assertEqual(target_y.shape,
+            self.assertEqual(encoded['keypoint_y_labels'].shape,
                              (1, 17, int(256 * codec.simcc_split_ratio)),
                              f'Failed case: "{name}"')
-            self.assertEqual(keypoint_weights.shape, (1, 17),
+            self.assertEqual(encoded['keypoint_weights'].shape, (1, 17),
                              f'Failed case: "{name}"')
 
     def test_decode(self):
@@ -90,11 +89,12 @@ class TestSimCCLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            target_x, target_y, _ = codec.encode(keypoints, keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
 
-            encoded = (target_x, target_y)
+            keypoint_labels = (encoded['keypoint_x_labels'],
+                               encoded['keypoint_y_labels'])
 
-            _keypoints, _ = codec.decode(encoded)
+            _keypoints, _ = codec.decode(keypoint_labels)
 
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),

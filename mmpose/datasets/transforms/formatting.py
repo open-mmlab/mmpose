@@ -152,7 +152,7 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.label_mapping_table.items():
             if key in results:
                 if isinstance(results[key], list):
-                    _labels = np.stack(results[key], axis=-1)
+                    _labels = np.stack(results[key], axis=1)
                     gt_instance_labels.set_field(_labels, packed_key)
                 else:
                     gt_instance_labels.set_field(results[key], packed_key)

@@ -123,7 +123,7 @@ class SimCCLabel(BaseKeypointCodec):
 
         encoded = dict(
             keypoint_x_labels=x_labels,
-            keypiont_y_labels=y_labels,
+            keypoint_y_labels=y_labels,
             keypoint_weights=keypoint_weights)
 
         return encoded

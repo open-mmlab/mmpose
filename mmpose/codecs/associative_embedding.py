@@ -276,13 +276,13 @@ class AssociativeEmbedding(BaseKeypointCodec):
         _keypoints = keypoints / scale_factor
 
         if self.use_udp:
-            heatmaps, keypoints_weights = generate_udp_gaussian_heatmaps(
+            heatmaps, keypoint_weights = generate_udp_gaussian_heatmaps(
                 heatmap_size=self.heatmap_size,
                 keypoints=_keypoints,
                 keypoints_visible=keypoints_visible,
                 sigma=self.sigma)
         else:
-            heatmaps, keypoints_weights = generate_gaussian_heatmaps(
+            heatmaps, keypoint_weights = generate_gaussian_heatmaps(
                 heatmap_size=self.heatmap_size,
                 keypoints=_keypoints,
                 keypoints_visible=keypoints_visible,
@@ -296,7 +296,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
         encoded = dict(
             heatmaps=heatmaps,
             keypoint_indices=keypoint_indices,
-            keypoints_weights=keypoints_weights)
+            keypoint_weights=keypoint_weights)
 
         return encoded
 

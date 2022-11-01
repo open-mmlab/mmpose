@@ -78,10 +78,12 @@ class IntegralRegressionLabel(BaseKeypointCodec):
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
-        heatmaps, keypoint_weights = self.heatmap_codec.encode(
-            keypoints, keypoints_visible)
-        keypoint_labels, keypoint_weights = self.keypoint_codec.encode(
-            keypoints, keypoint_weights)
+        encoded_hm = self.heatmap_codec.encode(keypoints, keypoints_visible)
+        encoded_kp = self.keypoint_codec.encode(keypoints, keypoints_visible)
+
+        heatmaps = encoded_hm['heatmaps']
+        keypoint_labels = encoded_kp['keypoint_labels']
+        keypoint_weights = encoded_kp['keypoint_weights']
 
         if self.normalize:
             val_sum = heatmaps.sum(axis=(-1, -2)).reshape(-1, 1, 1) + 1e-24

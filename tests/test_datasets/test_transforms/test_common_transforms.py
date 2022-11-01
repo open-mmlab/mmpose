@@ -465,7 +465,7 @@ class TestGenerateTarget(TestCase):
             with_bbox_cs=True,
             with_img_mask=True)
 
-    def test_generate_heatmap(self):
+    def test_generate_single_target(self):
         encoder = dict(
             type='MSRAHeatmap',
             input_size=(192, 256),
@@ -475,7 +475,7 @@ class TestGenerateTarget(TestCase):
         # generate heatmap
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
-            GenerateTarget(target_type='heatmap', encoder=encoder)
+            GenerateTarget(encoder=encoder)
         ])
         results = pipeline(deepcopy(self.data_info))
 
@@ -487,7 +487,6 @@ class TestGenerateTarget(TestCase):
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
             GenerateTarget(
-                target_type='heatmap',
                 encoder=encoder,
                 use_dataset_keypoint_weights=True,
             )
@@ -500,7 +499,7 @@ class TestGenerateTarget(TestCase):
             np.allclose(results['keypoint_weights'],
                         self.data_info['dataset_keypoint_weights'][None]))
 
-    def test_generate_multilevel_heatmap(self):
+    def test_generate_multilevel_target(self):
         encoder_0 = dict(
             type='MSRAHeatmap',
             input_size=(192, 256),
@@ -512,61 +511,80 @@ class TestGenerateTarget(TestCase):
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
             GenerateTarget(
-                target_type='multilevel_heatmap',
-                encoder=[encoder_0, encoder_1])
+                encoder=[encoder_0, encoder_1],
+                multilevel=True,
+                use_dataset_keypoint_weights=True)
         ])
         results = pipeline(deepcopy(self.data_info))
 
         self.assertTrue(is_list_of(results['heatmaps'], np.ndarray))
+        self.assertTrue(is_list_of(results['keypoint_weights'], np.ndarray))
         self.assertEqual(results['heatmaps'][0].shape, (17, 64, 48))
         self.assertEqual(results['heatmaps'][1].shape, (17, 32, 24))
-        self.assertEqual(results['keypoint_weights'].shape, (1, 2, 17))
+        self.assertEqual(results['keypoint_weights'][0].shape, (1, 17))
 
-    def test_generate_keypoint_label(self):
-        encoder = dict(type='RegressionLabel', input_size=(192, 256))
-
-        # generate keypoint label
-        pipeline = Compose([
-            TopdownAffine(input_size=(192, 256)),
-            GenerateTarget(target_type='keypoint_label', encoder=encoder)
-        ])
-
-        results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
-        self.assertTrue(
-            np.allclose(results['keypoint_weights'], np.ones((1, 17))))
-
-        # generate keypoint label and use meta keypoint weights
+    def test_generate_combined_target(self):
+        encoder_0 = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.0)
+        encoder_1 = dict(type='RegressionLabel', input_size=(192, 256))
+        # generate multilevel heatmap
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
             GenerateTarget(
-                target_type='keypoint_label',
-                encoder=encoder,
+                encoder=[encoder_0, encoder_1],
+                multilevel=False,
                 use_dataset_keypoint_weights=True)
         ])
 
         results = pipeline(deepcopy(self.data_info))
+
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(results['keypoint_weights'].shape, (1, 17))
-        self.assertTrue(
-            np.allclose(results['keypoint_weights'],
-                        self.data_info['dataset_keypoint_weights'][None]))
 
-    def test_generate_keypoint_xy_label(self):
+    def test_errors(self):
+
+        # single encoder with `multilevel=True`
         encoder = dict(
-            type='SimCCLabel',
+            type='MSRAHeatmap',
             input_size=(192, 256),
-            smoothing_type='gaussian',
-            simcc_split_ratio=2.0)
+            heatmap_size=(48, 64),
+            sigma=2.0)
 
-        # generate keypoint label
+        with self.assertRaisesRegex(AssertionError,
+                                    'Need multiple encoder configs'):
+            _ = GenerateTarget(encoder=encoder, multilevel=True)
+
+        # diverse keys in multilevel encoding
+        encoder_0 = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.0)
+
+        encoder_1 = dict(type='RegressionLabel', input_size=(192, 256))
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
-            GenerateTarget(target_type='keypoint_xy_label', encoder=encoder)
+            GenerateTarget(encoder=[encoder_0, encoder_1], multilevel=True)
         ])
 
-        results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['keypoint_x_labels'].shape, (1, 17, 192 * 2))
-        self.assertEqual(results['keypoint_y_labels'].shape, (1, 17, 256 * 2))
-        self.assertTrue(
-            np.allclose(results['keypoint_weights'], np.ones((1, 17))))
+        with self.assertRaisesRegex(ValueError, 'have the same keys'):
+            _ = pipeline(deepcopy(self.data_info))
+
+        # overlapping keys in combined encoding
+        encoder = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.0)
+
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(encoder=[encoder, encoder], multilevel=False)
+        ])
+
+        with self.assertRaisesRegex(ValueError, 'Overlapping item'):
+            _ = pipeline(deepcopy(self.data_info))

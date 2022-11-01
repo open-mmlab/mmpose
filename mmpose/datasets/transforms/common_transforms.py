@@ -935,7 +935,7 @@ class GenerateTarget(BaseTransform):
         # Encoded items from the encoder(s) will be updated into the results.
         # Please refer to the document of the specific codec for details about
         # encoded items.
-        if not isinstance(self.encoder):
+        if not isinstance(self.encoder, list):
             # For single encoding, the encoded items will be directly added
             # into results.
             encoded = self.encoder.encode(
@@ -949,19 +949,19 @@ class GenerateTarget(BaseTransform):
             ]
 
             if self.multilevel:
-
                 # For multilevel encoding, the encoded items from each encoder
                 # should have the same keys.
 
                 keys = encoded_list[0].keys()
-                assert all(
-                    _encoded.keys() == keys for _encoded in encoded_list
-                ), ('Encoded items from all encoders must have the same keys '
-                    'if ``multilevel==True``')
+                if not all(_encoded.keys() == keys
+                           for _encoded in encoded_list):
+                    raise ValueError(
+                        'Encoded items from all encoders must have the same '
+                        'keys if ``multilevel==True``.')
 
                 encoded = {
                     k: [_encoded[k] for _encoded in encoded_list]
-                    for k in keys()
+                    for k in keys
                 }
 
             else:
@@ -978,17 +978,26 @@ class GenerateTarget(BaseTransform):
                         if key == 'keypoint_weights':
                             keypoint_weights.append(value)
                         elif key not in encoded:
-                            encoded.update(key=value)
+                            encoded[key] = value
                         else:
                             raise ValueError(
                                 f'Overlapping item "{key}" from multiple '
-                                'encoders')
+                                'encoders, which is not supported when '
+                                '``multilevel==False``')
 
                 if keypoint_weights:
                     res = 1.0
                     for _weights in keypoint_weights:
                         res *= _weights
                     encoded['keypoint_weights'] = res
+
+        if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
+            if self.multilevel:
+                for w in encoded['keypoint_weights']:
+                    w *= results['dataset_keypoint_weights']
+            else:
+                encoded['keypoint_weights'] *= results[
+                    'dataset_keypoint_weights']
 
         results.update(encoded)
 
