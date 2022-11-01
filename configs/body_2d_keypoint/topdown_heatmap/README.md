@@ -19,35 +19,35 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 | HRNet-w48+Dark  |  256x192   | 0.764 | 0.814 |   [hrnet_dark_coco.md](./coco/hrnet_dark_coco.md)   |
 |    HRNet-w48    |  256x192   | 0.756 | 0.809 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |   HRFormer-B    |  256x192   | 0.754 | 0.807 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
-|    RSN-50-3x    |  256x192   | 0.749 | 0.812 |          [rsn_coco.md](./coco/rsn_coco.md)          |
+|    RSN-50-3x    |  256x192   | 0.750 | 0.814 |          [rsn_coco.md](./coco/rsn_coco.md)          |
 |    HRNet-w32    |  256x192   | 0.749 | 0.804 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |     Swin-L      |  256x192   | 0.743 | 0.798 |         [swin_coco.md](./coco/swin_coco.md)         |
 |   HRFormer-S    |  256x192   | 0.738 | 0.793 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
 |     Swin-B      |  256x192   | 0.737 | 0.794 |         [swin_coco.md](./coco/swin_coco.md)         |
 |  SEResNet-101   |  256x192   | 0.734 | 0.790 |     [seresnet_coco.md](./coco/seresnet_coco.md)     |
 |    SCNet-101    |  256x192   | 0.733 | 0.789 |        [scnet_coco.md](./coco/scnet_coco.md)        |
-| ResNet-101+Dark |  256x192   | 0.732 | 0.786 |  [resnet_dark_coco.md](./coco/resnet_dark_coco.md)  |
-|  ResNetV1d-101  |  256x192   | 0.731 | 0.786 |    [resnetv1d_coco.md](./coco/resnetv1d_coco.md)    |
+| ResNet-101+Dark |  256x192   | 0.733 | 0.786 |  [resnet_dark_coco.md](./coco/resnet_dark_coco.md)  |
+|  ResNetV1d-101  |  256x192   | 0.732 | 0.785 |    [resnetv1d_coco.md](./coco/resnetv1d_coco.md)    |
 |   SEResNet-50   |  256x192   | 0.729 | 0.784 |     [seresnet_coco.md](./coco/seresnet_coco.md)     |
 |    SCNet-50     |  256x192   | 0.728 | 0.784 |        [scnet_coco.md](./coco/scnet_coco.md)        |
-|   ResNet-101    |  256x192   | 0.726 | 0.781 |       [resnet_coco.md](./coco/resnet_coco.md)       |
+|   ResNet-101    |  256x192   | 0.726 | 0.783 |       [resnet_coco.md](./coco/resnet_coco.md)       |
 |   ResNeXt-101   |  256x192   | 0.726 | 0.781 |      [resnext_coco.md](./coco/resnext_coco.md)      |
-|     RSN-50      |  256x192   | 0.726 | 0.781 |          [rsn_coco.md](./coco/rsn_coco.md)          |
 |  HourglassNet   |  256x256   | 0.726 | 0.780 |    [hourglass_coco.md](./coco/hourglass_coco.md)    |
 |   ResNeSt-101   |  256x192   | 0.725 | 0.781 |      [resnest_coco.md](./coco/resnest_coco.md)      |
+|     RSN-50      |  256x192   | 0.724 | 0.790 |          [rsn_coco.md](./coco/rsn_coco.md)          |
 |     Swin-T      |  256x192   | 0.724 | 0.782 |         [swin_coco.md](./coco/swin_coco.md)         |
 |   MSPN 1-stg    |  256x192   | 0.723 | 0.788 |         [mspn_coco.md](./coco/mspn_coco.md)         |
 |  ResNetV1d-50   |  256x192   | 0.722 | 0.777 |    [resnetv1d_coco.md](./coco/resnetv1d_coco.md)    |
 |   ResNeSt-50    |  256x192   | 0.720 | 0.775 |      [resnest_coco.md](./coco/resnest_coco.md)      |
-|    ResNet-50    |  256x192   | 0.718 | 0.773 |       [resnet_coco.md](./coco/resnet_coco.md)       |
+|    ResNet-50    |  256x192   | 0.718 | 0.774 |       [resnet_coco.md](./coco/resnet_coco.md)       |
 |   ResNeXt-50    |  256x192   | 0.715 | 0.771 |      [resnext_coco.md](./coco/resnext_coco.md)      |
 |      PVT-S      |  256x192   | 0.714 | 0.773 |          [pvt_coco.md](./coco/pvt_coco.md)          |
 |  LiteHRNet-30   |  256x192   | 0.676 | 0.736 |    [litehrnet_coco.md](./coco/litehrnet_coco.md)    |
-|  MobileNet-v2   |  256x192   | 0.647 | 0.708 |  [mobilenetv2_coco.md](./coco/mobilenetv2_coco.md)  |
+|  MobileNet-v2   |  256x192   | 0.648 | 0.709 |  [mobilenetv2_coco.md](./coco/mobilenetv2_coco.md)  |
 |  LiteHRNet-18   |  256x192   | 0.642 | 0.705 |    [litehrnet_coco.md](./coco/litehrnet_coco.md)    |
-|       CPM       |  256x192   | 0.623 | 0.685 |          [cpm_coco.md](./coco/cpm_coco.md)          |
-|  ShuffleNet-v2  |  256x192   | 0.598 | 0.664 | [shufflenetv2_coco.md](./coco/shufflenetv2_coco.md) |
-|  ShuffleNet-v1  |  256x192   | 0.586 | 0.651 | [shufflenetv1_coco.md](./coco/shufflenetv1_coco.md) |
+|       CPM       |  256x192   | 0.627 | 0.689 |          [cpm_coco.md](./coco/cpm_coco.md)          |
+|  ShuffleNet-v2  |  256x192   | 0.602 | 0.668 | [shufflenetv2_coco.md](./coco/shufflenetv2_coco.md) |
+|  ShuffleNet-v1  |  256x192   | 0.587 | 0.654 | [shufflenetv1_coco.md](./coco/shufflenetv1_coco.md) |
 |     AlexNet     |  256x192   | 0.448 | 0.521 |      [alexnet_coco.md](./coco/alexnet_coco.md)      |
 
 ### MPII Dataset
