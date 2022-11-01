@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -35,7 +35,8 @@ codec = dict(
     input_size=(288, 384),
     heatmap_size=(72, 96),
     sigma=3,
-    unbiased=True)
+    unbiased=True,
+    blur_kernel_size=17)
 
 # model settings
 model = dict(
