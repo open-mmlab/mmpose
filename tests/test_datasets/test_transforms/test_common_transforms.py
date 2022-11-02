@@ -588,3 +588,14 @@ class TestGenerateTarget(TestCase):
 
         with self.assertRaisesRegex(ValueError, 'Overlapping item'):
             _ = pipeline(deepcopy(self.data_info))
+
+        # deprecated argument `target_type` is given
+        encoder = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.0)
+
+        with self.assertWarnsRegex(DeprecationWarning,
+                                   '`target_type` is deprecated'):
+            _ = GenerateTarget(encoder=encoder, target_type='heatmap')

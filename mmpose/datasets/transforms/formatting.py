@@ -100,7 +100,7 @@ class PackPoseInputs(BaseTransform):
 
     # items in `field_mapping_table` will be packed into
     # PoseDataSample.gt_fields and converted to Tensor. These items will be
-    # used for computing lossses
+    # used for computing losses
     field_mapping_table = {
         'heatmaps': 'heatmaps',
     }

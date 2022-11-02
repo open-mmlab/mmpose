@@ -881,11 +881,20 @@ class GenerateTarget(BaseTransform):
             the specific codec for more details.
 
     Args:
-        encoder (dict | list[dict]): The codec config for keypoint encoding
-        target_type (str, deprecated): This argument is deprecated and has no
-            effect
+        encoder (dict | list[dict]): The codec config for keypoint encoding.
+            Both single encoder and multiple encoders (given as a list) are
+            supported
+        multilevel (bool): Determine the method to handle multiple encoders.
+            If ``multilevel==True``, generate multilevel targets from a group
+            of encoders of the same type (e.g. multiple :class:`MSRAHeatmap`
+            encoders with different sigma values); If ``multilevel==False``,
+            generate combined targets from a group of different encoders. This
+            argument will have no effect in case of single encoder. Defaults
+            to ``False``
         use_dataset_keypoint_weights (bool): Whether use the keypoint weights
             from the dataset meta information. Defaults to ``False``
+        target_type (str, deprecated): This argument is deprecated and has no
+            effect. Defaults to ``None``
     """
 
     def __init__(self,
@@ -897,8 +906,9 @@ class GenerateTarget(BaseTransform):
 
         if target_type is not None:
             warnings.warn(
-                'The argument `target_type` in GenerateTarget is deprecated.'
-                'The target type and encoded keys will be directly')
+                'The argument `target_type` is deprecated in GenerateTarget. '
+                'The target type and encoded keys will be determined by '
+                'encoder(s).', DeprecationWarning)
 
         self.encoder_cfg = deepcopy(encoder)
         self.multilevel = multilevel
