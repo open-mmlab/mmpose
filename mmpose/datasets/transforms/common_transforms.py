@@ -996,13 +996,10 @@ class GenerateTarget(BaseTransform):
                                 '``multilevel==False``')
 
                 if keypoint_weights:
-                    res = 1.0
-                    for _weights in keypoint_weights:
-                        res *= _weights
-                    encoded['keypoint_weights'] = res
+                    encoded['keypoint_weights'] = keypoint_weights
 
         if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
-            if self.multilevel:
+            if isinstance(encoded['keypoint_weights'], list):
                 for w in encoded['keypoint_weights']:
                     w *= results['dataset_keypoint_weights']
             else:
@@ -1010,74 +1007,6 @@ class GenerateTarget(BaseTransform):
                     'dataset_keypoint_weights']
 
         results.update(encoded)
-
-        return results
-
-    def _transform(self, results: Dict) -> Optional[dict]:
-
-        if results.get('transformed_keypoints', None) is not None:
-            # use keypoints transformed by TopdownAffine
-            keypoints = results['transformed_keypoints']
-        elif results.get('keypoints', None) is not None:
-            # use original keypoints
-            keypoints = results['keypoints']
-        else:
-            raise ValueError(
-                'GenerateTarget requires \'transformed_keypoints\' or'
-                ' \'keypoints\' in the results.')
-
-        keypoints_visible = results['keypoints_visible']
-
-        if self.target_type == 'heatmap':
-            heatmaps, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['heatmaps'] = heatmaps
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'keypoint_label':
-            keypoint_labels, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['keypoint_labels'] = keypoint_labels
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'keypoint_xy_label':
-            x_labels, y_labels, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['keypoint_x_labels'] = x_labels
-            results['keypoint_y_labels'] = y_labels
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'heatmap+keypoint_label':
-            heatmaps, keypoint_labels, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['heatmaps'] = heatmaps
-            results['keypoint_labels'] = keypoint_labels
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'multilevel_heatmap':
-            heatmaps = []
-            keypoint_weights = []
-
-            for encoder in self.encoder:
-                _heatmaps, _keypoint_weights = encoder.encode(
-                    keypoints=keypoints, keypoints_visible=keypoints_visible)
-                heatmaps.append(_heatmaps)
-                keypoint_weights.append(_keypoint_weights)
-
-            results['heatmaps'] = heatmaps
-            # keypoint_weights.shape: [N, K] -> [N, n, K]
-            results['keypoint_weights'] = np.stack(keypoint_weights, axis=1)
-
-        else:
-            raise ValueError(f'Invalid target type {self.target_type}')
-
-        # multiply meta keypoint weight
-        if self.use_dataset_keypoint_weights:
-            results['keypoint_weights'] *= results['dataset_keypoint_weights']
 
         return results
 

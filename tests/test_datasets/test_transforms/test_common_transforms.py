@@ -543,7 +543,8 @@ class TestGenerateTarget(TestCase):
 
         self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
-        self.assertEqual(results['keypoint_weights'].shape, (1, 17))
+        self.assertIsInstance(results['keypoint_weights'], list)
+        self.assertEqual(results['keypoint_weights'][0].shape, (1, 17))
 
     def test_errors(self):
 
