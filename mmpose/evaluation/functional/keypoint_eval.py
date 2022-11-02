@@ -274,7 +274,7 @@ def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
 
     N, _, Wx = pred_x.shape
     _, _, Wy = pred_y.shape
-    H, W = int(Wx / simcc_split_ratio), int(Wy / simcc_split_ratio)
+    W, H = int(Wx / simcc_split_ratio), int(Wy / simcc_split_ratio)
 
     if normalize is None:
         normalize = np.tile(np.array([[H, W]]), (N, 1))
