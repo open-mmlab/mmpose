@@ -203,7 +203,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
                 num_keypoints = pred_instances.keypoints.shape[1]
                 for key, value in pred_instances.all_items():
                     if key.startswith('keypoint'):
-                        setattr(pred_instances, key, value[:, kpt_indices])
+                        pred_instances.set_field(value[:, kpt_indices], key)
 
             # add bbox information into pred_instances
             pred_instances.bboxes = gt_instances.bboxes
@@ -214,16 +214,11 @@ class TopdownPoseEstimator(BasePoseEstimator):
             if pred_fields is not None:
                 if kpt_indices is not None:
                     # select output heatmap channels with keypoint indices
+                    # when the number of heatmap channel matches num_keypoints
                     for key, value in pred_fields.all_items():
-                        if value.shape[0] % num_keypoints != 0:
+                        if value.shape[0] != num_keypoints:
                             continue
-                        field_size = value.shape[1:]
-                        # in some cases, such as UDP-regress, the number of
-                        # heatmap channels is a multiply of the number of
-                        # keypoints.
-                        value = value.reshape(num_keypoints, -1, *field_size)
-                        value = value[kpt_indices].reshape(-1, *field_size)
-                        setattr(pred_fields, key, value)
+                        pred_fields.set_field(value[kpt_indices], key)
                 data_sample.pred_fields = pred_fields
 
         return batch_data_samples
