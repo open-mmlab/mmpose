@@ -49,10 +49,10 @@
 
 MMPose supports training model with combined datasets. [coco-aic-merge](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py) and [coco-aic-combine](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) are two examples.
 
-- [coco-aic-merge](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py) leverages AIC data with partial keypoints to train a COCO model
-- [coco-aic-combine](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) trains a model that predicts both COCO and AIC keypoints
+- [coco-aic-merge](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py) leverages AIC data with partial keypoints as auxiliary data to train a COCO model
+- [coco-aic-combine](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) constructs a combined dataset whose keypoints are the union of COCO and AIC keypoints to train a model that predicts keypoints of both datasets.
 
-Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+Evaluation results on COCO val2017 of models trained with solely COCO dataset and combined dataset as shown below. These models are evaluated with detector having human AP of 56.4 on COCO val2017 dataset.
 
 | Train Set                                    | Arch           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                  ckpt                   |                  log                   |
 | :------------------------------------------- | :------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------: | :------------------------------------: |
