@@ -47,9 +47,15 @@
 
 </details>
 
+MMPose supports training model with combined datasets. [coco-aic-merge](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py) and [coco-aic-combine](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) are two examples.
+
+- [coco-aic-merge](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py) leverages AIC data with partial keypoints to train a COCO model
+- [coco-aic-combine](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) trains a model that predicts both COCO and AIC keypoints
+
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Train Set                                    | Arch           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                  ckpt                   |                  log                   |
 | :------------------------------------------- | :------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------: | :------------------------------------: |
+| [coco](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) | pose_hrnet_w32 |  256x192   | 0.749 |      0.906      |      0.821      | 0.804 |      0.945      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
 | [coco-aic-merge](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py) | pose_hrnet_w32 |  256x192   | 0.757 |      0.907      |      0.829      | 0.809 |      0.944      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge-b05435b9_20221025.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge_20221025.log) |
 | [coco-aic-combine](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) | pose_hrnet_w32 |  256x192   | 0.756 |      0.906      |      0.826      | 0.807 |      0.943      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine-4ce66880_20221026.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine_20221026.log) |

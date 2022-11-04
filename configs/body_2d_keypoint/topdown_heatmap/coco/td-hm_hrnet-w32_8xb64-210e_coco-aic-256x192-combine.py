@@ -125,7 +125,9 @@ model = dict(
         flip_test=True,
         flip_mode='heatmap',
         shift_heatmap=True,
-        out_keypoint_indices=[target for _, target in keypoint_mapping_coco]))
+        output_keypoint_indices=[
+            target for _, target in keypoint_mapping_coco
+        ]))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
