@@ -125,7 +125,7 @@ codec = dict(type='RegressionLabel', input_size=(192, 256))
 In pipelines, A codec should be passed into `GenerateTarget` to work as the `encoder`:
 
 ```Python
-dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec)
+dict(type='GenerateTarget', encoder=codec)
 ```
 
 ### Head
@@ -189,7 +189,7 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),   ## Generate Target ##
+    dict(type='GenerateTarget', encoder=codec),   ## Generate Target ##
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [

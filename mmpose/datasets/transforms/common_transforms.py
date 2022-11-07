@@ -639,8 +639,9 @@ class Albumentation(BaseTransform):
             if albumentations is None:
                 raise RuntimeError('albumentations is not installed')
             if not hasattr(albumentations.augmentations.transforms, obj_type):
-                warnings.warn('{obj_type} is not pixel-level transformations. '
-                              'Please use with caution.')
+                warnings.warn(
+                    f'{obj_type} is not pixel-level transformations. '
+                    'Please use with caution.')
             obj_cls = getattr(albumentations, obj_type)
         else:
             raise TypeError(f'type must be a str, but got {type(obj_type)}')
@@ -873,58 +874,60 @@ class GenerateTarget(BaseTransform):
         - keypoints_visible
         - dataset_keypoint_weights
 
-    Added Keys (depends on the args):
-        - heatmaps
-        - keypoint_labels
-        - keypoint_x_labels
-        - keypoint_y_labels
-        - keypoint_weights
+    Added Keys:
+
+        - The keys of the encoded items from the codec will be updated into
+            the results, e.g. ``'heatmaps'`` or ``'keypoint_weights'``. See
+            the specific codec for more details.
 
     Args:
-        encoder (dict | list[dict]): The codec config for keypoint encoding
-        target_type (str): The type of the encoded form of the keypoints.
-            Should be one of the following options:
-
-            - ``'heatmap'``: The encoded should be instance-irrelevant
-                heatmaps and will be stored in ``results['heatmaps']``
-            - ``'multilevel_heatmap'`` The encoded should be a list of
-                heatmaps and will be stored in ``results['heatmaps']``.
-                Note that in this case, ``self.encoder`` should also be
-                a list, and each encoder encodes a single-level heatmaps.
-            - ``'keypoint_label'``: The encoded should be instance-level
-                labels and will be stored in ``results['keypoint_label']``
-            - ``'keypoint_xy_label'``: The encoed should be instance-level
-                labels in x-axis and y-axis respectively. They will be stored
-                in ``results['keypoint_x_label']`` and
-                ``results['keypoint_y_label']``
-            - ``'heatmap+keypoint_label'``: The encoded should be heatmaps and
-                keypoint_labels, will be stored in ``results['heatmaps']``
-                and ``results['keypoint_label']``
+        encoder (dict | list[dict]): The codec config for keypoint encoding.
+            Both single encoder and multiple encoders (given as a list) are
+            supported
+        multilevel (bool): Determine the method to handle multiple encoders.
+            If ``multilevel==True``, generate multilevel targets from a group
+            of encoders of the same type (e.g. multiple :class:`MSRAHeatmap`
+            encoders with different sigma values); If ``multilevel==False``,
+            generate combined targets from a group of different encoders. This
+            argument will have no effect in case of single encoder. Defaults
+            to ``False``
         use_dataset_keypoint_weights (bool): Whether use the keypoint weights
             from the dataset meta information. Defaults to ``False``
+        target_type (str, deprecated): This argument is deprecated and has no
+            effect. Defaults to ``None``
     """
 
     def __init__(self,
                  encoder: MultiConfig,
-                 target_type: str,
+                 target_type: Optional[str] = None,
+                 multilevel: bool = False,
                  use_dataset_keypoint_weights: bool = False) -> None:
         super().__init__()
+
+        if target_type is not None:
+            warnings.warn(
+                'The argument `target_type` is deprecated in GenerateTarget. '
+                'The target type and encoded keys will be determined by '
+                'encoder(s).', DeprecationWarning)
+
         self.encoder_cfg = deepcopy(encoder)
-        self.target_type = target_type
+        self.multilevel = multilevel
         self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
-        if self.target_type == 'multilevel_heatmap':
-            if not isinstance(self.encoder_cfg, list):
-                raise ValueError(
-                    'The encoder should be a list if target type is '
-                    '"multilevel_heatmap"')
+        if isinstance(self.encoder_cfg, list):
             self.encoder = [
                 KEYPOINT_CODECS.build(cfg) for cfg in self.encoder_cfg
             ]
         else:
+            assert not self.multilevel, (
+                'Need multiple encoder configs if ``multilevel==True``')
             self.encoder = KEYPOINT_CODECS.build(self.encoder_cfg)
 
     def transform(self, results: Dict) -> Optional[dict]:
+        """The transform function of :class:`GenerateTarget`.
+
+        See ``transform()`` method of :class:`BaseTransform` for details.
+        """
 
         if results.get('transformed_keypoints', None) is not None:
             # use keypoints transformed by TopdownAffine
@@ -939,56 +942,71 @@ class GenerateTarget(BaseTransform):
 
         keypoints_visible = results['keypoints_visible']
 
-        if self.target_type == 'heatmap':
-            heatmaps, keypoint_weights = self.encoder.encode(
+        # Encoded items from the encoder(s) will be updated into the results.
+        # Please refer to the document of the specific codec for details about
+        # encoded items.
+        if not isinstance(self.encoder, list):
+            # For single encoding, the encoded items will be directly added
+            # into results.
+            encoded = self.encoder.encode(
                 keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['heatmaps'] = heatmaps
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'keypoint_label':
-            keypoint_labels, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['keypoint_labels'] = keypoint_labels
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'keypoint_xy_label':
-            x_labels, y_labels, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['keypoint_x_labels'] = x_labels
-            results['keypoint_y_labels'] = y_labels
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'heatmap+keypoint_label':
-            heatmaps, keypoint_labels, keypoint_weights = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
-
-            results['heatmaps'] = heatmaps
-            results['keypoint_labels'] = keypoint_labels
-            results['keypoint_weights'] = keypoint_weights
-
-        elif self.target_type == 'multilevel_heatmap':
-            heatmaps = []
-            keypoint_weights = []
-
-            for encoder in self.encoder:
-                _heatmaps, _keypoint_weights = encoder.encode(
-                    keypoints=keypoints, keypoints_visible=keypoints_visible)
-                heatmaps.append(_heatmaps)
-                keypoint_weights.append(_keypoint_weights)
-
-            results['heatmaps'] = heatmaps
-            # keypoint_weights.shape: [N, K] -> [N, n, K]
-            results['keypoint_weights'] = np.stack(keypoint_weights, axis=1)
 
         else:
-            raise ValueError(f'Invalid target type {self.target_type}')
+            encoded_list = [
+                _encoder.encode(
+                    keypoints=keypoints, keypoints_visible=keypoints_visible)
+                for _encoder in self.encoder
+            ]
 
-        # multiply meta keypoint weight
-        if self.use_dataset_keypoint_weights:
-            results['keypoint_weights'] *= results['dataset_keypoint_weights']
+            if self.multilevel:
+                # For multilevel encoding, the encoded items from each encoder
+                # should have the same keys.
+
+                keys = encoded_list[0].keys()
+                if not all(_encoded.keys() == keys
+                           for _encoded in encoded_list):
+                    raise ValueError(
+                        'Encoded items from all encoders must have the same '
+                        'keys if ``multilevel==True``.')
+
+                encoded = {
+                    k: [_encoded[k] for _encoded in encoded_list]
+                    for k in keys
+                }
+
+            else:
+                # For combined encoding, the encoded items from different
+                # encoders should have no overlapping items, except for
+                # `keypoint_weights`. If multiple `keypoint_weights` are given,
+                # they will be multiplied as the final `keypoint_weights`.
+
+                encoded = dict()
+                keypoint_weights = []
+
+                for _encoded in encoded_list:
+                    for key, value in _encoded.items():
+                        if key == 'keypoint_weights':
+                            keypoint_weights.append(value)
+                        elif key not in encoded:
+                            encoded[key] = value
+                        else:
+                            raise ValueError(
+                                f'Overlapping item "{key}" from multiple '
+                                'encoders, which is not supported when '
+                                '``multilevel==False``')
+
+                if keypoint_weights:
+                    encoded['keypoint_weights'] = keypoint_weights
+
+        if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
+            if isinstance(encoded['keypoint_weights'], list):
+                for w in encoded['keypoint_weights']:
+                    w *= results['dataset_keypoint_weights']
+            else:
+                encoded['keypoint_weights'] *= results[
+                    'dataset_keypoint_weights']
+
+        results.update(encoded)
 
         return results
 

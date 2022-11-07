@@ -179,7 +179,7 @@ train_pipeline = [ # 训练时数据增强
     dict(type='TopdownAffine', input_size=codec['input_size']), # 根据变换矩阵更新目标数据
     dict(
         type='GenerateTarget', # 根据目标数据生成监督信息
-        target_type='heatmap', # 监督信息类型
+        # 监督信息类型
         encoder=codec, # 传入编解码器，用于数据编码，生成特定格式的监督信息
     dict(type='PackPoseInputs') # 对target进行打包用于训练
 ]

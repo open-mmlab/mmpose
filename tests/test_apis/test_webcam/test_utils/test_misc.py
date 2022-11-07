@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import tempfile
 import unittest
 
 import mmcv
@@ -16,11 +17,13 @@ class TestMISC(unittest.TestCase):
     def test_get_cached_file_path(self):
         url = 'https://user-images.githubusercontent.com/15977946/' \
               '170850839-acc59e26-c6b3-48c9-a9ec-87556edb99ed.jpg'
-        cached_file = get_cached_file_path(url, file_name='sunglasses.jpg')
-        self.assertTrue(os.path.exists(cached_file))
-        # check if image is successfully cached
-        img = mmcv.imread(cached_file)
-        self.assertIsNotNone(img)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cached_file = get_cached_file_path(
+                url, save_dir=tmpdir, file_name='sunglasses.jpg')
+            self.assertTrue(os.path.exists(cached_file))
+            # check if image is successfully cached
+            img = mmcv.imread(cached_file)
+            self.assertIsNotNone(img)
 
     def test_get_config_path(self):
         cfg_path = 'configs/_base_/datasets/coco.py'
