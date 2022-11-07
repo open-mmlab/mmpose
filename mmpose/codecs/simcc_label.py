@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from itertools import product
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -18,7 +18,22 @@ class SimCCLabel(BaseKeypointCodec):
 
     Note:
 
-        - input image size: [w, h]
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: D
+        - image size: [w, h]
+
+    Encoded:
+
+        - keypoint_x_labels (np.ndarray): The generated SimCC label for x-axis.
+            The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
+            and (N, K) if `smoothing_type=='standard'``, where
+            :math:`Wx=w*simcc_split_ratio`
+        - keypoint_y_labels (np.ndarray): The generated SimCC label for y-axis.
+            The label shape is (N, K, Wy) if ``smoothing_type=='gaussian'``
+            and (N, K) if `smoothing_type=='standard'``, where
+            :math:`Wy=h*simcc_split_ratio`
+        - keypoint_weights (np.ndarray): The target weights in shape (N, K)
 
     Args:
         input_size (tuple): Input image size in [w, h]
@@ -65,12 +80,9 @@ class SimCCLabel(BaseKeypointCodec):
         if self.label_smooth_weight < 0.0 or self.label_smooth_weight > 1.0:
             raise ValueError('`label_smooth_weight` should be in range [0, 1]')
 
-    def encode(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray,
-                                                    np.ndarray]]:
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encoding keypoints into SimCC labels. Note that the original
         keypoint coordinates should be in the input image space.
 
@@ -80,12 +92,14 @@ class SimCCLabel(BaseKeypointCodec):
                 (N, K)
 
         Returns:
-            tuple:
-            - simcc_x (np.ndarray): The generated SimCC label for x-axis.
+            dict:
+            - keypoint_x_labels (np.ndarray): The generated SimCC label for
+                x-axis.
                 The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
                 and (N, K) if `smoothing_type=='standard'``, where
                 :math:`Wx=w*simcc_split_ratio`
-            - simcc_y (np.ndarray): The generated SimCC label for y-axis.
+            - keypoint_y_labels (np.ndarray): The generated SimCC label for
+                y-axis.
                 The label shape is (N, K, Wy) if ``smoothing_type=='gaussian'``
                 and (N, K) if `smoothing_type=='standard'``, where
                 :math:`Wy=h*simcc_split_ratio`
@@ -96,14 +110,23 @@ class SimCCLabel(BaseKeypointCodec):
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if self.smoothing_type == 'gaussian':
-            return self._generate_gaussian(keypoints, keypoints_visible)
+            x_labels, y_labels, keypoint_weights = self._generate_gaussian(
+                keypoints, keypoints_visible)
         elif self.smoothing_type == 'standard':
-            return self._generate_standard(keypoints, keypoints_visible)
+            x_labels, y_labels, keypoint_weights = self._generate_standard(
+                keypoints, keypoints_visible)
         else:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `smoothing_type` value'
                 f'{self.smoothing_type}. Should be one of '
                 '{"gaussian", "standard"}')
+
+        encoded = dict(
+            keypoint_x_labels=x_labels,
+            keypoint_y_labels=y_labels,
+            keypoint_weights=keypoint_weights)
+
+        return encoded
 
     def decode(self,
                encoded: Tuple[np.ndarray,

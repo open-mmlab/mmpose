@@ -41,12 +41,11 @@ class TestRegressionLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            reg_label, keypoint_weights = codec.encode(keypoints,
-                                                       keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
 
-            self.assertEqual(reg_label.shape, (1, 17, 2),
+            self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2),
                              f'Failed case: "{name}"')
-            self.assertEqual(keypoint_weights.shape, (1, 17),
+            self.assertEqual(encoded['keypoint_weights'].shape, (1, 17),
                              f'Failed case: "{name}"')
 
     def test_decode(self):
@@ -73,9 +72,9 @@ class TestRegressionLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            reg_label, _ = codec.encode(keypoints, keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
 
-            _keypoints, _ = codec.decode(reg_label)
+            _keypoints, _ = codec.decode(encoded['keypoint_labels'])
 
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),

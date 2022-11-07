@@ -255,7 +255,7 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
@@ -693,37 +693,30 @@ class GenerateTarget(BaseTransform):
         - keypoints_visible
         - dataset_keypoint_weights
 
-    Added Keys (depends on the args):
-        - heatmaps
-        - keypoint_labels
-        - keypoint_x_labels
-        - keypoint_y_labels
-        - keypoint_weights
+    Added Keys:
+
+        - The keys of the encoded items from the codec will be updated into
+            the results, e.g. ``'heatmaps'`` or ``'keypoint_weights'``. See
+            the specific codec for more details.
 
     Args:
-        encoder (dict | list[dict]): The codec config for keypoint encoding
-        target_type (str): The type of the encoded form of the keypoints.
-            Should be one of the following options:
-
-            - ``'heatmap'``: The encoded should be instance-irrelevant
-                heatmaps and will be stored in ``results['heatmaps']``
-            - ``'multiscale_heatmap'`` The encoded should be a list of
-                heatmaps and will be stored in ``results['heatmaps']``. Note
-                that in this case ``self.encoder`` is also a list, each
-                encoder for a single scale of heatmaps
-            - ``'keypoint_label'``: The encoded should be instance-level
-                labels and will be stored in ``results['keypoint_label']``
-            - ``'keypoint_xy_label'``: The encoed should be instance-level
-                labels in x-axis and y-axis respectively. They will be stored
-                in ``results['keypoint_x_label']`` and
-                ``results['keypoint_y_label']``
+        encoder (dict | list[dict]): The codec config for keypoint encoding.
+            Both single encoder and multiple encoders (given as a list) are
+            supported
+        multilevel (bool): Determine the method to handle multiple encoders.
+            If ``multilevel==True``, generate multilevel targets from a group
+            of encoders of the same type (e.g. multiple :class:`MSRAHeatmap`
+            encoders with different sigma values); If ``multilevel==False``,
+            generate combined targets from a group of different encoders. This
+            argument will have no effect in case of single encoder. Defaults
+            to ``False``
         use_dataset_keypoint_weights (bool): Whether use the keypoint weights
             from the dataset meta information. Defaults to ``False``
     """
 
     def __init__(self,
                  encoder: MultiConfig,
-                 target_type: str,
+                 multilevel: bool = False,
                  use_dataset_keypoint_weights: bool = False) -> None:
 ```
 

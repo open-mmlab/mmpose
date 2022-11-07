@@ -40,12 +40,11 @@ class TestMegviiHeatmap(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            heatmaps, keypoint_weights = codec.encode(keypoints,
-                                                      keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
 
-            self.assertEqual(heatmaps.shape, (17, 64, 48),
+            self.assertEqual(encoded['heatmaps'].shape, (17, 64, 48),
                              f'Failed case: "{name}"')
-            self.assertEqual(keypoint_weights.shape,
+            self.assertEqual(encoded['keypoint_weights'].shape,
                              (1, 17)), f'Failed case: "{name}"'
 
     def test_decode(self):
@@ -67,8 +66,8 @@ class TestMegviiHeatmap(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            heatmaps, _ = codec.encode(keypoints, keypoints_visible)
-            _keypoints, _ = codec.decode(heatmaps)
+            encoded = codec.encode(keypoints, keypoints_visible)
+            _keypoints, _ = codec.decode(encoded['heatmaps'])
 
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),

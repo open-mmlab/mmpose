@@ -39,8 +39,11 @@ class TestAssociativeEmbedding(TestCase):
             use_udp=False,
             decode_keypoint_order=self.decode_keypoint_order)
 
-        heatmaps, keypoint_indices, keypoint_weights = codec.encode(
-            data['keypoints'], data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
+        keypoint_weights = encoded['keypoint_weights']
 
         self.assertEqual(heatmaps.shape, (17, 64, 64))
         self.assertEqual(keypoint_indices.shape, (1, 17, 2))
@@ -58,8 +61,11 @@ class TestAssociativeEmbedding(TestCase):
             use_udp=True,
             decode_keypoint_order=self.decode_keypoint_order)
 
-        heatmaps, keypoint_indices, keypoint_weights = codec.encode(
-            data['keypoints'], data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
+        keypoint_weights = encoded['keypoint_weights']
 
         self.assertEqual(heatmaps.shape, (17, 64, 64))
         self.assertEqual(keypoint_indices.shape, (1, 17, 2))
@@ -125,8 +131,10 @@ class TestAssociativeEmbedding(TestCase):
             decode_keypoint_order=self.decode_keypoint_order,
             tag_per_keypoint=True)
 
-        heatmaps, keypoint_indices, _ = codec.encode(data['keypoints'],
-                                                     data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
 
         tags = self._get_tags(
             heatmaps, keypoint_indices, tag_per_keypoint=True)
@@ -162,8 +170,10 @@ class TestAssociativeEmbedding(TestCase):
             decode_keypoint_order=self.decode_keypoint_order,
             tag_per_keypoint=False)
 
-        heatmaps, keypoint_indices, _ = codec.encode(data['keypoints'],
-                                                     data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
 
         tags = self._get_tags(
             heatmaps, keypoint_indices, tag_per_keypoint=False)
@@ -199,8 +209,10 @@ class TestAssociativeEmbedding(TestCase):
             decode_keypoint_order=self.decode_keypoint_order,
             tag_per_keypoint=True)
 
-        heatmaps, keypoint_indices, _ = codec.encode(data['keypoints'],
-                                                     data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
 
         tags = self._get_tags(
             heatmaps, keypoint_indices, tag_per_keypoint=True)
@@ -236,8 +248,10 @@ class TestAssociativeEmbedding(TestCase):
             decode_keypoint_order=self.decode_keypoint_order,
             tag_per_keypoint=False)
 
-        heatmaps, keypoint_indices, _ = codec.encode(data['keypoints'],
-                                                     data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
 
         tags = self._get_tags(
             heatmaps, keypoint_indices, tag_per_keypoint=False)
@@ -273,8 +287,10 @@ class TestAssociativeEmbedding(TestCase):
             decode_keypoint_order=self.decode_keypoint_order,
             tag_per_keypoint=True)
 
-        heatmaps, keypoint_indices, _ = codec.encode(data['keypoints'],
-                                                     data['keypoints_visible'])
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
 
         tags = self._get_tags(
             heatmaps, keypoint_indices, tag_per_keypoint=True)
