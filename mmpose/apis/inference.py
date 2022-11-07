@@ -105,7 +105,7 @@ def init_model(config: Union[str, Path, Config],
             dataset_meta = ckpt['meta']['dataset_meta']
 
     if dataset_meta is None:
-        dataset_meta = dataset_meta_from_config(config, dataset_mode='test')
+        dataset_meta = dataset_meta_from_config(config, dataset_mode='train')
 
     if dataset_meta is None:
         warnings.simplefilter('once')

@@ -126,7 +126,7 @@ codec = dict(type='RegressionLabel', input_size=(192, 256))
 在数据处理阶段生成训练目标时，需要传入编解码器用于编码：
 
 ```Python
-dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec)
+dict(type='GenerateTarget', encoder=codec)
 ```
 
 ### 模型头部
@@ -190,7 +190,7 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),   ## 生成训练目标 ##
+    dict(type='GenerateTarget', encoder=codec),   ## 生成训练目标 ##
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [

@@ -24,22 +24,31 @@ class TopdownPoseEstimator(BasePoseEstimator):
             Defaults to ``None``
         data_preprocessor (dict, optional): The data preprocessing config to
             build the instance of :class:`BaseDataPreprocessor`. Defaults to
-            ``None``.
+            ``None``
         init_cfg (dict, optional): The config to control the initialization.
             Defaults to ``None``
+        metainfo (dict): Meta information for dataset, such as keypoints
+            definition and properties. If set, the metainfo of the input data
+            batch will be overridden. For more details, please refer to
+            https://mmpose.readthedocs.io/en/1.x/user_guides/
+            prepare_datasets.html#create-a-custom-dataset-info-
+            config-file-for-the-dataset. Defaults to ``None``
     """
 
     _version = 2
 
-    def __init__(self,
-                 backbone: ConfigType,
-                 neck: OptConfigType = None,
-                 head: OptConfigType = None,
-                 train_cfg: OptConfigType = None,
-                 test_cfg: OptConfigType = None,
-                 data_preprocessor: OptConfigType = None,
-                 init_cfg: OptMultiConfig = None):
-        super().__init__(data_preprocessor, init_cfg)
+    def __init__(
+        self,
+        backbone: ConfigType,
+        neck: OptConfigType = None,
+        head: OptConfigType = None,
+        train_cfg: OptConfigType = None,
+        test_cfg: OptConfigType = None,
+        data_preprocessor: OptConfigType = None,
+        init_cfg: OptMultiConfig = None,
+        metainfo: Optional[dict] = None,
+    ):
+        super().__init__(data_preprocessor, init_cfg, metainfo)
 
         self.backbone = MODELS.build(backbone)
 
@@ -178,6 +187,8 @@ class TopdownPoseEstimator(BasePoseEstimator):
         assert len(batch_pred_instances) == len(batch_data_samples)
         if batch_pred_fields is None:
             batch_pred_fields = []
+        output_keypoint_indices = self.test_cfg.get('output_keypoint_indices',
+                                                    None)
 
         for pred_instances, pred_fields, data_sample in zip_longest(
                 batch_pred_instances, batch_pred_fields, batch_data_samples):
@@ -192,6 +203,14 @@ class TopdownPoseEstimator(BasePoseEstimator):
             pred_instances.keypoints = pred_instances.keypoints / input_size \
                 * bbox_scales + bbox_centers - 0.5 * bbox_scales
 
+            if output_keypoint_indices is not None:
+                # select output keypoints with given indices
+                num_keypoints = pred_instances.keypoints.shape[1]
+                for key, value in pred_instances.all_items():
+                    if key.startswith('keypoint'):
+                        pred_instances.set_field(
+                            value[:, output_keypoint_indices], key)
+
             # add bbox information into pred_instances
             pred_instances.bboxes = gt_instances.bboxes
             pred_instances.bbox_scores = gt_instances.bbox_scores
@@ -199,6 +218,14 @@ class TopdownPoseEstimator(BasePoseEstimator):
             data_sample.pred_instances = pred_instances
 
             if pred_fields is not None:
+                if output_keypoint_indices is not None:
+                    # select output heatmap channels with keypoint indices
+                    # when the number of heatmap channel matches num_keypoints
+                    for key, value in pred_fields.all_items():
+                        if value.shape[0] != num_keypoints:
+                            continue
+                        pred_fields.set_field(value[output_keypoint_indices],
+                                              key)
                 data_sample.pred_fields = pred_fields
 
         return batch_data_samples

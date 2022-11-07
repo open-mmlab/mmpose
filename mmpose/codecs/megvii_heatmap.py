@@ -23,6 +23,12 @@ class MegviiHeatmap(BaseKeypointCodec):
         - image size: [w, h]
         - heatmap size: [W, H]
 
+    Encoded:
+
+        - heatmaps (np.ndarray): The generated heatmap in shape (K, H, W)
+            where [W, H] is the `heatmap_size`
+        - keypoint_weights (np.ndarray): The target weights in shape (N, K)
+
     Args:
         input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
@@ -47,11 +53,9 @@ class MegviiHeatmap(BaseKeypointCodec):
         self.scale_factor = (np.array(input_size) /
                              heatmap_size).astype(np.float32)
 
-    def encode(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encode keypoints into heatmaps. Note that the original keypoint
         coordinates should be in the input image space.
 
@@ -61,7 +65,7 @@ class MegviiHeatmap(BaseKeypointCodec):
                 (N, K)
 
         Returns:
-            tuple:
+            dict:
             - heatmaps (np.ndarray): The generated heatmap in shape
                 (K, H, W) where [W, H] is the `heatmap_size`
             - keypoint_weights (np.ndarray): The target weights in shape
@@ -96,7 +100,9 @@ class MegviiHeatmap(BaseKeypointCodec):
             # normalize the heatmap
             heatmaps[k] = heatmaps[k] / heatmaps[k, ky, kx] * 255.
 
-        return heatmaps, keypoint_weights
+        encoded = dict(heatmaps=heatmaps, keypoint_weights=keypoint_weights)
+
+        return encoded
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from heatmaps. The decoded keypoint

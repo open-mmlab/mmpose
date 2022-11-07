@@ -158,6 +158,15 @@ class AssociativeEmbedding(BaseKeypointCodec):
         - image size: [w, h]
         - heatmap size: [W, H]
 
+    Encoded:
+
+        - heatmaps (np.ndarray): The generated heatmap in shape (K, H, W)
+            where [W, H] is the `heatmap_size`
+        - keypoint_indices (np.ndarray): The keypoint position indices in shape
+            (N, K, 2). Each keypoint's index is [i, v], where i is the position
+            index in the heatmap (:math:`i=y*w+x`) and v is the visibility
+        - keypoint_weights (np.ndarray): The target weights in shape (N, K)
+
     Args:
         input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
@@ -234,11 +243,9 @@ class AssociativeEmbedding(BaseKeypointCodec):
                             heatmap_size).astype(np.float32)
         return scale_factor
 
-    def encode(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encode keypoints into heatmaps and position indices. Note that the
         original keypoint coordinates should be in the input image space.
 
@@ -248,7 +255,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 (N, K)
 
         Returns:
-            tuple:
+            dict:
             - heatmaps (np.ndarray): The generated heatmap in shape
                 (K, H, W) where [W, H] is the `heatmap_size`
             - keypoint_indices (np.ndarray): The keypoint position indices
@@ -269,13 +276,13 @@ class AssociativeEmbedding(BaseKeypointCodec):
         _keypoints = keypoints / scale_factor
 
         if self.use_udp:
-            heatmaps, keypoints_weights = generate_udp_gaussian_heatmaps(
+            heatmaps, keypoint_weights = generate_udp_gaussian_heatmaps(
                 heatmap_size=self.heatmap_size,
                 keypoints=_keypoints,
                 keypoints_visible=keypoints_visible,
                 sigma=self.sigma)
         else:
-            heatmaps, keypoints_weights = generate_gaussian_heatmaps(
+            heatmaps, keypoint_weights = generate_gaussian_heatmaps(
                 heatmap_size=self.heatmap_size,
                 keypoints=_keypoints,
                 keypoints_visible=keypoints_visible,
@@ -286,7 +293,12 @@ class AssociativeEmbedding(BaseKeypointCodec):
             keypoints=_keypoints,
             keypoints_visible=keypoints_visible)
 
-        return heatmaps, keypoint_indices, keypoints_weights
+        encoded = dict(
+            heatmaps=heatmaps,
+            keypoint_indices=keypoint_indices,
+            keypoint_weights=keypoint_weights)
+
+        return encoded
 
     def _encode_keypoint_indices(self, heatmap_size: Tuple[int, int],
                                  keypoints: np.ndarray,

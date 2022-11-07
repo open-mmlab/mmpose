@@ -174,7 +174,7 @@ train_pipeline = [ # data aug in training
     dict(type='TopdownAffine', input_size=codec['input_size']), # update inputs via transform matrix
     dict(
         type='GenerateTarget', # generate targets via transformed inputs
-        target_type='heatmap', # typeof targets
+        # typeof targets
         encoder=codec, # get encoder from codec
     dict(type='PackPoseInputs') # pack targets
 ]
