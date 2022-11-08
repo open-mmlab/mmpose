@@ -113,12 +113,22 @@ mmpose.registry
     :members:
 
 mmpose.evaluation
----------------
-.. automodule:: mmpose.evaluation
+-----------------
+.. automodule:: mmpose.registry
+    :members:
+
+metrics
+^^^^^^^^^^^
+.. automodule:: mmpose.evaluation.metrics
+    :members:
+
+functional
+^^^^^^^^^^^
+.. automodule:: mmpose.evaluation.functional
     :members:
 
 mmpose.visualization
----------------
+--------------------
 .. automodule:: mmpose.visualization
     :members:
 
