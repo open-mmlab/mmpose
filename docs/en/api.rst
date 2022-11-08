@@ -128,5 +128,7 @@ mmpose.visualization
 
 mmpose.engine
 ---------------
-.. automodule:: mmpose.engine
+hooks
+^^^^^^^^^^^
+.. automodule:: mmpose.engine.hooks
     :members:
