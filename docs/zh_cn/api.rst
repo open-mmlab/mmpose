@@ -114,9 +114,6 @@ mmpose.registry
 
 mmpose.evaluation
 -----------------
-.. automodule:: mmpose.registry
-    :members:
-
 metrics
 ^^^^^^^^^^^
 .. automodule:: mmpose.evaluation.metrics

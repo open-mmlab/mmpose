@@ -27,11 +27,11 @@ executor_cfg = dict(
             'scratch_600e_coco_20210629_110627-974d9307.pth',
             input_buffer='_input_',  # `_input_` is an executor-reserved buffer
             output_buffer='det_result'),
-        # 'TopDownPoseEstimatorNode':
+        # 'TopdownPoseEstimatorNode':
         # This node performs keypoint detection from the frame image using an
         # MMPose top-down model. Detection results is needed.
         dict(
-            type='TopDownPoseEstimatorNode',
+            type='TopdownPoseEstimatorNode',
             name='human pose estimator',
             model_config='configs/wholebody_2d_keypoint/'
             'topdown_heatmap/coco-wholebody/'
@@ -43,7 +43,7 @@ executor_cfg = dict(
             input_buffer='det_result',
             output_buffer='human_pose'),
         dict(
-            type='TopDownPoseEstimatorNode',
+            type='TopdownPoseEstimatorNode',
             name='animal pose estimator',
             model_config='configs/animal_2d_keypoint/topdown_heatmap/'
             'animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py',
