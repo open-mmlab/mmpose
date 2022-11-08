@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import math
-import warnings
 from typing import Sequence
 
 import torch
@@ -10,18 +9,10 @@ from mmcv.cnn import build_activation_layer, build_conv_layer, build_norm_layer
 from mmcv.cnn.bricks.transformer import (BaseTransformerLayer,
                                          TransformerLayerSequence,
                                          build_transformer_layer_sequence)
+from mmcv.ops.multi_scale_deform_attn import MultiScaleDeformableAttention
 from mmengine.model import BaseModule, xavier_init
 from mmengine.utils import to_2tuple
 from torch.nn.init import normal_
-
-try:
-    from mmcv.ops.multi_scale_deform_attn import MultiScaleDeformableAttention
-
-except ImportError:
-    warnings.warn(
-        '`MultiScaleDeformableAttention` in MMCV has been moved to '
-        '`mmcv.ops.multi_scale_deform_attn`, please update your MMCV')
-    from mmcv.cnn.bricks.transformer import MultiScaleDeformableAttention
 
 
 def nlc_to_nchw(x, hw_shape):
