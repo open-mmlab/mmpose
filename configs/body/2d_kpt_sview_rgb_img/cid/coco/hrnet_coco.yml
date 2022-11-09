@@ -8,7 +8,7 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_w32_coco_512x512.py
   In Collection: CID
   Metadata:
-    Architecture:
+    Architecture: &id001
     - CID
     Training Data: COCO
   Name: cid_hrnet_w32_coco_512x512
@@ -22,3 +22,19 @@ Models:
       AR@0.5: 0.926
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/cid/hrnet_w32_coco_512x512-867b9659_20220928.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_w48_coco_512x512.py
+  In Collection: CID
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: cid_hrnet_w48_coco_512x512
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.715
+      AP@0.5: 0.895
+      AP@0.75: 0.78
+      AR: 0.768
+      AR@0.5: 0.932
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/cid/hrnet_w48_coco_512x512-af545767_20221109.pth
