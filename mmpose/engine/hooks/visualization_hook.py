@@ -96,12 +96,14 @@ class PoseVisualizationHook(Hook):
         total_curr_iter = runner.iter + batch_idx
 
         # Visualize only the first data
-        img_path = data_batch['data_sample'][0].get('img_path')
+        img_path = data_batch['data_samples'][0].get('img_path')
         img_bytes = self.file_client.get(img_path)
         img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
         data_sample = outputs[0]
-        # revert the heatmap
+
+        # revert the heatmap on the original image
         data_sample = merge_data_samples([data_sample])
+
         if total_curr_iter % self.interval == 0:
             self._visualizer.add_datasample(
                 os.path.basename(img_path) if self.show else 'val_img',
