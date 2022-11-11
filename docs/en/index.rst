@@ -82,7 +82,6 @@ You can change the documentation language at the lower-left corner of the page.
    notes/faq.md
 
 .. toctree::
-   :maxdepth: 1
    :caption: API Reference
 
    api.rst
