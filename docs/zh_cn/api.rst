@@ -3,13 +3,10 @@ mmpose.apis
 .. automodule:: mmpose.apis
     :members:
 
-
 mmpose.codecs
 -------------
-
 .. automodule:: mmpose.codecs
     :members:
-
 
 mmpose.models
 ---------------
@@ -131,5 +128,9 @@ mmpose.visualization
 
 mmpose.engine
 ---------------
-.. automodule:: mmpose.engine
+hooks
+^^^^^^^^^^^
+.. automodule:: mmpose.engine.hooks
     :members:
+
+.. include:: webcam_api.rst
