@@ -14,11 +14,11 @@ from mmengine.runner import load_state_dict
 from mmengine.utils import to_2tuple
 
 from mmpose.registry import MODELS
-from ...utils import get_root_logger
+from mmpose.utils import get_root_logger
+from ..utils.transformer import PatchEmbed, PatchMerging
 from .base_backbone import BaseBackbone
 from .utils import get_state_dict
 from .utils.ckpt_convert import swin_converter
-from .utils.transformer import PatchEmbed, PatchMerging
 
 
 class WindowMSA(BaseModule):

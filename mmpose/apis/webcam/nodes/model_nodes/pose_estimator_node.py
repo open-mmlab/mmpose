@@ -19,7 +19,7 @@ class TrackInfo:
 
 
 @NODES.register_module()
-class TopDownPoseEstimatorNode(Node):
+class TopdownPoseEstimatorNode(Node):
     """Perform top-down pose estimation using MMPose model.
 
     The node should be placed after an object detection node.
@@ -51,7 +51,7 @@ class TopDownPoseEstimatorNode(Node):
 
     Example::
         >>> cfg = dict(
-        ...     type='TopDownPoseEstimatorNode',
+        ...     type='TopdownPoseEstimatorNode',
         ...     name='human pose estimator',
         ...     model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
         ...     'topdown_heatmap/coco-wholebody/'
