@@ -128,6 +128,15 @@ class CIDHead(nn.Module):
             instances['instance_heatmap'].append(instance_heatmap)
             instances['instance_mask'].append(instance_mask)
 
+        if total_instances <= 0:
+            losses = dict()
+            losses['multi_heatmap_loss'] = multi_heatmap_loss * \
+                self.multi_hm_loss_factor
+            losses['single_heatmap_loss'] = torch.zeros_like(
+                multi_heatmap_loss)
+            losses['contrastive_loss'] = torch.zeros_like(multi_heatmap_loss)
+            return losses
+
         contrastive_loss = contrastive_loss / total_instances
 
         for k, v in instances.items():
