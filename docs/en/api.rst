@@ -133,7 +133,7 @@ hooks
 .. automodule:: mmpose.engine.hooks
     :members:
 
-webcam apis
+mmpose.apis.webcam
 --------------------
 .. contents:: MMPose Webcam API: Tools to build simple interactive webcam applications and demos
     :depth: 2
