@@ -66,11 +66,11 @@ Detailed configurations can be found in the config file.
   In this demo we use two [top-down](https://github.com/open-mmlab/mmpose/tree/1.x/configs/body_2d_keypoint/topdown_heatmap) pose estimation models for humans and animals respectively. Users can choose models from the [MMPose Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html). To apply different pose models on different instance types, you can add multiple pose estimator nodes with `cls_names` set accordingly.
 
   ```python
-  # 'TopDownPoseEstimatorNode':
+  # 'TopdownPoseEstimatorNode':
   # This node performs keypoint detection from the frame image using an
   # MMPose top-down model. Detection results is needed.
   dict(
-      type='TopDownPoseEstimatorNode',
+      type='TopdownPoseEstimatorNode',
       name='human pose estimator',
       model_config='configs/wholebody_2d_keypoint/'
       'topdown_heatmap/coco-wholebody/'
@@ -82,7 +82,7 @@ Detailed configurations can be found in the config file.
       input_buffer='det_result',
       output_buffer='human_pose'),
   dict(
-      type='TopDownPoseEstimatorNode',
+      type='TopdownPoseEstimatorNode',
       name='animal pose estimator',
       model_config='configs/animal_2d_keypoint/topdown_heatmap/'
       'animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py',

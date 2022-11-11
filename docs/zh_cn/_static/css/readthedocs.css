@@ -4,3 +4,7 @@
     height: 50px;
     width: 120px;
 }
+
+table.autosummary td {
+    width: 35%
+}

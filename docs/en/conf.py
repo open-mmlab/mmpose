@@ -44,7 +44,8 @@ release = get_version()
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.viewcode',
-    'sphinx_markdown_tables', 'sphinx_copybutton', 'myst_parser'
+    'sphinx_markdown_tables', 'sphinx_copybutton', 'myst_parser',
+    'sphinx.ext.autosummary'
 ]
 
 autodoc_mock_imports = ['json_tricks', 'mmpose.version']
