@@ -21,7 +21,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                              locs: np.ndarray,
                              keypoint_order: List[int],
                              val_thr: float,
-                             tag_dist_thr: float = 1.0,
+                             tag_thr: float = 1.0,
                              max_groups: Optional[int] = None):
     """Group the keypoints by tags using Munkres algorithm.
 
@@ -44,7 +44,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             The groupping usually starts from a keypoints around the head and
             torso, and gruadually moves out to the limbs
         val_thr (float): The threshold of the keypoint response value
-        tag_dist_thr (float): The maximum allowed tag distance when matching a
+        tag_thr (float): The maximum allowed tag distance when matching a
             keypoint to a group. A keypoint with larger tag distance to any
             of the existing groups will initializes a new group
         max_groups (int, optional): The maximum group number. ``None`` means
@@ -120,7 +120,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             matches = munkres.compute(costs)
             for kpt_idx, group_idx in matches:
                 if group_idx < num_groups and dists[kpt_idx,
-                                                    group_idx] < tag_dist_thr:
+                                                    group_idx] < tag_thr:
                     # Add the keypoint to the matched group
                     group = groups[group_idx]
                 else:
@@ -176,8 +176,12 @@ class AssociativeEmbedding(BaseKeypointCodec):
         decode_keypoint_order (List[int]): The grouping order of the
             keypoint indices. The groupping usually starts from a keypoints
             around the head and torso, and gruadually moves out to the limbs
-        decode_thr (float): The threshold of keypoint response value in
-            heatmaps. Defaults to 0.1
+        decode_keypoint_thr (float): The threshold of keypoint response value
+            in heatmaps. Defaults to 0.1
+        decode_tag_thr (float): The maximum allowed tag distance when matching
+            a keypoint to a group. A keypoint with larger tag distance to any
+            of the existing groups will initializes a new group. Defaults to
+            1.0
         decode_nms_kernel (int): The kernel size of the NMS during decoding,
             which should be an odd integer. Defaults to 5
         decode_gaussian_kernel (int): The kernel size of the Gaussian blur
@@ -204,7 +208,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
         decode_keypoint_order: List[int] = [],
         decode_nms_kernel: int = 5,
         decode_gaussian_kernel: int = 3,
-        decode_thr: float = 0.1,
+        decode_keypoint_thr: float = 0.1,
+        decode_tag_thr: float = 1.0,
         decode_topk: int = 20,
         decode_max_instances: Optional[int] = None,
     ) -> None:
@@ -214,7 +219,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.use_udp = use_udp
         self.decode_nms_kernel = decode_nms_kernel
         self.decode_gaussian_kernel = decode_gaussian_kernel
-        self.decode_thr = decode_thr
+        self.decode_keypoint_thr = decode_keypoint_thr
+        self.decode_tag_thr = decode_tag_thr
         self.decode_topk = decode_topk
         self.decode_max_instances = decode_max_instances
         self.dedecode_keypoint_order = decode_keypoint_order.copy()
@@ -370,7 +376,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 tags,
                 locs,
                 keypoint_order=self.dedecode_keypoint_order,
-                val_thr=self.decode_thr,
+                val_thr=self.decode_keypoint_thr,
+                tag_thr=self.decode_tag_thr,
                 max_groups=self.decode_max_instances)
 
         _results = map(_group_func, zip(batch_vals, batch_tags, batch_locs))

@@ -4,7 +4,7 @@ from typing import Dict
 import torch.nn as nn
 
 from mmpose.registry import MODELS
-from mmpose.utils.typing import ConfigType, MultiConfig
+from mmpose.utils.typing import ConfigType
 
 
 @MODELS.register_module()
@@ -67,27 +67,3 @@ class CombinedLoss(nn.ModuleDict):
         super().__init__()
         for loss_name, loss_cfg in losses.items():
             self.add_module(loss_name, MODELS.build(loss_cfg))
-
-
-@MODELS.register_module()
-class MultipleLoss(nn.Module):
-    """A wrapper to combine multiple loss functions into one loss function.
-
-    The wrapped loss functions should have the same input type (e.g. heatmap).
-    The wrapper will compute losses of all wrapped loss functions and return
-    the sum.
-    """
-
-    def __init__(self, losses: MultiConfig) -> None:
-        super().__init__()
-
-        assert isinstance(
-            losses, list), ('``losses`` should be a list of loss configs.')
-
-        loss_modules = [MODELS.build(loss_cfg) for loss_cfg in losses]
-        self.loss_modules = nn.ModuleList(loss_modules)
-
-    def forward(self, *args, **kwargs):
-
-        loss = sum(loss(*args, **kwargs) for loss in self.loss_modules)
-        return loss
