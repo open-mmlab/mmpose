@@ -131,16 +131,18 @@ def aggregate_heatmaps(heatmaps: List[Tensor],
         w, h = size
 
     for i, _heatmaps in enumerate(heatmaps):
-        assert heatmaps.ndim == 4
+        assert _heatmaps.ndim == 4
         if mode == 'average':
             assert _heatmaps.shape[:2] == heatmaps[0].shape[:2]
         else:
             assert _heatmaps.shape[0] == heatmaps[0].shape[0]
 
         if _heatmaps.shape[2:4] != (h, w):
-            _size = _heatmaps.shape[:2] + (h, w)
             heatmaps[i] = F.interpolate(
-                _heatmaps, _size, mode='bilinear', align_corners=align_corners)
+                _heatmaps,
+                size=(h, w),
+                mode='bilinear',
+                align_corners=align_corners)
 
     if mode == 'average':
         output = sum(heatmaps).div(len(heatmaps))

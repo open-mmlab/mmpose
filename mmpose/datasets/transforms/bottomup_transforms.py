@@ -339,7 +339,7 @@ class BottomupResize(BaseTransform):
             to ``None``
         size_factor (int): The actual input size will be ceiled to
                 a multiple of the `size_factor` value at both sides.
-                Defaults to 8
+                Defaults to 16
         resize_mode (str): The method to resize the image to the input size.
             Options are:
 
@@ -360,7 +360,7 @@ class BottomupResize(BaseTransform):
     def __init__(self,
                  input_size: Tuple[int, int],
                  aug_scales: Optional[List[float]] = None,
-                 size_factor: int = 8,
+                 size_factor: int = 32,
                  resize_mode: str = 'fit',
                  use_udp: bool = False):
         super().__init__()

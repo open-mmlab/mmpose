@@ -76,22 +76,26 @@ class TestAssociativeEmbedding(TestCase):
             index_encoded = keypoint_indices[0, k, 0]
             self.assertEqual(index_expected, index_encoded)
 
-    def _get_tags(self, heatmaps, keypoint_indices, tag_per_keypoint: bool):
+    def _get_tags(self,
+                  heatmaps,
+                  keypoint_indices,
+                  tag_per_keypoint: bool,
+                  tag_dim: int = 1):
 
         K, H, W = heatmaps.shape
         N = keypoint_indices.shape[0]
 
         if tag_per_keypoint:
-            tags = np.zeros((K, H, W), dtype=np.float32)
+            tags = np.zeros((K * tag_dim, H, W), dtype=np.float32)
         else:
-            tags = np.zeros((1, H, W), dtype=np.float32)
+            tags = np.zeros((tag_dim, H, W), dtype=np.float32)
 
         for n, k in product(range(N), range(K)):
             y, x = np.unravel_index(keypoint_indices[n, k, 0], (H, W))
             if tag_per_keypoint:
-                tags[k, y, x] = n
+                tags[k::K, y, x] = n
             else:
-                tags[0, y, x] = n
+                tags[:, y, x] = n
 
         return tags
 
@@ -137,6 +141,44 @@ class TestAssociativeEmbedding(TestCase):
 
         tags = self._get_tags(
             heatmaps, keypoint_indices, tag_per_keypoint=True)
+
+        # to Tensor
+        batch_heatmaps = torch.from_numpy(heatmaps[None])
+        batch_tags = torch.from_numpy(tags[None])
+
+        batch_keypoints, batch_keypoint_scores = codec.batch_decode(
+            batch_heatmaps, batch_tags)
+
+        self.assertIsInstance(batch_keypoints, list)
+        self.assertIsInstance(batch_keypoint_scores, list)
+        self.assertEqual(len(batch_keypoints), 1)
+        self.assertEqual(len(batch_keypoint_scores), 1)
+
+        keypoints, scores = self._sort_preds(batch_keypoints[0],
+                                             batch_keypoint_scores[0],
+                                             data['keypoints'])
+
+        self.assertIsInstance(keypoints, np.ndarray)
+        self.assertIsInstance(scores, np.ndarray)
+        self.assertEqual(keypoints.shape, (2, 17, 2))
+        self.assertEqual(scores.shape, (2, 17))
+
+        self.assertTrue(np.allclose(keypoints, data['keypoints'], atol=4.0))
+
+        # w/o UDP, tag_imd=2
+        codec = AssociativeEmbedding(
+            input_size=(256, 256),
+            heatmap_size=(64, 64),
+            use_udp=False,
+            decode_keypoint_order=self.decode_keypoint_order)
+
+        encoded = codec.encode(data['keypoints'], data['keypoints_visible'])
+
+        heatmaps = encoded['heatmaps']
+        keypoint_indices = encoded['keypoint_indices']
+
+        tags = self._get_tags(
+            heatmaps, keypoint_indices, tag_per_keypoint=True, tag_dim=2)
 
         # to Tensor
         batch_heatmaps = torch.from_numpy(heatmaps[None])

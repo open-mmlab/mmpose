@@ -109,7 +109,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             num_kpts, num_groups = dists.shape[:2]
 
             # Experimental cost function for keypoint-group matching
-            costs = np.round(dists) * 100 - vals_i
+            costs = np.round(dists) * 100 - vals_i[..., None]
             if num_kpts > num_groups:
                 padding = np.full((num_kpts, num_kpts - num_groups),
                                   1e10,
@@ -408,6 +408,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
         N, K = keypoints.shape[:2]
         H, W = heatmaps.shape[1:]
+        L = tags.shape[0] // K
         keypoint_tags = [tags[k::K] for k in range(K)]
 
         for n in range(N):
@@ -419,13 +420,15 @@ class AssociativeEmbedding(BaseKeypointCodec):
                     x = np.clip(x, 0, W - 1)
                     y = np.clip(y, 0, H - 1)
                     _tag.append(keypoint_tags[k][:, y, x])
-            tag = np.mean(_tag, axis=0)
 
+            tag = np.mean(_tag, axis=0)
+            tag = tag.reshape(L, 1, 1)
             # Search maximum response of the missing keypoints
             for k in range(K):
                 if keypoint_scores[n, k] > 0:
                     continue
-                dist_map = np.linalg.norm(keypoint_tags - tag, ord=2, axis=0)
+                dist_map = np.linalg.norm(
+                    keypoint_tags[k] - tag, ord=2, axis=0)
                 cost_map = np.round(dist_map) * 100 - heatmaps[k]  # H, W
                 y, x = np.unravel_index(np.argmin(cost_map), shape=(H, W))
                 keypoints[n, k] = [x, y]
