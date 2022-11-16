@@ -22,7 +22,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                              keypoint_order: List[int],
                              val_thr: float,
                              tag_thr: float = 1.0,
-                             max_groups: Optional[int] = None):
+                             max_groups: Optional[int] = None) -> np.ndarray:
     """Group the keypoints by tags using Munkres algorithm.
 
     Note:
@@ -51,11 +51,8 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             no limitation. Defaults to ``None``
 
     Returns:
-        tuple:
-        - grouped_keypoints (np.ndarray): The grouped keypoints in shape
-            (G, K, D)
-        - grouped_keypoint_scores (np.ndarray): The grouped keypoint scores
-             in shape (G, K)
+        np.ndarray: grouped keypoints in shape (G, K, D+1), where the last
+        dimenssion is the concatenated keypoint coordinates and scores.
     """
     K, M, D = locs.shape
     assert vals.shape == tags.shape[:2] == (K, M)
@@ -133,10 +130,13 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                 group.tag_list.append(tags_i[kpt_idx])
 
     groups = groups[:max_groups]
-    grouped_keypoints = np.stack((g.kpts for g in groups))  # (G, K, D)
-    grouped_keypoint_scores = np.stack((g.scores for g in groups))  # (G, K)
+    if groups:
+        grouped_keypoints = np.stack(
+            (np.r_['1', g.kpts, g.scores[:, None]] for g in groups))
+    else:
+        grouped_keypoints = np.empty((0, K, D + 1))
 
-    return grouped_keypoints, grouped_keypoint_scores
+    return grouped_keypoints
 
 
 @KEYPOINT_CODECS.register_module()
@@ -364,9 +364,10 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 (B, K, Topk, 2)
 
         Returns:
-            List[Tuple[np.ndarray, np.ndarray]]: Grouping results of a batch,
-            eath element is a tuple of keypoints (in shape [N, K, D]) and
-            keypoint scores (in shape [N, K]) decoded from one image.
+            List[np.ndarray]: Grouping results of a batch, each element is a
+            np.ndarray (in shape [N, K, D+1]) that contains the groups
+            detected in an image, including both keypoint coordinates and
+            scores.
         """
 
         def _group_func(inputs: Tuple):
@@ -474,32 +475,34 @@ class AssociativeEmbedding(BaseKeypointCodec):
         batch_groups = self._group_keypoints(batch_topk_vals, batch_topk_tags,
                                              batch_topk_locs)
 
-        batch_keypoints, batch_keypoint_scores = map(list, zip(*batch_groups))
-
         # Convert to numpy
         batch_heatmaps_np = to_numpy(batch_heatmaps)
         batch_tags_np = to_numpy(batch_tags)
 
         # Refine the keypoint prediction
-        for i, (keypoints, scores, heatmaps, tags) in enumerate(
-                zip(batch_keypoints, batch_keypoint_scores, batch_heatmaps_np,
-                    batch_tags_np)):
+        batch_keypoints = []
+        batch_keypoint_scores = []
+        for i, (groups, heatmaps, tags) in enumerate(
+                zip(batch_groups, batch_heatmaps_np, batch_tags_np)):
 
-            # identify missing keypoints
-            keypoints, scores = self._fill_missing_keypoints(
-                keypoints, scores, heatmaps, tags)
+            keypoints, scores = groups[..., :-1], groups[..., -1]
 
-            # refine keypoint coordinates according to heatmap distribution
-            if self.use_udp:
-                keypoints = refine_keypoints_dark_udp(
-                    keypoints,
-                    heatmaps,
-                    blur_kernel_size=self.decode_gaussian_kernel)
-            else:
-                keypoints = refine_keypoints(keypoints, heatmaps)
+            if keypoints.size > 0:
+                # identify missing keypoints
+                keypoints, scores = self._fill_missing_keypoints(
+                    keypoints, scores, heatmaps, tags)
 
-            batch_keypoints[i] = keypoints
-            batch_keypoint_scores[i] = scores
+                # refine keypoint coordinates according to heatmap distribution
+                if self.use_udp:
+                    keypoints = refine_keypoints_dark_udp(
+                        keypoints,
+                        heatmaps,
+                        blur_kernel_size=self.decode_gaussian_kernel)
+                else:
+                    keypoints = refine_keypoints(keypoints, heatmaps)
+
+            batch_keypoints.append(keypoints)
+            batch_keypoint_scores.append(scores)
 
         # restore keypoint scale
         batch_keypoints = [
