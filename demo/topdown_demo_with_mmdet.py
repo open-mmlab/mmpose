@@ -4,6 +4,7 @@ import os
 import tempfile
 from argparse import ArgumentParser
 
+import json_tricks as json
 import mmcv
 import mmengine
 import numpy as np
@@ -12,7 +13,7 @@ from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
-from mmpose.structures import merge_data_samples
+from mmpose.structures import merge_data_samples, split_instances
 from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
@@ -23,9 +24,9 @@ except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
 
-def visualize_img(args, img_path, detector, pose_estimator, visualizer,
-                  show_interval):
-    """Visualize predicted keypoints (and heatmaps) of one image."""
+def infer_and_visualize_image(args, img_path, detector, pose_estimator,
+                              visualizer, show_interval):
+    """Predict the keypoints of one image, and visualize the results."""
 
     # predict bbox
     register_mmdet_modules()
@@ -61,6 +62,8 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
         out_file=out_file,
         kpt_score_thr=args.kpt_thr)
 
+    return data_samples.pred_instances
+
 
 def main():
     """Visualize the demo images.
@@ -85,6 +88,11 @@ def main():
         default='',
         help='root of the output img file. '
         'Default not saving the visualization images.')
+    parser.add_argument(
+        '--save-predictions',
+        action='store_true',
+        default=False,
+        help='whether to save predicted results')
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
@@ -132,6 +140,10 @@ def main():
     assert args.det_checkpoint is not None
     if args.output_root:
         mmengine.mkdir_or_exist(args.output_root)
+    if args.save_predictions:
+        assert args.output_root != ''
+        args.pred_save_path = f'{args.output_root}/results_' \
+            f'{os.path.splitext(os.path.basename(args.input))[0]}.json'
 
     # build detector
     register_mmdet_modules()
@@ -157,13 +169,18 @@ def main():
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':
-        visualize_img(
+        pred_instances = infer_and_visualize_image(
             args,
             args.input,
             detector,
             pose_estimator,
             visualizer,
             show_interval=0)
+        if args.save_predictions:
+            with open(args.pred_save_path, 'w') as f:
+                json.dump(split_instances(pred_instances), f, indent='\t')
+            print(f'predictions have been saved at {args.pred_save_path}')
+
     elif input_type == 'video':
         tmp_folder = tempfile.TemporaryDirectory()
         video = mmcv.VideoReader(args.input)
@@ -171,8 +188,10 @@ def main():
         video.cvt2frames(tmp_folder.name, show_progress=False)
         output_root = args.output_root
         args.output_root = tmp_folder.name
-        for img_fname in os.listdir(tmp_folder.name):
-            visualize_img(
+        pred_instances_list = []
+
+        for frame_id, img_fname in enumerate(os.listdir(tmp_folder.name)):
+            pred_instances = infer_and_visualize_image(
                 args,
                 f'{tmp_folder.name}/{img_fname}',
                 detector,
@@ -180,6 +199,11 @@ def main():
                 visualizer,
                 show_interval=1)
             progressbar.update()
+            pred_instances_list.append(
+                dict(
+                    frame_id=frame_id,
+                    instances=split_instances(pred_instances)))
+
         if output_root:
             mmcv.frames2video(
                 tmp_folder.name,
@@ -188,6 +212,12 @@ def main():
                 fourcc='mp4v',
                 show_progress=False)
         tmp_folder.cleanup()
+
+        if args.save_predictions:
+            with open(args.pred_save_path, 'w') as f:
+                json.dump(pred_instances_list, f, indent='\t')
+            print(f'predictions have been saved at {args.pred_save_path}')
+
     else:
         raise ValueError(
             f'file {os.path.basename(args.input)} has invalid format.')

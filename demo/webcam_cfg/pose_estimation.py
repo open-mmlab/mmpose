@@ -85,9 +85,9 @@ executor_cfg = dict(
             enable=False,
             input_buffer='vis',
             output_buffer='vis_sunglasses'),
-        # # 'BigeyeEffectNode':
-        # # This node draw the big-eye effetc in the frame image.
-        # # Pose results is needed.
+        # 'BigeyeEffectNode':
+        # This node draw the big-eye effetc in the frame image.
+        # Pose results is needed.
         dict(
             type='BigeyeEffectNode',
             name='big-eye',

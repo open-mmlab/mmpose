@@ -14,7 +14,7 @@ For more details, please refer to [face_recognition](https://github.com/ageitgey
 python demo/topdown_face_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --input ${INPUT_PATH} [--output-root ${OUTPUT_DIR}] \
-    [--show] [--device ${GPU_ID or CPU}] \
+    [--show] [--device ${GPU_ID or CPU}] [--save-predictions] \
     [--draw-heatmap ${DRAW_HEATMAP}] [--radius ${KPT_RADIUS}] \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
@@ -45,6 +45,8 @@ python demo/topdown_face_demo.py \
     --input tests/data/cofw/001766.jpg \
     --draw-heatmap --output-root vis_results
 ```
+
+To save the predicted results on disk, please specify `--save-predictions`.
 
 To run demos on CPU:
 
