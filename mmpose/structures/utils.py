@@ -113,3 +113,22 @@ def revert_heatmap(heatmap, bbox_center, bbox_scale, img_shape):
         heatmap = heatmap.transpose(2, 0, 1)
 
     return heatmap
+
+
+def split_instances(instances: InstanceData):
+    """Convert instances into a list where each element is a dict that contains
+    information about one instance."""
+    results = []
+
+    for i in range(len(instances.keypoints)):
+        result = dict(
+            keypoints=instances.keypoints[i].tolist(),
+            keypoint_scores=instances.keypoint_scores[i].tolist(),
+        )
+        if 'bboxes' in instances:
+            result['bbox'] = instances.bboxes[i].tolist(),
+            if 'bbox_scores' in instances:
+                result['bbox_score'] = instances.bbox_scores[i]
+        results.append(result)
+
+    return results

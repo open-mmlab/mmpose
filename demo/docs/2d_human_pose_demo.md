@@ -57,9 +57,9 @@ python demo/topdown_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --input ${INPUT_PATH} \
-    --output-root ${OUTPUT_DIR} \
-    [--show --draw-heatmap --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--output-root ${OUTPUT_DIR}] [--save-predictions] \
+    [--show] [--draw-heatmap] [--device ${GPU_ID or CPU}] \
+    [--bbox-thr ${BBOX_SCORE_THR}] [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Example:
@@ -77,6 +77,8 @@ python demo/topdown_demo_with_mmdet.py \
 Visualization result:
 
 <img src="https://user-images.githubusercontent.com/87690686/187824368-1f1631c3-52bf-4b45-bf9a-a70cd6551e1a.jpg" height="500px" alt><br>
+
+To save the predicted results on disk, please specify `--save-predictions`.
 
 ### 2D Human Pose Top-Down Video Demo
 
