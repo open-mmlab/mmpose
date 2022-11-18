@@ -163,10 +163,7 @@ class UDPHeatmap(BaseKeypointCodec):
                 if k % 3 == 0:
                     # for classification map
                     ks = 2 * self.blur_kernel_size + 1
-                else:
-                    # for offset map
-                    ks = self.blur_kernel_size
-                cv2.GaussianBlur(heatmaps[k], (ks, ks), 0, heatmaps[k])
+                    cv2.GaussianBlur(heatmaps[k], (ks, ks), 0, heatmaps[k])
 
             # valid radius
             radius = self.radius_factor * max(W, H)
