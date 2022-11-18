@@ -159,11 +159,10 @@ class UDPHeatmap(BaseKeypointCodec):
         elif self.heatmap_type == 'combined':
             _K, H, W = heatmaps.shape
             K = _K // 3
-            for k in range(_K):
-                if k % 3 == 0:
-                    # for classification map
-                    ks = 2 * self.blur_kernel_size + 1
-                    cv2.GaussianBlur(heatmaps[k], (ks, ks), 0, heatmaps[k])
+
+            for cls_heatmap in heatmaps[::3]:
+                ks = 2 * self.blur_kernel_size + 1
+                cv2.GaussianBlur(cls_heatmap, (ks, ks), 0, cls_heatmap)
 
             # valid radius
             radius = self.radius_factor * max(W, H)
