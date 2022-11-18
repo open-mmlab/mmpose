@@ -3,9 +3,8 @@ from argparse import ArgumentParser
 
 from mmcv.image import imread
 
-from mmpose.apis import inference_topdown, init_model
+from mmpose.apis import inference_bottomup, init_model
 from mmpose.registry import VISUALIZERS
-from mmpose.structures import merge_data_samples
 from mmpose.utils import register_all_modules
 
 
@@ -48,17 +47,20 @@ def main():
     visualizer.set_dataset_meta(model.dataset_meta)
 
     # inference a single image
-    batch_results = inference_topdown(model, args.img)
-    results = merge_data_samples(batch_results)
+    batch_results = inference_bottomup(model, args.img)
+    results = batch_results[0]
+    import pdb
+    pdb.set_trace()
 
     # show the results
     img = imread(args.img, channel_order='rgb')
+
     visualizer.add_datasample(
         'result',
         img,
         data_sample=results,
         draw_gt=False,
-        draw_bbox=True,
+        draw_bbox=False,
         draw_heatmap=args.draw_heatmap,
         show=True,
         out_file=args.out_file)

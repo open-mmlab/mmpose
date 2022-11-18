@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import List, Optional, Sequence, Tuple, Union
 
+import numpy as np
 import torch
 from mmengine.structures import PixelData
 from mmengine.utils import is_list_of
@@ -184,8 +185,17 @@ class AssociativeEmbeddingHead(HeatmapHead):
             batch_heatmaps = multiscale_heatmaps[0]
         # only keep tags at original scale
         batch_tags = multiscale_tags[0]
-
         batch_outputs = tuple([batch_heatmaps, batch_tags])
+
+        # Set decoding scale factor of the decoder according to runtime
+        # configs. The scale factor is the ratio of heatmap size and the
+        # image size.
+        if restore_heatmap_size:
+            decode_scale_factor = np.array([1, 1], dtype=np.float32)
+        else:
+            decode_scale_factor = None
+        self.decoder.set_scale_factor(decode_scale_factor)
+
         preds = self.decode(batch_outputs)
 
         if output_heatmaps:
