@@ -128,8 +128,8 @@ class TopDownPoseEstimatorNode(Node):
                 object['keypoints'] = pred_instances.keypoints[0]
                 object['keypoint_scores'] = pred_instances.keypoint_scores[0]
 
-                dataset_meta = object.get('dataset_meta', dict())
-                dataset_meta.update(self.model.dataset_meta)
+                dataset_meta = self.model.dataset_meta.copy()
+                dataset_meta.update(object.get('dataset_meta', dict()))
                 object['dataset_meta'] = dataset_meta
                 object['pose_model_cfg'] = self.model.cfg
 
