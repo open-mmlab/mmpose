@@ -163,13 +163,12 @@ class BottomupPoseEstimator(BasePoseEstimator):
                 batch_pred_instances, batch_pred_fields, batch_data_samples):
 
             # convert keypoint coordinates from input space to image space
-            # bbox_centers = gt_instances.bbox_centers
-            # bbox_scales = gt_instances.bbox_scales
-            # input_size = data_sample.metainfo['input_size']
+            input_size = data_sample.metainfo['input_size']
+            input_center = data_sample.metainfo['input_center']
+            input_scale = data_sample.metainfo['input_scale']
 
-            # pred_instances.keypoints = \
-            # pred_instances.keypoints / input_size \
-            #     * bbox_scales + bbox_centers - 0.5 * bbox_scales
+            pred_instances.keypoints = pred_instances.keypoints / input_size \
+                * input_scale + input_center - 0.5 * input_scale
 
             data_sample.pred_instances = pred_instances
 

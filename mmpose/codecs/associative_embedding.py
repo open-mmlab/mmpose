@@ -132,7 +132,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
     groups = groups[:max_groups]
     if groups:
         grouped_keypoints = np.stack(
-            (np.r_['1', g.kpts, g.scores[:, None]] for g in groups))
+            [np.r_['1', g.kpts, g.scores[:, None]] for g in groups])
     else:
         grouped_keypoints = np.empty((0, K, D + 1))
 
@@ -226,42 +226,16 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.dedecode_keypoint_order = decode_keypoint_order.copy()
 
         if self.use_udp:
-            self._scale_factor = ((np.array(input_size) - 1) /
-                                  (np.array(heatmap_size) - 1)).astype(
-                                      np.float32)
+            self.scale_factor = ((np.array(input_size) - 1) /
+                                 (np.array(heatmap_size) - 1)).astype(
+                                     np.float32)
         else:
-            self._scale_factor = (np.array(input_size) /
-                                  heatmap_size).astype(np.float32)
+            self.scale_factor = (np.array(input_size) /
+                                 heatmap_size).astype(np.float32)
 
         if sigma is None:
             sigma = (heatmap_size[0] * heatmap_size[1])**0.5 / 64
         self.sigma = sigma
-
-    @property
-    def scale_factor(self) -> np.ndarray:
-        """Get the scale factors between the heatmap and the image.
-
-        Returns:
-            np.ndarray: The scale factors in x-axis and y-axis
-        """
-
-        if getattr(self, '_user_scale_factor', None) is None:
-            return self._scale_factor
-        return self._user_scale_factor
-
-    def set_scale_factor(self, factor: Optional[np.ndarray]):
-        """"""
-        if factor is None:
-            # reset user scale factors
-            self._user_scale_factor = None
-        else:
-            # set user-defined scale factor
-            # this is usually used for decoding heatmaps that have been
-            # manually resized outside the codec
-            assert isinstance(factor, np.ndarray) and factor.shape == (2, ), (
-                'Get invalid format of scale factors, which should be a '
-                'np.ndarray with 2 elements [x_factor, y_factor]')
-            self._user_scale_factor = factor
 
     def encode(
         self,
@@ -372,8 +346,10 @@ class AssociativeEmbedding(BaseKeypointCodec):
         ]
 
         topk_tags = torch.stack(topk_tags_per_kpts, dim=-1)  # (B, K, TopK, L)
-        topk_locs = torch.stack([topk_indices % W, topk_indices // W],
-                                dim=-1)  # (B, K, TopK, 2)
+        topk_locs = torch.stack(
+            [topk_indices % W,
+             topk_indices.div(W, rounding_mode='floor')],
+            dim=-1)  # (B, K, TopK, 2)
 
         return topk_vals, topk_tags, topk_locs
 
@@ -534,8 +510,5 @@ class AssociativeEmbedding(BaseKeypointCodec):
         batch_keypoints = [
             kpts * self.scale_factor for kpts in batch_keypoints
         ]
-
-        import pdb
-        pdb.set_trace()
 
         return batch_keypoints, batch_keypoint_scores

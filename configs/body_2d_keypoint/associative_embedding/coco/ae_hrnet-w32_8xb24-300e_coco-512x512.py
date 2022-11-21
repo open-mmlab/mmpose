@@ -90,7 +90,9 @@ model = dict(
         deconv_out_channels=None,
         keypoint_loss=dict(type='KeypointMSELoss', use_target_weight=True),
         tag_loss=dict(type='AssociativeEmbeddingLoss', loss_weight=0.001),
-        decoder=codec),
+        # The heatmap will be resized to the input size before decoding
+        # if ``restore_heatmap_size==True``
+        decoder=dict(codec, heatmap_size=codec['input_size'])),
     test_cfg=dict(
         multiscale_test=False,
         flip_test=True,
@@ -102,7 +104,6 @@ model = dict(
 dataset_type = 'CocoDataset'
 data_mode = 'bottomup'
 data_root = 'data/coco/'
-# data_root = 'tests/data/coco/'
 
 # pipelines
 train_pipeline = []
@@ -111,6 +112,7 @@ val_pipeline = [
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],
+        size_factor=32,
         resize_mode='expand'),
     dict(type='PackPoseInputs')
 ]
@@ -150,24 +152,4 @@ test_dataloader = val_dataloader
 val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json')
-
-# val_dataloader = dict(
-#     batch_size=1,
-#     num_workers=2,
-#     persistent_workers=True,
-#     drop_last=False,
-#     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
-#     dataset=dict(
-#         type=dataset_type,
-#         data_root=data_root,
-#         data_mode=data_mode,
-#         ann_file='test_coco.json',
-#         # data_prefix=dict(img='val2017/'),
-#         test_mode=True,
-#         pipeline=val_pipeline,
-#     ))
-# test_dataloader = val_dataloader
-
-# val_evaluator = dict(type='CocoMetric',
-# ann_file=data_root + 'test_coco.json')
-# test_evaluator = val_evaluator
+test_evaluator = val_evaluator
