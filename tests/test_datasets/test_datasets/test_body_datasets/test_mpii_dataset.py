@@ -104,7 +104,7 @@ class TestMpiiDataset(TestCase):
         self.assertEqual(len(dataset), 5)
         self.check_data_info_keys(dataset[0])
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_mpii_dataset(data_mode='bottomup')
         self.assertEqual(len(dataset), 5)

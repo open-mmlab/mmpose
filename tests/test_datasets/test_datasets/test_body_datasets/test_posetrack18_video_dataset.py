@@ -101,7 +101,7 @@ class TestPoseTrack18VideoDataset(TestCase):
             len(dataset.metainfo['skeleton_links']),
             len(dataset.metainfo['skeleton_link_colors']))
 
-    def test_top_down(self):
+    def test_topdown(self):
         # test topdown training, frame_sampler_mode = 'random'
         dataset = self.build_posetrack18_video_dataset(
             data_mode='topdown', frame_sampler_mode='random')
@@ -164,7 +164,7 @@ class TestPoseTrack18VideoDataset(TestCase):
             filter_cfg=dict(bbox_score_thr=0.3))
         self.assertEqual(len(dataset), 119)
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_posetrack18_video_dataset(data_mode='bottomup')
         self.assertEqual(len(dataset), 3)

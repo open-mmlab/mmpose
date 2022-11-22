@@ -90,7 +90,7 @@ class TestHalpeDataset(TestCase):
             len(dataset.metainfo['skeleton_links']),
             len(dataset.metainfo['skeleton_link_colors']))
 
-    def test_top_down(self):
+    def test_topdown(self):
         # test topdown training
         dataset = self.build_halpe_dataset(data_mode='topdown')
         self.assertEqual(dataset.data_mode, 'topdown')
@@ -121,7 +121,7 @@ class TestHalpeDataset(TestCase):
         self.assertEqual(dataset.data_mode, 'topdown')
         self.assertEqual(len(dataset), 33)
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_halpe_dataset(data_mode='bottomup')
         self.assertEqual(len(dataset), 4)

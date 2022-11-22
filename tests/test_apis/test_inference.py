@@ -6,13 +6,13 @@ from unittest import TestCase
 
 import numpy as np
 import torch
-from mmcv.image import imwrite
+from mmcv.image import imread, imwrite
 from mmengine.utils import is_list_of
 from parameterized import parameterized
 
-from mmpose.apis import inference_topdown, init_model
+from mmpose.apis import inference_bottomup, inference_topdown, init_model
 from mmpose.structures import PoseDataSample
-from mmpose.testing._utils import _rand_bboxes
+from mmpose.testing._utils import _rand_bboxes, get_config_file, get_repo_dir
 from mmpose.utils import register_all_modules
 
 
@@ -25,9 +25,7 @@ class TestInference(TestCase):
                              'td-hm_hrnet-w32_8xb64-210e_coco-256x192.py'),
                             ('cpu', 'cuda'))])
     def test_init_model(self, config, devices):
-        project_dir = osp.abspath(osp.dirname(osp.dirname(__file__)))
-        project_dir = osp.join(project_dir, '..')
-        config_file = osp.join(project_dir, config)
+        config_file = get_config_file(config)
 
         for device in devices:
             if device == 'cuda' and not torch.cuda.is_available():
@@ -89,3 +87,31 @@ class TestInference(TestCase):
                 self.assertEqual(len(results), 1)
                 self.assertTrue(results[0].pred_instances.keypoints.shape,
                                 (1, 17, 2))
+
+    @parameterized.expand([(('configs/body_2d_keypoint/'
+                             'associative_embedding/coco/'
+                             'ae_hrnet-w32_8xb24-300e_coco-512x512.py'),
+                            ('cpu', 'cuda'))])
+    def test_inference_bottomup(self, config, devices):
+        config_file = get_config_file(config)
+        img = osp.join(get_repo_dir(), 'tests/data/coco/000000000785.jpg')
+
+        for device in devices:
+            if device == 'cuda' and not torch.cuda.is_available():
+                # Skip the test if cuda is required but unavailable
+                continue
+            model = init_model(config_file, device=device)
+
+            # test inference from image
+            results = inference_bottomup(model, img=imread(img))
+            self.assertTrue(is_list_of(results, PoseDataSample))
+            self.assertEqual(len(results), 1)
+            self.assertTrue(results[0].pred_instances.keypoints.shape,
+                            (1, 17, 2))
+
+            # test inference from file
+            results = inference_bottomup(model, img=img)
+            self.assertTrue(is_list_of(results, PoseDataSample))
+            self.assertEqual(len(results), 1)
+            self.assertTrue(results[0].pred_instances.keypoints.shape,
+                            (1, 17, 2))

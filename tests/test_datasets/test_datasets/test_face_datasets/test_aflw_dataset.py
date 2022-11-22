@@ -86,7 +86,7 @@ class TestAFLWDataset(TestCase):
         self.assertEqual(
             len(dataset.metainfo['dataset_keypoint_weights']), num_keypoints)
 
-    def test_top_down(self):
+    def test_topdown(self):
         # test topdown training
         dataset = self.build_aflw_dataset(data_mode='topdown')
         self.assertEqual(dataset.data_mode, 'topdown')
@@ -101,7 +101,7 @@ class TestAFLWDataset(TestCase):
         self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0])
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_aflw_dataset(data_mode='bottomup')
         self.assertEqual(len(dataset), 2)

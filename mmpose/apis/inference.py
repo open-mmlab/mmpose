@@ -122,36 +122,6 @@ def init_model(config: Union[str, Path, Config],
     return model
 
 
-def inference_bottomup(model: nn.Module, img: Union[np.ndarray, str]):
-    """Inference image with a bottom-up pose estimator.
-
-    Args:
-        model (nn.Module): The top-down pose estimator
-        img (np.ndarray | str): The loaded image or image file to inference
-
-    Returns:
-        List[:obj:`PoseDataSample`]: The inference results. Specifically, the
-        predicted keypoints and scores are saved at
-        ``data_sample.pred_instances.keypoints`` and
-        ``data_sample.pred_instances.keypoint_scores``.
-    """
-    pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
-
-    # prepare data batch
-    if isinstance(img, str):
-        data_info = dict(img_path=img)
-    else:
-        data_info = dict(img=img)
-    data_info.update(model.dataset_meta)
-    data = pipeline(data_info)
-    batch = pseudo_collate([data])
-
-    with torch.no_grad():
-        results = model.test_step(batch)
-
-    return results
-
-
 def inference_topdown(model: nn.Module,
                       img: Union[np.ndarray, str],
                       bboxes: Optional[Union[List, np.ndarray]] = None,
@@ -214,5 +184,35 @@ def inference_topdown(model: nn.Module,
             results = model.test_step(batch)
     else:
         results = []
+
+    return results
+
+
+def inference_bottomup(model: nn.Module, img: Union[np.ndarray, str]):
+    """Inference image with a bottom-up pose estimator.
+
+    Args:
+        model (nn.Module): The top-down pose estimator
+        img (np.ndarray | str): The loaded image or image file to inference
+
+    Returns:
+        List[:obj:`PoseDataSample`]: The inference results. Specifically, the
+        predicted keypoints and scores are saved at
+        ``data_sample.pred_instances.keypoints`` and
+        ``data_sample.pred_instances.keypoint_scores``.
+    """
+    pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
+
+    # prepare data batch
+    if isinstance(img, str):
+        data_info = dict(img_path=img)
+    else:
+        data_info = dict(img=img)
+    data_info.update(model.dataset_meta)
+    data = pipeline(data_info)
+    batch = pseudo_collate([data])
+
+    with torch.no_grad():
+        results = model.test_step(batch)
 
     return results
