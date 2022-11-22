@@ -42,7 +42,7 @@ class TestCocoWholeBodyFaceDataset(TestCase):
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
                 invalid_segs=list,
-                id=list)
+                id=int)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')
 
