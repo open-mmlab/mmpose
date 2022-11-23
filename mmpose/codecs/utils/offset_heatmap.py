@@ -63,8 +63,6 @@ def generate_offset_heatmap(
         heatmaps[k, 1] = x_offset
         heatmaps[k, 2] = y_offset
 
-    # keep only valid region in offset maps
-    heatmaps[:, 1:] *= heatmaps[:, :1]
     heatmaps = heatmaps.reshape(K * 3, H, W)
 
     return heatmaps, keypoint_weights
