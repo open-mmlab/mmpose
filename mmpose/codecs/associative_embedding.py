@@ -346,10 +346,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
         ]
 
         topk_tags = torch.stack(topk_tags_per_kpts, dim=-1)  # (B, K, TopK, L)
-        topk_locs = torch.stack(
-            [topk_indices % W,
-             topk_indices.div(W, rounding_mode='floor')],
-            dim=-1)  # (B, K, TopK, 2)
+        topk_locs = torch.stack([topk_indices % W, topk_indices // W],
+                                dim=-1)  # (B, K, TopK, 2)
 
         return topk_vals, topk_tags, topk_locs
 
