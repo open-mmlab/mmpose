@@ -66,3 +66,47 @@ def generate_offset_heatmap(
     heatmaps = heatmaps.reshape(K * 3, H, W)
 
     return heatmaps, keypoint_weights
+
+
+def generate_displacement_heatmap(
+    heatmap_size: Tuple[int, int],
+    keypoints: np.ndarray,
+    keypoints_visible: np.ndarray,
+    roots: np.ndarray,
+    roots_visible: np.ndarray,
+    diagonal_lengths: np.ndarray,
+    radius: float,
+):
+    N, K, _ = keypoints.shape
+    W, H = heatmap_size
+
+    displacements = np.zeros((K * 2, H, W), dtype=np.float32)
+    displacement_weights = np.zeros((K, H, W), dtype=np.float32)
+
+    for n in range(N):
+        if roots_visible[n] < 1:
+            continue
+        diagonal_length = diagonal_lengths[n]
+
+        for k in range(K):
+            if keypoints_visible[n, k] < 1:
+                continue
+
+            start_x = max(int(roots[n, 0] - radius), 0)
+            start_y = max(int(roots[n, 1] - radius), 0)
+            end_x = min(int(roots[n, 0] + radius), W)
+            end_y = min(int(roots[n, 1] + radius), H)
+
+            for x in range(start_x, end_x):
+                for y in range(start_y, end_y):
+                    if 0 < displacement_weights[k, y, x] < 1 / diagonal_length:
+                        # keep the gt displacement of larger instance
+                        continue
+
+                    displacement_weights[k, y, x] = 1 / diagonal_length
+                    displacements[2 * k:2 * k + 2, y,
+                                  x] = keypoints[n, k] - [x, y]
+
+    displacement_weights = np.stack(
+        [displacement_weights] * 2, axis=1).reshape(K * 2, H, W)
+    return displacements, displacement_weights

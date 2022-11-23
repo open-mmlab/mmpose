@@ -238,8 +238,8 @@ class BottomupRandomAffine(BaseTransform):
         # get scale
         if np.random.rand() < self.scale_prob:
             scale_min, scale_max = self.scale_factor
-            scale = scale_min + (scale_max -
-                                 scale_min) * self._truncnorm(size=(1, ))
+            scale = scale_min + (scale_max - scale_min) * (
+                self._truncnorm(size=(1, )) + 1) / 2
         else:
             scale = np.ones(1, dtype=np.float32)
 
