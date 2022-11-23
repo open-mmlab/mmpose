@@ -110,7 +110,7 @@ class CocoMetric(BaseMetric):
         self.use_area = use_area
         self.iou_type = iou_type
 
-        allowed_score_modes = ['bbox', 'bbox_keypoint', 'bbox_rle']
+        allowed_score_modes = ['bbox', 'bbox_keypoint', 'bbox_rle', 'keypoint']
         if score_mode not in allowed_score_modes:
             raise ValueError(
                 "`score_mode` should be one of 'bbox', 'bbox_keypoint', "
@@ -177,7 +177,12 @@ class CocoMetric(BaseMetric):
             pred['img_id'] = data_sample['img_id']
             pred['keypoints'] = keypoints
             pred['keypoint_scores'] = keypoint_scores
-            pred['bbox_scores'] = data_sample['gt_instances']['bbox_scores']
+            bbox_scores = data_sample['gt_instances']['bbox_scores']
+            if len(bbox_scores) != len(keypoints):
+                # bottom-up models might output different number of
+                # instances from annotation
+                bbox_scores = np.ones(len(keypoints))
+            pred['bbox_scores'] = bbox_scores
 
             # get area information
             if 'bbox_scales' in data_sample['gt_instances']:
@@ -334,7 +339,7 @@ class CocoMetric(BaseMetric):
         # group the preds by img_id
         for pred in preds:
             img_id = pred['img_id']
-            for idx in range(len(pred['bbox_scores'])):
+            for idx in range(len(pred['keypoints'])):
                 instance = {
                     'id': pred['id'],
                     'img_id': pred['img_id'],
@@ -371,6 +376,8 @@ class CocoMetric(BaseMetric):
                                                        axis=-1)
                 if self.score_mode == 'bbox':
                     instance['score'] = instance['bbox_score']
+                elif self.score_mode == 'keypoint':
+                    instance['score'] = np.mean(instance['keypoint_scores'])
                 else:
                     bbox_score = instance['bbox_score']
                     if self.score_mode == 'bbox_rle':

@@ -151,5 +151,8 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json',
+    nms_mode='none',
+    score_mode='keypoint',
+)
 test_evaluator = val_evaluator
