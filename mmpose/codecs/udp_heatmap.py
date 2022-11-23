@@ -161,6 +161,7 @@ class UDPHeatmap(BaseKeypointCodec):
             K = _K // 3
 
             for cls_heatmap in heatmaps[::3]:
+                # Apply Gaussian blur on classification maps
                 ks = 2 * self.blur_kernel_size + 1
                 cv2.GaussianBlur(cls_heatmap, (ks, ks), 0, cls_heatmap)
 
