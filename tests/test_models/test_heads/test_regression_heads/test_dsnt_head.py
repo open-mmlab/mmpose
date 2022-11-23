@@ -25,16 +25,6 @@ class TestDSNTHead(TestCase):
 
         return feats
 
-    def _get_data_samples(self,
-                          batch_size: int = 2,
-                          with_reg_label: bool = False):
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(
-                batch_size, with_reg_label=with_reg_label)
-        ]
-
-        return batch_data_samples
-
     def test_init(self):
         # square heatmap
         head = DSNTHead(
@@ -137,8 +127,8 @@ class TestDSNTHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_reg_label=False)
+        batch_data_samples = get_packed_inputs(
+            batch_size=2, with_reg_label=False)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -157,7 +147,7 @@ class TestDSNTHead(TestCase):
         )
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -177,8 +167,8 @@ class TestDSNTHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_reg_label=False)
+        batch_data_samples = get_packed_inputs(
+            batch_size=2, with_reg_label=False)['data_samples']
         _, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
@@ -205,8 +195,8 @@ class TestDSNTHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_reg_label=False)
+        batch_data_samples = get_packed_inputs(
+            batch_size=2, with_reg_label=False)['data_samples']
         preds = head.predict([feats, feats],
                              batch_data_samples,
                              test_cfg=dict(flip_test=True))
@@ -233,8 +223,8 @@ class TestDSNTHead(TestCase):
 
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-            batch_data_samples = self._get_data_samples(
-                batch_size=2, with_reg_label=True)
+            batch_data_samples = get_packed_inputs(
+                batch_size=2, with_reg_label=True)['data_samples']
             losses = head.loss(feats, batch_data_samples)
 
             self.assertIsInstance(losses['loss_kpt'], torch.Tensor)

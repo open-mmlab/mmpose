@@ -6,6 +6,7 @@ from typing import Optional
 import numpy as np
 import torch
 from mmengine.config import Config
+from mmengine.dataset import pseudo_collate
 from mmengine.structures import InstanceData, PixelData
 
 from mmpose.structures import MultilevelPixelData, PoseDataSample
@@ -81,7 +82,7 @@ def get_packed_inputs(batch_size=2,
                       num_instances=1,
                       num_keypoints=17,
                       num_levels=1,
-                      img_shape=(128, 128),
+                      img_shape=(256, 192),
                       input_size=(192, 256),
                       heatmap_size=(48, 64),
                       simcc_split_ratio=2.0,
@@ -91,7 +92,7 @@ def get_packed_inputs(batch_size=2,
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
-    packed_inputs = []
+    inputs_list = []
     for idx in range(batch_size):
         inputs = dict()
 
@@ -178,9 +179,10 @@ def get_packed_inputs(batch_size=2,
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
 
-        inputs['data_sample'] = data_sample
-        packed_inputs.append(inputs)
+        inputs['data_samples'] = data_sample
+        inputs_list.append(inputs)
 
+    packed_inputs = pseudo_collate(inputs_list)
     return packed_inputs
 
 

@@ -63,13 +63,11 @@ class TestAssociativeEmbeddingHead(TestCase):
 
         # get test data
         codec = KEYPOINT_CODECS.build(codec_cfg)
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(
-                1,
-                input_size=(256, 256),
-                heatmap_size=(64, 64),
-                img_shape=(256, 256))
-        ]
+        batch_data_samples = get_packed_inputs(
+            1,
+            input_size=(256, 256),
+            heatmap_size=(64, 64),
+            img_shape=(256, 256))['data_samples']
 
         keypoints = batch_data_samples[0].gt_instances['keypoints']
         keypoints_visible = batch_data_samples[0].gt_instances[
@@ -111,13 +109,11 @@ class TestAssociativeEmbeddingHead(TestCase):
         # get test data
         codec = KEYPOINT_CODECS.build(codec_cfg)
 
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(
-                1,
-                input_size=(256, 256),
-                heatmap_size=(64, 64),
-                img_shape=(256, 256))
-        ]
+        batch_data_samples = get_packed_inputs(
+            1,
+            input_size=(256, 256),
+            heatmap_size=(64, 64),
+            img_shape=(256, 256))['data_samples']
 
         keypoints = batch_data_samples[0].gt_instances['keypoints']
         keypoints_visible = batch_data_samples[0].gt_instances[
