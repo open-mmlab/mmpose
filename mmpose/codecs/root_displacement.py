@@ -23,8 +23,9 @@ class RootDisplacement(BaseKeypointCodec):
         root_type: str = 'kpt_center',
         minimal_diagonal_length=32,
         background_weight: float = 0.1,
-        decode_nms_kernel: int = 7,
-        max_num_instance: int = 30,
+        decode_nms_kernel: int = 5,
+        decode_max_instances: int = 30,
+        decode_score_threshold: float = 0.01,
         use_udp: bool = False,
     ):
         super().__init__()
@@ -36,7 +37,8 @@ class RootDisplacement(BaseKeypointCodec):
         self.minimal_diagonal_length = minimal_diagonal_length
         self.background_weight = background_weight
         self.decode_nms_kernel = decode_nms_kernel
-        self.max_num_instance = max_num_instance
+        self.decode_max_instances = decode_max_instances
+        self.decode_score_threshold = decode_score_threshold
         self.use_udp = use_udp
 
         if self.use_udp:
@@ -250,7 +252,9 @@ class RootDisplacement(BaseKeypointCodec):
         root_heatmap_peaks = batch_heatmap_nms(heatmaps[None, -1:],
                                                self.decode_nms_kernel)
         root_scores, pos_idx = root_heatmap_peaks.flatten().topk(
-            self.max_num_instance)
+            self.decode_max_instances)
+        mask = root_scores > self.decode_score_threshold
+        root_scores, pos_idx = root_scores[mask], pos_idx[mask]
 
         keypoints = posemaps[:, :, pos_idx].permute(2, 0, 1).contiguous()
 
@@ -259,13 +263,18 @@ class RootDisplacement(BaseKeypointCodec):
         else:
             keypoint_scores = None
 
-        keypoints = keypoints * self.scale_factor
+        keypoints = torch.stack((keypoints[..., 0] * self.scale_factor[0],
+                                 keypoints[..., 1] * self.scale_factor[1]),
+                                dim=-1)
         return keypoints, root_scores, keypoint_scores
 
     def get_keypoint_scores(self, heatmaps: Tensor, keypoints: Tensor):
         k, h, w = heatmaps.shape
-        keypoints = keypoints / torch.tensor([[[w - 1, h - 1]]],
-                                             dtype=keypoints.dtype) * 2 - 1
+        keypoints = torch.stack((
+            keypoints[..., 0] / (w - 1) * 2 - 1,
+            keypoints[..., 1] / (h - 1) * 2 - 1,
+        ),
+                                dim=-1)
         keypoints = keypoints.transpose(0, 1).unsqueeze(1).contiguous()
 
         keypoint_scores = torch.nn.functional.grid_sample(

@@ -229,7 +229,7 @@ class DEKRHead(BaseHead):
                  align_corners: bool = False,
                  heatmap_loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
-                 regress_loss: ConfigType = dict(
+                 displacement_loss: ConfigType = dict(
                      type='SoftWeightSmoothL1Loss',
                      use_target_weight=True,
                      supervise_empty=False),
@@ -265,7 +265,7 @@ class DEKRHead(BaseHead):
         self.loss_module = ModuleDict(
             dict(
                 heatmap=MODELS.build(heatmap_loss),
-                regress=MODELS.build(regress_loss),
+                regress=MODELS.build(displacement_loss),
             ))
 
         if decoder is not None:
@@ -364,24 +364,24 @@ class DEKRHead(BaseHead):
         pred_heatmaps, pred_displacements = self.forward(feats)
         gt_heatmaps = torch.stack(
             [d.gt_fields.heatmaps for d in batch_data_samples])
-        heatmap_weights = torch.cat(
+        heatmap_weights = torch.stack(
             [d.gt_fields.heatmap_weights for d in batch_data_samples])
         gt_displacements = torch.stack(
             [d.gt_fields.displacements for d in batch_data_samples])
-        displacement_weights = torch.cat(
+        displacement_weights = torch.stack(
             [d.gt_fields.displacement_weights for d in batch_data_samples])
 
         # calculate losses
         losses = dict()
         heatmap_loss = self.loss_module['heatmap'](pred_heatmaps, gt_heatmaps,
                                                    heatmap_weights)
-        regress_loss = self.loss_module['regress'](pred_displacements,
-                                                   gt_displacements,
-                                                   displacement_weights)
+        displacement_loss = self.loss_module['regress'](pred_displacements,
+                                                        gt_displacements,
+                                                        displacement_weights)
 
         losses.update({
             'loss/heatmap': heatmap_loss,
-            'loss/regress': regress_loss,
+            'loss/displacement': displacement_loss,
         })
 
         return losses
@@ -515,19 +515,12 @@ class DEKRHead(BaseHead):
 
         multiscale_test = test_cfg.get('multiscale_test', False)
         skeleton = metainfo.get('skeleton_links', None)
-        root_score_threshold = test_cfg.get('root_score_threshold', 0)
 
         if multiscale_test:
             raise NotImplementedError
         else:
             keypoints, root_scores, keypoints_scores = self.decoder.decode(
                 heatmaps[0], displacements[0])
-
-        # discard instances with low root scores
-        mask = root_scores > root_score_threshold
-        keypoints = keypoints[mask]
-        root_scores = root_scores[mask]
-        keypoints_scores = keypoints_scores[mask]
 
         # rescore each instance
         if self.rescore_net and skeleton and len(keypoints) > 0:
@@ -536,7 +529,7 @@ class DEKRHead(BaseHead):
             root_scores = root_scores * instance_scores.unsqueeze(1)
 
         # nms
-        keypoints, keypoints_scores = to_numpy(keypoints, keypoints_scores)
+        keypoints, keypoints_scores = to_numpy((keypoints, keypoints_scores))
         scores = to_numpy(root_scores)[..., None] * keypoints_scores
         if len(keypoints) > 0 and test_cfg.get('nms_dist_thr', 0) > 0:
             kpts_db = []
