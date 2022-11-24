@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=80)
+auto_scale_lr = dict(base_batch_size=40)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -32,8 +32,8 @@ default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 # codec settings
 codec = dict(
     type='RootDisplacement',
-    input_size=(512, 512),
-    heatmap_size=(128, 128),
+    input_size=(640, 640),
+    heatmap_size=(160, 160),
     sigma=(4, 2),
     generate_keypoint_heatmaps=True,
     decode_max_instances=30)
@@ -61,19 +61,19 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(32, 64)),
+                num_channels=(48, 96)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(32, 64, 128)),
+                num_channels=(48, 96, 192)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(32, 64, 128, 256),
+                num_channels=(48, 96, 192, 384),
                 multiscale_output=True)),
         init_cfg=dict(
             type='Pretrained',
@@ -82,10 +82,11 @@ model = dict(
     ),
     head=dict(
         type='DEKRHead',
-        in_channels=(32, 64, 128, 256),
+        in_channels=(48, 96, 192, 384),
         num_keypoints=17,
         input_transform='resize_concat',
         input_index=(0, 1, 2, 3),
+        num_heatmap_filters=48,
         heatmap_loss=dict(type='KeypointMSELoss', use_target_weight=True),
         displacement_loss=dict(
             type='SoftWeightSmoothL1Loss',
@@ -140,7 +141,7 @@ val_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=10,
+    batch_size=5,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

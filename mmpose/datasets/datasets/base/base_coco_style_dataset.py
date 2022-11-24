@@ -313,7 +313,6 @@ class BaseCocoStyleDataset(BaseDataset):
             # image data
             img_path = data_infos[0]['img_path']
             data_info_bu = {
-                'id': img_id,
                 'img_id': img_id,
                 'img_path': img_path,
             }

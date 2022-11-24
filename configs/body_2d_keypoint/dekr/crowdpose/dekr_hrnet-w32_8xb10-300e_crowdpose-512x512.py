@@ -1,7 +1,7 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=140, val_interval=10)
+train_cfg = dict(max_epochs=300, val_interval=20)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
@@ -17,8 +17,8 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=140,
-        milestones=[90, 120],
+        end=300,
+        milestones=[200, 260],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=80)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='crowdpose/AP', rule='greater'))
 
 # codec settings
 codec = dict(
@@ -83,7 +83,7 @@ model = dict(
     head=dict(
         type='DEKRHead',
         in_channels=(32, 64, 128, 256),
-        num_keypoints=17,
+        num_keypoints=14,
         input_transform='resize_concat',
         input_index=(0, 1, 2, 3),
         heatmap_loss=dict(type='KeypointMSELoss', use_target_weight=True),
@@ -92,16 +92,16 @@ model = dict(
             use_target_weight=True,
             supervise_empty=False,
             beta=1 / 9,
-            loss_weight=0.002,
+            loss_weight=0.004,
         ),
         decoder=codec,
         rescore_cfg=dict(
-            in_channels=74,
-            norm_indexes=(5, 6),
+            in_channels=59,
+            norm_indexes=(0, 1),
             init_cfg=dict(
                 type='Pretrained',
                 checkpoint='https://download.openmmlab.com/mmpose/'
-                'pretrain_models/kpt_rescore_coco-33d58c5c.pth')),
+                'pretrain_models/kpt_rescore_crowdpose-300c7efe.pth')),
     ),
     test_cfg=dict(
         multiscale_test=False,
@@ -111,9 +111,9 @@ model = dict(
         align_corners=False))
 
 # base dataset settings
-dataset_type = 'CocoDataset'
+dataset_type = 'CrowdPoseDataset'
 data_mode = 'bottomup'
-data_root = 'data/coco/'
+data_root = 'data/crowdpose/'
 
 # pipelines
 train_pipeline = [
@@ -148,8 +148,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='annotations/mmpose_crowdpose_trainval.json',
+        data_prefix=dict(img='images/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -162,8 +162,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_val2017.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file='annotations/mmpose_crowdpose_test.json',
+        data_prefix=dict(img='images/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -172,8 +172,10 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/person_keypoints_val2017.json',
+    ann_file=data_root + 'annotations/mmpose_crowdpose_test.json',
     nms_mode='none',
     score_mode='keypoint',
-)
+    use_area=False,
+    iou_type='keypoints_crowd',
+    prefix='crowdpose')
 test_evaluator = val_evaluator

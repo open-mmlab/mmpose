@@ -125,7 +125,7 @@ class RescoreNet(BaseModule):
         self.l3 = torch.nn.Linear(hidden, 1, bias=True)
         self.relu = torch.nn.ReLU()
 
-    def make_feature(self, keypoints, skeleton):
+    def make_feature(self, keypoints, keypoint_scores, skeleton):
         """Combine original scores, joint distance and relative distance to
         make feature.
 
@@ -153,12 +153,12 @@ class RescoreNet(BaseModule):
         joint_relate = joint_relate / normalize.unsqueeze(-1)
         joint_relate = joint_relate.flatten(1)
 
-        feature = torch.cat((joint_relate, joint_length, keypoints[..., 2]),
+        feature = torch.cat((joint_relate, joint_length, keypoint_scores),
                             dim=1).float()
         return feature
 
-    def forward(self, keypoints, skeleton):
-        feature = self.make_feature(keypoints, skeleton)
+    def forward(self, keypoints, keypoint_scores, skeleton):
+        feature = self.make_feature(keypoints, keypoint_scores, skeleton)
         x = self.relu(self.l1(feature))
         x = self.relu(self.l2(x))
         x = self.l3(x)
@@ -278,6 +278,9 @@ class DEKRHead(BaseHead):
         else:
             self.rescore_net = None
 
+        # Register the hook to automatically convert old version state dicts
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
+
     @property
     def default_init_cfg(self):
         init_cfg = [
@@ -328,15 +331,14 @@ class DEKRHead(BaseHead):
         return Sequential(*layers)
 
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
-        # TODO: modify the docstring
         """Forward the network. The input is multi scale feature maps and the
-        output is the heatmap.
+        output is a tuple of heatmap and displacement.
 
         Args:
             feats (Tuple[Tensor]): Multi scale feature maps.
 
         Returns:
-            Tensor: output heatmap.
+            Tuple[Tensor]: output heatmap and displacement.
         """
         x = self._transform_inputs(feats)
 
@@ -456,10 +458,10 @@ class DEKRHead(BaseHead):
                     shift_heatmap=test_cfg.get('shift_heatmap', False))
 
                 # this is a coordinate amendment.
-                scale_factor = s * (
+                x_scale_factor = s * (
                     metainfo['input_size'][0] / _heatmaps.shape[-1])
-                _displacements_flip[:, ::2] -= (scale_factor - 1) / (
-                    scale_factor)
+                _displacements_flip[:, ::2] -= (x_scale_factor - 1) / (
+                    x_scale_factor)
                 _displacements = (_displacements + _displacements_flip) / 2.0
 
             else:
@@ -519,23 +521,24 @@ class DEKRHead(BaseHead):
         if multiscale_test:
             raise NotImplementedError
         else:
-            keypoints, root_scores, keypoints_scores = self.decoder.decode(
+            keypoints, root_scores, keypoint_scores = self.decoder.decode(
                 heatmaps[0], displacements[0])
 
         # rescore each instance
-        if self.rescore_net and skeleton and len(keypoints) > 0:
-            instance_scores = self.rescore_net(keypoints, skeleton)
+        if self.rescore_net is not None and skeleton and len(keypoints) > 0:
+            instance_scores = self.rescore_net(keypoints, keypoint_scores,
+                                               skeleton)
             instance_scores[torch.isnan(instance_scores)] = 0
-            root_scores = root_scores * instance_scores.unsqueeze(1)
+            root_scores = root_scores * instance_scores
 
         # nms
-        keypoints, keypoints_scores = to_numpy((keypoints, keypoints_scores))
-        scores = to_numpy(root_scores)[..., None] * keypoints_scores
+        keypoints, keypoint_scores = to_numpy((keypoints, keypoint_scores))
+        scores = to_numpy(root_scores)[..., None] * keypoint_scores
         if len(keypoints) > 0 and test_cfg.get('nms_dist_thr', 0) > 0:
             kpts_db = []
             for i in range(len(keypoints)):
                 kpts_db.append(
-                    dict(keypoints=keypoints[i], score=keypoints_scores[i]))
+                    dict(keypoints=keypoints[i], score=keypoint_scores[i]))
             keep_instance_inds = nearby_joints_nms(
                 kpts_db,
                 test_cfg['nms_dist_thr'],
@@ -549,3 +552,32 @@ class DEKRHead(BaseHead):
         preds = [InstanceData(keypoints=keypoints, keypoint_scores=scores)]
 
         return preds
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to convert old-version state dict of
+        :class:`DEKRHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`DEKRHead`.
+
+        The hook will be automatically registered during initialization.
+        """
+        version = local_meta.get('version', None)
+        if version and version >= self._version:
+            return
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for k in keys:
+            if 'offset_conv_layer' in k:
+                v = state_dict.pop(k)
+                k = k.replace('offset_conv_layers', 'displacement_conv_layers')
+                state_dict[k] = v
+
+            if 'heatmap_conv_layers.2' in k:
+                v = state_dict.pop(k)
+                state_dict[k] = torch.cat((v[1:], v[:1]))
+
+            if 'rescore_net' in k:
+                v = state_dict.pop(k)
+                k = k.replace('rescore_net', 'head.rescore_net')
+                state_dict[k] = v
