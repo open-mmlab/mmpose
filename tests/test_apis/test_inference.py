@@ -12,7 +12,7 @@ from parameterized import parameterized
 
 from mmpose.apis import inference_bottomup, inference_topdown, init_model
 from mmpose.structures import PoseDataSample
-from mmpose.testing import _rand_bboxes, get_config_file, get_repo_dir
+from mmpose.testing._utils import _rand_bboxes, get_config_file, get_repo_dir
 from mmpose.utils import register_all_modules
 
 
