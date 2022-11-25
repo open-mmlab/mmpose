@@ -118,8 +118,7 @@ class TestPoseTrack18Metric(TestCase):
         # test score_mode option
         with self.assertRaisesRegex(ValueError,
                                     '`score_mode` should be one of'):
-            _ = PoseTrack18Metric(
-                ann_file=self.ann_file, score_mode='keypoint')
+            _ = PoseTrack18Metric(ann_file=self.ann_file, score_mode='invalid')
 
         # test nms_mode option
         with self.assertRaisesRegex(ValueError, '`nms_mode` should be one of'):

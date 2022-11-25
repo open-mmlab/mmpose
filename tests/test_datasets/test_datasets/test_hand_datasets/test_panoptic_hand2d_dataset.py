@@ -47,7 +47,7 @@ class TestPanopticHand2DDataset(TestCase):
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
                 invalid_segs=list,
-                id=int)
+                id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')
 

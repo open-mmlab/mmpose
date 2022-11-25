@@ -52,7 +52,7 @@ class TestPoseTrack18VideoDataset(TestCase):
                 keypoints_visible=np.ndarray,
                 invalid_segs=list,
                 frame_weights=np.ndarray,
-                id=int)
+                id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')
 
