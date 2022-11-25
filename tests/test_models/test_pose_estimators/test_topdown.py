@@ -5,6 +5,7 @@ from unittest import TestCase
 import torch
 from parameterized import parameterized
 
+from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs, get_pose_estimator_cfg
 from mmpose.utils import register_all_modules
 
@@ -56,3 +57,46 @@ class TestTopdownPoseEstimator(TestCase):
             data = model.data_preprocessor(packed_inputs, training=True)
             losses = model.forward(**data, mode='loss')
             self.assertIsInstance(losses, dict)
+
+    @parameterized.expand(configs_with_devices)
+    def test_forward_predict(self, config, devices):
+        model_cfg = get_pose_estimator_cfg(config)
+        model_cfg.backbone.init_cfg = None
+
+        from mmpose.models import build_pose_estimator
+
+        for device in devices:
+            model = build_pose_estimator(model_cfg)
+
+            if device == 'cuda':
+                if not torch.cuda.is_available():
+                    return unittest.skip('test requires GPU and torch+cuda')
+                model = model.cuda()
+
+            packed_inputs = get_packed_inputs(2)
+            model.eval()
+            with torch.no_grad():
+                data = model.data_preprocessor(packed_inputs, training=True)
+                batch_results = model.forward(**data, mode='predict')
+                self.assertEqual(len(batch_results), 2)
+                self.assertIsInstance(batch_results[0], PoseDataSample)
+
+    @parameterized.expand(configs_with_devices)
+    def test_forward_tensor(self, config, devices):
+        model_cfg = get_pose_estimator_cfg(config)
+        model_cfg.backbone.init_cfg = None
+
+        from mmpose.models import build_pose_estimator
+
+        for device in devices:
+            model = build_pose_estimator(model_cfg)
+
+            if device == 'cuda':
+                if not torch.cuda.is_available():
+                    return unittest.skip('test requires GPU and torch+cuda')
+                model = model.cuda()
+
+            packed_inputs = get_packed_inputs(2)
+            data = model.data_preprocessor(packed_inputs, training=True)
+            batch_results = model.forward(**data, mode='tensor')
+            self.assertIsInstance(batch_results, (tuple, torch.Tensor))
