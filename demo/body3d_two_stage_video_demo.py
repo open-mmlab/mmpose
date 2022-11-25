@@ -97,6 +97,23 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
 
             keypoints_new[[1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
                 keypoints[[7, 9, 11, 6, 8, 10, 0, 2, 4, 1, 3, 5]]
+        # Add by Ji,Wei 11/25/2022
+        # 添加TopDownCocoWholeBodyDataset => Body3DH36MDataset的转换
+        elif pose_det_dataset in ['TopDownCocoWholeBodyDataset']:
+            keypoints = keypoints[:17, ...]
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
+            # in COCO, head is in the middle of l_eye and r_eye
+            # in PoseTrack18, head is in the middle of head_bottom and head_top
+            keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
+            # rearrange other keypoints
+            keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
+        # Add end
         else:
             raise NotImplementedError(
                 f'unsupported conversion between {pose_lift_dataset} and '
@@ -171,9 +188,13 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
 
 
 def main():
+
+    # ---------------------- 配置命令行参数开始 ----------------------
     parser = ArgumentParser()
+
     parser.add_argument('det_config', help='Config file for detection')
     parser.add_argument('det_checkpoint', help='Checkpoint file for detection')
+
     parser.add_argument(
         'pose_detector_config',
         type=str,
@@ -184,14 +205,17 @@ def main():
         type=str,
         default=None,
         help='Checkpoint file for the 1st stage 2D pose detector')
+
     parser.add_argument(
         'pose_lifter_config',
         help='Config file for the 2nd stage pose lifter model')
     parser.add_argument(
         'pose_lifter_checkpoint',
         help='Checkpoint file for the 2nd stage pose lifter model')
+
     parser.add_argument(
         '--video-path', type=str, default='', help='Video path')
+
     parser.add_argument(
         '--rebase-keypoint-height',
         action='store_true',
@@ -199,6 +223,7 @@ def main():
         'height of 0 (landing on the ground). This is useful for '
         'visualization when the model do not predict the global position '
         'of the 3D pose.')
+
     parser.add_argument(
         '--norm-pose-2d',
         action='store_true',
@@ -206,6 +231,7 @@ def main():
         'scale of the dataset, and move the bbox (along with the 2D pose) to '
         'the average bbox center of the dataset. This is useful when bbox '
         'is small, especially in multi-person scenarios.')
+
     parser.add_argument(
         '--num-instances',
         type=int,
@@ -213,29 +239,35 @@ def main():
         help='The number of 3D poses to be visualized in every frame. If '
         'less than 0, it will be set to the number of pose results in the '
         'first frame.')
+
     parser.add_argument(
         '--show',
         action='store_true',
         default=False,
         help='whether to show visualizations.')
+
     parser.add_argument(
         '--out-video-root',
         type=str,
         default='vis_results',
         help='Root of the output video file. '
         'Default not saving the visualization video.')
+
     parser.add_argument(
         '--device', default='cuda:0', help='Device for inference')
+
     parser.add_argument(
         '--det-cat-id',
         type=int,
         default=1,
         help='Category id for bounding box detection model')
+
     parser.add_argument(
         '--bbox-thr',
         type=float,
         default=0.9,
         help='Bounding box score threshold')
+
     parser.add_argument('--kpt-thr', type=float, default=0.3)
     parser.add_argument(
         '--use-oks-tracking', action='store_true', help='Using OKS tracking')
@@ -285,14 +317,17 @@ def main():
 
     video = mmcv.VideoReader(args.video_path)
     assert video.opened, f'Failed to load video file {args.video_path}'
+    # ---------------------- 配置命令行参数结束 ----------------------
 
     # First stage: 2D pose detection
     print('Stage 1: 2D pose detection.')
 
     print('Initializing model...')
-    person_det_model = init_detector(
-        args.det_config, args.det_checkpoint, device=args.device.lower())
 
+    # 目标检测模型
+    person_det_model = init_detector(args.det_config, args.det_checkpoint, device=args.device.lower())
+
+    # 2D keypoints检测模型
     pose_det_model = init_pose_model(
         args.pose_detector_config,
         args.pose_detector_checkpoint,
