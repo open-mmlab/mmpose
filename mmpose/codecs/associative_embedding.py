@@ -144,7 +144,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
     """Encode/decode keypoints with the method introduced in "Associative
     Embedding". This is an asymmetric codec, where the keypoints are
     represented as gaussian heatmaps and position indices during encoding, and
-    reostred from predicted heatmaps and group tags.
+    restored from predicted heatmaps and group tags.
 
     See the paper `Associative Embedding: End-to-End Learning for Joint
     Detection and Grouping`_ by Newell et al (2017) for details

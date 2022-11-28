@@ -23,9 +23,9 @@ def flip_heatmaps(heatmaps: Tensor,
                 of symmetric keypoints according to ``flip_indices``
             - ``'udp_combined'``: similar to ``'heatmap'`` mode but further
                 flip the x_offset values
-            # TODO: refine docstring
-            - ``'offset'``: similar to ``'heatmap'`` mode but further
-                flip the x_offset values
+            - ``'offset'``: horizontally flip the offset fields and swap
+                heatmaps of symmetric keypoints according to
+                ``flip_indices``. x_offset values are also reversed
         shift_heatmap (bool): Shift the flipped heatmaps to align with the
             original heatmaps and improve accuracy. Defaults to ``True``
 
@@ -50,9 +50,11 @@ def flip_heatmaps(heatmaps: Tensor,
 
     elif flip_mode == 'offset':
         B, C, H, W = heatmaps.shape
-        assert C % len(flip_indices) == 0
-        heatmaps = heatmaps.view(B, len(flip_indices), -1, H, W)
-        heatmaps = heatmaps[:, flip_indices].flip(-1)
+        heatmaps = heatmaps.view(B, C // 2, -1, H, W)
+        heatmaps = heatmaps.flip(-1)
+        if flip_indices is not None:
+            assert len(flip_indices) == C // 2
+            heatmaps = heatmaps[:, flip_indices]
         heatmaps[:, :, 0] = -heatmaps[:, :, 0]
         heatmaps = heatmaps.view(B, C, H, W)
 

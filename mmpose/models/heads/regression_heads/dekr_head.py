@@ -11,7 +11,6 @@ from torch import Tensor
 from mmpose.evaluation.functional.nms import nearby_joints_nms
 from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
-from mmpose.structures import MultilevelPixelData
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, Features, InstanceList,
                                  OptConfigType, OptSampleList, Predictions)
@@ -103,9 +102,9 @@ class RescoreNet(BaseModule):
     off-the-shelf rescore net pretrained by authors of DEKR.
 
     Args:
-        in_channels (int): input channels
-        norm_indexes (Tuple(int)): indexes of torso in skeleton.
-        pretrained (str): url or path of pretrained rescore net.
+        in_channels (int): Input channels
+        norm_indexes (Tuple(int)): Indices of torso in skeleton
+        init_cfg (dict, optional): Initialization config dict
     """
 
     def __init__(
@@ -130,7 +129,8 @@ class RescoreNet(BaseModule):
         make feature.
 
         Args:
-            keypoints (np.ndarray): predicetd keypoints
+            keypoints (torch.Tensor): predicetd keypoints
+            keypoint_scores (torch.Tensor): predicetd keypoint scores
             skeleton (list(list(int))): joint links
 
         Returns:
@@ -167,30 +167,18 @@ class RescoreNet(BaseModule):
 
 @MODELS.register_module()
 class DEKRHead(BaseHead):
-    # TODO: modify the docstring
-    """Top-down heatmap head introduced in `Simple Baselines`_ by Xiao et al
-    (2018). The head is composed of a few deconvolutional layers followed by a
-    convolutional layer to generate heatmaps from low-resolution feature maps.
+    """DisEntangled Keypoint Regression head introduced in `Bottom-up human
+    pose estimation via disentangled keypoint regression`_ by Geng et al
+    (2021). The head is composed of a heatmap branch and a displacement branch.
 
     Args:
         in_channels (int | Sequence[int]): Number of channels in the input
             feature map
-        out_channels (int): Number of channels in the output heatmap
-        deconv_out_channels (Sequence[int], optional): The output channel
-            number of each deconv layer. Defaults to ``(256, 256, 256)``
-        deconv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
-            of each deconv layer. Each element should be either an integer for
-            both height and width dimensions, or a tuple of two integers for
-            the height and the width dimension respectively.Defaults to
-            ``(4, 4, 4)``
-        conv_out_channels (Sequence[int], optional): The output channel number
-            of each intermediate conv layer. ``None`` means no intermediate
-            conv layer between deconv layers and the final conv layer.
-            Defaults to ``None``
-        conv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
-            of each intermediate conv layer. Defaults to ``None``
-        has_final_layer (bool): Whether have the final 1x1 Conv2d layer.
-            Defaults to ``True``
+        num_joints (int): Number of joints
+        num_heatmap_filters (int): Number of filters for heatmap branch.
+            Defaults to 32
+        num_offset_filters_per_joint (int): Number of filters for each joint
+            in displacement branch. Defaults to 15
         input_transform (str): Transformation of input features which should
             be one of the following options:
 
@@ -207,14 +195,20 @@ class DEKRHead(BaseHead):
         align_corners (bool): `align_corners` argument of
             :func:`torch.nn.functional.interpolate` used in the input
             transformation. Defaults to ``False``
-        loss (Config): Config of the keypoint loss. Defaults to use
+        heatmap_loss (Config): Config of the heatmap loss. Defaults to use
             :class:`KeypointMSELoss`
+        displacement_loss (Config): Config of the displacement regression loss.
+            Defaults to use :class:`SoftWeightSmoothL1Loss`
         decoder (Config, optional): The decoder config that controls decoding
             keypoint coordinates from the network output. Defaults to ``None``
+        rescore_cfg (Config, optional): The config for rescore net which
+            estimates OKS via predicted keypoints and keypoint scores.
+            Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
 
-    .. _`Simple Baselines`: https://arxiv.org/abs/1804.06208
+    .. _`Bottom-up human pose estimation via disentangled keypoint regression`:
+        https://arxiv.org/abs/2104.02300
     """
 
     _version = 2
@@ -250,29 +244,34 @@ class DEKRHead(BaseHead):
 
         in_channels = self._get_in_channels()
 
+        # build heatmap branch
         self.heatmap_conv_layers = self._make_heatmap_conv_layers(
             in_channels=in_channels,
             out_channels=1 + num_keypoints,
             num_filters=num_heatmap_filters,
         )
 
+        # build displacement branch
         self.displacement_conv_layers = self._make_displacement_conv_layers(
             in_channels=in_channels,
             out_channels=2 * num_keypoints,
             num_filters=num_keypoints * num_displacement_filters_per_keypoint,
             groups=num_keypoints)
 
+        # build losses
         self.loss_module = ModuleDict(
             dict(
                 heatmap=MODELS.build(heatmap_loss),
                 regress=MODELS.build(displacement_loss),
             ))
 
+        # build decoder
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
 
+        # build rescore net
         if rescore_cfg is not None:
             self.rescore_net = RescoreNet(**rescore_cfg)
         else:
@@ -292,7 +291,8 @@ class DEKRHead(BaseHead):
 
     def _make_heatmap_conv_layers(self, in_channels: int, out_channels: int,
                                   num_filters: int):
-
+        """Create convolutional layers of heatmap branch by given
+        parameters."""
         layers = [
             ConvModule(
                 in_channels=in_channels,
@@ -312,6 +312,8 @@ class DEKRHead(BaseHead):
     def _make_displacement_conv_layers(self, in_channels: int,
                                        out_channels: int, num_filters: int,
                                        groups: int):
+        """Create convolutional layers of displacement branch by given
+        parameters."""
         layers = [
             ConvModule(
                 in_channels=in_channels,
@@ -396,7 +398,7 @@ class DEKRHead(BaseHead):
 
         Args:
             feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
-                features (or multiple multi-stage features in TTA)
+                features (or multiple multi-scale features in TTA)
             batch_data_samples (List[:obj:`PoseDataSample`]): The batch
                 data samples
             test_cfg (dict): The runtime config for testing process. Defaults
@@ -419,7 +421,10 @@ class DEKRHead(BaseHead):
             The heatmap prediction is a list of ``PixelData``, each contains
             the following fields:
 
-                - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
+                - heatmaps (Tensor): The predicted heatmaps in shape (1, h, w)
+                    or (K+1, h, w) if keypoint heatmaps are predicted
+                - displacements (Tensor): The predicted displacement fields
+                    in shape (K*2, h, w)
         """
         multiscale_test = test_cfg.get('multiscale_test', False)
         flip_test = test_cfg.get('flip_test', False)
@@ -460,15 +465,15 @@ class DEKRHead(BaseHead):
                 # this is a coordinate amendment.
                 x_scale_factor = s * (
                     metainfo['input_size'][0] / _heatmaps.shape[-1])
-                _displacements_flip[:, ::2] -= (x_scale_factor - 1) / (
+                _displacements_flip[:, ::2] += (x_scale_factor - 1) / (
                     x_scale_factor)
                 _displacements = (_displacements + _displacements_flip) / 2.0
 
             else:
                 _heatmaps, _displacements = self.forward(feat)
 
-            heatmaps.append(_heatmaps[0])
-            displacements.append(_displacements[0])
+            heatmaps.append(_heatmaps)
+            displacements.append(_displacements)
 
         preds = self.decode(heatmaps, displacements, test_cfg, metainfo)
 
@@ -478,16 +483,10 @@ class DEKRHead(BaseHead):
             B = heatmaps[0].shape[0]
             pred_fields = []
             for i in range(B):
-                if multiscale_test:
-                    pred_fields.append(
-                        MultilevelPixelData(
-                            heatmaps=[hm[i] for hm in heatmaps],
-                            displacements=[dm[i] for dm in displacements]))
-                else:
-                    pred_fields.append(
-                        PixelData(
-                            heatmaps=heatmaps[0][i],
-                            displacements=displacements[0][i]))
+                pred_fields.append(
+                    PixelData(
+                        heatmaps=heatmaps[0][i],
+                        displacements=displacements[0][i]))
             return preds, pred_fields
         else:
             return preds
@@ -497,12 +496,16 @@ class DEKRHead(BaseHead):
                displacements: Tuple[Tensor],
                test_cfg: ConfigType = {},
                metainfo: dict = {}) -> InstanceList:
-        # TODO: modify the docstring
         """Decode keypoints from outputs.
 
         Args:
-            batch_outputs (Tensor | Tuple[Tensor]): The network outputs of
-                a data batch
+            heatmaps (Tuple[Tensor]): The output heatmaps inferred from one
+                image or multi-scale images.
+            displacements (Tuple[Tensor]): The output displacement fields
+                inferred from one image or multi-scale images.
+            test_cfg (dict): The runtime config for testing process. Defaults
+                to {}
+            metainfo (dict): The metainfo of test dataset. Defaults to {}
 
         Returns:
             List[InstanceData]: A list of InstanceData, each contains the
@@ -518,38 +521,45 @@ class DEKRHead(BaseHead):
         multiscale_test = test_cfg.get('multiscale_test', False)
         skeleton = metainfo.get('skeleton_links', None)
 
-        if multiscale_test:
-            raise NotImplementedError
-        else:
-            keypoints, root_scores, keypoint_scores = self.decoder.decode(
-                heatmaps[0], displacements[0])
+        preds = []
+        batch_size = heatmaps[0].shape[0]
 
-        # rescore each instance
-        if self.rescore_net is not None and skeleton and len(keypoints) > 0:
-            instance_scores = self.rescore_net(keypoints, keypoint_scores,
-                                               skeleton)
-            instance_scores[torch.isnan(instance_scores)] = 0
-            root_scores = root_scores * instance_scores
+        for b in range(batch_size):
+            if multiscale_test:
+                raise NotImplementedError
+            else:
+                keypoints, (root_scores,
+                            keypoint_scores) = self.decoder.decode(
+                                heatmaps[0][b], displacements[0][b])
 
-        # nms
-        keypoints, keypoint_scores = to_numpy((keypoints, keypoint_scores))
-        scores = to_numpy(root_scores)[..., None] * keypoint_scores
-        if len(keypoints) > 0 and test_cfg.get('nms_dist_thr', 0) > 0:
-            kpts_db = []
-            for i in range(len(keypoints)):
-                kpts_db.append(
-                    dict(keypoints=keypoints[i], score=keypoint_scores[i]))
-            keep_instance_inds = nearby_joints_nms(
-                kpts_db,
-                test_cfg['nms_dist_thr'],
-                test_cfg.get('nms_joints_thr', None),
-                score_per_joint=True,
-                max_dets=test_cfg.get('max_num_people', 30))
-            keypoints = keypoints[keep_instance_inds]
-            scores = scores[keep_instance_inds]
+            # rescore each instance
+            if self.rescore_net is not None and skeleton and len(
+                    keypoints) > 0:
+                instance_scores = self.rescore_net(keypoints, keypoint_scores,
+                                                   skeleton)
+                instance_scores[torch.isnan(instance_scores)] = 0
+                root_scores = root_scores * instance_scores
 
-        # pack outputs
-        preds = [InstanceData(keypoints=keypoints, keypoint_scores=scores)]
+            # nms
+            keypoints, keypoint_scores = to_numpy((keypoints, keypoint_scores))
+            scores = to_numpy(root_scores)[..., None] * keypoint_scores
+            if len(keypoints) > 0 and test_cfg.get('nms_dist_thr', 0) > 0:
+                kpts_db = []
+                for i in range(len(keypoints)):
+                    kpts_db.append(
+                        dict(keypoints=keypoints[i], score=keypoint_scores[i]))
+                keep_instance_inds = nearby_joints_nms(
+                    kpts_db,
+                    test_cfg['nms_dist_thr'],
+                    test_cfg.get('nms_joints_thr', None),
+                    score_per_joint=True,
+                    max_dets=test_cfg.get('max_num_people', 30))
+                keypoints = keypoints[keep_instance_inds]
+                scores = scores[keep_instance_inds]
+
+            # pack outputs
+            preds.append(
+                InstanceData(keypoints=keypoints, keypoint_scores=scores))
 
         return preds
 
@@ -571,9 +581,15 @@ class DEKRHead(BaseHead):
             if 'offset_conv_layer' in k:
                 v = state_dict.pop(k)
                 k = k.replace('offset_conv_layers', 'displacement_conv_layers')
+                if 'displacement_conv_layers.3.' in k:
+                    # the source and target of displacement vectors are
+                    # opposite between two versions.
+                    v = -v
                 state_dict[k] = v
 
             if 'heatmap_conv_layers.2' in k:
+                # root heatmap is at the first/last channel of the
+                # heatmap tensor in MMPose v0.x/1.x, respectively.
                 v = state_dict.pop(k)
                 state_dict[k] = torch.cat((v[1:], v[:1]))
 
