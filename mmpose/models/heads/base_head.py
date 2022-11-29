@@ -66,7 +66,6 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
     def _transform_inputs(self, feats: Tuple[Tensor]
                           ) -> Union[Tensor, Tuple[Tensor]]:
         """Transform multi scale features into the network input."""
-        
         if not isinstance(feats, Tuple):
             return feats
         
