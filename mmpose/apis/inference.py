@@ -192,7 +192,7 @@ def inference_bottomup(model: nn.Module, img: Union[np.ndarray, str]):
     """Inference image with a bottom-up pose estimator.
 
     Args:
-        model (nn.Module): The top-down pose estimator
+        model (nn.Module): The bottom-up pose estimator
         img (np.ndarray | str): The loaded image or image file to inference
 
     Returns:
