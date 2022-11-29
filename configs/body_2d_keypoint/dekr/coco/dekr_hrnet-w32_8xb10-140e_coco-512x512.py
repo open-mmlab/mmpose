@@ -110,6 +110,9 @@ model = dict(
         shift_heatmap=False,
         align_corners=False))
 
+# enable DDP training when rescore net is used
+find_unused_parameters = True
+
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'bottomup'
