@@ -68,7 +68,6 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         """Transform multi scale features into the network input."""
         if not isinstance(feats, Tuple):
             return feats
-        
         if self.input_transform == 'resize_concat':
             inputs = [feats[i] for i in self.input_index]
             resized_inputs = [
