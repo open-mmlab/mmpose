@@ -128,15 +128,16 @@ class SimCCLabel(BaseKeypointCodec):
 
         return encoded
 
-    def decode(self,
-               encoded: Tuple[np.ndarray,
-                              np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+    def decode(self, simcc_x: np.ndarray,
+               simcc_y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from SimCC representations. The decoded
         coordinates are in the input image space.
 
         Args:
             encoded (Tuple[np.ndarray, np.ndarray]): SimCC labels for x-axis
                 and y-axis
+            simcc_x (np.ndarray): SimCC label for x-axis
+            simcc_y (np.ndarray): SimCC label for y-axis
 
         Returns:
             tuple:
@@ -145,9 +146,7 @@ class SimCCLabel(BaseKeypointCodec):
                 It usually represents the confidence of the keypoint prediction
         """
 
-        simcc_x, simcc_y = encoded
         keypoints, scores = get_simcc_maximum(simcc_x, simcc_y)
-
         keypoints /= self.simcc_split_ratio
 
         # Unsqueeze the instance dimension for single-instance results

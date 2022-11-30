@@ -24,9 +24,9 @@ except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
 
-def infer_and_visualize_image(args, img_path, detector, pose_estimator,
-                              visualizer, show_interval):
-    """Predict the keypoints of one image, and visualize the results."""
+def process_one_image(args, img_path, detector, pose_estimator, visualizer,
+                      show_interval):
+    """Visualize predicted keypoints (and heatmaps) of one image."""
 
     # predict bbox
     register_mmdet_modules()
@@ -169,7 +169,7 @@ def main():
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':
-        pred_instances = infer_and_visualize_image(
+        pred_instances = process_one_image(
             args,
             args.input,
             detector,
@@ -191,7 +191,7 @@ def main():
         pred_instances_list = []
 
         for frame_id, img_fname in enumerate(os.listdir(tmp_folder.name)):
-            pred_instances = infer_and_visualize_image(
+            pred_instances = process_one_image(
                 args,
                 f'{tmp_folder.name}/{img_fname}',
                 detector,

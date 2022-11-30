@@ -87,7 +87,7 @@ class TestCocoWholeBodyFaceDataset(TestCase):
         # note that len(sigmas) may be zero if dataset.metainfo['sigmas'] = []
         self.assertEqual(len(dataset.metainfo['sigmas']), num_keypoints)
 
-    def test_top_down(self):
+    def test_topdown(self):
         # test topdown training
         dataset = self.build_coco_wholebody_face_dataset(data_mode='topdown')
         self.assertEqual(dataset.data_mode, 'topdown')
@@ -104,7 +104,7 @@ class TestCocoWholeBodyFaceDataset(TestCase):
         self.assertEqual(len(dataset), 4)
         self.check_data_info_keys(dataset[0])
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_coco_wholebody_face_dataset(data_mode='bottomup')
         # filter one invalid insances due to face_valid = false

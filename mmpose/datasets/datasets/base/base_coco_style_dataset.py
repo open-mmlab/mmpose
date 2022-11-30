@@ -3,8 +3,7 @@ import copy
 import os.path as osp
 from copy import deepcopy
 from itertools import filterfalse, groupby
-from typing import (Any, Callable, Dict, Iterable, List, Optional, Sequence,
-                    Union)
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 from mmengine.dataset import BaseDataset, force_full_init
@@ -193,7 +192,7 @@ class BaseCocoStyleDataset(BaseDataset):
 
         for img_id in coco.getImgIds():
             img = coco.loadImgs(img_id)[0]
-            ann_ids = coco.getAnnIds(imgIds=img_id, iscrowd=False)
+            ann_ids = coco.getAnnIds(imgIds=img_id)
             for ann in coco.loadAnns(ann_ids):
 
                 data_info = self.parse_data_info(
@@ -204,7 +203,6 @@ class BaseCocoStyleDataset(BaseDataset):
                     continue
 
                 data_list.append(data_info)
-
         return data_list
 
     def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
@@ -226,8 +224,7 @@ class BaseCocoStyleDataset(BaseDataset):
         img = raw_data_info['raw_img_info']
 
         # filter invalid instance
-        if 'bbox' not in ann or 'keypoints' not in ann or max(
-                ann['keypoints']) == 0:
+        if 'bbox' not in ann or 'keypoints' not in ann:
             return None
 
         img_path = osp.join(self.data_prefix['img'], img['file_name'])
@@ -290,6 +287,10 @@ class BaseCocoStyleDataset(BaseDataset):
             w, h = bbox[2:4] - bbox[:2]
             if w <= 0 or h <= 0:
                 return False
+        # invalid keypoints
+        if 'keypoints' in data_info:
+            if np.max(data_info['keypoints']) <= 0:
+                return False
         return True
 
     def _get_topdown_data_infos(self, data_list: List[Dict]) -> List[Dict]:
@@ -302,12 +303,6 @@ class BaseCocoStyleDataset(BaseDataset):
     def _get_bottomup_data_infos(self, data_list):
         """Organize the data list in bottom-up mode."""
 
-        def _concat(seq: Iterable, key: Any, axis=0):
-            seq = [x[key] for x in seq]
-            if isinstance(seq[0], np.ndarray):
-                seq = np.concatenate(seq, axis=axis)
-            return seq
-
         # bottom-up data list
         data_list_bu = []
 
@@ -315,23 +310,19 @@ class BaseCocoStyleDataset(BaseDataset):
         for img_id, data_infos in groupby(data_list, lambda x: x['img_id']):
             data_infos = list(data_infos)
 
-            # get valid instances for keypoint annotations
-            data_infos_valid = list(
-                filter(self._is_valid_instance, data_infos))
-            if not data_infos_valid:
-                continue
-
-            img_path = data_infos_valid[0]['img_path']
-
             # image data
+            img_path = data_infos[0]['img_path']
             data_info_bu = {
                 'img_id': img_id,
                 'img_path': img_path,
             }
-            # instance data
-            for key in data_infos_valid[0].keys():
+
+            for key in data_infos[0].keys():
                 if key not in data_info_bu:
-                    data_info_bu[key] = _concat(data_infos_valid, key)
+                    seq = [d[key] for d in data_infos]
+                    if isinstance(seq[0], np.ndarray):
+                        seq = np.concatenate(seq, axis=0)
+                    data_info_bu[key] = seq
 
             # The segmentation annotation of invalid objects will be used
             # to generate valid region mask in the pipeline.
