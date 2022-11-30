@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
-from typing import List, Tuple, Union
+from typing import List, Sequence, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -63,11 +63,14 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         return in_channels
 
-    def _transform_inputs(self, feats: Tuple[Tensor]
-                          ) -> Union[Tensor, Tuple[Tensor]]:
+    def _transform_inputs(
+        self,
+        feats: Union[Tensor, Sequence[Tensor]],
+    ) -> Union[Tensor, Tuple[Tensor]]:
         """Transform multi scale features into the network input."""
-        if not isinstance(feats, Tuple):
+        if not isinstance(feats, Sequence):
             return feats
+
         if self.input_transform == 'resize_concat':
             inputs = [feats[i] for i in self.input_index]
             resized_inputs = [
