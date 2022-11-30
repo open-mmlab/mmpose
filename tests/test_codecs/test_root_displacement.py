@@ -14,6 +14,29 @@ class TestRootDisplacement(TestCase):
     def setUp(self) -> None:
         pass
 
+    def _make_multi_instance_data(self, data):
+        keypoints = data['keypoints']
+        keypoints_visible = data['keypoints_visible']
+
+        keypoints_visible[..., 0] = 0
+
+        keypoints_outside = keypoints - keypoints.max(axis=-1, keepdims=True)
+        keypoints_outside_visible = np.zeros(keypoints_visible.shape)
+
+        keypoint_overlap = keypoints.mean(
+            axis=-1, keepdims=True) + 0.8 * (
+                keypoints - keypoints.mean(axis=-1, keepdims=True))
+        keypoint_overlap_visible = keypoints_visible
+
+        data['keypoints'] = np.concatenate(
+            (keypoints, keypoints_outside, keypoint_overlap), axis=0)
+        data['keypoints_visible'] = np.concatenate(
+            (keypoints_visible, keypoints_outside_visible,
+             keypoint_overlap_visible),
+            axis=0)
+
+        return data
+
     def test_build(self):
         cfg = dict(
             type='RootDisplacement',
@@ -26,6 +49,7 @@ class TestRootDisplacement(TestCase):
 
     def test_encode(self):
         data = get_coco_sample(img_shape=(512, 512), num_instances=1)
+        data = self._make_multi_instance_data(data)
 
         # w/o keypoint heatmaps
         codec = RootDisplacement(
