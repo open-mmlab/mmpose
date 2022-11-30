@@ -28,11 +28,7 @@ def generate_offset_heatmap(
     Returns:
         tuple:
         - heatmap (np.ndarray): The generated heatmap in shape
-            (C_out, H, W) where [W, H] is the `heatmap_size`, and the
-            C_out is the output channel number which depends on the
-            `heatmap_type`. If `heatmap_type=='gaussian'`, C_out equals to
-            keypoint number K; if `heatmap_type=='combined'`, C_out
-            equals to K*3 (x_offset, y_offset and class label)
+            (K*3, H, W) where [W, H] is the `heatmap_size`
         - keypoint_weights (np.ndarray): The target weights in shape
             (K,)
     """
@@ -77,6 +73,33 @@ def generate_displacement_heatmap(
     diagonal_lengths: np.ndarray,
     radius: float,
 ):
+    """Generate displacement heatmaps of keypoints, where each keypoint is
+    represented by 3 maps: one pixel-level class label map (1 for keypoint and
+    0 for non-keypoint) and 2 pixel-level offset maps for x and y directions
+    respectively.
+
+    Args:
+        heatmap_size (Tuple[int, int]): Heatmap size in [W, H]
+        keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
+        keypoints_visible (np.ndarray): Keypoint visibilities in shape
+            (N, K)
+        roots (np.ndarray): Coordinates of instance centers in shape (N, D).
+            The displacement fields of each instance will locate around its
+            center.
+        roots_visible (np.ndarray): Roots visibilities in shape (N,)
+        diagonal_lengths (np.ndarray): Diaginal length of the bounding boxes
+            of each instance in shape (N,)
+        radius (float): The radius factor of the binary label
+            map. The positive region is defined as the neighbor of the
+            keypoint with the radius :math:`r=radius_factor*max(W, H)`
+
+    Returns:
+        tuple:
+        - displacements (np.ndarray): The generated displacement map in
+            shape (K*2, H, W) where [W, H] is the `heatmap_size`
+        - displacement_weights (np.ndarray): The target weights in shape
+            (K*2, H, W)
+    """
     N, K, _ = keypoints.shape
     W, H = heatmap_size
 

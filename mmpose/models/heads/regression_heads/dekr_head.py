@@ -509,7 +509,7 @@ class DEKRHead(BaseHead):
 
         Returns:
             List[InstanceData]: A list of InstanceData, each contains the
-            decoded pose information of the instances of one data sample.
+                decoded pose information of the instances of one data sample.
         """
 
         if self.decoder is None:
@@ -566,8 +566,8 @@ class DEKRHead(BaseHead):
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
         """A hook function to convert old-version state dict of
-        :class:`DEKRHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`DEKRHead`.
+        :class:`DEKRHead` (before MMPose v1.0.0) to a compatible format
+        of :class:`DEKRHead`.
 
         The hook will be automatically registered during initialization.
         """
