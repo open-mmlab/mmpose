@@ -26,7 +26,7 @@ except ImportError:
 Number = Union[int, float]
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class GetBBoxCenterScale(BaseTransform):
     """Convert bboxes from [x, y, w, h] to center and scale.
 
@@ -87,7 +87,7 @@ class GetBBoxCenterScale(BaseTransform):
         return repr_str
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class RandomFlip(BaseTransform):
     """Randomly flip the image, bbox and keypoints.
 
@@ -255,7 +255,7 @@ class RandomFlip(BaseTransform):
         return repr_str
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class RandomHalfBody(BaseTransform):
     """Data augmentation with half-body transform that keeps only the upper or
     lower body at random.
@@ -425,7 +425,7 @@ class RandomHalfBody(BaseTransform):
         return repr_str
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class RandomBBoxTransform(BaseTransform):
     r"""Rnadomly shift, resize and rotate the bounding boxes.
 
@@ -554,7 +554,7 @@ class RandomBBoxTransform(BaseTransform):
         return repr_str
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 @avoid_cache_randomness
 class Albumentation(BaseTransform):
     """Albumentation augmentation (pixel-level transforms only).
@@ -692,7 +692,7 @@ class Albumentation(BaseTransform):
         return repr_str
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class PhotometricDistortion(BaseTransform):
     """Apply photometric distortion to image sequentially, every transformation
     is applied with a probability of 0.5. The position of random contrast is in
@@ -861,7 +861,7 @@ class PhotometricDistortion(BaseTransform):
         return repr_str
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class GenerateTarget(BaseTransform):
     """Encode keypoints into Target.
 

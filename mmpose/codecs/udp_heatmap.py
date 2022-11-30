@@ -181,6 +181,5 @@ class UDPHeatmap(BaseKeypointCodec):
 
         W, H = self.heatmap_size
         keypoints = keypoints / [W - 1, H - 1] * self.input_size
-        # keypoints = keypoints * self.scale_factor
 
         return keypoints, scores

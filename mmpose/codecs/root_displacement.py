@@ -11,7 +11,7 @@ from .utils import (batch_heatmap_nms, generate_displacement_heatmap,
                     generate_gaussian_heatmaps)
 
 
-@KEYPOINT_CODECS.register_module(force=True)
+@KEYPOINT_CODECS.register_module()
 class RootDisplacement(BaseKeypointCodec):
     """Encode/decode keypoints with the method introduced in the paper SPM.
 
