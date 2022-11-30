@@ -378,7 +378,7 @@ class DEKRHead(BaseHead):
         # calculate losses
         losses = dict()
         heatmap_loss = self.loss_module['heatmap'](pred_heatmaps, gt_heatmaps,
-                                                   heatmap_weights)
+                                                   None, heatmap_weights)
         displacement_loss = self.loss_module['regress'](pred_displacements,
                                                         gt_displacements,
                                                         displacement_weights)
