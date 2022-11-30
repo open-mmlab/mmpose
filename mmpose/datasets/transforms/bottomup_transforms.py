@@ -314,30 +314,32 @@ class BottomupResize(BaseTransform):
     Required Keys:
 
         - img
-        - img_shape
+        - ori_shape
 
     Modified Keys:
 
         - img
+        - img_shape
 
     Added Keys:
 
         - input_size
-
+        - warp_mat
+        - aug_scale
 
     Args:
         input_size (Tuple[int, int]): The input size of the model in [w, h].
             Note that the actually size of the resized image will be affected
             by ``resize_mode`` and ``size_factor``, thus may not exactly equals
             to the ``input_size``
-        aux_scales (List[float], optional): The auxiliary input scales for
+        aug_scales (List[float], optional): The extra input scales for
             multi-scale testing. If given, the input image will be resized
             to different scales to build a image pyramid. And heatmaps from
             all scales will be aggregated to make final prediction. Defaults
             to ``None``
         size_factor (int): The actual input size will be ceiled to
                 a multiple of the `size_factor` value at both sides.
-                Defaults to 8
+                Defaults to 16
         resize_mode (str): The method to resize the image to the input size.
             Options are:
 
@@ -357,14 +359,14 @@ class BottomupResize(BaseTransform):
 
     def __init__(self,
                  input_size: Tuple[int, int],
-                 aux_scales: Optional[List[float]] = None,
-                 size_factor: int = 8,
+                 aug_scales: Optional[List[float]] = None,
+                 size_factor: int = 32,
                  resize_mode: str = 'fit',
                  use_udp: bool = False):
         super().__init__()
 
         self.input_size = input_size
-        self.aux_scales = aux_scales
+        self.aug_scales = aug_scales
         self.resize_mode = resize_mode
         self.size_factor = size_factor
         self.use_udp = use_udp
@@ -374,9 +376,11 @@ class BottomupResize(BaseTransform):
         """Ceil the given size (tuple of [w, h]) to a multiple of the base."""
         return tuple(int(np.ceil(s / base) * base) for s in size)
 
-    def _get_actual_size(self, img_size: Tuple[int, int],
-                         input_size: Tuple[int, int]) -> Tuple:
-        """Calculate the actual input size and the size of the resized image.
+    def _get_input_size(self, img_size: Tuple[int, int],
+                        input_size: Tuple[int, int]) -> Tuple:
+        """Calculate the actual input size (which the original image will be
+        resized to) and the padded input size (which the resized image will be
+        padded to, or which is the size of the model input).
 
         Args:
             img_size (Tuple[int, int]): The original image size in [w, h]
@@ -384,44 +388,44 @@ class BottomupResize(BaseTransform):
 
         Returns:
             tuple:
-            - actual_input_size (Tuple[int, int]): The target size to generate
+            - actual_input_size (Tuple[int, int]): The target size to resize
+                the image
+            - padded_input_size (Tuple[int, int]): The target size to generate
                 the model input which will contain the resized image
-            - actual_img_size (Tuple[int, int]): The target size to resize the
-                image
         """
         img_w, img_h = img_size
         ratio = img_w / img_h
 
         if self.resize_mode == 'fit':
-            actual_input_size = self._ceil_to_multiple(input_size,
+            padded_input_size = self._ceil_to_multiple(input_size,
                                                        self.size_factor)
-            if actual_input_size != input_size:
+            if padded_input_size != input_size:
                 raise ValueError(
                     'When ``resize_mode==\'fit\', the input size (height and'
                     ' width) should be mulitples of the size_factor('
                     f'{self.size_factor}) at all scales. Got invalid input '
                     f'size {input_size}.')
 
-            tgt_w, tgt_h = actual_input_size
-            rsz_w = min(tgt_w, tgt_h * ratio)
-            rsz_h = min(tgt_h, tgt_w / ratio)
-            actual_img_size = (rsz_w, rsz_h)
+            pad_w, pad_h = padded_input_size
+            rsz_w = min(pad_w, pad_h * ratio)
+            rsz_h = min(pad_h, pad_w / ratio)
+            actual_input_size = (rsz_w, rsz_h)
 
         elif self.resize_mode == 'expand':
-            _actual_input_size = self._ceil_to_multiple(
+            _padded_input_size = self._ceil_to_multiple(
                 input_size, self.size_factor)
-            tgt_w, tgt_h = _actual_input_size
-            rsz_w = max(tgt_w, tgt_h * ratio)
-            rsz_h = max(tgt_h, tgt_w / ratio)
+            pad_w, pad_h = _padded_input_size
+            rsz_w = max(pad_w, pad_h * ratio)
+            rsz_h = max(pad_h, pad_w / ratio)
 
-            actual_img_size = (rsz_w, rsz_h)
-            actual_input_size = self._ceil_to_multiple(actual_img_size,
+            actual_input_size = (rsz_w, rsz_h)
+            padded_input_size = self._ceil_to_multiple(actual_input_size,
                                                        self.size_factor)
 
         else:
             raise ValueError(f'Invalid resize mode {self.resize_mode}')
 
-        return actual_input_size, actual_img_size
+        return actual_input_size, padded_input_size
 
     def transform(self, results: Dict) -> Optional[dict]:
         """The transform function of :class:`BottomupResize` to perform
@@ -438,21 +442,17 @@ class BottomupResize(BaseTransform):
         """
 
         img = results['img']
-        img_h, img_w = results['img_shape']
+        img_h, img_w = results['ori_shape']
         w, h = self.input_size
 
         input_sizes = [(w, h)]
-        if self.aux_scales:
-            input_sizes += [(int(w * s), int(h * s)) for s in self.aux_scales]
+        if self.aug_scales:
+            input_sizes += [(int(w * s), int(h * s)) for s in self.aug_scales]
 
         imgs = []
-        warp_mats = []
-        actual_input_sizes = []
-        actual_img_sizes = []
+        for i, (_w, _h) in enumerate(input_sizes):
 
-        for _w, _h in input_sizes:
-
-            actual_input_size, actual_img_size = self._get_actual_size(
+            actual_input_size, padded_input_size = self._get_input_size(
                 img_size=(img_w, img_h), input_size=(_w, _h))
 
             if self.use_udp:
@@ -463,7 +463,7 @@ class BottomupResize(BaseTransform):
                     center=center,
                     scale=scale,
                     rot=0,
-                    output_size=actual_img_size)
+                    output_size=actual_input_size)
             else:
                 center = np.array([img_w / 2, img_h / 2], dtype=np.float32)
                 scale = np.array([img_w, img_h], dtype=np.float32)
@@ -471,24 +471,25 @@ class BottomupResize(BaseTransform):
                     center=center,
                     scale=scale,
                     rot=0,
-                    output_size=actual_img_size)
+                    output_size=actual_input_size)
 
             _img = cv2.warpAffine(
-                img, warp_mat, actual_input_size, flags=cv2.INTER_LINEAR)
+                img, warp_mat, padded_input_size, flags=cv2.INTER_LINEAR)
 
             imgs.append(_img)
-            warp_mats.append(warp_mat)
-            actual_input_sizes.append(actual_input_size)
-            actual_img_sizes.append(actual_img_size)
 
-        if self.aux_scales:
+            # Store the transform information w.r.t. the main input size
+            if i == 0:
+                results['img_shape'] = padded_input_size[::-1]
+                results['input_center'] = center
+                results['input_scale'] = scale
+                results['input_size'] = actual_input_size
+
+        if self.aug_scales:
             results['img'] = imgs
+            results['aug_scales'] = self.aug_scales
         else:
             results['img'] = imgs[0]
-
-        # Store the transform information w.r.t. the main input size
-        results['warp_mat'] = warp_mats[0]
-        results['input_size'] = actual_input_sizes[0]
-        results['img_size'] = actual_img_sizes[0]
+            results['aug_scale'] = None
 
         return results

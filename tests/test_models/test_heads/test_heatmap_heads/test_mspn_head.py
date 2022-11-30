@@ -34,18 +34,16 @@ class TestMSPNHead(TestCase):
                           batch_size: int = 2,
                           heatmap_size=(48, 64),
                           num_levels=1):
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(
-                batch_size=batch_size,
-                num_instances=1,
-                num_keypoints=17,
-                img_shape=(128, 128),
-                input_size=(192, 256),
-                heatmap_size=heatmap_size,
-                with_heatmap=True,
-                with_reg_label=False,
-                num_levels=num_levels)
-        ]
+        batch_data_samples = get_packed_inputs(
+            batch_size=batch_size,
+            num_instances=1,
+            num_keypoints=17,
+            img_shape=(128, 128),
+            input_size=(192, 256),
+            heatmap_size=heatmap_size,
+            with_heatmap=True,
+            with_reg_label=False,
+            num_levels=num_levels)['data_samples']
         return batch_data_samples
 
     def test_init(self):

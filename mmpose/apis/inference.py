@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from mmengine.config import Config
-from mmengine.dataset import Compose
+from mmengine.dataset import Compose, pseudo_collate
 from mmengine.runner import load_checkpoint
 from PIL import Image
 
@@ -126,7 +126,7 @@ def inference_topdown(model: nn.Module,
                       img: Union[np.ndarray, str],
                       bboxes: Optional[Union[List, np.ndarray]] = None,
                       bbox_format: str = 'xyxy') -> List[PoseDataSample]:
-    """Inference image with the top-down pose estimator.
+    """Inference image with a top-down pose estimator.
 
     Args:
         model (nn.Module): The top-down pose estimator
@@ -143,8 +143,7 @@ def inference_topdown(model: nn.Module,
         ``data_sample.pred_instances.keypoints`` and
         ``data_sample.pred_instances.keypoint_scores``.
     """
-    cfg = model.cfg
-    pipeline = Compose(cfg.test_dataloader.dataset.pipeline)
+    pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
 
     if bboxes is None:
         # get bbox from the image size
@@ -176,14 +175,44 @@ def inference_topdown(model: nn.Module,
         data_info.update(model.dataset_meta)
         data_list.append(pipeline(data_info))
 
-    # collate
     if data_list:
-        batch = dict(
-            inputs=[data['inputs'] for data in data_list],
-            data_samples=[data['data_samples'] for data in data_list])
-
+        # collate data list into a batch, which is a dict with following keys:
+        # batch['inputs']: a list of input images
+        # batch['data_samples']: a list of :obj:`PoseDataSample`
+        batch = pseudo_collate(data_list)
         with torch.no_grad():
             results = model.test_step(batch)
     else:
         results = []
+
+    return results
+
+
+def inference_bottomup(model: nn.Module, img: Union[np.ndarray, str]):
+    """Inference image with a bottom-up pose estimator.
+
+    Args:
+        model (nn.Module): The bottom-up pose estimator
+        img (np.ndarray | str): The loaded image or image file to inference
+
+    Returns:
+        List[:obj:`PoseDataSample`]: The inference results. Specifically, the
+        predicted keypoints and scores are saved at
+        ``data_sample.pred_instances.keypoints`` and
+        ``data_sample.pred_instances.keypoint_scores``.
+    """
+    pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
+
+    # prepare data batch
+    if isinstance(img, str):
+        data_info = dict(img_path=img)
+    else:
+        data_info = dict(img=img)
+    data_info.update(model.dataset_meta)
+    data = pipeline(data_info)
+    batch = pseudo_collate([data])
+
+    with torch.no_grad():
+        results = model.test_step(batch)
+
     return results
