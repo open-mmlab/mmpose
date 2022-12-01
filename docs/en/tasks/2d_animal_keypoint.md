@@ -216,7 +216,7 @@ mmpose
 
 </details>
 
-For [MacaquePose](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images can be downloaded from [download](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html).
+For [MacaquePose](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images can be downloaded from [download](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/download.php).
 Please download the annotation files from [macaque_annotations](https://download.openmmlab.com/mmpose/datasets/macaque_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
