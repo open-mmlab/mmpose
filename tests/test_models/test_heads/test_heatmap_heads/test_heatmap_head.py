@@ -110,7 +110,31 @@ class TestHeatmapHead(TestCase):
         self.assertEqual(preds[0].keypoints.shape,
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
-        # input transform: output heatmap
+        # input transform: none
+        head = HeatmapHead(
+            in_channels=[16, 32],
+            out_channels=17,
+            input_transform='resize_concat',
+            input_index=[0, 1],
+            deconv_out_channels=(256, 256),
+            deconv_kernel_sizes=(4, 4),
+            conv_out_channels=(256, ),
+            conv_kernel_sizes=(1, ),
+            decoder=decoder_cfg)
+        feats = self._get_feats(batch_size=2, feat_shapes=[(48, 16, 12)])[0]
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
+        with self.assertWarnsRegex(
+                Warning,
+                'the input of HeatmapHead is a tensor instead of a tuple '
+                'or list. The argument `input_transform` will be ignored.'):
+            preds = head.predict(feats, batch_data_samples)
+
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
+
+        # output heatmap
         head = HeatmapHead(
             in_channels=[16, 32],
             out_channels=17,
