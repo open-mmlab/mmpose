@@ -122,7 +122,7 @@ class TestHeatmapHead(TestCase):
             conv_kernel_sizes=(1, ),
             decoder=decoder_cfg)
         feats = self._get_feats(batch_size=2, feat_shapes=[(48, 16, 12)])[0]
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         with self.assertWarnsRegex(
                 Warning,
                 'the input of HeatmapHead is a tensor instead of a tuple '
