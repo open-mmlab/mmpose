@@ -8,7 +8,7 @@ MMPose supported datasets:
 - [Animal-Pose](#animal-pose) \[ [Homepage](https://sites.google.com/view/animal-pose/) \]
 - [AP-10K](#ap-10k) \[ [Homepage](https://github.com/AlexTheBad/AP-10K/) \]
 - [Horse-10](#horse-10) \[ [Homepage](http://www.mackenziemathislab.org/horse10) \]
-- [MacaquePose](#macaquepose) \[ [Homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) \]
+- [MacaquePose](#macaquepose) \[ [Homepage](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html) \]
 - [Vinegar Fly](#vinegar-fly) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Desert Locust](#desert-locust) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Grévy’s Zebra](#grvys-zebra) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
@@ -216,7 +216,7 @@ mmpose
 
 </details>
 
-For [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images can be downloaded from [download](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html).
+For [MacaquePose](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images can be downloaded from [download](http://pri.ehub.kyoto-u.ac.jp/datasets/macaquepose/download.php).
 Please download the annotation files from [macaque_annotations](https://download.openmmlab.com/mmpose/datasets/macaque_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
