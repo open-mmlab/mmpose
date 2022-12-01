@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
 from abc import ABCMeta, abstractmethod
 from typing import List, Sequence, Tuple, Union
 
@@ -69,6 +70,9 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
     ) -> Union[Tensor, Tuple[Tensor]]:
         """Transform multi scale features into the network input."""
         if not isinstance(feats, Sequence):
+            warnings.warn(f'the input of {self._get_name()} is a tensor '
+                          f'instead of a tuple or list. The argument '
+                          f'`input_transform` will be ignored.')
             return feats
 
         if self.input_transform == 'resize_concat':
