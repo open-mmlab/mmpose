@@ -370,18 +370,22 @@ class DEKRHead(BaseHead):
             [d.gt_fields.heatmaps for d in batch_data_samples])
         heatmap_weights = torch.stack(
             [d.gt_fields.heatmap_weights for d in batch_data_samples])
-        heatmap_mask = torch.stack(
-            [d.gt_fields.heatmap_mask for d in batch_data_samples])
         gt_displacements = torch.stack(
             [d.gt_fields.displacements for d in batch_data_samples])
         displacement_weights = torch.stack(
             [d.gt_fields.displacement_weights for d in batch_data_samples])
 
+        if 'heatmap_mask' in batch_data_samples[0].keys():
+            heatmap_mask = torch.stack(
+                [d.gt_fields.heatmap_mask for d in batch_data_samples])
+        else:
+            heatmap_mask = None
+
         # calculate losses
         losses = dict()
-        heatmap_weights = heatmap_weights * heatmap_mask
         heatmap_loss = self.loss_module['heatmap'](pred_heatmaps, gt_heatmaps,
-                                                   None, heatmap_weights)
+                                                   heatmap_weights,
+                                                   heatmap_mask)
         displacement_loss = self.loss_module['regress'](pred_displacements,
                                                         gt_displacements,
                                                         displacement_weights)
@@ -429,12 +433,12 @@ class DEKRHead(BaseHead):
                 - displacements (Tensor): The predicted displacement fields
                     in shape (K*2, h, w)
         """
-        multiscale_test = test_cfg.get('multiscale_test', False)
-        flip_test = test_cfg.get('flip_test', False)
 
         assert len(batch_data_samples) == 1, f'DEKRHead only supports ' \
             f'prediction with batch_size 1, but got {len(batch_data_samples)}'
 
+        multiscale_test = test_cfg.get('multiscale_test', False)
+        flip_test = test_cfg.get('flip_test', False)
         metainfo = batch_data_samples[0].metainfo
         aug_scales = [1]
 
