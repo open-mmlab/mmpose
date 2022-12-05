@@ -262,7 +262,7 @@ class DEKRHead(BaseHead):
         self.loss_module = ModuleDict(
             dict(
                 heatmap=MODELS.build(heatmap_loss),
-                regress=MODELS.build(displacement_loss),
+                displacement=MODELS.build(displacement_loss),
             ))
 
         # build decoder
@@ -386,9 +386,8 @@ class DEKRHead(BaseHead):
         heatmap_loss = self.loss_module['heatmap'](pred_heatmaps, gt_heatmaps,
                                                    heatmap_weights,
                                                    heatmap_mask)
-        displacement_loss = self.loss_module['regress'](pred_displacements,
-                                                        gt_displacements,
-                                                        displacement_weights)
+        displacement_loss = self.loss_module['displacement'](
+            pred_displacements, gt_displacements, displacement_weights)
 
         losses.update({
             'loss/heatmap': heatmap_loss,

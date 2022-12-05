@@ -194,7 +194,7 @@ class RootDisplacement(BaseKeypointCodec):
                     1] >= H or roots_coordinate[i].min() < 0:
                 roots_visible[i] = 0
             else:
-                roots_visible[i] = 1
+                roots_visible[i] = 2
 
         return roots_coordinate, roots_visible
 
@@ -260,8 +260,7 @@ class RootDisplacement(BaseKeypointCodec):
         keypoints_visible[diagonal_lengths < self.minimal_diagonal_length] = 0
 
         # generate heatmaps
-        # WARNING: mask is absence here
-        heatmaps, weights = generate_gaussian_heatmaps(
+        heatmaps, _ = generate_gaussian_heatmaps(
             heatmap_size=self.heatmap_size,
             keypoints=roots[:, None],
             keypoints_visible=roots_visible[:, None],
@@ -358,8 +357,8 @@ class RootDisplacement(BaseKeypointCodec):
         return keypoints, (root_scores, keypoint_scores)
 
     def get_keypoint_scores(self, heatmaps: Tensor, keypoints: Tensor):
-        """Calculate the diagonal length of instance bounding box from visible
-        keypoints.
+        """Calculate the keypoint scores with keypoints heatmaps and
+        coordinates.
 
         Args:
             heatmaps (Tensor): Keypoint heatmaps in shape (K, H, W)
