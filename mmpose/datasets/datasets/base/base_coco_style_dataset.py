@@ -329,7 +329,7 @@ class BaseCocoStyleDataset(BaseDataset):
             invalid_segs = []
             for data_info_invalid in filterfalse(self._is_valid_instance,
                                                  data_infos):
-                if 'segementation' in data_info_invalid:
+                if 'segmentation' in data_info_invalid:
                     invalid_segs.append(data_info_invalid['segmentation'])
             data_info_bu['invalid_segs'] = invalid_segs
 

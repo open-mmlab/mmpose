@@ -79,7 +79,7 @@ class RootDisplacement(BaseKeypointCodec):
         sigma: Optional[Union[float, Tuple[float]]] = None,
         generate_keypoint_heatmaps: bool = False,
         root_type: str = 'kpt_center',
-        minimal_diagonal_length: Union[int, float] = 32,
+        minimal_diagonal_length: Union[int, float] = 5,
         background_weight: float = 0.1,
         decode_nms_kernel: int = 5,
         decode_max_instances: int = 30,

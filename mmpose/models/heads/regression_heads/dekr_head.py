@@ -370,6 +370,8 @@ class DEKRHead(BaseHead):
             [d.gt_fields.heatmaps for d in batch_data_samples])
         heatmap_weights = torch.stack(
             [d.gt_fields.heatmap_weights for d in batch_data_samples])
+        heatmap_mask = torch.stack(
+            [d.gt_fields.heatmap_mask for d in batch_data_samples])
         gt_displacements = torch.stack(
             [d.gt_fields.displacements for d in batch_data_samples])
         displacement_weights = torch.stack(
@@ -377,6 +379,7 @@ class DEKRHead(BaseHead):
 
         # calculate losses
         losses = dict()
+        heatmap_weights = heatmap_weights * heatmap_mask
         heatmap_loss = self.loss_module['heatmap'](pred_heatmaps, gt_heatmaps,
                                                    None, heatmap_weights)
         displacement_loss = self.loss_module['regress'](pred_displacements,
