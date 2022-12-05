@@ -261,13 +261,14 @@ class BaseCocoStyleDataset(BaseDataset):
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
+            'category_id': ann['category_id'],
             # store the raw annotation of the instance
             # it is useful for evaluation without providing ann_file
             'raw_ann_info': copy.deepcopy(ann),
         }
 
         if 'crowdIndex' in img:
-            data_info['crowdIndex'] = img['crowdIndex']
+            data_info['crowd_index'] = img['crowdIndex']
 
         return data_info
 
