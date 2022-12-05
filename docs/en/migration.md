@@ -410,7 +410,7 @@ Three modes are provided in `forward()` of the estimator:
 
 - `mode == 'predict'`: return the prediction result in the input space, used for model inference
 
-- `mode == 'tensor'`: return the model output in the output space, i.e. model forward propagatin only, for model export
+- `mode == 'tensor'`: return the model output in the output space, i.e. model forward propagation only, for model export
 
 Developers should build the components by calling the corresponding registry. Taking the top-down model as an example:
 
@@ -466,7 +466,7 @@ init_cfg=dict(
     checkpoint='PATH/TO/YOUR_MODEL_WEIGHTS.pth'),
 ```
 
-If you want to load a checkopoint to your backbone, you should specify the `prefix`:
+If you want to load a checkpoint to your backbone, you should specify the `prefix`:
 
 ```Python
 init_cfg=dict(
