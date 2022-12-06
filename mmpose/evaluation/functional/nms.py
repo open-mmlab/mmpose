@@ -1,5 +1,6 @@
 # ------------------------------------------------------------------------------
 # Adapted from https://github.com/leoxiaobin/deep-high-resolution-net.pytorch
+# and https://github.com/HRNet/DEKR
 # Original licence: Copyright (c) Microsoft, under the MIT License.
 # ------------------------------------------------------------------------------
 
@@ -252,13 +253,16 @@ def soft_oks_nms(kpts_db: List[dict],
 
 
 def nearby_joints_nms(
-    kpts_db,
-    dist_thr,
-    num_nearby_joints_thr=None,
-    score_per_joint=False,
+    kpts_db: List[dict],
+    dist_thr: float,
+    num_nearby_joints_thr: Optional[int] = None,
+    score_per_joint: bool = False,
     max_dets: int = 30,
 ):
-    """Nearby joints NMS implementations.
+    """Nearby joints NMS implementations. Instances with non-maximum scores
+    will be suppressed if they have too much closed joints with other
+    instances. This function is modified from project
+    `DEKR<https://github.com/HRNet/DEKR/blob/main/lib/core/nms.py>`.
 
     Args:
         kpts_db (list[dict]): keypoints and scores.
