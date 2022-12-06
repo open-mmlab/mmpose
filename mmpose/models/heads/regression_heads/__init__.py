@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from .dekr_head import DEKRHead
 from .dsnt_head import DSNTHead
 from .integral_regression_head import IntegralRegressionHead
 from .regression_head import RegressionHead
@@ -10,5 +9,4 @@ __all__ = [
     'IntegralRegressionHead',
     'DSNTHead',
     'RLEHead',
-    'DEKRHead',
 ]

@@ -2,7 +2,8 @@
 from .base_head import BaseHead
 from .heatmap_heads import (AssociativeEmbeddingHead, CPMHead, HeatmapHead,
                             MSPNHead, SimCCHead, ViPNASHead)
-from .regression_heads import (DEKRHead, DSNTHead, IntegralRegressionHead,
+from .hybrid_heads import DEKRHead
+from .regression_heads import (DSNTHead, IntegralRegressionHead,
                                RegressionHead, RLEHead)
 
 __all__ = [
