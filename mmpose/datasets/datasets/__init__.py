@@ -6,7 +6,8 @@ from .animal import (AnimalATRWDataset, AnimalFlyDataset, AnimalHorse10Dataset,
                      AnimalPoseDataset, AnimalZebraDataset)
 from .body3d import (Body3DH36MDataset, Body3DMviewDirectCampusDataset,
                      Body3DMviewDirectPanopticDataset,
-                     Body3DMviewDirectShelfDataset)
+                     Body3DMviewDirectShelfDataset,
+                     WholeBody3DH3WBDataset)
 from .bottom_up import (BottomUpAicDataset, BottomUpCocoDataset,
                         BottomUpCocoWholeBodyDataset, BottomUpCrowdPoseDataset,
                         BottomUpMhpDataset)

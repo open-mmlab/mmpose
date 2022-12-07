@@ -192,9 +192,11 @@ def main():
     # ---------------------- 配置命令行参数开始 ----------------------
     parser = ArgumentParser()
 
+    # 目标检测模型
     parser.add_argument('det_config', help='Config file for detection')
     parser.add_argument('det_checkpoint', help='Checkpoint file for detection')
 
+    # 2D Keypoints检测模型
     parser.add_argument(
         'pose_detector_config',
         type=str,
@@ -206,6 +208,7 @@ def main():
         default=None,
         help='Checkpoint file for the 1st stage 2D pose detector')
 
+    # 2D转3D模型
     parser.add_argument(
         'pose_lifter_config',
         help='Config file for the 2nd stage pose lifter model')
@@ -256,6 +259,7 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device for inference')
 
+    # coco数据集id=1的标签为person
     parser.add_argument(
         '--det-cat-id',
         type=int,
@@ -273,6 +277,7 @@ def main():
         '--use-oks-tracking', action='store_true', help='Using OKS tracking')
     parser.add_argument(
         '--tracking-thr', type=float, default=0.3, help='Tracking threshold')
+    
     parser.add_argument(
         '--radius',
         type=int,
@@ -288,6 +293,8 @@ def main():
         action='store_true',
         help='Apply a temporal filter to smooth the 2D pose estimation '
         'results. See also --smooth-filter-cfg.')
+
+    # 平滑配置
     parser.add_argument(
         '--smooth-filter-cfg',
         type=str,

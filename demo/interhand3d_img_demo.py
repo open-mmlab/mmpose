@@ -40,14 +40,18 @@ def _transform_interhand_camera_param(interhand_camera_param):
 
 def main():
     parser = ArgumentParser()
+
     parser.add_argument('pose_config', help='Config file for pose network')
     parser.add_argument('pose_checkpoint', help='Checkpoint file')
+
     parser.add_argument('--img-root', type=str, default='', help='Image root')
     parser.add_argument(
         '--json-file',
         type=str,
         default='',
         help='Json file containing image info.')
+
+    # 需要弄清楚pixel space和camera space
     parser.add_argument(
         '--camera-param-file',
         type=str,
@@ -55,6 +59,7 @@ def main():
         help='Camera parameter file for converting 3D pose predictions from '
         ' the pixel space to camera space. If None, keypoints in pixel space'
         'will be visualized')
+
     parser.add_argument(
         '--gt-joints-file',
         type=str,
@@ -102,6 +107,7 @@ def main():
     args = parser.parse_args()
     assert args.show or (args.out_img_root != '')
 
+    # 构建coco数据集
     coco = COCO(args.json_file)
 
     # build the pose model from a config file and a checkpoint file
