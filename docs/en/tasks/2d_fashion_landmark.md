@@ -115,7 +115,7 @@ mmpose
             │-- deepfashion2_skirt_train.json
             │-- deepfashion2_sling_dress_train.json
             │-- ...
-            │-- img
+            │-- image
             │   │-- 000001.jpg
             │   │-- 000002.jpg
             │   │-- 000003.jpg
@@ -128,7 +128,7 @@ mmpose
             │-- deepfashion2_trousers_validation.json
             │-- deepfashion2_skirt_validation.json
             │-- ...
-            │-- img
+            │-- image
             │   │-- 000001.jpg
             │   │-- 000002.jpg
             │   │-- 000003.jpg
