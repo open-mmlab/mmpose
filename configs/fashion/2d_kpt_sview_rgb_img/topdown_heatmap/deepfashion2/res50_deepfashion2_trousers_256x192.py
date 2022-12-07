@@ -103,11 +103,9 @@ data_cfg = dict(
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
-    use_gt_bbox=False,
+    use_gt_bbox=True,
     det_bbox_thr=0.0,
-    bbox_file='data/deepfashion2/validation/detection_results/'
-    'deepfashion2_validation_detections_AP_H_57_trousers.json',
-)
+    bbox_file=None)
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
