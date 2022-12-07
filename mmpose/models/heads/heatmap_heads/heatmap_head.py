@@ -84,7 +84,8 @@ class HeatmapHead(BaseHead):
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
-                 init_cfg: OptConfigType = None):
+                 init_cfg: OptConfigType = None,
+                 upsample=0, ):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
@@ -101,6 +102,7 @@ class HeatmapHead(BaseHead):
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
+        self.upsample = upsample
 
         # Get model input channels according to feature
         in_channels = self._get_in_channels()

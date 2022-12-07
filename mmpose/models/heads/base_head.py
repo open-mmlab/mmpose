@@ -11,6 +11,7 @@ from torch import Tensor
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (Features, InstanceList, OptConfigType,
                                  OptSampleList, Predictions)
+from mmpose.models.utils.ops import resize
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
@@ -79,6 +80,13 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         elif self.input_transform == 'select':
             if isinstance(self.input_index, int):
                 inputs = feats[self.input_index]
+                if self.upsample > 0:
+                    inputs = resize(
+                        input=F.relu(inputs),
+                        scale_factor=self.upsample,
+                        mode='bilinear',
+                        align_corners=self.align_corners
+                        )
             else:
                 inputs = tuple(feats[i] for i in self.input_index)
         else:
