@@ -164,6 +164,8 @@ class BottomupRandomAffine(BaseTransform):
             (0.75, 1.5)
         scale_prob (float): Probability of applying random resizing. Defaults
             to 1.0
+        scale_type (str): wrt ``long`` or ``short`` length of the image.
+            Defaults to ``short``
         rotate_factor (float): Randomly rotate the bbox in
             :math:`[-rotate_factor, rotate_factor]` in degrees. Defaults
             to 40.0
@@ -179,6 +181,7 @@ class BottomupRandomAffine(BaseTransform):
                  shift_prob: float = 1.,
                  scale_factor: Tuple[float, float] = (0.75, 1.5),
                  scale_prob: float = 1.,
+                 scale_type: str = 'short',
                  rotate_factor: float = 30.,
                  rotate_prob: float = 1,
                  use_udp: bool = False) -> None:
@@ -189,6 +192,7 @@ class BottomupRandomAffine(BaseTransform):
         self.shift_prob = shift_prob
         self.scale_factor = scale_factor
         self.scale_prob = scale_prob
+        self.scale_type = scale_type
         self.rotate_factor = rotate_factor
         self.rotate_prob = rotate_prob
         self.use_udp = use_udp
@@ -200,8 +204,7 @@ class BottomupRandomAffine(BaseTransform):
         """Sample from a truncated normal distribution."""
         return truncnorm.rvs(low, high, size=size).astype(np.float32)
 
-    @staticmethod
-    def _fix_aspect_ratio(scale: np.ndarray, aspect_ratio: float):
+    def _fix_aspect_ratio(self, scale: np.ndarray, aspect_ratio: float):
         """Extend the scale to match the given aspect ratio.
 
         Args:
@@ -213,10 +216,19 @@ class BottomupRandomAffine(BaseTransform):
         """
         w, h = scale
         if w > h * aspect_ratio:
-            _w, _h = w, w / aspect_ratio
+            if self.scale_type == 'long':
+                _w, _h = w, w / aspect_ratio
+            elif self.scale_type == 'short':
+                _w, _h = h * aspect_ratio, h
+            else:
+                raise ValueError(f'Unknown scale type: {self.scale_type}')
         else:
-            _w, _h = h * aspect_ratio, h
-
+            if self.scale_type == 'short':
+                _w, _h = w, w / aspect_ratio
+            elif self.scale_type == 'long':
+                _w, _h = h * aspect_ratio, h
+            else:
+                raise ValueError(f'Unknown scale type: {self.scale_type}')
         return np.array([_w, _h], dtype=scale.dtype)
 
     @cache_randomness
@@ -238,8 +250,8 @@ class BottomupRandomAffine(BaseTransform):
         # get scale
         if np.random.rand() < self.scale_prob:
             scale_min, scale_max = self.scale_factor
-            scale = scale_min + (scale_max -
-                                 scale_min) * self._truncnorm(size=(1, ))
+            scale = scale_min + (scale_max - scale_min) * (
+                self._truncnorm(size=(1, )) + 1) / 2
         else:
             scale = np.ones(1, dtype=np.float32)
 
