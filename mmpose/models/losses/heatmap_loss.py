@@ -50,7 +50,8 @@ class KeypointMSELoss(nn.Module):
             output (Tensor): The output heatmaps with shape [B, K, H, W]
             target (Tensor): The target heatmaps with shape [B, K, H, W]
             target_weights (Tensor, optional): The target weights of differet
-                keypoints, with shape [B, K].
+                keypoints, with shape [B, K] (keypoint-wise) or
+                [B, K, H, W] (pixel-wise).
             mask (Tensor, optional): The masks of valid heatmap pixels in
                 shape [B, K, H, W] or [B, 1, H, W]. If ``None``, no mask will
                 be applied. Defaults to ``None``
@@ -89,8 +90,8 @@ class KeypointMSELoss(nn.Module):
         # Mask by target weights (keypoint-wise mask)
         if target_weights is not None:
             # check target weight has matching shape with target
-            assert (target_weights.ndim == 2
-                    and target_weights.shape[:2] == target.shape[:2]), (
+            assert (target_weights.ndim in (2, 4) and target_weights.shape
+                    == target.shape[:target_weights.ndim]), (
                         'target_weights and target have unmatched shapes '
                         f'{target_weights.shape} v.s. {target.shape}')
 

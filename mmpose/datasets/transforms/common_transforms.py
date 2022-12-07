@@ -96,6 +96,7 @@ class RandomFlip(BaseTransform):
         - img
         - img_shape
         - flip_indices
+        - input_size (optional)
         - bbox (optional)
         - bbox_center (optional)
         - keypoints (optional)
@@ -201,7 +202,7 @@ class RandomFlip(BaseTransform):
             results['flip'] = True
             results['flip_direction'] = flip_dir
 
-            h, w = results['img_shape']
+            h, w = results.get('input_size', results['img_shape'])
             # flip image and mask
             if isinstance(results['img'], list):
                 results['img'] = [

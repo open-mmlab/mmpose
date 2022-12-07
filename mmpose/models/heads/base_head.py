@@ -59,8 +59,8 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             else:
                 in_channels = [feat_channels[i] for i in self.input_index]
         else:
-            raise (ValueError,
-                   f'Invalid input transform mode "{self.input_transform}"')
+            raise ValueError(
+                f'Invalid input transform mode "{self.input_transform}"')
 
         return in_channels
 

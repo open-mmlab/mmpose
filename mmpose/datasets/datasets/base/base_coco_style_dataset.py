@@ -150,7 +150,7 @@ class BaseCocoStyleDataset(BaseDataset):
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [
             'upper_body_ids', 'lower_body_ids', 'flip_pairs',
-            'dataset_keypoint_weights', 'flip_indices'
+            'dataset_keypoint_weights', 'flip_indices', 'skeleton_links'
         ]
 
         for key in metainfo_keys:
@@ -330,7 +330,7 @@ class BaseCocoStyleDataset(BaseDataset):
             invalid_segs = []
             for data_info_invalid in filterfalse(self._is_valid_instance,
                                                  data_infos):
-                if 'segementation' in data_info_invalid:
+                if 'segmentation' in data_info_invalid:
                     invalid_segs.append(data_info_invalid['segmentation'])
             data_info_bu['invalid_segs'] = invalid_segs
 
