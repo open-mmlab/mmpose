@@ -179,6 +179,7 @@ MMPose 也提供了其他更详细的教程:
 - [x] [COCO](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#coco-eccv-2014) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
 - [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cmu-panoptic-iccv-2015) (ICCV'2015)
 - [x] [DeepFashion](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#deepfashion-cvpr-2016) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
+- [x] [DeepFashion2](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#deepfashion2-cvpr-2019) \[[homepage](https://github.com/switchablenorms/DeepFashion2)\] (CVPR'2019)
 - [x] [300W](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#300w-imavis-2016) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
 - [x] [RHD](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#rhd-iccv-2017) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
 - [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cmu-panoptic-iccv-2015) \[[homepage](http://domedb.perception.cs.cmu.edu/)\] (ICCV'2015)
