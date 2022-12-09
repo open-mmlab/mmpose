@@ -39,9 +39,9 @@ class SimCCLabel(BaseKeypointCodec):
     Args:
         input_size (tuple): Input image size in [w, h]
         smoothing_type (str): The SimCC label smoothing strategy. Options are
-        ``'gaussian'`` and ``'standard'``. Defaults to ``'gaussian'``
-        sigma (float, int, tuple): The sigma value in the Gaussian SimCC label.
-        Defaults to 6.0
+            ``'gaussian'`` and ``'standard'``. Defaults to ``'gaussian'``
+        sigma (float | int | tuple): The sigma value in the Gaussian SimCC
+            label. Defaults to 6.0
         simcc_split_ratio (float): The ratio of the label size to the input
             size. For example, if the input width is ``w``, the x label size
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
