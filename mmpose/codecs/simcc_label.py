@@ -16,11 +16,13 @@ class SimCCLabel(BaseKeypointCodec):
     See the paper: `SimCC: a Simple Coordinate Classification Perspective for
     Human Pose Estimation`_ by Li et al (2022) for more details.
     Old name: SimDR
+
     Note:
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
         - image size: [w, h]
+
     Encoded:
         - keypoint_x_labels (np.ndarray): The generated SimCC label for x-axis.
             The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
@@ -31,6 +33,7 @@ class SimCCLabel(BaseKeypointCodec):
             and (N, K) if `smoothing_type=='standard'``, where
             :math:`Wy=h*simcc_split_ratio`
         - keypoint_weights (np.ndarray): The target weights in shape (N, K)
+
     Args:
         input_size (tuple): Input image size in [w, h]
         smoothing_type (str): The SimCC label smoothing strategy. Options are
@@ -42,6 +45,7 @@ class SimCCLabel(BaseKeypointCodec):
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
         label_smooth_weight (float): Label Smoothing weight. Defaults to 0.0
         normalize (bool): Whether to normalize the heatmaps. Defaults to True.
+
     .. _`SimCC: a Simple Coordinate Classification Perspective for Human Pose
     Estimation`: https://arxiv.org/abs/2107.03332
     """

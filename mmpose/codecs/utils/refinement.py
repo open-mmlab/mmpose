@@ -10,14 +10,17 @@ def refine_keypoints(keypoints: np.ndarray,
                      heatmaps: np.ndarray) -> np.ndarray:
     """Refine keypoint predictions by moving from the maximum towards the
     second maximum by 0.25 pixel. The operation is in-place.
+
     Note:
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
         - heatmap size: [W, H]
+
     Args:
         keypoints (np.ndarray): The keypoint coordinates in shape (N, K, D)
         heatmaps (np.ndarray): The heatmaps in shape (K, H, W)
+
     Returns:
         np.ndarray: Refine keypoint coordinates in shape (N, K, D)
     """
@@ -46,18 +49,22 @@ def refine_keypoints_dark(keypoints: np.ndarray, heatmaps: np.ndarray,
                           blur_kernel_size: int) -> np.ndarray:
     """Refine keypoint predictions using distribution aware coordinate
     decoding. See `Dark Pose`_ for details. The operation is in-place.
+
     Note:
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
         - heatmap size: [W, H]
+
     Args:
         keypoints (np.ndarray): The keypoint coordinates in shape (N, K, D)
         heatmaps (np.ndarray): The heatmaps in shape (K, H, W)
         blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
             modulation
+
     Returns:
         np.ndarray: Refine keypoint coordinates in shape (N, K, D)
+
     .. _`Dark Pose`: https://arxiv.org/abs/1910.06278
     """
     N, K = keypoints.shape[:2]
@@ -97,18 +104,22 @@ def refine_keypoints_dark_udp(keypoints: np.ndarray, heatmaps: np.ndarray,
                               blur_kernel_size: int) -> np.ndarray:
     """Refine keypoint predictions using distribution aware coordinate decoding
     for UDP. See `UDP`_ for details. The operation is in-place.
+
     Note:
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
         - heatmap size: [W, H]
+
     Args:
         keypoints (np.ndarray): The keypoint coordinates in shape (N, K, D)
         heatmaps (np.ndarray): The heatmaps in shape (K, H, W)
         blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
             modulation
+
     Returns:
         np.ndarray: Refine keypoint coordinates in shape (N, K, D)
+
     .. _`UDP`: https://arxiv.org/abs/1911.07524
     """
     N, K = keypoints.shape[:2]
@@ -156,17 +167,21 @@ def refine_simcc_dark(keypoints: np.ndarray, simcc: np.ndarray,
     """SimCC version. Refine keypoint predictions using distribution aware
     coordinate decoding for UDP. See `UDP`_ for details. The operation is in-
     place.
+
     Note:
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
+
     Args:
         keypoints (np.ndarray): The keypoint coordinates in shape (N, K, D)
         simcc (np.ndarray): The heatmaps in shape (N, K, Wx)
         blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
             modulation
+
     Returns:
         np.ndarray: Refine keypoint coordinates in shape (N, K, D)
+
     .. _`UDP`: https://arxiv.org/abs/1911.07524
     """
     N = simcc.shape[0]
