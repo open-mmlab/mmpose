@@ -40,6 +40,25 @@ class TestSimCCLabel(TestCase):
                     sigma=5.0,
                     simcc_split_ratio=3.0),
             ),
+            (
+                'simcc dark',
+                dict(
+                    type='SimCCLabel',
+                    input_size=(192, 256),
+                    smoothing_type='gaussian',
+                    sigma=6.0,
+                    simcc_split_ratio=2.0,
+                    use_dark=True),
+            ),
+            (
+                'simcc separated sigmas',
+                dict(
+                    type='SimCCLabel',
+                    input_size=(192, 256),
+                    smoothing_type='gaussian',
+                    sigma=(4.9, 5.66),
+                    simcc_split_ratio=2.0),
+            ),
         ]
 
         # The bbox is usually padded so the keypoint will not be near the
