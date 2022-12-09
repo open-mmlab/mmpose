@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from itertools import product
 from typing import Tuple
 
 import cv2
@@ -11,17 +12,14 @@ from torch import Tensor
 def get_simcc_maximum(simcc_x: np.ndarray,
                       simcc_y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Get maximum response location and value from simcc representations.
-
     Note:
         instance number: N
         num_keypoints: K
         heatmap height: H
         heatmap width: W
-
     Args:
         simcc_x (np.ndarray): x-axis SimCC in shape (K, Wx) or (N, K, Wx)
         simcc_y (np.ndarray): y-axis SimCC in shape (K, Wy) or (N, K, Wy)
-
     Returns:
         tuple:
         - locs (np.ndarray): locations of maximum heatmap responses in shape
@@ -66,16 +64,13 @@ def get_simcc_maximum(simcc_x: np.ndarray,
 
 def get_heatmap_maximum(heatmaps: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Get maximum response location and value from heatmaps.
-
     Note:
         batch_size: B
         num_keypoints: K
         heatmap height: H
         heatmap width: W
-
     Args:
         heatmaps (np.ndarray): Heatmaps in shape (K, H, W) or (B, K, H, W)
-
     Returns:
         tuple:
         - locs (np.ndarray): locations of maximum heatmap responses in shape
@@ -111,18 +106,15 @@ def get_heatmap_maximum(heatmaps: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
 def gaussian_blur(heatmaps: np.ndarray, kernel: int = 11) -> np.ndarray:
     """Modulate heatmap distribution with Gaussian.
-
     Note:
         - num_keypoints: K
         - heatmap height: H
         - heatmap width: W
-
     Args:
         heatmaps (np.ndarray[K, H, W]): model predicted heatmaps.
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
-
     Returns:
         np.ndarray ([K, H, W]): Modulated heatmap distribution.
     """
@@ -141,6 +133,34 @@ def gaussian_blur(heatmaps: np.ndarray, kernel: int = 11) -> np.ndarray:
     return heatmaps
 
 
+def gaussian_blur1d(simcc: np.ndarray, kernel: int = 11) -> np.ndarray:
+    """Modulate simcc distribution with Gaussian.
+    Note:
+        - num_keypoints: K
+        - simcc length: Wx
+    Args:
+        simcc (np.ndarray[K, Wx]): model predicted simcc.
+        kernel (int): Gaussian kernel size (K) for modulation, which should
+            match the simcc gaussian sigma when training.
+            K=17 for sigma=3 and k=11 for sigma=2.
+    Returns:
+        np.ndarray ([K, Wx]): Modulated simcc distribution.
+    """
+    assert kernel % 2 == 1
+
+    border = (kernel - 1) // 2
+    N, K, Wx = simcc.shape
+
+    for n, k in product(range(N), range(K)):
+        origin_max = np.max(simcc[n, k])
+        dr = np.zeros((1, Wx + 2 * border), dtype=np.float32)
+        dr[0, border:-border] = simcc[n, k].copy()
+        dr = cv2.GaussianBlur(dr, (kernel, 1), 0)
+        simcc[n, k] = dr[0, border:-border].copy()
+        simcc[n, k] *= origin_max / np.max(simcc[n, k])
+    return simcc
+
+
 def batch_heatmap_nms(batch_heatmaps: Tensor, kernel_size: int = 5):
     """Apply NMS on a batch of heatmaps.
 
@@ -148,7 +168,6 @@ def batch_heatmap_nms(batch_heatmaps: Tensor, kernel_size: int = 5):
         batch_heatmaps (Tensor): batch heatmaps in shape (B, K, H, W)
         kernel_size (int): The kernel size of the NMS which should be
             a odd integer. Defaults to 5
-
     Returns:
         Tensor: The batch heatmaps after NMS.
     """
