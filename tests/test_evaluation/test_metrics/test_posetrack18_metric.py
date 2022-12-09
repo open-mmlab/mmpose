@@ -41,7 +41,7 @@ class TestPoseTrack18Metric(TestCase):
             'posetrack18/Hip AP': 100.0,
             'posetrack18/Knee AP': 100.0,
             'posetrack18/Ankl AP': 100.0,
-            'posetrack18/Total AP': 100.0,
+            'posetrack18/AP': 100.0,
         }
 
     def _convert_ann_to_topdown_batch_data(self):

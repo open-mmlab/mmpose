@@ -18,7 +18,7 @@ from ..functional import oks_nms, soft_oks_nms
 
 @METRICS.register_module()
 class CocoMetric(BaseMetric):
-    """COCO evaluation metric.
+    """COCO pose estimation task evaluation metric.
 
     Evaluate AR, AP, and mAP for keypoint detection tasks. Support COCO
     dataset and other datasets in COCO format. Please refer to
@@ -32,7 +32,7 @@ class CocoMetric(BaseMetric):
         use_area (bool): Whether to use ``'area'`` message in the annotations.
             If the ground truth annotations (e.g. CrowdPose, AIC) do not have
             the field ``'area'``, please set ``use_area=False``.
-            Default: ``True``
+            Defaults to ``True``
         iou_type (str): The same parameter as `iouType` in
             :class:`xtcocotools.COCOeval`, which can be ``'keypoints'``, or
             ``'keypoints_crowd'`` (used in CrowdPose dataset).
@@ -72,10 +72,9 @@ class CocoMetric(BaseMetric):
             test submission when the ground truth annotations are absent. If
             set to ``True``, ``outfile_prefix`` should specify the path to
             store the output results. Defaults to ``False``
-        outfile_prefix (str, optional): The prefix of json files. It includes
+        outfile_prefix (str | None): The prefix of json files. It includes
             the file path and the prefix of filename, e.g., ``'a/b/prefix'``.
-            If not specified, a temp file will be created.
-            Defaults to ``None``
+            If not specified, a temp file will be created. Defaults to ``None``
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
             ``'gpu'``. Defaults to ``'cpu'``
