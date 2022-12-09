@@ -12,6 +12,7 @@ def refine_keypoints(keypoints: np.ndarray,
     second maximum by 0.25 pixel. The operation is in-place.
 
     Note:
+
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
@@ -51,6 +52,7 @@ def refine_keypoints_dark(keypoints: np.ndarray, heatmaps: np.ndarray,
     decoding. See `Dark Pose`_ for details. The operation is in-place.
 
     Note:
+
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
@@ -106,6 +108,7 @@ def refine_keypoints_dark_udp(keypoints: np.ndarray, heatmaps: np.ndarray,
     for UDP. See `UDP`_ for details. The operation is in-place.
 
     Note:
+
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
@@ -169,6 +172,7 @@ def refine_simcc_dark(keypoints: np.ndarray, simcc: np.ndarray,
     place.
 
     Note:
+
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
