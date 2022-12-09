@@ -18,12 +18,14 @@ class SimCCLabel(BaseKeypointCodec):
     Old name: SimDR
 
     Note:
+
         - instance number: N
         - keypoint number: K
         - keypoint dimension: D
         - image size: [w, h]
 
     Encoded:
+
         - keypoint_x_labels (np.ndarray): The generated SimCC label for x-axis.
             The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
             and (N, K) if `smoothing_type=='standard'``, where
@@ -90,10 +92,12 @@ class SimCCLabel(BaseKeypointCodec):
                keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encoding keypoints into SimCC labels. Note that the original
         keypoint coordinates should be in the input image space.
+
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
+
         Returns:
             dict:
             - keypoint_x_labels (np.ndarray): The generated SimCC label for
@@ -135,11 +139,13 @@ class SimCCLabel(BaseKeypointCodec):
                simcc_y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from SimCC representations. The decoded
         coordinates are in the input image space.
+
         Args:
             encoded (Tuple[np.ndarray, np.ndarray]): SimCC labels for x-axis
                 and y-axis
             simcc_x (np.ndarray): SimCC label for x-axis
             simcc_y (np.ndarray): SimCC label for y-axis
+
         Returns:
             tuple:
             - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
