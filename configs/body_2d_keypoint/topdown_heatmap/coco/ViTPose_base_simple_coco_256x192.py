@@ -9,7 +9,11 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 custom_imports = dict(imports=['mmpose.engine.optim_wrapper.layer_decay_optim_wrapper'], allow_failed_imports=False)
 
 optim_wrapper = dict(
-    optimizer=dict(type="AdamW", lr=5e-4, betas=(0.9, 0.999), weight_decay=0.1),
+    optimizer=dict(
+        type="AdamW", 
+        lr=5e-4, 
+        betas=(0.9, 0.999), 
+        weight_decay=0.1),
     paramwise_cfg=dict(
         num_layers=12,
         layer_decay_rate=0.75,
@@ -63,16 +67,20 @@ model = dict(
         patch_size=16,
         qkv_bias=True,
         drop_path_rate=0.3,
-        output_cls_token=False
+        with_cls_token=False,
+        output_cls_token=False,
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='pretrained/mae_pretrain_vit_base.pth'),
     ),
     head=dict(
         type='HeatmapHead',
         in_channels=768,
+        out_channels=17,
         deconv_out_channels=[],
         deconv_kernel_sizes=[],
         conv_out_channels=[17],
         conv_kernel_sizes=[3],
-        out_channels=17,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
         upsample=4
@@ -84,7 +92,7 @@ model = dict(
     ))
 
 # base dataset settings
-data_root = 'data/coco'
+data_root = 'data/coco/'
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 
@@ -142,5 +150,5 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + '/annotations/person_keypoints_val2017.json')
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator

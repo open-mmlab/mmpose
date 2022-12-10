@@ -68,17 +68,20 @@ model = dict(
         patch_size=16,
         qkv_bias=True,
         drop_path_rate=0.55,
-        output_cls_token=False
+        with_cls_token=False,
+        output_cls_token=False,
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='pretrained/mae_pretrain_vit_huge.pth'),
     ),
     head=dict(
         type='HeatmapHead',
         in_channels=1280,
+        out_channels=17,
         deconv_out_channels=(256, 256),
         deconv_kernel_sizes=(4, 4),
-        out_channels=17,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        decoder=codec
-    ),
+        decoder=codec),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
@@ -86,7 +89,7 @@ model = dict(
     ))
 
 # base dataset settings
-data_root = 'data/coco'
+data_root = 'data/coco/'
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 
@@ -144,5 +147,5 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + '/annotations/person_keypoints_val2017.json')
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator
