@@ -85,8 +85,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
                         input=F.relu(inputs),
                         scale_factor=self.upsample,
                         mode='bilinear',
-                        align_corners=self.align_corners
-                        )
+                        align_corners=self.align_corners)
             else:
                 inputs = tuple(feats[i] for i in self.input_index)
         else:

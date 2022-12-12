@@ -85,7 +85,8 @@ class HeatmapHead(BaseHead):
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None,
-                 upsample=0, ):
+                 upsample=0,
+    ):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
