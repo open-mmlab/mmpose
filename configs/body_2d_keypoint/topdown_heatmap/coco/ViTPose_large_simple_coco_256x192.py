@@ -6,11 +6,13 @@ _base_ = [
 train_cfg = dict(max_epochs=210, val_interval=10)
 
 # optimizer
-custom_imports = dict(imports=['mmpose.engine.optim_wrapper.layer_decay_optim_wrapper'], allow_failed_imports=False)
+custom_imports = dict(
+    imports=['mmpose.engine.optim_wrapper.layer_decay_optim_wrapper'],
+    allow_failed_imports=False)
 
 optim_wrapper = dict(
     optimizer=dict(
-        type="AdamW",
+        type='AdamW',
         lr=5e-4,
         betas=(0.9, 0.999),
         weight_decay=0.1),
@@ -18,13 +20,13 @@ optim_wrapper = dict(
         num_layers=24,
         layer_decay_rate=0.8,
         custom_keys={
-            "bias": dict(decay_multi=0.0),
-            "pos_embed": dict(decay_mult=0.0),
-            "relative_position_bias_table": dict(decay_mult=0.0),
-            "norm": dict(decay_mult=0.0),
+            'bias': dict(decay_multi=0.0),
+            'pos_embed': dict(decay_mult=0.0),
+            'relative_position_bias_table': dict(decay_mult=0.0),
+            'norm': dict(decay_mult=0.0),
         },
     ),
-    constructor="LayerDecayOptimWrapperConstructor",
+    constructor='LayerDecayOptimWrapperConstructor',
     clip_grad=dict(max_norm=1., norm_type=2),
 )
 
@@ -46,7 +48,11 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=1))
+default_hooks = dict(
+    checkpoint=dict(
+        save_best='coco/AP',
+        rule='greater',
+        max_keep_ckpts=1))
 
 # codec settings
 codec = dict(
