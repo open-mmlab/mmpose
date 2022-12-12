@@ -8,10 +8,10 @@ from mmengine.model import BaseModule
 from mmengine.structures import InstanceData
 from torch import Tensor
 
+from mmpose.models.utils.ops import resize
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (Features, InstanceList, OptConfigType,
                                  OptSampleList, Predictions)
-from mmpose.models.utils.ops import resize
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
