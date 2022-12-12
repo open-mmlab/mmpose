@@ -20,7 +20,7 @@ Models:
       EPE: 10.2
       PCK@0.2: 0.988
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_short_sleeved_shirt_256x192-21e1c5da_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_long_sleeved_shirt_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -34,7 +34,7 @@ Models:
       EPE: 16.5
       PCK@0.2: 0.973
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_long_sleeved_shirt_256x192-8679e7e3_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_short_sleeved_outwear_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -48,7 +48,7 @@ Models:
       EPE: 24.0
       PCK@0.2: 0.966
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_short_sleeved_outwear_256x192-a04c1298_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_long_sleeved_outwear_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -62,7 +62,7 @@ Models:
       EPE: 18.1
       PCK@0.2: 0.987
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_long_sleeved_outwear_256x192-31fbaecf_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_vest_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -76,7 +76,7 @@ Models:
       EPE: 12.7
       PCK@0.2: 0.981
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_vest_256x192-4c48d05c_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_sling_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -90,7 +90,7 @@ Models:
       EPE: 21.6
       PCK@0.2: 0.94
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_sling_256x192-ebb2b736_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_shorts_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -104,7 +104,7 @@ Models:
       EPE: 12.4
       PCK@0.2: 0.975
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_shorts_256x192-9ab23592_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_trousers_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -118,7 +118,7 @@ Models:
       EPE: 14.8
       PCK@0.2: 0.973
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_trousers_256x192-3e632257_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_skirt_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -132,7 +132,7 @@ Models:
       EPE: 16.6
       PCK@0.2: 0.952
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_skirt_256x192-09573469_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_short_sleeved_dress_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -146,7 +146,7 @@ Models:
       EPE: 15.6
       PCK@0.2: 0.98
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_short_sleeved_dress_256x192-1345b07a_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_long_sleeved_dress_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -160,7 +160,7 @@ Models:
       EPE: 20.1
       PCK@0.2: 0.976
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_long_sleeved_dress_256x192-87bac74e_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_vest_dress_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -174,7 +174,7 @@ Models:
       EPE: 16.0
       PCK@0.2: 0.98
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_vest_dress_256x192-fb3fbd6f_20221208.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/res50_deepfashion2_sling_dress_256x192.py
   In Collection: SimpleBaseline2D
   Metadata:
@@ -188,4 +188,4 @@ Models:
       EPE: 19.5
       PCK@0.2: 0.967
     Task: Fashion 2D Keypoint
-  Weights: https://drive.google.com/drive/folders/1bQSp-agqlgC1IZXR-pNnBJezAWZzPKTi?usp=share_link
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion2_sling_dress_256x192-8ebae0eb_20221208.pth
