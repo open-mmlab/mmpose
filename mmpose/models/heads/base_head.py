@@ -80,7 +80,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         elif self.input_transform == 'select':
             if isinstance(self.input_index, int):
                 inputs = feats[self.input_index]
-                if self.upsample > 0:
+                if hasattr(self, 'upsample') and self.upsample > 0:
                     inputs = resize(
                         input=F.relu(inputs),
                         scale_factor=self.upsample,
