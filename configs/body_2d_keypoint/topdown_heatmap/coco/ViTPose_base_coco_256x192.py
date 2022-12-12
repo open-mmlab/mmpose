@@ -1,6 +1,4 @@
-_base_ = [
-    '../../../_base_/default_runtime.py'
-]
+_base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
 train_cfg = dict(max_epochs=210, val_interval=10)
@@ -12,10 +10,7 @@ custom_imports = dict(
 
 optim_wrapper = dict(
     optimizer=dict(
-        type='AdamW',
-        lr=5e-4,
-        betas=(0.9, 0.999),
-        weight_decay=0.1),
+        type='AdamW', lr=5e-4, betas=(0.9, 0.999), weight_decay=0.1),
     paramwise_cfg=dict(
         num_layers=12,
         layer_decay_rate=0.75,
@@ -49,10 +44,7 @@ auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(
-        save_best='coco/AP',
-        rule='greater',
-        max_keep_ckpts=1))
+    checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=1))
 
 # codec settings
 codec = dict(
@@ -86,8 +78,7 @@ model = dict(
         deconv_out_channels=(256, 256),
         deconv_kernel_sizes=(4, 4),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        decoder=codec
-    ),
+        decoder=codec),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
