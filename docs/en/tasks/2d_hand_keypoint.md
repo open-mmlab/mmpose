@@ -184,7 +184,7 @@ year = {2020}
 </details>
 
 For [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/), please download from [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/).
-Please download the annotation files from [annotations](https://drive.google.com/drive/folders/1pWXhdfaka-J0fSAze0MsajN0VpZ8e8tO).
+Please download the annotation files from [annotations](https://download.openmmlab.com/mmpose/datasets/interhand2.6m_annotations.zip).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```text
