@@ -39,9 +39,9 @@ def process_face_det_results(face_det_results):
     return person_results
 
 
-def infer_and_visualize_image(args, img_path, pose_estimator, visualizer,
-                              show_interval):
-    """Predict the keypoints of one image, and visualize the results."""
+def process_one_image(args, img_path, pose_estimator, visualizer,
+                      show_interval):
+    """Visualize predicted keypoints (and heatmaps) of one image."""
 
     # predict bbox
     image = face_recognition.load_image_file(img_path)
@@ -56,8 +56,7 @@ def infer_and_visualize_image(args, img_path, pose_estimator, visualizer,
     data_samples = merge_data_samples(pose_results)
 
     # show the results
-    img = mmcv.imread(img_path)
-    img = mmcv.imconvert(img, 'bgr', 'rgb')
+    img = mmcv.imread(img_path, channel_order='rgb')
 
     out_file = None
     if args.output_root:
@@ -166,12 +165,9 @@ def main():
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':
-        pred_instances = infer_and_visualize_image(
+        pred_instances = process_one_image(
             args, args.input, pose_estimator, visualizer, show_interval=0)
-        if args.save_predictions:
-            with open(args.pred_save_path, 'w') as f:
-                json.dump(split_instances(pred_instances), f, indent='\t')
-            print(f'predictions have been saved at {args.pred_save_path}')
+        pred_instances_list = split_instances(pred_instances)
 
     elif input_type == 'video':
         tmp_folder = tempfile.TemporaryDirectory()
@@ -183,7 +179,7 @@ def main():
         pred_instances_list = []
 
         for frame_id, img_fname in enumerate(os.listdir(tmp_folder.name)):
-            pred_instances = infer_and_visualize_image(
+            pred_instances = process_one_image(
                 args,
                 f'{tmp_folder.name}/{img_fname}',
                 pose_estimator,
@@ -204,14 +200,20 @@ def main():
                 show_progress=False)
         tmp_folder.cleanup()
 
-        if args.save_predictions:
-            with open(args.pred_save_path, 'w') as f:
-                json.dump(pred_instances_list, f, indent='\t')
-            print(f'predictions have been saved at {args.pred_save_path}')
-
     else:
+        args.save_predictions = False
         raise ValueError(
             f'file {os.path.basename(args.input)} has invalid format.')
+
+    if args.save_predictions:
+        with open(args.pred_save_path, 'w') as f:
+            json.dump(
+                dict(
+                    metainfo=pose_estimator.dataset_meta,
+                    instances=pred_instances_list),
+                f,
+                indent='\t')
+        print(f'predictions have been saved at {args.pred_save_path}')
 
 
 if __name__ == '__main__':
