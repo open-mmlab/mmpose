@@ -37,14 +37,14 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
     bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
                                    pred_instance.scores > args.bbox_thr)]
     bboxes = bboxes[nms(bboxes, args.nms_thr), :4]
+
     # predict keypoints
     register_mmpose_modules()
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
     data_samples = merge_data_samples(pose_results)
 
     # show the results
-    img = mmcv.imread(img_path)
-    img = mmcv.imconvert(img, 'bgr', 'rgb')
+    img = mmcv.imread(img_path, channel_order='rgb')
 
     out_file = None
     if args.output_root:
@@ -176,10 +176,7 @@ def main():
             pose_estimator,
             visualizer,
             show_interval=0)
-        if args.save_predictions:
-            with open(args.pred_save_path, 'w') as f:
-                json.dump(split_instances(pred_instances), f, indent='\t')
-            print(f'predictions have been saved at {args.pred_save_path}')
+        pred_instances_list = split_instances(pred_instances)
 
     elif input_type == 'video':
         tmp_folder = tempfile.TemporaryDirectory()
@@ -213,14 +210,20 @@ def main():
                 show_progress=False)
         tmp_folder.cleanup()
 
-        if args.save_predictions:
-            with open(args.pred_save_path, 'w') as f:
-                json.dump(pred_instances_list, f, indent='\t')
-            print(f'predictions have been saved at {args.pred_save_path}')
-
     else:
+        args.save_predictions = False
         raise ValueError(
             f'file {os.path.basename(args.input)} has invalid format.')
+
+    if args.save_predictions:
+        with open(args.pred_save_path, 'w') as f:
+            json.dump(
+                dict(
+                    meta_info=pose_estimator.dataset_meta,
+                    instance_info=pred_instances_list),
+                f,
+                indent='\t')
+        print(f'predictions have been saved at {args.pred_save_path}')
 
 
 if __name__ == '__main__':
