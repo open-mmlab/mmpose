@@ -209,8 +209,8 @@ def main():
         with open(args.pred_save_path, 'w') as f:
             json.dump(
                 dict(
-                    metainfo=pose_estimator.dataset_meta,
-                    instances=pred_instances_list),
+                    meta_info=pose_estimator.dataset_meta,
+                    instance_info=pred_instances_list),
                 f,
                 indent='\t')
         print(f'predictions have been saved at {args.pred_save_path}')
