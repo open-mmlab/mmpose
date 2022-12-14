@@ -174,7 +174,7 @@ class PoseLocalVisualizer(Visualizer):
             return self.get_image()
 
         if 'labels' in instances and self.text_color is not None:
-            classes = self.dataset_meta.get('CLASSES', None)
+            classes = self.dataset_meta.get('classes', None)
             labels = instances.labels
 
             positions = bboxes[:, :2]
