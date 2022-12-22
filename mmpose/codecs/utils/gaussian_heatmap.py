@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from itertools import product
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 
@@ -9,7 +9,7 @@ def generate_gaussian_heatmaps(
     heatmap_size: Tuple[int, int],
     keypoints: np.ndarray,
     keypoints_visible: np.ndarray,
-    sigma: float,
+    sigma: Union[float, Tuple[float], np.ndarray],
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Generate gaussian heatmaps of keypoints.
 
@@ -34,19 +34,22 @@ def generate_gaussian_heatmaps(
     heatmaps = np.zeros((K, H, W), dtype=np.float32)
     keypoint_weights = keypoints_visible.copy()
 
-    # 3-sigma rule
-    radius = sigma * 3
-
-    # xy grid
-    gaussian_size = 2 * radius + 1
-    x = np.arange(0, gaussian_size, 1, dtype=np.float32)
-    y = x[:, None]
-    x0 = y0 = gaussian_size // 2
+    if isinstance(sigma, (int, float)):
+        sigma = (sigma, ) * N
 
     for n, k in product(range(N), range(K)):
         # skip unlabled keypoints
         if keypoints_visible[n, k] < 0.5:
             continue
+
+        # 3-sigma rule
+        radius = sigma[n] * 3
+
+        # xy grid
+        gaussian_size = 2 * radius + 1
+        x = np.arange(0, gaussian_size, 1, dtype=np.float32)
+        y = x[:, None]
+        x0 = y0 = gaussian_size // 2
 
         # get gaussian center coordinates
         mu = (keypoints[n, k] + 0.5).astype(np.int64)
@@ -61,7 +64,7 @@ def generate_gaussian_heatmaps(
 
         # The gaussian is not normalized,
         # we want the center value to equal 1
-        gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
+        gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma[n]**2))
 
         # valid range in gaussian
         g_x1 = max(0, -left)

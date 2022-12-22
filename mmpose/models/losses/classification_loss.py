@@ -153,3 +153,51 @@ class KLDiscretLoss(nn.Module):
                 self.criterion(coord_y_pred, coord_y_gt).mul(weight).sum())
 
         return loss / num_joints
+
+
+@MODELS.register_module()
+class ContrastiveLoss(nn.Module):
+    # TODO: refine the docstring
+    """A class representing the contrastive loss function.
+
+    This loss function is used to train a Siamese network, which is a type of
+    neural network that takes two input images and learns to predict whether they
+    are similar or dissimilar. The contrastive loss function computes the
+    distance between the features extracted from the two input images and
+    minimizes the loss if the images are similar (labeled as 1) or maximizes
+    the loss if the images are dissimilar (labeled as 0).
+
+    Attributes:
+        temp (float): The temperature parameter for the loss function.
+            The temperature controls the slope of the logistic sigmoid function
+            used in the loss calculation. A higher temperature results in a
+            flatter sigmoid curve, which makes the model more confident in its
+            predictions.
+    """
+
+    def __init__(self, temperature: float = 0.05) -> None:
+        """Initialize a ContrastiveLoss instance.
+
+        Args:
+            temperature (float, optional): The temperature parameter for the
+                loss function. Defaults to 0.05.
+        """
+        super(ContrastiveLoss, self).__init__()
+        self.temp = temperature
+
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        """Compute the contrastive loss.
+
+        Args:
+            features (torch.Tensor): A tensor of shape (batch_size, feature_dim)
+                representing the features extracted from the input images.
+
+        Returns:
+            torch.Tensor: A scalar tensor representing the contrastive loss.
+        """
+        n = features.size(0)
+        features_norm = F.normalize(features, dim=1)
+        logits = features_norm.mm(features_norm.t()) / self.temp
+        targets = torch.arange(n, dtype=torch.long, device=features.device)
+        loss = F.cross_entropy(logits, targets, reduction='sum')
+        return loss
