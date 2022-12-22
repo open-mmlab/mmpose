@@ -254,6 +254,7 @@ class DecoupledHeatmap(BaseKeypointCodec):
     def decode(self, instance_heatmaps: np.ndarray,
                instance_scores: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         keypoints, keypoint_scores = [], []
+
         for i in range(instance_heatmaps.shape[0]):
             heatmaps = instance_heatmaps[i].copy()
             kpts, scores = get_heatmap_maximum(heatmaps)
@@ -265,6 +266,6 @@ class DecoupledHeatmap(BaseKeypointCodec):
         keypoints = keypoints * self.scale_factor
 
         keypoint_scores = np.concatenate(keypoint_scores)
-        keypoint_scores *= instance_scores[:, None]
+        keypoint_scores *= instance_scores
 
         return keypoints, keypoint_scores

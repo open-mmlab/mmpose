@@ -8,6 +8,7 @@ from mmcv.cnn import build_conv_layer
 from mmengine.model import BaseModule, ModuleDict, Sequential
 from mmengine.structures import PixelData
 from mmengine.utils import is_list_of
+from mmengine.structures import InstanceData
 from torch import Tensor
 
 from mmpose.models.utils.tta import aggregate_heatmaps, flip_heatmaps
@@ -72,7 +73,7 @@ class IIAModule(BaseModule):
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
-                kernel_size=1)),
+                kernel_size=1))
         self.sigmoid = TruncSigmoid(min=clamp_delta, max=1 - clamp_delta)
 
     def forward(self, feats: Tensor):
@@ -83,11 +84,18 @@ class IIAModule(BaseModule):
     def _sample_feats(self, feats, indices):
         assert indices.dtype == torch.long
         if indices.shape[1] == 3:
-            b, w, h = [ind.squeeze() for ind in indices.split(1, -1)]
+            b, w, h = [ind.squeeze(-1) for ind in indices.split(1, -1)]
             instance_feats = feats[b, :, h, w]
         elif indices.shape[1] == 2:
-            w, h = [ind.squeeze() for ind in indices.split(1, -1)]
+            w, h = [ind.squeeze(-1) for ind in indices.split(1, -1)]
             instance_feats = feats[:, :, h, w]
+            try:
+                instance_feats = instance_feats.permute(0, 2, 1)
+                instance_feats = instance_feats.reshape(-1, instance_feats.shape[-1])
+            except RuntimeError:
+                print(instance_feats.shape)
+                print(h)
+                print(w)
         else:
             raise ValueError(f'`indices` should have 2 or 3 channels, '
                              f'but got f{indices.shape[1]}')
@@ -156,7 +164,10 @@ class IIAModule(BaseModule):
 
         # sample feature vectors from feature map
         instance_coords = torch.stack((pos_ind % W, pos_ind // W), dim=1)
-        instance_feats = self._sample_feats(feats, instance_coords)
+        if len(instance_coords) > 0:
+            instance_feats = self._sample_feats(feats, instance_coords)
+        else:
+            instance_feats = None
 
         return instance_feats, instance_coords, scores
 
@@ -185,6 +196,7 @@ class ChannelAttention(nn.Module):
         Returns:
             torch.Tensor: The output tensor.
         """
+
         instance_feats = self.atn(instance_feats).unsqueeze(2).unsqueeze(3)
         return global_feats * instance_feats
 
@@ -196,11 +208,13 @@ class SpatialAttention(nn.Module):
         self.atn = nn.Linear(in_channels, out_channels)
         self.feat_stride = 4
         self.conv = nn.Conv2d(3, 1, 5, 1, 2)
-
+        
+    def _get_pixel_coords(self, heatmap_size, device='cpu'):
         w, h = heatmap_size
         y, x = torch.meshgrid(torch.arange(h), torch.arange(w))
         pixel_coords = torch.stack((x, y), dim=-1).reshape(-1, 2)
-        self.register_buffer('pixel_coords', pixel_coords.float())
+        pixel_coords = pixel_coords.float().to(device)
+        return pixel_coords
 
     def forward(self, global_feats, instance_feats, instance_coords):
         B, C, H, W = global_feats.size()
@@ -209,8 +223,9 @@ class SpatialAttention(nn.Module):
         feats = global_feats * instance_feats.expand_as(global_feats)
         fsum = torch.sum(feats, dim=1, keepdim=True)
 
+        pixel_coords = self._get_pixel_coords((W, H), feats.device)
         relative_coords = instance_coords.reshape(
-            -1, 1, 2) - self.pixel_coords.reshape(1, -1, 2)
+            -1, 1, 2) - pixel_coords.reshape(1, -1, 2)
         relative_coords = relative_coords.permute(0, 2, 1) / 32.0
         relative_coords = relative_coords.reshape(B, 2, H, W)
 
@@ -226,8 +241,8 @@ class GFDModule(BaseModule):
         in_channels: int,
         out_channels: int,
         gfd_channels: int,
-        clamp_delta: float = 1e-4,
         heatmap_size=None,
+        clamp_delta: float = 1e-4,
         init_cfg: OptConfigType = None,
     ):
         super().__init__(init_cfg=init_cfg)
@@ -274,14 +289,15 @@ class GFDModule(BaseModule):
         return cond_instance_feats
 
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class CIDHead(BaseHead):
     _version = 2
 
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
                  gfd_channels: int,
-                 num_joints: int,
+                 num_keypoints: int,
+                 heatmap_size: Tuple[int, int],
                  max_train_instances=200,
                  input_transform: str = 'select',
                  input_index: Union[int, Sequence[int]] = -1,
@@ -298,7 +314,7 @@ class CIDHead(BaseHead):
         super().__init__(init_cfg)
 
         self.in_channels = in_channels
-        self.num_joints = num_joints
+        self.num_keypoints = num_keypoints
         self.align_corners = align_corners
         self.input_transform = input_transform
         self.max_train_instances = max_train_instances
@@ -316,8 +332,8 @@ class CIDHead(BaseHead):
                 'multiple input features.')
 
         # build sub-modules
-        self.iia_module = IIAModule(in_channels, num_joints + 1)
-        self.gfd_module = GFDModule(in_channels, num_joints, gfd_channels)
+        self.iia_module = IIAModule(in_channels, num_keypoints + 1)
+        self.gfd_module = GFDModule(in_channels, num_keypoints, gfd_channels, heatmap_size)
 
         # build losses
         self.loss_module = ModuleDict(
@@ -329,6 +345,15 @@ class CIDHead(BaseHead):
 
         # Register the hook to automatically convert old version state dicts
         self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
+
+    @property
+    def default_init_cfg(self):
+        init_cfg = [
+            dict(
+                type='Normal', layer=['Conv2d', 'ConvTranspose2d'], std=0.001),
+            dict(type='Constant', layer='BatchNorm2d', val=1)
+        ]
+        return init_cfg
 
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
@@ -382,33 +407,41 @@ class CIDHead(BaseHead):
 
             feats_flipped = flip_heatmaps(
                 self._transform_inputs(feats[1]), shift_heatmap=False)
-            feats = torch.cat((feats[0], feats_flipped))
+            feats = torch.cat((self._transform_inputs(feats[0]), feats_flipped))
+        else:
+            feats = self._transform_inputs(feats)
 
         instance_info = self.iia_module.forward_test(feats, test_cfg)
         instance_feats, instance_coords, instance_scores = instance_info
-        instance_indices = torch.zeros(
-            instance_coords.size(0), dtype=torch.long, device=feats.device)
-        if test_cfg.get('flip_test', False):
-            instance_coords = torch.cat((instance_coords, instance_coords))
-            instance_indices = torch.cat(
-                (instance_indices, instance_indices + 1))
-        instance_heatmaps = self.gfd_module(feats, instance_feats,
-                                            instance_coords, instance_indices)
-        if test_cfg.get('flip_test', False):
-            instance_heatmaps, instance_heatmaps_flip = torch.chunk(
-                instance_heatmaps, 2, dim=0)
-            instance_heatmaps_flip = instance_heatmaps_flip[:, test_cfg[
-                'flip_index'], :, :]
-            instance_heatmaps = (instance_heatmaps +
-                                 instance_heatmaps_flip) / 2.0
-        instance_heatmaps = smooth_heatmaps(
-            instance_heatmaps, test_cfg.get('blur_kernel_size', 3))
+        if len(instance_coords) > 0:
+            instance_indices = torch.zeros(
+                instance_coords.size(0), dtype=torch.long, device=feats.device)
+            if test_cfg.get('flip_test', False):
+                instance_coords = torch.cat((instance_coords, instance_coords))
+                instance_indices = torch.cat(
+                    (instance_indices, instance_indices + 1))
+            instance_heatmaps = self.gfd_module(feats, instance_feats,
+                                                instance_coords, instance_indices)
+            if test_cfg.get('flip_test', False):
+                flip_indices = batch_data_samples[0].metainfo['flip_indices']
+                instance_heatmaps, instance_heatmaps_flip = torch.chunk(
+                    instance_heatmaps, 2, dim=0)
+                instance_heatmaps_flip = instance_heatmaps_flip[:, flip_indices, :, :]
+                instance_heatmaps = (instance_heatmaps +
+                                    instance_heatmaps_flip) / 2.0
+            instance_heatmaps = smooth_heatmaps(
+                instance_heatmaps, test_cfg.get('blur_kernel_size', 3))
 
-        preds = self.decode((instance_heatmaps, instance_scores))
+            preds = self.decode((instance_heatmaps, instance_scores[..., None]))
+            preds = [InstanceData.cat(preds)]
+
+        else:
+            preds = [InstanceData(keypoints=np.empty((1, self.num_keypoints, 2)), keypoint_scores=np.empty((1, self.num_keypoints)))]
+            instance_heatmaps = []
 
         if test_cfg.get('output_heatmaps', False):
             pred_fields = [
-                PixelData(heatmaps=hm) for hm in instance_heatmaps.detach()
+                PixelData(heatmaps=hm) for hm in instance_heatmaps
             ]
             return preds, pred_fields
         else:
@@ -453,7 +486,7 @@ class CIDHead(BaseHead):
                     dtype=torch.long,
                     device=gt_heatmaps.device) * i)
             instance_heatmaps = d.gt_fields.instance_heatmaps.reshape(
-                -1, self.num_joints, *d.gt_fields.instance_heatmaps.shape[1:])
+                -1, self.num_keypoints, *d.gt_fields.instance_heatmaps.shape[1:])
             gt_instance_heatmaps.append(instance_heatmaps)
         instance_indices = torch.cat(instance_indices, dim=0)
         gt_instance_heatmaps = torch.cat(gt_instance_heatmaps, dim=0)
@@ -501,7 +534,6 @@ class CIDHead(BaseHead):
 
         The hook will be automatically registered during initialization.
         """
-        raise NotImplementedError
         version = local_meta.get('version', None)
         if version and version >= self._version:
             return
@@ -509,22 +541,33 @@ class CIDHead(BaseHead):
         # convert old-version state dict
         keys = list(state_dict.keys())
         for k in keys:
-            if 'offset_conv_layer' in k:
+            if 'keypoint_center_conv' in k:
                 v = state_dict.pop(k)
-                k = k.replace('offset_conv_layers', 'displacement_conv_layers')
-                if 'displacement_conv_layers.3.' in k:
-                    # the source and target of displacement vectors are
-                    # opposite between two versions.
-                    v = -v
+                k = k.replace('keypoint_center_conv', 'iia_module.keypoint_root_conv')
                 state_dict[k] = v
 
-            if 'heatmap_conv_layers.2' in k:
-                # root heatmap is at the first/last channel of the
-                # heatmap tensor in MMPose v0.x/1.x, respectively.
+            if 'conv_down' in k:
                 v = state_dict.pop(k)
-                state_dict[k] = torch.cat((v[1:], v[:1]))
-
-            if 'rescore_net' in k:
-                v = state_dict.pop(k)
-                k = k.replace('rescore_net', 'head.rescore_net')
+                k = k.replace('conv_down', 'gfd_module.conv_down')
                 state_dict[k] = v
+
+            if 'c_attn' in k:
+                v = state_dict.pop(k)
+                k = k.replace('c_attn', 'gfd_module.channel_attention')
+                state_dict[k] = v
+                
+            if 's_attn' in k:
+                v = state_dict.pop(k)
+                k = k.replace('s_attn', 'gfd_module.spatial_attention')
+                state_dict[k] = v
+                
+            if 'fuse_attn' in k:
+                v = state_dict.pop(k)
+                k = k.replace('fuse_attn', 'gfd_module.fuse_attention')
+                state_dict[k] = v
+                
+            if 'heatmap_conv' in k:
+                v = state_dict.pop(k)
+                k = k.replace('heatmap_conv', 'gfd_module.heatmap_conv')
+                state_dict[k] = v
+                                                                                

@@ -80,6 +80,7 @@ model = dict(
         in_channels=(32, 64, 128, 256),
         num_keypoints=17,
         gfd_channels=32,
+        heatmap_size=codec['heatmap_size'],
         input_transform='resize_concat',
         input_index=(0, 1, 2, 3),
         multi_instance_heatmap_loss=dict(
@@ -119,7 +120,12 @@ val_pipeline = [
         input_size=codec['input_size'],
         size_factor=32,
         resize_mode='expand'),
-    dict(type='PackPoseInputs')
+    dict(
+        type='PackPoseInputs',
+        meta_keys=('id', 'img_id', 'img_path', 'crowd_index', 'ori_shape',
+                   'img_shape', 'input_size', 'input_center', 'input_scale',
+                   'flip', 'flip_direction', 'flip_indices', 'raw_ann_info',
+                   'skeleton_links'))
 ]
 
 # data loaders

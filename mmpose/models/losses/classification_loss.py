@@ -175,7 +175,7 @@ class ContrastiveLoss(nn.Module):
             predictions.
     """
 
-    def __init__(self, temperature: float = 0.05) -> None:
+    def __init__(self, temperature: float = 0.05, loss_weight=1.0) -> None:
         """Initialize a ContrastiveLoss instance.
 
         Args:
@@ -184,6 +184,7 @@ class ContrastiveLoss(nn.Module):
         """
         super(ContrastiveLoss, self).__init__()
         self.temp = temperature
+        self.loss_weight = loss_weight
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
         """Compute the contrastive loss.
@@ -200,4 +201,4 @@ class ContrastiveLoss(nn.Module):
         logits = features_norm.mm(features_norm.t()) / self.temp
         targets = torch.arange(n, dtype=torch.long, device=features.device)
         loss = F.cross_entropy(logits, targets, reduction='sum')
-        return loss
+        return loss * self.loss_weight
