@@ -6,6 +6,7 @@ from .topdown_crowdpose_dataset import TopDownCrowdPoseDataset
 from .topdown_h36m_dataset import TopDownH36MDataset
 from .topdown_halpe_dataset import TopDownHalpeDataset
 from .topdown_jhmdb_dataset import TopDownJhmdbDataset
+from .topdown_jrdb_dataset import TopDownJRDBDataset
 from .topdown_mhp_dataset import TopDownMhpDataset
 from .topdown_mpii_dataset import TopDownMpiiDataset
 from .topdown_mpii_trb_dataset import TopDownMpiiTrbDataset
@@ -23,6 +24,7 @@ __all__ = [
     'TopDownOCHumanDataset',
     'TopDownPoseTrack18Dataset',
     'TopDownJhmdbDataset',
+    'TopDownJRDBDataset',
     'TopDownMhpDataset',
     'TopDownH36MDataset',
     'TopDownHalpeDataset',
