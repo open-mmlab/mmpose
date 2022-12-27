@@ -170,7 +170,7 @@ class HeatmapGenerator:
             self.output_size = output_size
         else:
             self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+                                        dtype=np.int32)
         self.num_joints = num_joints
         if sigma < 0:
             sigma = self.output_size.prod()**0.5 / 64
@@ -244,7 +244,7 @@ class OffsetGenerator:
             self.output_size = output_size
         else:
             self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+                                        dtype=np.int32)
         self.num_joints = num_joints
         assert radius > 0, f'`radius` must be a positive value, ' \
                            f'but got {radius}'
@@ -321,7 +321,7 @@ class JointsEncoder:
             self.output_size = output_size
         else:
             self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+                                        dtype=np.int32)
         self.tag_per_joint = tag_per_joint
 
     def __call__(self, joints):
@@ -372,7 +372,7 @@ class PAFGenerator:
             self.output_size = output_size
         else:
             self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+                                        dtype=np.int32)
         self.limb_width = limb_width
         self.skeleton = skeleton
 
@@ -527,7 +527,7 @@ class BottomUpRandomFlip:
                     assert len(_output_size) == 2
                 else:
                     _output_size = np.array([_output_size, _output_size],
-                                            dtype=np.int)
+                                            dtype=np.int32)
                 mask[i] = mask[i][:, ::-1].copy()
                 joints[i] = joints[i][:, self.flip_index]
                 joints[i][:, :, 0] = _output_size[0] - joints[i][:, :, 0] - 1
@@ -1156,7 +1156,7 @@ class BottomUpGetImgSize:
         if input_size.size > 1:
             assert len(input_size) == 2
         else:
-            input_size = np.array([input_size, input_size], dtype=np.int)
+            input_size = np.array([input_size, input_size], dtype=np.int32)
         img = results['img']
 
         base_size, center, scale = _get_multi_scale_size(
@@ -1199,7 +1199,7 @@ class BottomUpResizeAlign:
         if input_size.size > 1:
             assert len(input_size) == 2
         else:
-            input_size = np.array([input_size, input_size], dtype=np.int)
+            input_size = np.array([input_size, input_size], dtype=np.int32)
         test_scale_factor = results['ann_info']['test_scale_factor']
         aug_data = []
 
