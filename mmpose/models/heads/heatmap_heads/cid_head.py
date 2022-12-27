@@ -6,9 +6,8 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import build_conv_layer
 from mmengine.model import BaseModule, ModuleDict, Sequential
-from mmengine.structures import PixelData
+from mmengine.structures import InstanceData, PixelData
 from mmengine.utils import is_list_of
-from mmengine.structures import InstanceData
 from torch import Tensor
 
 from mmpose.models.utils.tta import aggregate_heatmaps, flip_heatmaps
@@ -91,7 +90,8 @@ class IIAModule(BaseModule):
             instance_feats = feats[:, :, h, w]
             try:
                 instance_feats = instance_feats.permute(0, 2, 1)
-                instance_feats = instance_feats.reshape(-1, instance_feats.shape[-1])
+                instance_feats = instance_feats.reshape(
+                    -1, instance_feats.shape[-1])
             except RuntimeError:
                 print(instance_feats.shape)
                 print(h)
@@ -208,12 +208,12 @@ class SpatialAttention(nn.Module):
         self.atn = nn.Linear(in_channels, out_channels)
         self.feat_stride = 4
         self.conv = nn.Conv2d(3, 1, 5, 1, 2)
-        
+
     def _get_pixel_coords(self, heatmap_size, device='cpu'):
         w, h = heatmap_size
         y, x = torch.meshgrid(torch.arange(h), torch.arange(w))
         pixel_coords = torch.stack((x, y), dim=-1).reshape(-1, 2)
-        pixel_coords = pixel_coords.float().to(device)
+        pixel_coords = pixel_coords.float().to(device) + 0.5
         return pixel_coords
 
     def forward(self, global_feats, instance_feats, instance_coords):
@@ -333,7 +333,8 @@ class CIDHead(BaseHead):
 
         # build sub-modules
         self.iia_module = IIAModule(in_channels, num_keypoints + 1)
-        self.gfd_module = GFDModule(in_channels, num_keypoints, gfd_channels, heatmap_size)
+        self.gfd_module = GFDModule(in_channels, num_keypoints, gfd_channels,
+                                    heatmap_size)
 
         # build losses
         self.loss_module = ModuleDict(
@@ -407,7 +408,8 @@ class CIDHead(BaseHead):
 
             feats_flipped = flip_heatmaps(
                 self._transform_inputs(feats[1]), shift_heatmap=False)
-            feats = torch.cat((self._transform_inputs(feats[0]), feats_flipped))
+            feats = torch.cat(
+                (self._transform_inputs(feats[0]), feats_flipped))
         else:
             feats = self._transform_inputs(feats)
 
@@ -421,28 +423,35 @@ class CIDHead(BaseHead):
                 instance_indices = torch.cat(
                     (instance_indices, instance_indices + 1))
             instance_heatmaps = self.gfd_module(feats, instance_feats,
-                                                instance_coords, instance_indices)
+                                                instance_coords,
+                                                instance_indices)
             if test_cfg.get('flip_test', False):
                 flip_indices = batch_data_samples[0].metainfo['flip_indices']
                 instance_heatmaps, instance_heatmaps_flip = torch.chunk(
                     instance_heatmaps, 2, dim=0)
-                instance_heatmaps_flip = instance_heatmaps_flip[:, flip_indices, :, :]
+                instance_heatmaps_flip = instance_heatmaps_flip[:,
+                                                                flip_indices, :, :]
                 instance_heatmaps = (instance_heatmaps +
-                                    instance_heatmaps_flip) / 2.0
+                                     instance_heatmaps_flip) / 2.0
             instance_heatmaps = smooth_heatmaps(
                 instance_heatmaps, test_cfg.get('blur_kernel_size', 3))
 
-            preds = self.decode((instance_heatmaps, instance_scores[..., None]))
-            preds = [InstanceData.cat(preds)]
+            preds = self.decode((instance_heatmaps, instance_scores[...,
+                                                                    None]))
+            preds = InstanceData.cat(preds)
+            preds.keypoints[..., :2] += 1.5
+            preds = [preds]
 
         else:
-            preds = [InstanceData(keypoints=np.empty((1, self.num_keypoints, 2)), keypoint_scores=np.empty((1, self.num_keypoints)))]
+            preds = [
+                InstanceData(
+                    keypoints=np.empty((0, self.num_keypoints, 2)),
+                    keypoint_scores=np.empty((0, self.num_keypoints)))
+            ]
             instance_heatmaps = []
 
         if test_cfg.get('output_heatmaps', False):
-            pred_fields = [
-                PixelData(heatmaps=hm) for hm in instance_heatmaps
-            ]
+            pred_fields = [PixelData(heatmaps=hm) for hm in instance_heatmaps]
             return preds, pred_fields
         else:
             return preds
@@ -486,7 +495,8 @@ class CIDHead(BaseHead):
                     dtype=torch.long,
                     device=gt_heatmaps.device) * i)
             instance_heatmaps = d.gt_fields.instance_heatmaps.reshape(
-                -1, self.num_keypoints, *d.gt_fields.instance_heatmaps.shape[1:])
+                -1, self.num_keypoints,
+                *d.gt_fields.instance_heatmaps.shape[1:])
             gt_instance_heatmaps.append(instance_heatmaps)
         instance_indices = torch.cat(instance_indices, dim=0)
         gt_instance_heatmaps = torch.cat(gt_instance_heatmaps, dim=0)
@@ -543,7 +553,8 @@ class CIDHead(BaseHead):
         for k in keys:
             if 'keypoint_center_conv' in k:
                 v = state_dict.pop(k)
-                k = k.replace('keypoint_center_conv', 'iia_module.keypoint_root_conv')
+                k = k.replace('keypoint_center_conv',
+                              'iia_module.keypoint_root_conv')
                 state_dict[k] = v
 
             if 'conv_down' in k:
@@ -555,19 +566,18 @@ class CIDHead(BaseHead):
                 v = state_dict.pop(k)
                 k = k.replace('c_attn', 'gfd_module.channel_attention')
                 state_dict[k] = v
-                
+
             if 's_attn' in k:
                 v = state_dict.pop(k)
                 k = k.replace('s_attn', 'gfd_module.spatial_attention')
                 state_dict[k] = v
-                
+
             if 'fuse_attn' in k:
                 v = state_dict.pop(k)
                 k = k.replace('fuse_attn', 'gfd_module.fuse_attention')
                 state_dict[k] = v
-                
+
             if 'heatmap_conv' in k:
                 v = state_dict.pop(k)
                 k = k.replace('heatmap_conv', 'gfd_module.heatmap_conv')
                 state_dict[k] = v
-                                                                                
