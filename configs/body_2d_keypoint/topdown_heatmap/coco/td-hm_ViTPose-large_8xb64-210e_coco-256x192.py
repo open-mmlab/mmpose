@@ -12,7 +12,7 @@ optim_wrapper = dict(
     optimizer=dict(
         type='AdamW', lr=5e-4, betas=(0.9, 0.999), weight_decay=0.1),
     paramwise_cfg=dict(
-        num_layers=16,
+        num_layers=24,
         layer_decay_rate=0.8,
         custom_keys={
             'bias': dict(decay_multi=0.0),

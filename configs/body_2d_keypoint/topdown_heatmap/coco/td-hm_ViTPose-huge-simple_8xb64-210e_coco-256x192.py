@@ -60,12 +60,7 @@ model = dict(
         bgr_to_rgb=True),
     backbone=dict(
         type='mmcls.VisionTransformer',
-        arch=dict(
-            embed_dims=1280,
-            num_layers=32,
-            num_heads=16,
-            feedforward_channels=1280 * 4,
-        ),
+        arch='huge',
         img_size=(256, 192),
         patch_size=16,
         qkv_bias=True,
