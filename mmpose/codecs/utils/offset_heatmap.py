@@ -131,7 +131,7 @@ def generate_displacement_heatmap(
                                      x] != 0 or displacements[2 * k + 1, y,
                                                               x] != 0:
                         if diagonal_length > instance_size_map[y, x]:
-                            # keep the gt displacement of larger instance
+                            # keep the gt displacement of smaller instance
                             continue
 
                     displacement_weights[2 * k:2 * k + 2, y,
