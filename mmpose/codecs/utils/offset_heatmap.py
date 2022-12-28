@@ -104,15 +104,20 @@ def generate_displacement_heatmap(
     W, H = heatmap_size
 
     displacements = np.zeros((K * 2, H, W), dtype=np.float32)
-    displacement_weights = np.zeros((K, H, W), dtype=np.float32)
+    displacement_weights = np.zeros((K * 2, H, W), dtype=np.float32)
+    instance_size_map = np.zeros((H, W), dtype=np.float32)
 
     for n in range(N):
-        if roots_visible[n] < 1:
+        if (roots_visible[n] < 1 or (roots[n, 0] < 0 or roots[n, 1] < 0)
+                or (roots[n, 0] >= W or roots[n, 1] >= H)):
             continue
+
         diagonal_length = diagonal_lengths[n]
 
         for k in range(K):
-            if keypoints_visible[n, k] < 1:
+            if keypoints_visible[n, k] < 1 or keypoints[n, k, 0] < 0 \
+                or keypoints[n, k, 1] < 0 or keypoints[n, k, 0] >= W \
+                    or keypoints[n, k, 1] >= H:
                 continue
 
             start_x = max(int(roots[n, 0] - radius), 0)
@@ -122,14 +127,17 @@ def generate_displacement_heatmap(
 
             for x in range(start_x, end_x):
                 for y in range(start_y, end_y):
-                    if 0 < displacement_weights[k, y, x] < 1 / diagonal_length:
-                        # keep the gt displacement of larger instance
-                        continue
+                    if displacements[2 * k, y,
+                                     x] != 0 or displacements[2 * k + 1, y,
+                                                              x] != 0:
+                        if diagonal_length > instance_size_map[y, x]:
+                            # keep the gt displacement of larger instance
+                            continue
 
-                    displacement_weights[k, y, x] = 1 / diagonal_length
+                    displacement_weights[2 * k:2 * k + 2, y,
+                                         x] = 1 / diagonal_length
                     displacements[2 * k:2 * k + 2, y,
                                   x] = keypoints[n, k] - [x, y]
+                    instance_size_map[y, x] = diagonal_length
 
-    displacement_weights = np.stack(
-        [displacement_weights] * 2, axis=1).reshape(K * 2, H, W)
     return displacements, displacement_weights

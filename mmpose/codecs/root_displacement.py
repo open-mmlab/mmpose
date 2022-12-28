@@ -181,20 +181,15 @@ class RootDisplacement(BaseKeypointCodec):
             # compute the instance root with visible keypoints
             if self.root_type == 'kpt_center':
                 roots_coordinate[i] = visible_keypoints.mean(axis=0)
+                roots_visible[i] = 1
             elif self.root_type == 'bbox_center':
                 roots_coordinate[i] = (visible_keypoints.max(axis=0) +
                                        visible_keypoints.min(axis=0)) / 2.0
+                roots_visible[i] = 1
             else:
                 raise ValueError(
                     f'the value of `root_type` must be \'kpt_center\' or '
                     f'\'bbox_center\', but got \'{self.root_type}\'')
-
-            # compute the visibility of roots
-            if roots_coordinate[i][0] >= W or roots_coordinate[i][
-                    1] >= H or roots_coordinate[i].min() < 0:
-                roots_visible[i] = 0
-            else:
-                roots_visible[i] = 2
 
         return roots_coordinate, roots_visible
 
@@ -257,7 +252,6 @@ class RootDisplacement(BaseKeypointCodec):
 
         # discard the small instances
         roots_visible[diagonal_lengths < self.minimal_diagonal_length] = 0
-        keypoints_visible[diagonal_lengths < self.minimal_diagonal_length] = 0
 
         # generate heatmaps
         heatmaps, _ = generate_gaussian_heatmaps(
