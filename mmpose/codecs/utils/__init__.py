@@ -17,6 +17,6 @@ __all__ = [
     'get_heatmap_maximum', 'get_simcc_maximum', 'generate_offset_heatmap',
     'batch_heatmap_nms', 'refine_keypoints', 'refine_keypoints_dark',
     'refine_keypoints_dark_udp', 'generate_displacement_heatmap',
-    'refine_simcc_dark', 'gaussian_blur1d',
-    'get_diagonal_lengths', 'get_instance_root'
+    'refine_simcc_dark', 'gaussian_blur1d', 'get_diagonal_lengths',
+    'get_instance_root'
 ]

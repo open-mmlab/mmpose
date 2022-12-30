@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
-from typing import List, Optional
-from collections import defaultdict
+from typing import List
 
 import cv2
 import numpy as np

@@ -1,16 +1,15 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
 import torch.nn as nn
 from mmcv.cnn import build_conv_layer
-from mmengine.model import BaseModule, ModuleDict, Sequential
+from mmengine.model import BaseModule, ModuleDict
 from mmengine.structures import InstanceData, PixelData
-from mmengine.utils import is_list_of
 from torch import Tensor
 
-from mmpose.models.utils.tta import aggregate_heatmaps, flip_heatmaps
+from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.typing import (ConfigType, Features, OptConfigType,
                                  OptSampleList, Predictions)
@@ -57,7 +56,7 @@ class TruncSigmoid(nn.Sigmoid):
 
 
 class IIAModule(BaseModule):
-
+    # TODO: add docstring
     def __init__(
         self,
         in_channels: int,
@@ -114,16 +113,6 @@ class IIAModule(BaseModule):
     def forward_train(self, feats: torch.Tensor, instance_coords: torch.Tensor,
                       instance_indices: torch.Tensor
                       ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Args:
-            feats: a tensor of shape [B, C, H, W] representing the features of the input image batch.
-            roots: a tensor of shape [N, 2] representing the root coordinates of the instances in the input image batch.
-            indices: a tensor of shape [N] representing the indices that map each instance in `roots` to the corresponding image in `feats`.
-
-        Returns:
-            instance_feats: a tensor of shape [N, C] representing the features of the instances in the input image batch.
-            heatmaps: a tensor of shape [B, K+1, H, W] representing the heatmaps of the input image batch.
-        """
         heatmaps = self.forward(feats)
         indices = torch.cat((instance_indices[:, None], instance_coords),
                             dim=1)
@@ -132,17 +121,7 @@ class IIAModule(BaseModule):
         return instance_feats, heatmaps
 
     def forward_test(self, feats: Tensor, test_cfg: dict):
-        """_summary_
 
-        Args:
-            feats (Tensor): _description_
-            flip_test (bool, optional): _description_. Defaults to False.
-
-        Returns:
-            instance_feats
-            instance_coords
-            instance_scores
-        """
         blur_kernel_size = test_cfg.get('blur_kernel_size', 3)
         max_instances = test_cfg.get('max_instances', 30)
         score_threshold = test_cfg.get('score_threshold', 0.01)
@@ -191,7 +170,8 @@ class ChannelAttention(nn.Module):
 
         Args:
             global_feats (torch.Tensor): The input tensor.
-            instance_feats (torch.Tensor): The tensor representing the attention weights.
+            instance_feats (torch.Tensor): A tensor that contains the feature
+                vectors of each instance.
 
         Returns:
             torch.Tensor: The output tensor.
@@ -429,8 +409,8 @@ class CIDHead(BaseHead):
                 flip_indices = batch_data_samples[0].metainfo['flip_indices']
                 instance_heatmaps, instance_heatmaps_flip = torch.chunk(
                     instance_heatmaps, 2, dim=0)
-                instance_heatmaps_flip = instance_heatmaps_flip[:,
-                                                                flip_indices, :, :]
+                instance_heatmaps_flip = \
+                    instance_heatmaps_flip[:, flip_indices, :, :]
                 instance_heatmaps = (instance_heatmaps +
                                      instance_heatmaps_flip) / 2.0
             instance_heatmaps = smooth_heatmaps(

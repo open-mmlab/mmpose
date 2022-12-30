@@ -156,45 +156,32 @@ class KLDiscretLoss(nn.Module):
 
 
 @MODELS.register_module()
-class ContrastiveLoss(nn.Module):
-    # TODO: refine the docstring
-    """A class representing the contrastive loss function.
+class InfoNCELoss(nn.Module):
+    """InfoNCE loss for training a discriminative representation space with a
+    contrastive manner.
 
-    This loss function is used to train a Siamese network, which is a type of
-    neural network that takes two input images and learns to predict whether they
-    are similar or dissimilar. The contrastive loss function computes the
-    distance between the features extracted from the two input images and
-    minimizes the loss if the images are similar (labeled as 1) or maximizes
-    the loss if the images are dissimilar (labeled as 0).
-
-    Attributes:
-        temp (float): The temperature parameter for the loss function.
-            The temperature controls the slope of the logistic sigmoid function
-            used in the loss calculation. A higher temperature results in a
-            flatter sigmoid curve, which makes the model more confident in its
-            predictions.
+    Args:
+        temperature (float, optional): The temperature to use in the softmax
+            function. Higher temperatures lead to softer probability
+            distributions. Defaults to 0.05.
+        loss_weight (float, optional): The weight to apply to the loss.
+            Defaults to 1.0.
     """
 
     def __init__(self, temperature: float = 0.05, loss_weight=1.0) -> None:
-        """Initialize a ContrastiveLoss instance.
-
-        Args:
-            temperature (float, optional): The temperature parameter for the
-                loss function. Defaults to 0.05.
-        """
-        super(ContrastiveLoss, self).__init__()
+        super(InfoNCELoss, self).__init__()
         self.temp = temperature
         self.loss_weight = loss_weight
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
-        """Compute the contrastive loss.
+        """Computes the InfoNCE loss.
 
         Args:
-            features (torch.Tensor): A tensor of shape (batch_size, feature_dim)
-                representing the features extracted from the input images.
+            features (Tensor): A tensor containing the feature
+                representations of different samples.
 
         Returns:
-            torch.Tensor: A scalar tensor representing the contrastive loss.
+            Tensor: A tensor of shape (1,) containing the InfoNCE loss.
         """
         n = features.size(0)
         features_norm = F.normalize(features, dim=1)

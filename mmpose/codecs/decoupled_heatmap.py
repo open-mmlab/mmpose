@@ -1,18 +1,15 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import random
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import numpy as np
-import torch
-from torch import Tensor
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
-from .utils import (batch_heatmap_nms, generate_displacement_heatmap,
-                    generate_gaussian_heatmaps, get_diagonal_lengths,
+from .utils import (generate_gaussian_heatmaps, get_diagonal_lengths,
                     get_instance_root)
 from .utils.post_processing import get_heatmap_maximum
-from .utils.refinement import refine_keypoints, refine_keypoints_dark
+from .utils.refinement import refine_keypoints
 
 
 @KEYPOINT_CODECS.register_module(force=True)
