@@ -47,7 +47,7 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint='mmcls://mobilenet_v2')),
     head=dict(
         type='HeatmapHead',
-        in_channels=2048,
+        in_channels=1280,
         out_channels=21,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
