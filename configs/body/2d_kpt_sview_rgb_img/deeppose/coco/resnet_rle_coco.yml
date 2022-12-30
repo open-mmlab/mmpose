@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Human pose regression with residual log-likelihood estimation
     URL: https://arxiv.org/abs/2107.11291
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/rle.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/rle.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192_rle.py
   In Collection: RLE
