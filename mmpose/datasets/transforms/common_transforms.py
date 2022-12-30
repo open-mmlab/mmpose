@@ -1019,7 +1019,6 @@ class GenerateTarget(BaseTransform):
         """
         repr_str = self.__class__.__name__
         repr_str += (f'(encoder={str(self.encoder_cfg)}, ')
-        repr_str += (f'(target_type={str(self.target_type)}, ')
         repr_str += ('use_dataset_keypoint_weights='
                      f'{self.use_dataset_keypoint_weights})')
         return repr_str

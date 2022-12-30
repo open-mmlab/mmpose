@@ -28,7 +28,8 @@ auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='posetrack18/Total AP', rule='greater'))
+    checkpoint=dict(
+        save_best='posetrack18/Total AP', rule='greater', interval=1))
 
 # load from the pretrained model
 load_from = 'https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-384x288-c161b7de_20220915.pth'  # noqa: E501

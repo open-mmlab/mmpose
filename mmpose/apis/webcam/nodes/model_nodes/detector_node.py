@@ -124,7 +124,7 @@ class DetectorNode(Node):
         """Post-process the predictions of MMDetection model."""
         instances = preds.pred_instances.cpu().numpy()
 
-        classes = self.model.dataset_meta['CLASSES']
+        classes = self.model.dataset_meta['classes']
         if isinstance(classes, str):
             classes = (classes, )
 
