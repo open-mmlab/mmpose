@@ -12,6 +12,7 @@ from mmengine.visualization import Visualizer
 
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
+from simCCVis import SimCCVisualizer
 
 
 def _get_adaptive_scales(areas: np.ndarray,
@@ -360,6 +361,34 @@ class PoseLocalVisualizer(Visualizer):
             heatmaps, _ = heatmaps.max(dim=0)
         heatmaps = heatmaps.unsqueeze(0)
         out_image = self.draw_featmap(heatmaps, overlaid_image)
+        return out_image
+
+    def _draw_instance_xy_heatmap(
+        self,
+        fields: PixelData,
+        overlaid_image: Optional[np.ndarray] = None,
+        n: int = 20,
+    ):
+        """Draw heatmaps of GT or prediction.
+
+        Args:
+            fields (:obj:`PixelData`): Data structure for
+            pixel-level annotations or predictions.
+            overlaid_image (np.ndarray): The image to draw.
+            n (int): Number of keypoint, up to 20.
+
+        Returns:
+            np.ndarray: the drawn image which channel is RGB.
+        """
+        if 'heatmaps' not in fields:
+            return None
+        heatmaps = fields.heatmaps
+        if isinstance(heatmaps, np.ndarray):
+            heatmaps = torch.from_numpy(heatmaps)
+        out_image = SimCCVisualizer().draw_instance_xy_heatmap(
+            heatmaps, overlaid_image, n)
+        img = out_image[:, :, ::-1]
+        self.show(img)
         return out_image
 
     @master_only
