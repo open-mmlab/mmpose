@@ -383,10 +383,12 @@ class PoseLocalVisualizer(Visualizer):
         if 'heatmaps' not in fields:
             return None
         heatmaps = fields.heatmaps
+        _, h, w = heatmaps.shape
         if isinstance(heatmaps, np.ndarray):
             heatmaps = torch.from_numpy(heatmaps)
         out_image = SimCCVisualizer().draw_instance_xy_heatmap(
             heatmaps, overlaid_image, n)
+        out_image = cv2.resize(out_image[:, :, ::-1], (w, h))
         return out_image
 
     @master_only
@@ -473,8 +475,12 @@ class PoseLocalVisualizer(Visualizer):
 
             # draw heatmaps
             if 'pred_fields' in data_sample and draw_heatmap:
-                pred_img_heatmap = self._draw_instance_heatmap(
-                    data_sample.pred_fields, image)
+                if 'keypoint_x_labels' in data_sample.pred_instances:
+                    pred_img_heatmap = self._draw_instance_xy_heatmap(
+                        data_sample.pred_fields, image)
+                else:
+                    pred_img_heatmap = self._draw_instance_heatmap(
+                        data_sample.pred_fields, image)
                 if pred_img_heatmap is not None:
                     pred_img_data = np.concatenate(
                         (pred_img_data, pred_img_heatmap), axis=0)

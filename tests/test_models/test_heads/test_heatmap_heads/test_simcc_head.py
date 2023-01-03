@@ -29,7 +29,8 @@ class TestSimCCHead(TestCase):
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
-            in_featuremap_size=(8, 6),
+            in_featuremap_size=(6, 8),
+            simcc_split_ratio=2.0,
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
@@ -43,7 +44,8 @@ class TestSimCCHead(TestCase):
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
-            in_featuremap_size=(8, 6),
+            in_featuremap_size=(6, 8),
+            simcc_split_ratio=3.0,
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
@@ -58,7 +60,8 @@ class TestSimCCHead(TestCase):
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
-            in_featuremap_size=(8, 6),
+            in_featuremap_size=(6, 8),
+            simcc_split_ratio=3.0,
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
@@ -96,14 +99,16 @@ class TestSimCCHead(TestCase):
                 in_channels=[16, 32],
                 out_channels=17,
                 input_size=(192, 256),
-                in_featuremap_size=(8, 6),
+                in_featuremap_size=(6, 8),
+                simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 input_transform='select',
                 input_index=-1,
                 decoder=decoder_cfg)
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = get_packed_inputs(
-                batch_size=2, simcc_split_ratio=2.0,
+                batch_size=2,
+                simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
             preds = head.predict(feats, batch_data_samples)
 
@@ -129,7 +134,8 @@ class TestSimCCHead(TestCase):
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = get_packed_inputs(
-                batch_size=2, simcc_split_ratio=2.0,
+                batch_size=2,
+                simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
             preds = head.predict(feats, batch_data_samples)
 
@@ -144,14 +150,16 @@ class TestSimCCHead(TestCase):
                 in_channels=[16, 32],
                 out_channels=17,
                 input_size=(192, 256),
-                in_featuremap_size=(8, 6),
+                in_featuremap_size=(6, 8),
+                simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 input_transform='select',
                 input_index=-1,
                 decoder=decoder_cfg)
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = get_packed_inputs(
-                batch_size=2, simcc_split_ratio=2.0,
+                batch_size=2,
+                simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
             preds = head.predict(
                 feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
@@ -174,7 +182,8 @@ class TestSimCCHead(TestCase):
             in_channels=[16, 32],
             out_channels=17,
             input_size=(192, 256),
-            in_featuremap_size=(8, 6),
+            in_featuremap_size=(6, 8),
+            simcc_split_ratio=2.0,
             input_transform='select',
             input_index=-1,
             decoder=decoder_cfg)
@@ -221,7 +230,8 @@ class TestSimCCHead(TestCase):
                 in_channels=[16, 32],
                 out_channels=17,
                 input_size=(192, 256),
-                in_featuremap_size=(8, 6),
+                in_featuremap_size=(6, 8),
+                simcc_split_ratio=2.0,
                 input_transform='select',
                 input_index=-1,
                 decoder=decoder_cfg)

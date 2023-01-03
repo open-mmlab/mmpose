@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from mmcv.cnn import build_conv_layer
+from mmengine.structures import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
@@ -315,6 +316,17 @@ class SimCCHead(BaseHead):
         preds = self.decode((batch_pred_x, batch_pred_y))
 
         if test_cfg.get('output_heatmaps', False):
+            B, K, _ = batch_pred_x.shape
+            # B, K, Wx -> B, K, Wx, 1
+            x = batch_pred_x.reshape(B, K, 1, -1)
+            # B, K, Wy -> B, K, 1, Wy
+            y = batch_pred_y.reshape(B, K, -1, 1)
+            # B, K, Wx, Wy
+            batch_heatmaps = torch.matmul(y, x)
+            pred_fields = [
+                PixelData(heatmaps=hm) for hm in batch_heatmaps.detach()
+            ]
+
             for pred_instances, pred_x, pred_y in zip(preds,
                                                       to_numpy(batch_pred_x),
                                                       to_numpy(batch_pred_y)):
@@ -322,7 +334,9 @@ class SimCCHead(BaseHead):
                 pred_instances.keypoint_x_labels = pred_x[None]
                 pred_instances.keypoint_y_labels = pred_y[None]
 
-        return preds
+            return preds, pred_fields
+        else:
+            return preds
 
     def loss(
         self,
