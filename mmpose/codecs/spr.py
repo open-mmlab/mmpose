@@ -158,9 +158,9 @@ class SPR(BaseKeypointCodec):
 
         Returns:
             tuple
-            - roots_coordinate(np.ndarray): Coordinates of instance roots in
+            - roots_coordinate (np.ndarray): Coordinates of instance roots in
                 shape [N, D]
-            - roots_visible(np.ndarray): Visibility of instance roots in
+            - roots_visible (np.ndarray): Visibility of instance roots in
                 shape [N]
         """
         W, H = self.heatmap_size

@@ -14,10 +14,10 @@ from .utils.refinement import refine_keypoints
 
 @KEYPOINT_CODECS.register_module(force=True)
 class DecoupledHeatmap(BaseKeypointCodec):
-    """Encode/decode keypoints with the method introduced in the paper SPM.
+    """Encode/decode keypoints with the method introduced in the paper CID.
 
-    See the paper `Single-stage multi-person pose machines`_
-    by Nie et al (2017) for details
+    See the paper Contextual Instance Decoupling for Robust Multi-Person
+    Pose Estimation`_ by Wang et al (2022) for details
 
     Note:
 
@@ -28,26 +28,18 @@ class DecoupledHeatmap(BaseKeypointCodec):
         - heatmap size: [W, H]
 
     Encoded:
-
-        - heatmaps (np.ndarray): The generated heatmap in shape (1, H, W)
-            where [W, H] is the `heatmap_size`. If the keypoint heatmap is
-            generated together, the output heatmap shape is (K+1, H, W)
-        - heatmap_weights (np.ndarray): The target weights for heatmaps which
-            has same shape with heatmaps.
-        - displacements (np.ndarray): The dense keypoint displacement in
-            shape (K*2, H, W).
-        - displacement_weights (np.ndarray): The target weights for heatmaps
-            which has same shape with displacements.
+        - heatmaps (np.ndarray): The coupled heatmap in shape
+            (1+K, H, W) where [W, H] is the `heatmap_size`.
+        - instance_heatmaps (np.ndarray): The decoupled heatmap in shape
+            (M*K, H, W) where M is the number of instances.
+        - keypoint_weights (np.ndarray): The weight for heatmaps in shape
+            (M*K).
+        - instance_coords (np.ndarray): The coordinates of instance roots
+            in shape (M, 2)
 
     Args:
         input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
-        sigma (float or tuple, optional): The sigma values of the Gaussian
-            heatmaps. If sigma is a tuple, it includes both sigmas for root
-            and keypoint heatmaps. ``None`` means the sigmas are computed
-            automatically from the heatmap size. Defaults to ``None``
-        generate_keypoint_heatmaps (bool): Whether to generate Gaussian
-            heatmaps for each keypoint. Defaults to ``False``
         root_type (str): The method to generate the instance root. Options
             are:
 
@@ -57,20 +49,17 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
             Defaults to ``'kpt_center'``
 
-        minimal_diagonal_length (int or float): The threshold of diagonal
+        heatmap_min_overlap (float): The threshold of diagonal
             length of instance bounding box. Small instances will not be
             used in training. Defaults to 32
         background_weight (float): Loss weight of background pixels.
             Defaults to 0.1
-        decode_thr (float): The threshold of keypoint response value in
-            heatmaps. Defaults to 0.01
-        decode_nms_kernel (int): The kernel size of the NMS during decoding,
-            which should be an odd integer. Defaults to 5
-        decode_max_instances (int): The maximum number of instances
-            to decode. Defaults to 30
+        encode_max_instances (int): The maximum number of instances
+            to encode for each sample. Defaults to 30
 
-    .. _`Single-stage multi-person pose machines`:
-        https://arxiv.org/abs/1908.09220
+    .. _`CID`: https://openaccess.thecvf.com/content/CVPR2022/html/Wang_
+    Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_
+    CVPR_2022_paper.html
     """
 
     def __init__(
@@ -80,9 +69,6 @@ class DecoupledHeatmap(BaseKeypointCodec):
         root_type: str = 'kpt_center',
         heatmap_min_overlap: float = 0.7,
         encode_max_instances: int = 30,
-        decode_nms_kernel: int = 5,
-        decode_max_instances: int = 30,
-        decode_thr: float = 0.01,
     ):
         super().__init__()
 
@@ -91,14 +77,25 @@ class DecoupledHeatmap(BaseKeypointCodec):
         self.root_type = root_type
         self.encode_max_instances = encode_max_instances
         self.heatmap_min_overlap = heatmap_min_overlap
-        self.decode_nms_kernel = decode_nms_kernel
-        self.decode_max_instances = decode_max_instances
-        self.decode_thr = decode_thr
 
         self.scale_factor = (np.array(input_size) /
                              heatmap_size).astype(np.float32)
 
-    def _get_instance_wise_sigmas(self, keypoints, keypoints_visible):
+    def _get_instance_wise_sigmas(
+        self,
+        keypoints: np.ndarray,
+        keypoints_visible: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Get sigma values for each instance according to their size.
+
+        Args:
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
+            keypoints_visible (np.ndarray): Keypoint visibilities in shape
+                (N, K)
+
+        Returns:
+            np.ndarray: Array containing the sigma values for each instance.
+        """
         sigmas = np.zeros((keypoints.shape[0], ), dtype=np.float32)
 
         for i in range(keypoints.shape[0]):
@@ -114,7 +111,6 @@ class DecoupledHeatmap(BaseKeypointCodec):
                 axis=0)
 
             # compute sigma for each instance
-
             # condition 1
             a1, b1 = 1, h + w
             c1 = w * h * (1 - self.heatmap_min_overlap) / (
@@ -140,30 +136,10 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
         return sigmas
 
-    def _get_heatmap_weights(self,
-                             heatmaps,
-                             fg_weight: float = 1,
-                             bg_weight: float = 0):
-        """Generate weight array for heatmaps.
-
-        Args:
-            heatmaps (np.ndarray): Root and keypoint (optional) heatmaps
-            fg_weight (float): Weight for foreground pixels. Defaults to 1.0
-            bg_weight (float): Weight for background pixels. Defaults to 0.0
-
-        Returns:
-            np.ndarray: Heatmap weight array in the same shape with heatmaps
-        """
-        heatmap_weights = np.ones(heatmaps.shape) * bg_weight
-        heatmap_weights[heatmaps > 0] = fg_weight
-        return heatmap_weights
-
     def encode(self,
                keypoints: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None) -> dict:
-        """Encode keypoints into root heatmaps and keypoint displacement
-        fields. Note that the original keypoint coordinates should be in the
-        input image space.
+        """Encode keypoints into heatmaps.
 
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
@@ -172,17 +148,14 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
         Returns:
             dict:
-            - heatmaps (np.ndarray): The generated heatmap in shape
-                (1, H, W) where [W, H] is the `heatmap_size`. If keypoint
-                heatmaps are generated together, the shape is (K+1, H, W)
-            - heatmap_weights (np.ndarray): The pixel-wise weight for heatmaps
-                 which has same shape with `heatmaps`
-            - displacements (np.ndarray): The generated displacement fields in
-                shape (K*D, H, W). The vector on each pixels represents the
-                displacement of keypoints belong to the associated instance
-                from this pixel.
-            - displacement_weights (np.ndarray): The pixel-wise weight for
-                displacements which has same shape with `displacements`
+            - heatmaps (np.ndarray): The coupled heatmap in shape
+                (1+K, H, W) where [W, H] is the `heatmap_size`.
+            - instance_heatmaps (np.ndarray): The decoupled heatmap in shape
+                (N*K, H, W) where M is the number of instances.
+            - keypoint_weights (np.ndarray): The weight for heatmaps in shape
+                (N*K).
+            - instance_coords (np.ndarray): The coordinates of instance roots
+                in shape (N, 2)
         """
 
         if keypoints_visible is None:
@@ -250,6 +223,19 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
     def decode(self, instance_heatmaps: np.ndarray,
                instance_scores: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Decode keypoint coordinates from decoupled heatmaps. The decoded
+        keypoint coordinates are in the input image space.
+
+        Args:
+            encoded (np.ndarray): Heatmaps in shape (N, K, H, W)
+
+        Returns:
+            tuple:
+            - keypoints (np.ndarray): Decoded keypoint coordinates in shape
+                (N, K, D)
+            - scores (np.ndarray): The keypoint scores in shape (N, K). It
+                usually represents the confidence of the keypoint prediction
+        """
         keypoints, keypoint_scores = [], []
 
         for i in range(instance_heatmaps.shape[0]):

@@ -373,26 +373,60 @@ class AdaptiveWingLoss(nn.Module):
 
 @MODELS.register_module()
 class FocalHeatmapLoss(KeypointMSELoss):
+    """A class for calculating the modified focal loss for heatmap prediction.
+
+    This loss function is exactly the same as the one used in CornerNet. It
+    runs faster and costs a little bit more memory.
+
+    Arguments:
+        alpha (int): The alpha parameter in the focal loss equation.
+        beta (int): The beta parameter in the focal loss equation.
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+            Defaults to ``False``
+        skip_empty_channel (bool): If ``True``, heatmap channels with no
+            non-zero value (which means no visible ground-truth keypoint
+            in the image) will not be used to calculate the loss. Defaults to
+            ``False``
+        loss_weight (float): Weight of the loss. Defaults to 1.0
+    """
 
     def __init__(self,
-                 alpha=2,
-                 beta=4,
+                 alpha: int = 2,
+                 beta: int = 4,
                  use_target_weight: bool = False,
                  skip_empty_channel: bool = False,
-                 loss_weight=1.0):
+                 loss_weight: float = 1.0):
         super(FocalHeatmapLoss, self).__init__(use_target_weight,
                                                skip_empty_channel, loss_weight)
         self.alpha = alpha
         self.beta = beta
 
-    def forward(self, pred, target, target_weights=None, mask=None):
-        """Modified focal loss.
+    def forward(self,
+                output: Tensor,
+                target: Tensor,
+                target_weights: Optional[Tensor] = None,
+                mask: Optional[Tensor] = None) -> Tensor:
+        """Calculate the modified focal loss for heatmap prediction.
 
-        Exactly the same as CornerNet.
-        Runs faster and costs a little bit more memory
-        Arguments:
-          pred (batch x c x h x w)
-          target (batch x c x h x w)
+        Note:
+            - batch_size: B
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
+
+        Args:
+            output (Tensor): The output heatmaps with shape [B, K, H, W]
+            target (Tensor): The target heatmaps with shape [B, K, H, W]
+            target_weights (Tensor, optional): The target weights of differet
+                keypoints, with shape [B, K] (keypoint-wise) or
+                [B, K, H, W] (pixel-wise).
+            mask (Tensor, optional): The masks of valid heatmap pixels in
+                shape [B, K, H, W] or [B, 1, H, W]. If ``None``, no mask will
+                be applied. Defaults to ``None``
+
+        Returns:
+            Tensor: The calculated loss.
         """
         _mask = self._get_mask(target, target_weights, mask)
 
@@ -405,9 +439,10 @@ class FocalHeatmapLoss(KeypointMSELoss):
 
         neg_weights = torch.pow(1 - target, self.beta)
 
-        pos_loss = torch.log(pred) * torch.pow(1 - pred, self.alpha) * pos_inds
-        neg_loss = torch.log(1 - pred) * torch.pow(
-            pred, self.alpha) * neg_weights * neg_inds
+        pos_loss = torch.log(output) * torch.pow(1 - output,
+                                                 self.alpha) * pos_inds
+        neg_loss = torch.log(1 - output) * torch.pow(
+            output, self.alpha) * neg_weights * neg_inds
 
         num_pos = pos_inds.float().sum()
         if num_pos == 0:

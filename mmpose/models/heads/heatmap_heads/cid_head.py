@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional, Sequence, Tuple, Union
+from typing import Dict, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -15,10 +15,17 @@ from mmpose.utils.typing import (ConfigType, Features, OptConfigType,
                                  OptSampleList, Predictions)
 from ..base_head import BaseHead
 
-OptIntSeq = Optional[Sequence[int]]
 
+def smooth_heatmaps(heatmaps: Tensor, blur_kernel_size: int) -> Tensor:
+    """Smooth the heatmaps by blurring and averaging.
 
-def smooth_heatmaps(heatmaps, blur_kernel_size):
+    Args:
+        heatmaps (Tensor): The heatmaps to smooth.
+        blur_kernel_size (int): The kernel size for blurring the heatmaps.
+
+    Returns:
+        Tensor: The smoothed heatmaps.
+    """
     smoothed_heatmaps = torch.nn.functional.avg_pool2d(
         heatmaps, blur_kernel_size, 1, (blur_kernel_size - 1) // 2)
     smoothed_heatmaps = (heatmaps + smoothed_heatmaps) / 2.0
@@ -42,21 +49,25 @@ class TruncSigmoid(nn.Sigmoid):
         self.max = max
 
     def forward(self, input: Tensor) -> Tensor:
-        """Computes the truncated sigmoid activation of the input tensor.
-
-        Args:
-            input (torch.Tensor): The input tensor.
-
-        Returns:
-            torch.Tensor: The output tensor.
-        """
+        """Computes the truncated sigmoid activation of the input tensor."""
         output = torch.sigmoid(input)
         output = output.clamp(min=self.min, max=self.max)
         return output
 
 
 class IIAModule(BaseModule):
-    # TODO: add docstring
+    """Instance Information Abstraction module introduced in `CID`. This module
+    extracts the feature representation vectors for each instance.
+
+    Args:
+        in_channels (int): Number of channels in the input feature tensor
+        out_channels (int): Number of channels of the output heatmaps
+        clamp_delta (float, optional): A small value that prevents the sigmoid
+            activation from becoming saturated. Defaults to 1e-4.
+        init_cfg (Config, optional): Config to control the initialization. See
+            :attr:`default_init_cfg` for default settings
+    """
+
     def __init__(
         self,
         in_channels: int,
@@ -79,7 +90,17 @@ class IIAModule(BaseModule):
         heatmaps = self.sigmoid(heatmaps)
         return heatmaps
 
-    def _sample_feats(self, feats, indices):
+    def _sample_feats(self, feats: Tensor, indices: Tensor) -> Tensor:
+        """Extract feature vectors at the specified indices from the input
+        feature map.
+
+        Args:
+            feats (Tensor): Input feature map.
+            indices (Tensor): Indices of the feature vectors to extract.
+
+        Returns:
+            Tensor: Extracted feature vectors.
+        """
         assert indices.dtype == torch.long
         if indices.shape[1] == 3:
             b, w, h = [ind.squeeze(-1) for ind in indices.split(1, -1)]
@@ -87,20 +108,25 @@ class IIAModule(BaseModule):
         elif indices.shape[1] == 2:
             w, h = [ind.squeeze(-1) for ind in indices.split(1, -1)]
             instance_feats = feats[:, :, h, w]
-            try:
-                instance_feats = instance_feats.permute(0, 2, 1)
-                instance_feats = instance_feats.reshape(
-                    -1, instance_feats.shape[-1])
-            except RuntimeError:
-                print(instance_feats.shape)
-                print(h)
-                print(w)
+            instance_feats = instance_feats.permute(0, 2, 1)
+            instance_feats = instance_feats.reshape(-1,
+                                                    instance_feats.shape[-1])
+
         else:
             raise ValueError(f'`indices` should have 2 or 3 channels, '
                              f'but got f{indices.shape[1]}')
         return instance_feats
 
-    def _hierarchical_pool(self, heatmaps):
+    def _hierarchical_pool(self, heatmaps: Tensor) -> Tensor:
+        """Conduct max pooling on the input heatmaps with different kernel size
+        according to the input size.
+
+        Args:
+            heatmaps (Tensor): Input heatmaps.
+
+        Returns:
+            Tensor: Result of hierarchical pooling.
+        """
         map_size = (heatmaps.shape[-1] + heatmaps.shape[-2]) / 2.0
         if map_size > 300:
             maxm = torch.nn.functional.max_pool2d(heatmaps, 7, 1, 3)
@@ -110,9 +136,20 @@ class IIAModule(BaseModule):
             maxm = torch.nn.functional.max_pool2d(heatmaps, 3, 1, 1)
         return maxm
 
-    def forward_train(self, feats: torch.Tensor, instance_coords: torch.Tensor,
-                      instance_indices: torch.Tensor
-                      ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward_train(self, feats: Tensor, instance_coords: Tensor,
+                      instance_indices: Tensor) -> Tuple[Tensor, Tensor]:
+        """Forward pass during training.
+
+        Args:
+            feats (Tensor): Input feature tensor.
+            instance_coords (Tensor): Coordinates of the instance roots.
+            instance_indices (Tensor): Sample indices of each instances
+                in the batch.
+
+        Returns:
+            Tuple[Tensor, Tensor]: Extracted feature vectors and heatmaps
+                for the instances.
+        """
         heatmaps = self.forward(feats)
         indices = torch.cat((instance_indices[:, None], instance_coords),
                             dim=1)
@@ -120,8 +157,29 @@ class IIAModule(BaseModule):
 
         return instance_feats, heatmaps
 
-    def forward_test(self, feats: Tensor, test_cfg: dict):
+    def forward_test(
+        self, feats: Tensor, test_cfg: Dict
+    ) -> Tuple[Optional[Tensor], Optional[Tensor], Optional[Tensor]]:
+        """Forward pass during testing.
 
+        Args:
+            feats (Tensor): Input feature tensor.
+            test_cfg (Dict): Testing configuration, including:
+                - blur_kernel_size (int, optional): Kernel size for blurring
+                    the heatmaps. Defaults to 3.
+                - max_instances (int, optional): Maximum number of instances
+                    to extract. Defaults to 30.
+                - score_threshold (float, optional): Minimum score for
+                    extracting an instance. Defaults to 0.01.
+                - flip_test (bool, optional): Whether to compute the average
+                    of the heatmaps across the batch dimension.
+                    Defaults to False.
+
+        Returns:
+            A tuple of Tensor including extracted feature vectors,
+            coordinates, and scores of the instances. Any of these can be
+            empty Tensor if no instances are extracted.
+        """
         blur_kernel_size = test_cfg.get('blur_kernel_size', 3)
         max_instances = test_cfg.get('max_instances', 30)
         score_threshold = test_cfg.get('score_threshold', 0.01)
@@ -143,22 +201,19 @@ class IIAModule(BaseModule):
 
         # sample feature vectors from feature map
         instance_coords = torch.stack((pos_ind % W, pos_ind // W), dim=1)
-        if len(instance_coords) > 0:
-            instance_feats = self._sample_feats(feats, instance_coords)
-        else:
-            instance_feats = None
+        instance_feats = self._sample_feats(feats, instance_coords)
 
         return instance_feats, instance_coords, scores
 
 
 class ChannelAttention(nn.Module):
-    # TODO: refine the docstrings
-    """A module that applies attention to the channel dimension of the input
-    tensor.
+    """Channel-wise attention module introduced in `CID`.
 
     Args:
-        in_channels (int): The number of channels in the input tensor.
-        out_channels (int): The number of channels in the output tensor.
+        in_channels (int): The number of channels of the input instance
+            vectors.
+        out_channels (int): The number of channels of the transformed instance
+            vectors.
     """
 
     def __init__(self, in_channels: int, out_channels: int):
@@ -166,37 +221,59 @@ class ChannelAttention(nn.Module):
         self.atn = nn.Linear(in_channels, out_channels)
 
     def forward(self, global_feats: Tensor, instance_feats: Tensor) -> Tensor:
-        """Applies attention to the channel dimension of the input tensor.
-
-        Args:
-            global_feats (torch.Tensor): The input tensor.
-            instance_feats (torch.Tensor): A tensor that contains the feature
-                vectors of each instance.
-
-        Returns:
-            torch.Tensor: The output tensor.
-        """
+        """Applies attention to the channel dimension of the input tensor."""
 
         instance_feats = self.atn(instance_feats).unsqueeze(2).unsqueeze(3)
         return global_feats * instance_feats
 
 
 class SpatialAttention(nn.Module):
+    """Spatial-wise attention module introduced in `CID`.
 
-    def __init__(self, in_channels, out_channels, heatmap_size):
+    Args:
+        in_channels (int): The number of channels of the input instance
+            vectors.
+        out_channels (int): The number of channels of the transformed instance
+            vectors.
+    """
+
+    def __init__(self, in_channels, out_channels):
         super(SpatialAttention, self).__init__()
         self.atn = nn.Linear(in_channels, out_channels)
         self.feat_stride = 4
         self.conv = nn.Conv2d(3, 1, 5, 1, 2)
 
-    def _get_pixel_coords(self, heatmap_size, device='cpu'):
+    def _get_pixel_coords(self, heatmap_size: Tuple, device: str = 'cpu'):
+        """Get pixel coordinates for each element in the heatmap.
+
+        Args:
+            heatmap_size (tuple): Size of the heatmap in (W, H) format.
+            device (str): Device to put the resulting tensor on.
+
+        Returns:
+            Tensor of shape (batch_size, num_pixels, 2) containing the pixel
+            coordinates for each element in the heatmap.
+        """
         w, h = heatmap_size
         y, x = torch.meshgrid(torch.arange(h), torch.arange(w))
         pixel_coords = torch.stack((x, y), dim=-1).reshape(-1, 2)
         pixel_coords = pixel_coords.float().to(device) + 0.5
         return pixel_coords
 
-    def forward(self, global_feats, instance_feats, instance_coords):
+    def forward(self, global_feats: Tensor, instance_feats: Tensor,
+                instance_coords: Tensor) -> Tensor:
+        """Perform spatial attention.
+
+        Args:
+            global_feats (Tensor): Tensor containing the global features.
+            instance_feats (Tensor): Tensor containing the instance feature
+                vectors.
+            instance_coords (Tensor): Tensor containing the root coordinates
+                of the instances.
+
+        Returns:
+            Tensor containing the modulated global features.
+        """
         B, C, H, W = global_feats.size()
 
         instance_feats = self.atn(instance_feats).reshape(B, C, 1, 1)
@@ -215,13 +292,25 @@ class SpatialAttention(nn.Module):
 
 
 class GFDModule(BaseModule):
+    """Global Feature Decoupling module introduced in `CID`. This module
+    extracts the decoupled heatmaps for each instance.
+
+    Args:
+        in_channels (int): Number of channels in the input feature map
+        out_channels (int): Number of channels of the output heatmaps
+            for each instance
+        gfd_channels (int): Number of channels in the transformed feature map
+        clamp_delta (float, optional): A small value that prevents the sigmoid
+            activation from becoming saturated. Defaults to 1e-4.
+        init_cfg (Config, optional): Config to control the initialization. See
+            :attr:`default_init_cfg` for default settings
+    """
 
     def __init__(
         self,
         in_channels: int,
         out_channels: int,
         gfd_channels: int,
-        heatmap_size=None,
         clamp_delta: float = 1e-4,
         init_cfg: OptConfigType = None,
     ):
@@ -235,8 +324,7 @@ class GFDModule(BaseModule):
                 kernel_size=1))
 
         self.channel_attention = ChannelAttention(in_channels, gfd_channels)
-        self.spatial_attention = SpatialAttention(in_channels, gfd_channels,
-                                                  heatmap_size)
+        self.spatial_attention = SpatialAttention(in_channels, gfd_channels)
         self.fuse_attention = build_conv_layer(
             dict(
                 type='Conv2d',
@@ -251,8 +339,28 @@ class GFDModule(BaseModule):
                 kernel_size=1))
         self.sigmoid = TruncSigmoid(min=clamp_delta, max=1 - clamp_delta)
 
-    def forward(self, feats, instance_feats, instance_coords,
-                instance_indices):
+    def forward(
+        self,
+        feats: Tensor,
+        instance_feats: Tensor,
+        instance_coords: Tensor,
+        instance_indices: Tensor,
+    ) -> Tensor:
+        """Extract decoupled heatmaps for each instance.
+
+        Args:
+            feats (Tensor): Input feature maps.
+            instance_feats (Tensor): Tensor containing the instance feature
+                vectors.
+            instance_coords (Tensor): Tensor containing the root coordinates
+                of the instances.
+            instance_indices (Tensor): Sample indices of each instances
+                in the batch.
+
+        Returns:
+            A tensor containing decoupled heatmaps.
+        """
+
         global_feats = self.conv_down(feats)
         global_feats = global_feats[instance_indices]
         cond_instance_feats = torch.cat(
@@ -264,27 +372,74 @@ class GFDModule(BaseModule):
         cond_instance_feats = self.fuse_attention(cond_instance_feats)
         cond_instance_feats = torch.nn.functional.relu(cond_instance_feats)
         cond_instance_feats = self.heatmap_conv(cond_instance_feats)
-        cond_instance_feats = self.sigmoid(cond_instance_feats)
+        heatmaps = self.sigmoid(cond_instance_feats)
 
-        return cond_instance_feats
+        return heatmaps
 
 
-@MODELS.register_module(force=True)
+@MODELS.register_module()
 class CIDHead(BaseHead):
+    """Contextual Instance Decoupling head introduced in `Contextual Instance
+    Decoupling for Robust Multi-Person Pose Estimation (CID)`_ by Wang et al
+    (2022). The head is composed of an Instance Information Abstraction (IIA)
+    module and a Global Feature Decoupling (GFD) module.
+
+    Args:
+        in_channels (int | Sequence[int]): Number of channels in the input
+            feature map
+        num_keypoints (int): Number of keypoints
+        gfd_channels (int): Number of filters in GFD module
+        max_train_instances (int): Maximum number of instances in a batch
+            during training. Defaults to 200
+        input_transform (str): Transformation of input features which should
+            be one of the following options:
+
+                - ``'resize_concat'``: Resize multiple feature maps specified
+                    by ``input_index`` to the same size as the first one and
+                    concat these feature maps
+                - ``'select'``: Select feature map(s) specified by
+                    ``input_index``. Multiple selected features will be
+                    bundled into a tuple
+
+            Defaults to ``'select'``
+        input_index (int | Sequence[int]): The feature map index used in the
+            input transformation. See also ``input_transform``. Defaults to -1
+        align_corners (bool): `align_corners` argument of
+            :func:`torch.nn.functional.interpolate` used in the input
+            transformation. Defaults to ``False``
+        heatmap_loss (Config): Config of the heatmap loss. Defaults to use
+            :class:`KeypointMSELoss`
+        coupled_heatmap_loss (Config): Config of the loss for coupled heatmaps.
+            Defaults to use :class:`SoftWeightSmoothL1Loss`
+        decoupled_heatmap_loss (Config): Config of the loss for decoupled
+            heatmaps. Defaults to use :class:`SoftWeightSmoothL1Loss`
+        contrastive_loss (Config): Config of the contrastive loss for
+            representation vectors of instances. Defaults to use
+            :class:`InfoNCELoss`
+        decoder (Config, optional): The decoder config that controls decoding
+            keypoint coordinates from the network output. Defaults to ``None``
+        init_cfg (Config, optional): Config to control the initialization. See
+            :attr:`default_init_cfg` for default settings
+
+    .. _`CID`: https://openaccess.thecvf.com/content/CVPR2022/html/Wang_
+    Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_
+    CVPR_2022_paper.html
+    """
     _version = 2
 
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
                  gfd_channels: int,
                  num_keypoints: int,
-                 heatmap_size: Tuple[int, int],
                  max_train_instances=200,
                  input_transform: str = 'select',
                  input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
-                 multi_instance_heatmap_loss: OptConfigType = None,
-                 single_instance_heatmap_loss: OptConfigType = None,
-                 contrastive_loss: OptConfigType = None,
+                 coupled_heatmap_loss: OptConfigType = dict(
+                     type='FocalHeatmapLoss'),
+                 decoupled_heatmap_loss: OptConfigType = dict(
+                     type='FocalHeatmapLoss'),
+                 contrastive_loss: OptConfigType = dict(type='InfoNCELoss'),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -313,14 +468,13 @@ class CIDHead(BaseHead):
 
         # build sub-modules
         self.iia_module = IIAModule(in_channels, num_keypoints + 1)
-        self.gfd_module = GFDModule(in_channels, num_keypoints, gfd_channels,
-                                    heatmap_size)
+        self.gfd_module = GFDModule(in_channels, num_keypoints, gfd_channels)
 
         # build losses
         self.loss_module = ModuleDict(
             dict(
-                heatmap_multi_inst=MODELS.build(multi_instance_heatmap_loss),
-                heatmap_single_inst=MODELS.build(single_instance_heatmap_loss),
+                heatmap_coupled=MODELS.build(coupled_heatmap_loss),
+                heatmap_decoupled=MODELS.build(decoupled_heatmap_loss),
                 contrastive=MODELS.build(contrastive_loss),
             ))
 
@@ -346,9 +500,15 @@ class CIDHead(BaseHead):
         Returns:
             Tensor: output heatmap.
         """
-        raise NotImplementedError
-        x = self._transform_inputs(feats)
-        return x
+        feats = self._transform_inputs(feats)
+        instance_info = self.iia_module.forward_test(feats, {})
+        instance_feats, instance_coords, instance_scores = instance_info
+        instance_indices = torch.zeros(
+            instance_coords.size(0), dtype=torch.long, device=feats.device)
+        instance_heatmaps = self.gfd_module(feats, instance_feats,
+                                            instance_coords, instance_indices)
+
+        return instance_heatmaps
 
     def predict(self,
                 feats: Features,
@@ -501,14 +661,14 @@ class CIDHead(BaseHead):
 
         # calculate losses
         losses = {
-            'loss/heatmap_multi_inst':
-            self.loss_module['heatmap_multi_inst'](pred_heatmaps, gt_heatmaps,
-                                                   None, heatmap_mask),
-            'loss/heatmap_single_inst':
-            self.loss_module['heatmap_single_inst'](pred_instance_heatmaps,
-                                                    gt_instance_heatmaps,
-                                                    keypoint_weights,
-                                                    heatmap_mask),
+            'loss/heatmap_coupled':
+            self.loss_module['heatmap_coupled'](pred_heatmaps, gt_heatmaps,
+                                                None, heatmap_mask),
+            'loss/heatmap_decoupled':
+            self.loss_module['heatmap_decoupled'](pred_instance_heatmaps,
+                                                  gt_instance_heatmaps,
+                                                  keypoint_weights,
+                                                  heatmap_mask),
             'loss/contrastive':
             self.loss_module['contrastive'](pred_instance_feats)
         }
@@ -519,8 +679,8 @@ class CIDHead(BaseHead):
                                   **kwargs):
         # TODO: modify the docstring
         """A hook function to convert old-version state dict of
-        :class:`DEKRHead` (before MMPose v1.0.0) to a compatible format
-        of :class:`DEKRHead`.
+        :class:`CIDHead` (before MMPose v1.0.0) to a compatible format
+        of :class:`CIDHead`.
 
         The hook will be automatically registered during initialization.
         """

@@ -80,14 +80,13 @@ model = dict(
         in_channels=(48, 96, 192, 384),
         num_keypoints=17,
         gfd_channels=48,
-        heatmap_size=codec['heatmap_size'],
         input_transform='resize_concat',
         input_index=(0, 1, 2, 3),
         multi_instance_heatmap_loss=dict(
             type='FocalHeatmapLoss', loss_weight=1.0),
         single_instance_heatmap_loss=dict(
             type='FocalHeatmapLoss', loss_weight=4.0),
-        contrastive_loss=dict(type='ContrastiveLoss', loss_weight=1.0),
+        contrastive_loss=dict(type='InfoNCELoss', loss_weight=1.0),
         decoder=codec,
     ),
     test_cfg=dict(
