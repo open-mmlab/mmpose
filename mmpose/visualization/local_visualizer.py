@@ -12,7 +12,7 @@ from mmengine.visualization import Visualizer
 
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
-from simCCVis import SimCCVisualizer
+from simcc_vis import SimCCVisualizer
 
 
 def _get_adaptive_scales(areas: np.ndarray,
