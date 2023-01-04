@@ -68,7 +68,7 @@ mim test mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py $
 
 |           Model           | Backbone  |  AP   |  AR   |                                   Config                                   |                                      Download                                      |
 | :-----------------------: | :-------: | :---: | :---: | :------------------------------------------------------------------------: | :--------------------------------------------------------------------------------: |
-| ExampleHead + ExampleLoss | HRNet-w32 | 82.33 | 96.15 | [config](./configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py) | [model](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) \| [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
+| ExampleHead + ExampleLoss | HRNet-w32 | 0.749 | 0.804 | [config](./configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py) | [model](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) \| [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
 
 ## Citation
 
