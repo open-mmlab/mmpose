@@ -18,4 +18,5 @@ models:
   - shufflenetv2_coco_256x192
   - hrnet_w32_coco_256x192_udp
   - res50_wflw_256x256
+  - res50_coco_256x192
 

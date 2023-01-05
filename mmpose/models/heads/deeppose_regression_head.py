@@ -62,8 +62,14 @@ class DeepposeRegressionHead(nn.Module):
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
         assert target.dim() == 3 and target_weight.dim() == 3
+        
+        output = output.cpu()
+        target = target.cpu()
+        target_weight = target_weight.cpu()
+        self.loss = self.loss.cpu()
+        
         losses['reg_loss'] = self.loss(output, target, target_weight)
-
+    
         return losses
 
     def get_accuracy(self, output, target, target_weight):

@@ -61,6 +61,9 @@ case $MODEL_NAME in
     "res50_wflw_256x256")
         FULL_MODEL="face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256"
         ;;
+    "res50_coco_256x192")
+        FULL_MODEL="body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192"
+        ;;
     *)
        echo "invalid $MODEL_NAME"
        exit 1
@@ -74,7 +77,7 @@ folder_model=${FULL_MODEL%/*}
 
 # 8. run model
 srun -p $1 -n$2\
-        --gres gpu:$g \
+        --gres mlu:$g \
         --ntasks-per-node $g \
         --job-name=${FRAME_NAME}_${MODEL_NAME} ${SRUN_ARGS}\
     python -u $pyroot/tools/train.py $pyroot/algolib/configs/$folder_model/$file_model.py --launcher=slurm  \
