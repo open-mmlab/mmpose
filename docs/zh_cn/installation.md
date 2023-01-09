@@ -18,7 +18,7 @@
 
 在本节中，我们将演示如何准备 PyTorch 相关的依赖环境。
 
-MMPose 适用于 Linux、Windows 和 macOS。它需要 Python 3.6+、CUDA 9.2+ 和 PyTorch 1.6+。
+MMPose 适用于 Linux、Windows 和 macOS。它需要 Python 3.7+、CUDA 9.2+ 和 PyTorch 1.6+。
 
 如果您对配置 PyTorch 环境已经很熟悉，并且已经完成了配置，可以直接进入下一节：[安装](#安装-mmpose)。否则，请依照以下步骤完成配置。
 
