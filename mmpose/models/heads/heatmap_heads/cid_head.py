@@ -543,6 +543,8 @@ class CIDHead(BaseHead):
 
                 - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
         """
+        metainfo = batch_data_samples[0].metainfo
+
         if test_cfg.get('flip_test', False):
             assert isinstance(feats, list) and len(feats) == 2
 
@@ -578,7 +580,10 @@ class CIDHead(BaseHead):
 
             preds = self.decode((instance_heatmaps, instance_scores[:, None]))
             preds = InstanceData.cat(preds)
-            preds.keypoints[..., :2] += 1.5
+            preds.keypoints[..., 0] += metainfo['input_size'][
+                0] / instance_heatmaps.shape[-1] / 2.0
+            preds.keypoints[..., 1] += metainfo['input_size'][
+                1] / instance_heatmaps.shape[-2] / 2.0
             preds = [preds]
 
         else:
