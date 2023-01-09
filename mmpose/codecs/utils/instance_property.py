@@ -1,20 +1,27 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional, Tuple
+from typing import Optional
 
 import numpy as np
 
 
 def get_instance_root(keypoints: np.ndarray,
                       keypoints_visible: Optional[np.ndarray] = None,
-                      root_type: str = 'kpt_center',
-                      output_size: Optional[Tuple[int,
-                                                  int]] = None) -> np.ndarray:
+                      root_type: str = 'kpt_center') -> np.ndarray:
     """Calculate the coordinates and visibility of instance roots.
 
     Args:
         keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
         keypoints_visible (np.ndarray): Keypoint visibilities in shape
             (N, K)
+        root_type (str): Calculation of instance roots which should
+            be one of the following options:
+
+                - ``'kpt_center'``: The roots' coordinates are the mean
+                    coordinates of visible keypoints
+                - ``'bbox_center'``: The roots' are the center of bounding
+                    boxes outlined by visible keypoints
+
+            Defaults to ``'kpt_center'``
 
     Returns:
         tuple
@@ -41,20 +48,16 @@ def get_instance_root(keypoints: np.ndarray,
         # compute the instance root with visible keypoints
         if root_type == 'kpt_center':
             roots_coordinate[i] = visible_keypoints.mean(axis=0)
+            roots_visible[i] = 1
         elif root_type == 'bbox_center':
             roots_coordinate[i] = (visible_keypoints.max(axis=0) +
                                    visible_keypoints.min(axis=0)) / 2.0
+            roots_visible[i] = 1
         else:
             raise ValueError(
                 f'the value of `root_type` must be \'kpt_center\' or '
                 f'\'bbox_center\', but got \'{root_type}\'')
 
-        if output_size is not None:
-            W, H = output_size
-            # compute the visibility of roots
-            if roots_coordinate[i][0] >= W or roots_coordinate[i][
-                    1] >= H or roots_coordinate[i].min() < 0:
-                roots_visible[i] = 0
     return roots_coordinate, roots_visible
 
 

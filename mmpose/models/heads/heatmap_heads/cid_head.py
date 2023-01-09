@@ -576,8 +576,7 @@ class CIDHead(BaseHead):
             instance_heatmaps = smooth_heatmaps(
                 instance_heatmaps, test_cfg.get('blur_kernel_size', 3))
 
-            preds = self.decode((instance_heatmaps, instance_scores[...,
-                                                                    None]))
+            preds = self.decode((instance_heatmaps, instance_scores[:, None]))
             preds = InstanceData.cat(preds)
             preds.keypoints[..., :2] += 1.5
             preds = [preds]
@@ -588,10 +587,15 @@ class CIDHead(BaseHead):
                     keypoints=np.empty((0, self.num_keypoints, 2)),
                     keypoint_scores=np.empty((0, self.num_keypoints)))
             ]
-            instance_heatmaps = []
+            instance_heatmaps = torch.empty(0, self.num_keypoints,
+                                            *feats.shape[-2:])
 
         if test_cfg.get('output_heatmaps', False):
-            pred_fields = [PixelData(heatmaps=hm) for hm in instance_heatmaps]
+            pred_fields = [
+                PixelData(
+                    heatmaps=instance_heatmaps.reshape(
+                        -1, *instance_heatmaps.shape[-2:]))
+            ]
             return preds, pred_fields
         else:
             return preds
@@ -617,7 +621,7 @@ class CIDHead(BaseHead):
         gt_heatmaps = torch.stack(
             [d.gt_fields.heatmaps for d in batch_data_samples])
         gt_instance_coords = torch.cat(
-            [d.gt_instance_labels.instance_coords for d in batch_data_samples])
+            [d.gt_instances.instance_coords for d in batch_data_samples])
         keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
@@ -631,7 +635,7 @@ class CIDHead(BaseHead):
         for i, d in enumerate(batch_data_samples):
             instance_indices.append(
                 torch.ones(
-                    len(d.gt_instance_labels.instance_coords),
+                    len(d.gt_instances.instance_coords),
                     dtype=torch.long,
                     device=gt_heatmaps.device) * i)
             instance_heatmaps = d.gt_fields.instance_heatmaps.reshape(

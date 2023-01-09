@@ -163,13 +163,15 @@ class InfoNCELoss(nn.Module):
     Args:
         temperature (float, optional): The temperature to use in the softmax
             function. Higher temperatures lead to softer probability
-            distributions. Defaults to 0.05.
+            distributions. Defaults to 1.0.
         loss_weight (float, optional): The weight to apply to the loss.
             Defaults to 1.0.
     """
 
-    def __init__(self, temperature: float = 0.05, loss_weight=1.0) -> None:
+    def __init__(self, temperature: float = 1.0, loss_weight=1.0) -> None:
         super(InfoNCELoss, self).__init__()
+        assert temperature > 0, f'the argument `temperature` must be ' \
+                                f'positive, but got {temperature}'
         self.temp = temperature
         self.loss_weight = loss_weight
 

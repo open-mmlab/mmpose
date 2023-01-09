@@ -446,7 +446,7 @@ class FocalHeatmapLoss(KeypointMSELoss):
 
         num_pos = pos_inds.float().sum()
         if num_pos == 0:
-            loss = -neg_loss
+            loss = -neg_loss.sum()
         else:
             loss = -(pos_loss.sum() + neg_loss.sum()) / num_pos
         return loss * self.loss_weight

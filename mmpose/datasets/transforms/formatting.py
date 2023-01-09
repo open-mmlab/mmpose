@@ -92,8 +92,8 @@ class PackPoseInputs(BaseTransform):
     }
 
     # items in `label_mapping_table` will be packed into
-    # PoseDataSample.gt_instances and converted to Tensor. These items will
-    # be used for computing losses
+    # PoseDataSample.gt_instance_labels and converted to Tensor. These items
+    # will be used for computing losses
     label_mapping_table = {
         'keypoint_labels': 'keypoint_labels',
         'keypoint_x_labels': 'keypoint_x_labels',

@@ -12,7 +12,7 @@ from .utils.post_processing import get_heatmap_maximum
 from .utils.refinement import refine_keypoints
 
 
-@KEYPOINT_CODECS.register_module(force=True)
+@KEYPOINT_CODECS.register_module()
 class DecoupledHeatmap(BaseKeypointCodec):
     """Encode/decode keypoints with the method introduced in the paper CID.
 
@@ -49,9 +49,8 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
             Defaults to ``'kpt_center'``
 
-        heatmap_min_overlap (float): The threshold of diagonal
-            length of instance bounding box. Small instances will not be
-            used in training. Defaults to 32
+        heatmap_min_overlap (float): Minimum overlap rate among instances.
+            Used when calculating sigmas for instances. Defaults to 0.7
         background_weight (float): Loss weight of background pixels.
             Defaults to 0.1
         encode_max_instances (int): The maximum number of instances
@@ -166,8 +165,7 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
         # compute the root and scale of each instance
         roots, roots_visible = get_instance_root(_keypoints, keypoints_visible,
-                                                 self.root_type,
-                                                 self.heatmap_size)
+                                                 self.root_type)
 
         sigmas = self._get_instance_wise_sigmas(_keypoints, keypoints_visible)
 
@@ -227,7 +225,9 @@ class DecoupledHeatmap(BaseKeypointCodec):
         keypoint coordinates are in the input image space.
 
         Args:
-            encoded (np.ndarray): Heatmaps in shape (N, K, H, W)
+            instance_heatmaps (np.ndarray): Heatmaps in shape (N, K, H, W)
+            instance_scores (np.ndarray): Confidence of instance roots
+                prediction in shape (N, 1)
 
         Returns:
             tuple:
