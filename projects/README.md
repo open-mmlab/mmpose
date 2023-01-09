@@ -8,7 +8,7 @@ Here is an [example project](./example_project) about how to add your algorithms
 
 We also provide some documentation listed below:
 
-- [New Model Guide](https://mmpose.readthedocs.io/en/latest/tutorials/4_new_modules.html)
+- [New Model Guide](https://mmpose.readthedocs.io/en/1.x/migration.html#step3-model)
 
   The documentation of adding new models.
 
@@ -18,4 +18,4 @@ We also provide some documentation listed below:
 
 - [Discussions](https://github.com/open-mmlab/mmpose/discussions)
 
-  Welcome to start discussion!
+  Welcome to start a discussion!

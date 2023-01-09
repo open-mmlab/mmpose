@@ -8,7 +8,7 @@ according to your project.
 
 ### Setup Environment
 
-Please refer to [Installation](https://mmpose.readthedocs.io/en/latest/install.html#installation) to install MMPose.
+Please refer to [Installation](https://mmpose.readthedocs.io/en/1.x/installation.html) to install MMPose.
 
 At first, add the current folder to `PYTHONPATH`, so that Python can find your code. Run command in the current directory to add it.
 
@@ -20,7 +20,7 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 
 ### Data Preparation
 
-Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/latest/tasks/2d_body_keypoint.html#coco).
+Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/1.x/dataset_zoo/2d_body_keypoint.html#coco).
 
 ### Training commands
 
