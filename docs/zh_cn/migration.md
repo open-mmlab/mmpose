@@ -483,6 +483,15 @@ init_cfg=dict(
     checkpoint='PATH/TO/YOUR_MODEL_WEIGHTS.pth'),
 ```
 
+如果你想只加载一个训练好的 checkpoint 的 backbone 部分，你需要指明一下前缀 `prefix`:
+
+```Python
+init_cfg=dict(
+    type='Pretrained',
+    prefix='backbone.',
+    checkpoint='PATH/TO/YOUR_CHECKPOINT.pth'),
+```
+
 其中 `checkpoint` 既可以是本地路径，也可以是下载链接。因此，如果你想使用 Torchvision 提供的预训练模型（比如ResNet50），可以使用：
 
 ```Python
