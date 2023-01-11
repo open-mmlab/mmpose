@@ -50,6 +50,10 @@ loss_cfg = dict(
 loss = MODELS.build(loss_cfg) # equals to `loss = Loss_A(param1=1.0, param2=True)`
 ```
 
+```{note}
+Note that all new modules need to be registered using `Registry` and imported in `__init__.py` in the corresponding directory before we can create their instances from configs.
+```
+
 Here is a list of pre-defined registries in MMPose:
 
 - `DATASETS`: data-related modules
