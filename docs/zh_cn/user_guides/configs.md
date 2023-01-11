@@ -68,6 +68,10 @@ MMPose 预定义的 Registry 在 `$MMPOSE/mmpose/registry.py` 中，目前支持
 
 - `HOOKS`：钩子类
 
+```{note}
+需要注意的是，所有新增的模块都需要使用注册器（Registry）进行注册，并在对应目录的 `__init__.py` 中进行 `import`，以便能够使用配置文件构建其实例。
+```
+
 ## 配置系统
 
 具体而言，一个配置文件主要包含如下五个部分：
