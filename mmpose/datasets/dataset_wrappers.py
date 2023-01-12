@@ -86,9 +86,7 @@ class CombinedDataset(BaseDataset):
 
         subset_idx, sample_idx = self._get_subset_index(idx)
         # Get data sample from the subset
-        data_info = self.datasets[subset_idx].get_data_info(sample_idx)
-        if hasattr(self.datasets[subset_idx], 'pipeline'):
-            data_info = self.datasets[subset_idx].pipeline(data_info)
+        data_info = self.datasets[subset_idx][sample_idx]
 
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [
