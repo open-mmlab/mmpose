@@ -84,8 +84,19 @@ class CombinedDataset(BaseDataset):
             Any: Depends on ``self.pipeline``.
         """
 
+        data_info = self.get_data_info(idx)
+        return self.pipeline(data_info)
+
+    def get_data_info(self, idx: int) -> dict:
+        """Get annotation by index.
+
+        Args:
+            idx (int): Global index of ``CombinedDataset``.
+        Returns:
+            dict: The idx-th annotation of the datasets.
+        """
         subset_idx, sample_idx = self._get_subset_index(idx)
-        # Get data sample from the subset
+        # Get data sample processed by ``self.pipeline`` from the subset
         data_info = self.datasets[subset_idx][sample_idx]
 
         # Add metainfo items that are required in the pipeline and the model
@@ -100,7 +111,7 @@ class CombinedDataset(BaseDataset):
                 'exists in the `data_info`.')
             data_info[key] = deepcopy(self._metainfo[key])
 
-        return self.pipeline(data_info)
+        return data_info
 
     def full_init(self):
         """Fully initialize all sub datasets."""
