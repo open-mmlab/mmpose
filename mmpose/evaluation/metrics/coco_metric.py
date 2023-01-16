@@ -273,6 +273,11 @@ class CocoMetric(BaseMetric):
 
             # filter duplicate annotations
             for ann in gt_dict['raw_ann_info']:
+                if ann is None:
+                    # during evaluation on bottom-up datasets, some images
+                    # do not have instance annotation
+                    continue
+
                 annotation = dict(
                     id=ann['id'],
                     image_id=ann['image_id'],

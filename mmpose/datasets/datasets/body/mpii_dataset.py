@@ -150,7 +150,7 @@ class MpiiDataset(BaseCocoStyleDataset):
 
         instance_list = []
         image_list = []
-        used_image_ids = set()
+        used_img_ids = set()
         ann_id = 0
 
         # mpii bbox scales are normalized with factor 200.
@@ -197,8 +197,8 @@ class MpiiDataset(BaseCocoStyleDataset):
                 head_size *= SC_BIAS
                 instance_info['head_size'] = head_size.reshape(1, -1)
 
-            if instance_info['img_id'] not in used_image_ids:
-                used_image_ids.add(instance_info['img_id'])
+            if instance_info['img_id'] not in used_img_ids:
+                used_img_ids.add(instance_info['img_id'])
                 image_list.append({
                     'img_id': instance_info['img_id'],
                     'img_path': instance_info['img_path'],

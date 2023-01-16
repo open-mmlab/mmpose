@@ -357,7 +357,8 @@ class BaseCocoStyleDataset(BaseDataset):
                     data_info_bu = {
                         'img_id': img_info['img_id'],
                         'img_path': img_info['img_path'],
-                        'id': [-1],
+                        'id': list(),
+                        'raw_ann_info': None,
                     }
                     data_list_bu.append(data_info_bu)
 

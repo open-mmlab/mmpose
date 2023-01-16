@@ -114,7 +114,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
 
         instance_list = []
         image_list = []
-        used_image_ids = set()
+        used_img_ids = set()
 
         # mpii-trb bbox scales are normalized with factor 200.
         pixel_std = 200.
@@ -157,8 +157,8 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
                     ann['headbox'], dtype=np.float32)
 
             instance_list.append(instance_info)
-            if instance_info['img_id'] not in used_image_ids:
-                used_image_ids.add(instance_info['img_id'])
+            if instance_info['img_id'] not in used_img_ids:
+                used_img_ids.add(instance_info['img_id'])
                 image_list.append({
                     'img_id': instance_info['img_id'],
                     'img_path': instance_info['img_path'],
