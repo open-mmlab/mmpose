@@ -177,11 +177,15 @@ class CocoMetric(BaseMetric):
             pred['keypoints'] = keypoints
             pred['keypoint_scores'] = keypoint_scores
             pred['category_id'] = data_sample.get('category_id', 1)
-            bbox_scores = data_sample['gt_instances']['bbox_scores']
-            if len(bbox_scores) != len(keypoints):
+
+            if ('bbox_scores' not in data_sample['gt_instances']
+                    or len(data_sample['gt_instances']['bbox_scores']) !=
+                    len(keypoints)):
                 # bottom-up models might output different number of
                 # instances from annotation
                 bbox_scores = np.ones(len(keypoints))
+            else:
+                bbox_scores = data_sample['gt_instances']['bbox_scores']
             pred['bbox_scores'] = bbox_scores
 
             # get area information
