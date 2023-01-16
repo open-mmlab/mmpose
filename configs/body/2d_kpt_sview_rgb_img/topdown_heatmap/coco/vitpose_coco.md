@@ -33,6 +33,8 @@
 
 </details>
 
+The backbone models are pre-trained using MAE. The small-size pre-trained backbone can be found in [link](https://github.com/ViTAE-Transformer/ViTPose). The base, large, and huge pre-trained backbones can be found in [link](https://github.com/facebookresearch/mae).
+
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch                                                                                                             | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |    ckpt    |    log    |
