@@ -247,7 +247,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
         """
 
         if input_transform is not None:
-            assert input_transform in ['resize_concat', 'multiple_select']
+            assert input_transform in ['resize_concat', 'multiple_select', 'resize_upsample4']
         self.input_transform = input_transform
         self.in_index = in_index
         if input_transform is not None:
@@ -273,6 +273,13 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
             Tensor: The transformed inputs
         """
         if not isinstance(inputs, list):
+            if self.input_transform == 'resize_upsample4':
+                inputs = resize(
+                            input=torch.nn.functional.relu(inputs),
+                            scale_factor=4,
+                            mode='bilinear',
+                            align_corners=self.align_corners
+                        )
             return inputs
 
         if self.input_transform == 'resize_concat':

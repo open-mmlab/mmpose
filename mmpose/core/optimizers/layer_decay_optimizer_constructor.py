@@ -2,10 +2,9 @@
 import json
 import warnings
 
-from mmcv.runner import DefaultOptimizerConstructor, get_dist_info
+from mmcv.runner import DefaultOptimizerConstructor, get_dist_info, OPTIMIZER_BUILDERS
 
 from mmpose.utils import get_root_logger
-from .builder import OPTIMIZER_BUILDERS
 
 
 def get_layer_id_for_convnext(var_name, max_layer_id):
@@ -144,7 +143,8 @@ class LearningRateDecayOptimizerConstructor(DefaultOptimizerConstructor):
                         name, self.paramwise_cfg.get('num_layers'))
                     logger.info(f'set param {name} as id {layer_id}')
                 elif 'BEiT' in module.backbone.__class__.__name__ or \
-                     'MAE' in module.backbone.__class__.__name__:
+                     'MAE' in module.backbone.__class__.__name__ or \
+                     'VisionTransformer' in module.backbone.__class__.__name__:
                     layer_id = get_layer_id_for_vit(name, num_layers)
                     logger.info(f'set param {name} as id {layer_id}')
                 else:
