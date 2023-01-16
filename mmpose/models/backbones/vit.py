@@ -10,6 +10,7 @@ import torch.utils.checkpoint as cp
 from mmcv.cnn import build_norm_layer, constant_init, trunc_normal_init
 from mmcv.cnn.bricks.transformer import FFN, MultiheadAttention
 from mmcv.runner import BaseModule, ModuleList, _load_checkpoint
+from torch.nn.modules.utils import _pair as to_2tuple
 
 from ...utils import get_root_logger
 from ..builder import BACKBONES
@@ -178,6 +179,15 @@ class VisionTransformer(BaseBackbone):
     ):
         super(VisionTransformer, self).__init__()
 
+        if isinstance(img_size, int):
+            img_size = to_2tuple(img_size)
+        elif isinstance(img_size, tuple):
+            if len(img_size) == 1:
+                img_size = to_2tuple(img_size[0])
+            assert len(img_size) == 2, \
+                f'The size of image should have length 1 or 2, ' \
+                f'but got {len(img_size)}'
+
         self.img_size = img_size
         self.patch_size = patch_size
         self.with_cp = with_cp
@@ -206,6 +216,7 @@ class VisionTransformer(BaseBackbone):
             self.out_indices = out_indices
         else:
             raise TypeError('out_indices must be type of int, list or tuple')
+
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, num_layers)]
 
         self.layers = ModuleList()

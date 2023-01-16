@@ -261,6 +261,18 @@ def test_top_down_simple_head():
     out = head([inputs])
     assert out.shape == torch.Size([1, 3, 32, 32])
 
+    # Test upsample case
+    head = TopdownHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        num_deconv_layers=0,
+        input_transform='resize_upsample4',
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+    input_shape = (1, 512, 32, 32)
+    inputs = _demo_inputs(input_shape)
+    out = head(inputs)
+    assert out.shape == torch.Size([1, 3, 128, 128])
+
     head.init_weights()
 
 
