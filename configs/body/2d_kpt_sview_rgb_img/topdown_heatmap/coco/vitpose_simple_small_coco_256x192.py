@@ -12,7 +12,7 @@ optimizer = dict(
     constructor='LayerDecayOptimizerConstructor',
     paramwise_cfg=dict(
         num_layers=12,
-        layer_decay_rate=0.9,
+        layer_decay_rate=0.8,
     ))
 
 optimizer_config = dict(grad_clip=dict(max_norm=1., norm_type=2))
@@ -48,7 +48,7 @@ model = dict(
         num_layers=12,
         num_heads=12,
         mlp_ratio=4,
-        drop_path_rate=0.3,
+        drop_path_rate=0.1,
         final_norm=True,
     ),
     keypoint_head=dict(
