@@ -30,6 +30,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
             If num_deconv_layers > 0, the length of
         num_deconv_kernels (list|tuple): Kernel sizes.
         in_index (int|Sequence[int]): Input feature index. Default: 0
+        upsample (int): Directly upsample ratio of input features. Default: 0
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
             Default: None.
@@ -53,6 +54,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
                  num_deconv_kernels=(4, 4, 4),
                  extra=None,
                  in_index=0,
+                 upsample=0,
                  input_transform=None,
                  align_corners=False,
                  loss_keypoint=None,
@@ -70,6 +72,10 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
         self._init_inputs(in_channels, in_index, input_transform)
         self.in_index = in_index
         self.align_corners = align_corners
+
+        self.upsample = upsample
+        if self.upsample > 0:
+            assert isinstance(in_index, int)
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -247,9 +253,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
         """
 
         if input_transform is not None:
-            assert input_transform in [
-                'resize_concat', 'multiple_select', 'resize_upsample4'
-            ]
+            assert input_transform in ['resize_concat', 'multiple_select']
         self.input_transform = input_transform
         self.in_index = in_index
         if input_transform is not None:
@@ -275,10 +279,10 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
             Tensor: The transformed inputs
         """
         if not isinstance(inputs, list):
-            if self.input_transform == 'resize_upsample4':
+            if self.upsample > 0:
                 inputs = resize(
                     input=torch.nn.functional.relu(inputs),
-                    scale_factor=4,
+                    scale_factor=self.upsample,
                     mode='bilinear',
                     align_corners=self.align_corners)
             return inputs

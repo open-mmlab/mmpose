@@ -266,7 +266,7 @@ def test_top_down_simple_head():
         out_channels=3,
         in_channels=512,
         num_deconv_layers=0,
-        input_transform='resize_upsample4',
+        upsample=4,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
