@@ -344,7 +344,7 @@ class VisionTransformer(BaseBackbone):
         if not cls_token:
             if x_len != (pos_len - 1):
                 if pos_len == (self.img_size[0] // self.patch_size) * (
-                        self.img_size[1] // self.patch_size):
+                        self.img_size[1] // self.patch_size) + 1:
                     pos_h = self.img_size[0] // self.patch_size
                     pos_w = self.img_size[1] // self.patch_size
                 else:
@@ -358,7 +358,7 @@ class VisionTransformer(BaseBackbone):
         else:
             if x_len != pos_len:
                 if pos_len == (self.img_size[0] // self.patch_size) * (
-                        self.img_size[1] // self.patch_size):
+                        self.img_size[1] // self.patch_size) + 1:
                     pos_h = self.img_size[0] // self.patch_size
                     pos_w = self.img_size[1] // self.patch_size
                 else:
