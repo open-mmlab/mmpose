@@ -45,6 +45,8 @@ model = dict(
         img_size=(256, 192),
         patch_size=16,
         embed_dims=1024,
+        # Optional in train
+        padding=2,
         num_layers=24,
         num_heads=16,
         mlp_ratio=4,

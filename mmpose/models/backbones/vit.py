@@ -132,6 +132,7 @@ class VisionTransformer(BaseBackbone):
         img_size (int | tuple): Input image size. Default: 224.
         patch_size (int): The patch size. Default: 16.
         in_channels (int): Number of input channels. Default: 3.
+        padding (int): Padding used in the patchembed laher. Default: 0.
         embed_dims (int): embedding dimension. Default: 768.
         num_layers (int): depth of transformer. Default: 12.
         num_heads (int): number of attention heads. Default: 12.
@@ -162,6 +163,7 @@ class VisionTransformer(BaseBackbone):
         img_size=(256, 192),
         patch_size=16,
         in_channels=3,
+        padding=0,
         embed_dims=768,
         num_layers=12,
         num_heads=12,
@@ -198,6 +200,7 @@ class VisionTransformer(BaseBackbone):
             conv_type='Conv2d',
             kernel_size=patch_size,
             stride=patch_size,
+            padding=padding,
             norm_cfg=None,
             init_cfg=None)
 
