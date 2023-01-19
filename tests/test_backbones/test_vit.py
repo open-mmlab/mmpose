@@ -34,6 +34,12 @@ def test_vit_backbone():
     model.init_weights()
     model(imgs)
 
+    # Test img_size isinstance int
+    imgs = torch.randn(1, 3, 224, 224)
+    model = VisionTransformer(img_size=224)
+    model.init_weights()
+    model(imgs)
+
     # Test img_size isinstance tuple
     imgs = torch.randn(1, 3, 224, 224)
     model = VisionTransformer(img_size=(224, 224))
@@ -82,3 +88,31 @@ def test_vit_backbone():
     imgs = torch.randn(1, 3, 224, 224)
     feat = model(imgs)
     assert feat.shape == (1, 768, 14, 14)
+
+    # Test checkpoint
+    model = VisionTransformer(with_cp=True)
+    imgs = torch.randn(1, 3, 224, 224)
+    feat = model(imgs)
+    assert feat.shape == (1, 768, 14, 14)
+
+    # Test pos embed resize with wrong pos shape
+    model = VisionTransformer(img_size=224)
+    imgs = torch.randn(1, 3, 256, 256)
+    model.pos_embed = torch.nn.Parameter(torch.randn(1, 201, 768))
+    with pytest.raises(ValueError):
+        feat = model(imgs)
+
+    # Test pos embed with class token
+    model = VisionTransformer(img_size=224)
+    imgs = torch.randn(1, 197, 768)
+    model._pos_embeding(imgs, (14, 14), model.pos_embed, cls_token=True)
+
+    # Test pos embed resize with class token
+    model = VisionTransformer(img_size=224)
+    imgs = torch.randn(1, 257, 768)
+    model._pos_embeding(imgs, (16, 16), model.pos_embed, cls_token=True)
+
+    # Test pos embed resize with wrong pos shape
+    model.pos_embed = torch.nn.Parameter(torch.randn(1, 201, 768))
+    with pytest.raises(ValueError):
+        model._pos_embeding(imgs, (14, 14), model.pos_embed, cls_token=True)
