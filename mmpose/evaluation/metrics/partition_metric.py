@@ -63,12 +63,25 @@ class PartitionMetric(BaseMetric):
         for partition_name, metric in self.metrics.items():
             metric.process(data_batch, parted_data_samples[partition_name])
 
-    def compute_metrics(self, results: list) -> Dict[str, float]:
+    def compute_metrics(self, results: list) -> dict:
+        pass
+
+    def evaluate(self, size: int) -> dict:
+        """Evaluate the model performance of the whole dataset after processing
+        all batches.
+        Args:
+            size (int): Length of the entire validation dataset. When batch
+                size > 1, the dataloader may pad some data samples to make
+                sure all ranks have the same length of dataset slice. The
+                ``collect_results`` function will drop the padded data based on
+                this size.
+        Returns:
+            dict: Evaluation metrics dict on the val dataset. The keys are the
+            names of the metrics, and the values are corresponding results.
+        """
+
         eval_results = OrderedDict()
         for partition_name, metric in self.metrics.items():
-            _eval_results = metric.compute_metrics(metric.results)
-            for key in list(_eval_results.keys()):
-                new_key = partition_name + '/' + key
-                _eval_results[new_key] = _eval_results.pop(key)
+            _eval_results = metric.evaluate(size)
             eval_results.update(_eval_results)
         return eval_results
