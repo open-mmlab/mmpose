@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=40)
+auto_scale_lr = dict(base_batch_size=80)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -123,9 +123,10 @@ data_root = 'data/coco/'
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
-    dict(type='RandomFlip', direction='horizontal'),
     dict(type='BottomupRandomAffine', input_size=codec['input_size']),
+    dict(type='RandomFlip', direction='horizontal'),
     dict(type='GenerateTarget', encoder=codec),
+    dict(type='BottomupGetHeatmapMask'),
     dict(type='PackPoseInputs'),
 ]
 val_pipeline = [
@@ -145,7 +146,7 @@ val_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=5,
+    batch_size=10,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
