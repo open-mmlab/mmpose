@@ -121,6 +121,39 @@ dataset_info = dict(
     ])
 ```
 
+Once a new dataset meta information config file is added, e.g. `$MMPOSE/configs/_base_/datasets/custom.py`, it must be specified in the training config file for it to be used:
+
+```python
+# dataset and dataloader settings
+dataset_type = 'MyCustomDataset' # or 'CocoDataset'
+
+train_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
+        type=dataset_type,
+        data_root='root/of/your/train/data',
+        ann_file='path/to/your/train/json',
+        data_prefix=dict(img='path/to/your/train/img'),
+        # specify the new dataset meta information config file
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
+        ...),
+    )
+
+val_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
+        type=dataset_type,
+        data_root='root/of/your/val/data',
+        ann_file='path/to/your/val/json',
+        data_prefix=dict(img='path/to/your/val/img'),
+        # specify the new dataset meta information config file
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
+        ...),
+    )
+
+test_dataloader = val_dataloader
+```
+
 ### Dataset
 
 To use custom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
