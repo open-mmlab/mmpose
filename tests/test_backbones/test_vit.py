@@ -112,7 +112,7 @@ def test_vit_backbone():
     imgs = torch.randn(1, 257, 768)
     model._pos_embeding(imgs, (16, 16), model.pos_embed, cls_token=True)
 
-    # Test pos embed resize with wrong pos shape
+    # Test pos embed resize with cls token using wrong pos shape
     model.pos_embed = torch.nn.Parameter(torch.randn(1, 201, 768))
     with pytest.raises(ValueError):
         model._pos_embeding(imgs, (14, 14), model.pos_embed, cls_token=True)
