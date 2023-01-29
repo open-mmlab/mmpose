@@ -71,7 +71,7 @@ During validation:
 python tools/train.py ${CONFIG} --work-dir ${WORK_DIR} --show-dir=${SHOW_DIR}
 ```
 
-More details about visualization hook arguments can be found in [train_and_test](./train_and_test.md).
+More details about visualization arguments can be found in [train_and_test](./train_and_test.md).
 
 If you use a heatmap-based method and want to visualize predicted heatmaps, you can manually specify `output_heatmaps=True` for `model.test_cfg` in config file. Another way is to add `--cfg-options='model.test_cfg.output_heatmaps=True'` at the end of your command.
 
