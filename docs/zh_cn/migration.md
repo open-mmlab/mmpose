@@ -121,6 +121,36 @@ dataset_info = dict(
     ])
 ```
 
+在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/_base_/datasets/custom.py`，指定方式如下：
+
+```python
+# dataset and dataloader settings
+dataset_type = 'MyCustomDataset' # or 'CocoDataset'
+train_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
+        type=dataset_type,
+        data_root='root/of/your/train/data',
+        ann_file='path/to/your/train/json',
+        data_prefix=dict(img='path/to/your/train/img'),
+        # 指定对应的元信息配置文件
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
+        ...),
+    )
+val_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
+        type=dataset_type,
+        data_root='root/of/your/val/data',
+        ann_file='path/to/your/val/json',
+        data_prefix=dict(img='path/to/your/val/img'),
+        # 指定对应的元信息配置文件
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
+        ...),
+    )
+test_dataloader = val_dataloader
+```
+
 ### 数据集
 
 在 MMPose 中使用自定义数据集时，我们推荐将数据转化为已支持的格式（如 COCO 或 MPII），并直接使用我们提供的对应数据集实现。如果这种方式不可行，则用户需要实现自己的数据集类。

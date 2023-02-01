@@ -121,7 +121,7 @@ dataset_info = dict(
     ])
 ```
 
-In the model config, the user needs to specify the metainfo path of the custom dataset (e.g. `$MMPOSE/configs/_base_/datasets/custom.py`) as follows:```
+In the model config, the user needs to specify the metainfo path of the custom dataset (e.g. `$MMPOSE/configs/_base_/datasets/custom.py`) as follows:\`\`\`
 
 ```python
 # dataset and dataloader settings
