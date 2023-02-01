@@ -121,7 +121,7 @@ dataset_info = dict(
     ])
 ```
 
-Once a new dataset meta information config file is added, e.g. `$MMPOSE/configs/_base_/datasets/custom.py`, it must be specified in the training config file for it to be used:
+In the model config, the user needs to specify the metainfo path of the custom dataset (e.g. `$MMPOSE/configs/_base_/datasets/custom.py`) as follows:```
 
 ```python
 # dataset and dataloader settings
