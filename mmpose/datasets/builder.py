@@ -6,7 +6,7 @@ import random
 import numpy as np
 import torch
 from mmengine import build_from_cfg, is_seq_of
-from torch.utils.data.dataset import ConcatDataset
+from mmengine.dataset import ConcatDataset, RepeatDataset
 
 from mmpose.registry import DATASETS
 
@@ -64,7 +64,6 @@ def build_dataset(cfg, default_args=None):
     Returns:
         Dataset: The constructed dataset.
     """
-    from .dataset_wrappers import RepeatDataset
 
     if isinstance(cfg, (list, tuple)):
         dataset = ConcatDataset([build_dataset(c, default_args) for c in cfg])
