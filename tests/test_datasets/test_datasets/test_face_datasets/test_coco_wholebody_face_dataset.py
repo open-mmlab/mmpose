@@ -107,15 +107,15 @@ class TestCocoWholeBodyFaceDataset(TestCase):
     def test_bottomup(self):
         # test bottomup training
         dataset = self.build_coco_wholebody_face_dataset(data_mode='bottomup')
-        # filter one invalid insances due to face_valid = false
+        # filter one invalid instance due to face_valid = false
         self.assertEqual(len(dataset), 3)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
         # test bottomup testing
         dataset = self.build_coco_wholebody_face_dataset(
             data_mode='bottomup', test_mode=True)
-        # filter invalid insances due to face_valid = false
-        self.assertEqual(len(dataset), 3)
+        # all images are used for evaluation
+        self.assertEqual(len(dataset), 4)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
     def test_exceptions_and_warnings(self):

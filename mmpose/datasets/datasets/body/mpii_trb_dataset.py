@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
 import os.path as osp
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 from mmengine.utils import check_file_exist
@@ -103,7 +103,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
 
     METAINFO: dict = dict(from_file='configs/_base_/datasets/mpii_trb.py')
 
-    def _load_annotations(self) -> List[dict]:
+    def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in MPII-TRB format."""
 
         check_file_exist(self.ann_file)
@@ -112,7 +112,9 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
 
         imgid2info = {img['id']: img for img in data['images']}
 
-        data_list = []
+        instance_list = []
+        image_list = []
+        used_img_ids = set()
 
         # mpii-trb bbox scales are normalized with factor 200.
         pixel_std = 200.
@@ -135,7 +137,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
             img_path = osp.join(self.data_prefix['img'],
                                 imgid2info[img_id]['file_name'])
 
-            data_info = {
+            instance_info = {
                 'id': ann['id'],
                 'img_id': img_id,
                 'img_path': img_path,
@@ -151,10 +153,16 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
 
             # val set
             if 'headbox' in ann:
-                data_info['headbox'] = np.array(
+                instance_info['headbox'] = np.array(
                     ann['headbox'], dtype=np.float32)
 
-            data_list.append(data_info)
+            instance_list.append(instance_info)
+            if instance_info['img_id'] not in used_img_ids:
+                used_img_ids.add(instance_info['img_id'])
+                image_list.append({
+                    'img_id': instance_info['img_id'],
+                    'img_path': instance_info['img_path'],
+                })
 
-        data_list = sorted(data_list, key=lambda x: x['id'])
-        return data_list
+        instance_list = sorted(instance_list, key=lambda x: x['id'])
+        return instance_list, image_list
