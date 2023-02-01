@@ -77,11 +77,10 @@ model = dict(
         out_channels=17,
         deconv_out_channels=[],
         deconv_kernel_sizes=[],
-        conv_out_channels=[17],
-        conv_kernel_sizes=[3],
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
-        upsample=4),
+        extra=dict(upsample=4, final_conv_kernel=3),
+    ),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
