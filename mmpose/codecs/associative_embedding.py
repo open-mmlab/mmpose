@@ -1,10 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import namedtuple
+from copy import deepcopy
 from itertools import product
 from typing import Any, List, Optional, Tuple
 
 import numpy as np
 import torch
+from mmengine import dump
 from munkres import Munkres
 from torch import Tensor
 
@@ -75,7 +77,9 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             tag_list=[])
         return _group
 
-    for i in keypoint_order:
+    group_history = []
+
+    for idx, i in enumerate(keypoint_order):
         # Get all valid candidate of the i-th keypoints
         valid = vals[i] > val_thr
         if not valid.any():
@@ -87,12 +91,22 @@ def _group_keypoints_by_tags(vals: np.ndarray,
 
         if len(groups) == 0:  # Initialize the group pool
             for tag, val, loc in zip(tags_i, vals_i, locs_i):
+
+                # Check if the keypoint belongs to existing groups
+                if len(groups):
+                    prev_tags = np.stack([g.tag_list[0] for g in groups])
+                    dists = np.linalg.norm(prev_tags - tag, ord=2, axis=1)
+                    if dists.min() < 1:
+                        continue
+
                 group = _init_group()
                 group.kpts[i] = loc
                 group.scores[i] = val
                 group.tag_list.append(tag)
 
                 groups.append(group)
+            costs_copy = None
+            matches = None
 
         else:  # Match keypoints to existing groups
             groups = groups[:max_groups]
@@ -101,17 +115,18 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             # Calculate distance matrix between group tags and tag candidates
             # of the i-th keypoint
             # Shape: (M', 1, L) , (1, G, L) -> (M', G, L)
-            diff = tags_i[:, None] - np.array(group_tags)[None]
+            diff = (tags_i[:, None] -
+                    np.array(group_tags)[None]).astype(np.float64)
             dists = np.linalg.norm(diff, ord=2, axis=2)
             num_kpts, num_groups = dists.shape[:2]
 
-            # Experimental cost function for keypoint-group matching
+            # Experimental cost function for keypoint-group matching2
             costs = np.round(dists) * 100 - vals_i[..., None]
+
             if num_kpts > num_groups:
-                padding = np.full((num_kpts, num_kpts - num_groups),
-                                  1e10,
-                                  dtype=np.float32)
+                padding = np.full((num_kpts, num_kpts - num_groups), 1e10)
                 costs = np.concatenate((costs, padding), axis=1)
+            costs_copy = costs.copy()
 
             # Match keypoints and groups by Munkres algorithm
             matches = munkres.compute(costs)
@@ -121,13 +136,30 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                     # Add the keypoint to the matched group
                     group = groups[group_idx]
                 else:
-                    # Initialize a new group with unmatched keypoint
-                    group = _init_group()
-                    groups.append(group)
+                    # if dists[kpt_idx].min() < 0.2:
+                    if False:
+                        group = None
+                    else:
+                        # Initialize a new group with unmatched keypoint
+                        group = _init_group()
+                        groups.append(group)
+                if group is not None:
+                    group.kpts[i] = locs_i[kpt_idx]
+                    group.scores[i] = vals_i[kpt_idx]
+                    group.tag_list.append(tags_i[kpt_idx])
 
-                group.kpts[i] = locs_i[kpt_idx]
-                group.scores[i] = vals_i[kpt_idx]
-                group.tag_list.append(tags_i[kpt_idx])
+        out = {
+            'idx': idx,
+            'i': i,
+            'costs': costs_copy,
+            'matches': matches,
+            'kpts': np.array([g.kpts for g in groups]),
+            'scores': np.array([g.scores for g in groups]),
+            'tag_list': [np.array(g.tag_list) for g in groups],
+        }
+        group_history.append(deepcopy(out))
+
+    dump(group_history, 'group_history.pkl')
 
     groups = groups[:max_groups]
     if groups:
@@ -210,7 +242,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
         decode_gaussian_kernel: int = 3,
         decode_keypoint_thr: float = 0.1,
         decode_tag_thr: float = 1.0,
-        decode_topk: int = 20,
+        decode_topk: int = 30,
         decode_max_instances: Optional[int] = None,
     ) -> None:
         super().__init__()
@@ -336,6 +368,12 @@ class AssociativeEmbedding(BaseKeypointCodec):
         B, K, H, W = batch_heatmaps.shape
         L = batch_tags.shape[1] // K
 
+        # Heatmap NMS
+        dump(batch_heatmaps.cpu().numpy(), 'heatmaps.pkl')
+        batch_heatmaps = batch_heatmap_nms(batch_heatmaps,
+                                           self.decode_nms_kernel)
+        dump(batch_heatmaps.cpu().numpy(), 'heatmaps_nms.pkl')
+
         # shape of topk_val, top_indices: (B, K, TopK)
         topk_vals, topk_indices = batch_heatmaps.flatten(-2, -1).topk(
             k, dim=-1)
@@ -433,9 +471,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 cost_map = np.round(dist_map) * 100 - heatmaps[k]  # H, W
                 y, x = np.unravel_index(np.argmin(cost_map), shape=(H, W))
                 keypoints[n, k] = [x, y]
-                keypoint_scores[n, k] = heatmaps[k, y, x]
 
-        return keypoints, keypoint_scores
+        return keypoints
 
     def batch_decode(self, batch_heatmaps: Tensor, batch_tags: Tensor
                      ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -457,14 +494,11 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 batch, each is in shape (N, K). It usually represents the
                 confidience of the keypoint prediction
         """
+
         B, _, H, W = batch_heatmaps.shape
         assert batch_tags.shape[0] == B and batch_tags.shape[2:4] == (H, W), (
             f'Mismatched shapes of heatmap ({batch_heatmaps.shape}) and '
             f'tagging map ({batch_tags.shape})')
-
-        # Heatmap NMS
-        batch_heatmaps = batch_heatmap_nms(batch_heatmaps,
-                                           self.decode_nms_kernel)
 
         # Get top-k in each heatmap and and convert to numpy
         batch_topk_vals, batch_topk_tags, batch_topk_locs = to_numpy(
@@ -489,7 +523,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
             if keypoints.size > 0:
                 # identify missing keypoints
-                keypoints, scores = self._fill_missing_keypoints(
+                keypoints = self._fill_missing_keypoints(
                     keypoints, scores, heatmaps, tags)
 
                 # refine keypoint coordinates according to heatmap distribution
@@ -500,6 +534,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
                         blur_kernel_size=self.decode_gaussian_kernel)
                 else:
                     keypoints = refine_keypoints(keypoints, heatmaps)
+                    # keypoints += 0.75
+                    keypoints += 0.5
 
             batch_keypoints.append(keypoints)
             batch_keypoint_scores.append(scores)

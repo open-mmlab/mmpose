@@ -1,7 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+
 import mimetypes
 import os
 import time
+import os.path as osp
+import tempfile
 from argparse import ArgumentParser
 
 import cv2
@@ -208,19 +211,61 @@ def main():
         cap.release()
 
     else:
-        args.save_predictions = False
-        raise ValueError(
-            f'file {os.path.basename(args.input)} has invalid format.')
+        inputs = [osp.join(args.input, fn) for fn in os.listdir(args.input)]
 
-    if args.save_predictions:
-        with open(args.pred_save_path, 'w') as f:
-            json.dump(
-                dict(
-                    meta_info=model.dataset_meta,
-                    instance_info=pred_instances_list),
-                f,
-                indent='\t')
-        print(f'predictions have been saved at {args.pred_save_path}')
+    for fn in inputs:
+
+        input_type = mimetypes.guess_type(fn)[0].split('/')[0]
+        if input_type == 'image':
+            pred_instances = process_one_image(
+                args, fn, model, visualizer, show_interval=0)
+            pred_instances_list = split_instances(pred_instances)
+
+        elif input_type == 'video':
+            tmp_folder = tempfile.TemporaryDirectory()
+            video = mmcv.VideoReader(fn)
+            progressbar = mmengine.ProgressBar(len(video))
+            video.cvt2frames(tmp_folder.name, show_progress=False)
+            output_root = args.output_root
+            args.output_root = tmp_folder.name
+            pred_instances_list = []
+
+            for frame_id, img_fname in enumerate(os.listdir(tmp_folder.name)):
+                pred_instances = process_one_image(
+                    args,
+                    f'{tmp_folder.name}/{img_fname}',
+                    model,
+                    visualizer,
+                    show_interval=1)
+                progressbar.update()
+                pred_instances_list.append(
+                    dict(
+                        frame_id=frame_id,
+                        instances=split_instances(pred_instances)))
+
+            if output_root:
+                mmcv.frames2video(
+                    tmp_folder.name,
+                    f'{output_root}/{os.path.basename(fn)}',
+                    fps=video.fps,
+                    fourcc='mp4v',
+                    show_progress=False)
+            tmp_folder.cleanup()
+
+        else:
+            args.save_predictions = False
+            raise ValueError(
+                f'file {os.path.basename(fn)} has invalid format.')
+
+        if args.save_predictions:
+            with open(args.pred_save_path, 'w') as f:
+                json.dump(
+                    dict(
+                        meta_info=model.dataset_meta,
+                        instance_info=pred_instances_list),
+                    f,
+                    indent='\t')
+            print(f'predictions have been saved at {args.pred_save_path}')
 
 
 if __name__ == '__main__':

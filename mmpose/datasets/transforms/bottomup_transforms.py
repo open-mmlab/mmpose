@@ -484,6 +484,7 @@ class BottomupResize(BaseTransform):
                     output_size=actual_input_size)
             else:
                 center = np.array([img_w / 2, img_h / 2], dtype=np.float32)
+                center = np.round(center)
                 scale = np.array([
                     img_w * padded_input_size[0] / actual_input_size[0],
                     img_h * padded_input_size[1] / actual_input_size[1]
@@ -495,10 +496,17 @@ class BottomupResize(BaseTransform):
                     rot=0,
                     output_size=padded_input_size)
 
-            _img = cv2.warpAffine(
-                img, warp_mat, padded_input_size, flags=cv2.INTER_LINEAR)
+            _img = cv2.warpAffine(img, warp_mat, padded_input_size)
 
             imgs.append(_img)
+
+            # print('#' * 20)
+            # print('w,h: ', img_w, img_h, 'center: ', center, 'scale: ',
+            # scale,
+            #       'actual_input_size: ', actual_input_size,
+            #       'padded_input_size: ', padded_input_size)
+            # print(warp_mat)
+            # print('#' * 20)
 
             # Store the transform information w.r.t. the main input size
             if i == 0:
