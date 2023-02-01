@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 from mmengine.utils import check_file_exist
@@ -84,17 +84,27 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
     METAINFO: dict = dict(
         from_file='configs/_base_/datasets/coco_wholebody_hand.py')
 
-    def _load_annotations(self) -> List[dict]:
+    def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in COCO format."""
 
         check_file_exist(self.ann_file)
 
         coco = COCO(self.ann_file)
-        data_list = []
+        instance_list = []
+        image_list = []
         id = 0
 
         for img_id in coco.getImgIds():
             img = coco.loadImgs(img_id)[0]
+
+            img.update({
+                'img_id':
+                img_id,
+                'img_path':
+                osp.join(self.data_prefix['img'], img['file_name']),
+            })
+            image_list.append(img)
+
             ann_ids = coco.getAnnIds(imgIds=img_id, iscrowd=False)
             anns = coco.loadAnns(ann_ids)
             for ann in anns:
@@ -103,8 +113,6 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
                     # valid instances (left and right hand) in one image
                     if ann[f'{type}hand_valid'] and max(
                             ann[f'{type}hand_kpts']) > 0:
-                        img_path = osp.join(self.data_prefix['img'],
-                                            img['file_name'])
 
                         bbox_xywh = np.array(
                             ann[f'{type}hand_box'],
@@ -120,9 +128,9 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
 
                         num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 
-                        data_info = {
+                        instance_info = {
                             'img_id': ann['image_id'],
-                            'img_path': img_path,
+                            'img_path': img['img_path'],
                             'bbox': bbox,
                             'bbox_score': np.ones(1, dtype=np.float32),
                             'num_keypoints': num_keypoints,
@@ -132,8 +140,8 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
                             'segmentation': ann['segmentation'],
                             'id': id,
                         }
-                        data_list.append(data_info)
+                        instance_list.append(instance_info)
                         id = id + 1
 
-        data_list = sorted(data_list, key=lambda x: x['id'])
-        return data_list
+        instance_list = sorted(instance_list, key=lambda x: x['id'])
+        return instance_list, image_list

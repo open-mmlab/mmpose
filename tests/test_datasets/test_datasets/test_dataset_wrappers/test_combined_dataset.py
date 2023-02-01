@@ -86,6 +86,4 @@ class TestCombinedDataset(TestCase):
         lens = dataset._lens
 
         data_info = dataset[lens[0]]
-        print(data_info.keys())
-        print(data_info['dataset_keypoint_weights'])
         self.check_data_info_keys(data_info)
