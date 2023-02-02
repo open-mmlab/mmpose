@@ -17,13 +17,14 @@ class MultiSourceSampler(Sampler):
     According to the sampling ratio, sample data from different
     datasets to form batches.
     Args:
-        dataset (Sized): The dataset.
-        batch_size (int): Size of mini-batch.
+        dataset (Sized): The dataset
+        batch_size (int): Size of mini-batch
         source_ratio (list[int | float]): The sampling ratio of different
-            source datasets in a mini-batch.
-        shuffle (bool): Whether shuffle the dataset or not. Defaults to True.
-        seed (int, optional): Random seed. If None, set a random seed.
-            Defaults to None.
+            source datasets in a mini-batch
+        shuffle (bool): Whether shuffle the dataset or not. Defaults to
+            ``True``
+        seed (int, optional): Random seed. If ``None``, set a random seed.
+            Defaults to ``None``
     """
 
     def __init__(self,
