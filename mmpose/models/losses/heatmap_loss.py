@@ -338,7 +338,10 @@ class AdaptiveWingLoss(nn.Module):
 
         return torch.mean(losses)
 
-    def forward(self, output, target, target_weights):
+    def forward(self,
+                output: Tensor,
+                target: Tensor,
+                target_weights: Optional[Tensor] = None):
         """Forward function.
 
         Note:
@@ -352,6 +355,9 @@ class AdaptiveWingLoss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
+            ndim_pad = target.ndim - target_weights.ndim
+            target_weights = target_weights.view(target_weights.shape +
+                                                 (1, ) * ndim_pad)
             loss = self.criterion(output * target_weights,
                                   target * target_weights)
         else:
