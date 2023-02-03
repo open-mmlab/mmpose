@@ -62,7 +62,7 @@ def encode(self,
 
 编码后的数据会在 `PackPoseInputs` 中被转换为 Tensor 格式，并封装到 `data_sample.gt_instance_labels` 中供模型调用，一般主要用于 loss 计算，下面以 `RegressionHead` 中的 `loss()` 为例：
 
-```python
+```Python
 def loss(self,
          inputs: Tuple[Tensor],
          batch_data_samples: OptSampleList,
