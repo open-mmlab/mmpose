@@ -26,12 +26,9 @@ MMPose 1.0 中引入了新模块 **编解码器（Codec）** ，将关键点数�
 以 Regression-based 方法的编码器为例：
 
 ```Python
-@abstractmethod
-def encode(
-    self,
-    keypoints: np.ndarray,
-    keypoints_visible: Optional[np.ndarray] = None
-) -> Tuple[np.ndarray, np.ndarray]:
+def encode(self,
+           keypoints: np.ndarray,
+           keypoints_visible: Optional[np.ndarray] = None) -> dict:
     """Encoding keypoints from input image space to normalized space.
 
     Args:
@@ -40,13 +37,12 @@ def encode(
             (N, K)
 
     Returns:
-        tuple:
-        - reg_labels (np.ndarray): The normalized regression labels in
+        dict:
+        - keypoint_labels (np.ndarray): The normalized regression labels in
             shape (N, K, D) where D is 2 for 2d coordinates
         - keypoint_weights (np.ndarray): The target weights in shape
             (N, K)
     """
-
     if keypoints_visible is None:
         keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
@@ -55,10 +51,39 @@ def encode(
              (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
                  keypoints_visible > 0.5)
 
-    reg_labels = (keypoints / np.array([w, h])).astype(np.float32)
+    keypoint_labels = (keypoints / np.array([w, h])).astype(np.float32)
     keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
 
-    return reg_labels, keypoint_weights
+    encoded = dict(
+        keypoint_labels=keypoint_labels, keypoint_weights=keypoint_weights)
+
+    return encoded
+```
+
+编码后的数据会在 `PackPoseInputs` 中被转换为 Tensor 格式，并封装到 `data_sample.gt_instance_labels` 中供模型调用，一般主要用于 loss 计算，下面以 `RegressionHead` 中的 `loss()` 为例：
+
+```Python
+def loss(self,
+         inputs: Tuple[Tensor],
+         batch_data_samples: OptSampleList,
+         train_cfg: ConfigType = {}) -> dict:
+    """Calculate losses from a batch of inputs and data samples."""
+
+    pred_outputs = self.forward(inputs)
+
+    keypoint_labels = torch.cat(
+        [d.gt_instance_labels.keypoint_labels for d in batch_data_samples])
+    keypoint_weights = torch.cat([
+        d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+    ])
+
+    # calculate losses
+    losses = dict()
+    loss = self.loss_module(pred_outputs, keypoint_labels,
+                            keypoint_weights.unsqueeze(-1))
+
+    losses.update(loss_kpt=loss)
+    ### 后续内容省略 ###
 ```
 
 ### 解码器
