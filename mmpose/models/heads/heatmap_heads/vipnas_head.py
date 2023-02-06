@@ -116,14 +116,14 @@ class ViPNASHead(HeatmapHead):
                 raise ValueError(
                     '"deconv_out_channels" and "deconv_kernel_sizes" should '
                     'be integer sequences with the same length. Got '
-                    f'unmatched values {deconv_out_channels} and '
+                    f'mismatched lengths {deconv_out_channels} and '
                     f'{deconv_kernel_sizes}')
             if deconv_num_groups is None or len(deconv_out_channels) != len(
                     deconv_num_groups):
                 raise ValueError(
                     '"deconv_out_channels" and "deconv_num_groups" should '
                     'be integer sequences with the same length. Got '
-                    f'unmatched values {deconv_out_channels} and '
+                    f'mismatched lengths {deconv_out_channels} and '
                     f'{deconv_num_groups}')
 
             self.deconv_layers = self._make_deconv_layers(
@@ -141,8 +141,9 @@ class ViPNASHead(HeatmapHead):
                     conv_kernel_sizes):
                 raise ValueError(
                     '"conv_out_channels" and "conv_kernel_sizes" should '
-                    'be integer sequences with the same length. Got unmatched'
-                    f' values {conv_out_channels} and {conv_kernel_sizes}')
+                    'be integer sequences with the same length. Got '
+                    f'mismatched lengths {conv_out_channels} and '
+                    f'{conv_kernel_sizes}')
 
             self.conv_layers = self._make_conv_layers(
                 in_channels=in_channels,

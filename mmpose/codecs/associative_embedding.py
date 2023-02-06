@@ -459,7 +459,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
         """
         B, _, H, W = batch_heatmaps.shape
         assert batch_tags.shape[0] == B and batch_tags.shape[2:4] == (H, W), (
-            f'Unmatched shapes of heatmap ({batch_heatmaps.shape}) and '
+            f'Mismatched shapes of heatmap ({batch_heatmaps.shape}) and '
             f'tagging map ({batch_tags.shape})')
 
         # Heatmap NMS

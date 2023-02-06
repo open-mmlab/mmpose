@@ -221,7 +221,7 @@ class TestCPMHead(TestCase):
 
     def test_errors(self):
         # Invalid arguments
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = CPMHead(
                 num_stages=1,
                 in_channels=17,
