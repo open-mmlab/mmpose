@@ -26,11 +26,9 @@ The encoder transforms the coordinates in the input image space into the needed 
 For example, in the Regression-based method, the encoder will be:
 
 ```Python
-def encode(
-    self,
-    keypoints: np.ndarray,
-    keypoints_visible: Optional[np.ndarray] = None
-) -> Tuple[np.ndarray, np.ndarray]:
+def encode(self,
+           keypoints: np.ndarray,
+           keypoints_visible: Optional[np.ndarray] = None) -> dict:
     """Encoding keypoints from input image space to normalized space.
 
     Args:
@@ -39,13 +37,12 @@ def encode(
             (N, K)
 
     Returns:
-        tuple:
-        - reg_labels (np.ndarray): The normalized regression labels in
+        dict:
+        - keypoint_labels (np.ndarray): The normalized regression labels in
             shape (N, K, D) where D is 2 for 2d coordinates
         - keypoint_weights (np.ndarray): The target weights in shape
             (N, K)
     """
-
     if keypoints_visible is None:
         keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
@@ -54,10 +51,39 @@ def encode(
              (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
                  keypoints_visible > 0.5)
 
-    reg_labels = (keypoints / np.array([w, h])).astype(np.float32)
+    keypoint_labels = (keypoints / np.array([w, h])).astype(np.float32)
     keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
 
-    return reg_labels, keypoint_weights
+    encoded = dict(
+        keypoint_labels=keypoint_labels, keypoint_weights=keypoint_weights)
+
+    return encoded
+```
+
+The encoded data is converted to Tensor format in `PackPoseInputs` and packed in `data_sample.gt_instance_labels` for model calls, which is generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
+
+```Python
+def loss(self,
+         inputs: Tuple[Tensor],
+         batch_data_samples: OptSampleList,
+         train_cfg: ConfigType = {}) -> dict:
+    """Calculate losses from a batch of inputs and data samples."""
+
+    pred_outputs = self.forward(inputs)
+
+    keypoint_labels = torch.cat(
+        [d.gt_instance_labels.keypoint_labels for d in batch_data_samples])
+    keypoint_weights = torch.cat([
+        d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+    ])
+
+    # calculate losses
+    losses = dict()
+    loss = self.loss_module(pred_outputs, keypoint_labels,
+                            keypoint_weights.unsqueeze(-1))
+
+    losses.update(loss_kpt=loss)
+    ### Omitted ###
 ```
 
 ### Decoder
