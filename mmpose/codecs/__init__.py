@@ -5,7 +5,7 @@ from .megvii_heatmap import MegviiHeatmap
 from .msra_heatmap import MSRAHeatmap
 from .regression_label import RegressionLabel
 from .simcc_label import SimCCLabel
-from .structured_pose_representation import SPR
+from .spr import SPR
 from .udp_heatmap import UDPHeatmap
 
 __all__ = [
