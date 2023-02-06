@@ -94,7 +94,7 @@ class CPMHead(BaseHead):
                 raise ValueError(
                     '"deconv_out_channels" and "deconv_kernel_sizes" should '
                     'be integer sequences with the same length. Got '
-                    f'unmatched values {deconv_out_channels} and '
+                    f'mismatched lengths {deconv_out_channels} and '
                     f'{deconv_kernel_sizes}')
 
             for _ in range(self.num_stages):
