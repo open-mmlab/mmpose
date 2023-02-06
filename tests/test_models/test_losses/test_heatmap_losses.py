@@ -30,7 +30,6 @@ class TestAdaptiveWingLoss(TestCase):
         fake_pred = torch.zeros((1, 3, 2, 2))
         fake_label = torch.zeros((1, 3, 2, 2))
         fake_weight = torch.tensor([1, 0, 1]).reshape(1, 3).float()
-        print(loss(fake_pred, fake_label, fake_weight))
         self.assertTrue(
             torch.allclose(
                 loss(fake_pred, fake_label, fake_weight), torch.tensor(0.)))
