@@ -39,7 +39,7 @@ resume = False
 # file I/O backend
 file_client_args = dict(backend='disk')
 
-# training/validatin/testing progress
+# training/validation/testing progress
 train_cfg = dict(by_epoch=True)
 val_cfg = dict()
 test_cfg = dict()

@@ -177,13 +177,13 @@ class TestViPNASHead(TestCase):
 
     def test_errors(self):
         # Invalid arguments
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = ViPNASHead(
                 in_channels=[16, 32],
                 out_channels=17,
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(4, 4))
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = ViPNASHead(
                 in_channels=[16, 32],
                 out_channels=17,
@@ -191,7 +191,7 @@ class TestViPNASHead(TestCase):
                 deconv_kernel_sizes=(4, 4),
                 deconv_num_groups=(1, ))
 
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = ViPNASHead(
                 in_channels=[16, 32],
                 out_channels=17,

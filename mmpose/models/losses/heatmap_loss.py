@@ -84,7 +84,7 @@ class KeypointMSELoss(nn.Module):
             assert (mask.ndim == target.ndim and all(
                 d_m == d_t or d_m == 1
                 for d_m, d_t in zip(mask.shape, target.shape))), (
-                    f'mask and target have unmatched shapes {mask.shape} v.s.'
+                    f'mask and target have mismatched shapes {mask.shape} v.s.'
                     f'{target.shape}')
 
         # Mask by target weights (keypoint-wise mask)
@@ -92,7 +92,7 @@ class KeypointMSELoss(nn.Module):
             # check target weight has matching shape with target
             assert (target_weights.ndim in (2, 4) and target_weights.shape
                     == target.shape[:target_weights.ndim]), (
-                        'target_weights and target have unmatched shapes '
+                        'target_weights and target have mismatched shapes '
                         f'{target_weights.shape} v.s. {target.shape}')
 
             ndim_pad = target.ndim - target_weights.ndim
@@ -338,7 +338,10 @@ class AdaptiveWingLoss(nn.Module):
 
         return torch.mean(losses)
 
-    def forward(self, output, target, target_weights):
+    def forward(self,
+                output: Tensor,
+                target: Tensor,
+                target_weights: Optional[Tensor] = None):
         """Forward function.
 
         Note:
@@ -352,6 +355,14 @@ class AdaptiveWingLoss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
+            assert (target_weights.ndim in (2, 4) and target_weights.shape
+                    == target.shape[:target_weights.ndim]), (
+                        'target_weights and target have mismatched shapes '
+                        f'{target_weights.shape} v.s. {target.shape}')
+
+            ndim_pad = target.ndim - target_weights.ndim
+            target_weights = target_weights.view(target_weights.shape +
+                                                 (1, ) * ndim_pad)
             loss = self.criterion(output * target_weights,
                                   target * target_weights)
         else:
