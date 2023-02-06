@@ -49,7 +49,7 @@ class TestDEKRHead(TestCase):
     def test_predict(self):
 
         codec_cfg = dict(
-            type='RootDisplacement',
+            type='SPR',
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, 2),
@@ -102,7 +102,7 @@ class TestDEKRHead(TestCase):
         data = get_coco_sample(img_shape=(512, 512), num_instances=1)
 
         codec_cfg = dict(
-            type='RootDisplacement',
+            type='SPR',
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, 2),
