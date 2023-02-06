@@ -3,13 +3,13 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.codecs import RootDisplacement
+from mmpose.codecs import SPR
 from mmpose.registry import KEYPOINT_CODECS
 from mmpose.testing import get_coco_sample
 from mmpose.utils.tensor_utils import to_numpy, to_tensor
 
 
-class TestRootDisplacement(TestCase):
+class TestSPR(TestCase):
 
     def setUp(self) -> None:
         pass
@@ -39,20 +39,20 @@ class TestRootDisplacement(TestCase):
 
     def test_build(self):
         cfg = dict(
-            type='RootDisplacement',
+            type='SPR',
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=4,
         )
         codec = KEYPOINT_CODECS.build(cfg)
-        self.assertIsInstance(codec, RootDisplacement)
+        self.assertIsInstance(codec, SPR)
 
     def test_encode(self):
         data = get_coco_sample(img_shape=(512, 512), num_instances=1)
         data = self._make_multi_instance_data(data)
 
         # w/o keypoint heatmaps
-        codec = RootDisplacement(
+        codec = SPR(
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=4,
@@ -72,14 +72,14 @@ class TestRootDisplacement(TestCase):
 
         # w/ keypoint heatmaps
         with self.assertRaises(AssertionError):
-            codec = RootDisplacement(
+            codec = SPR(
                 input_size=(512, 512),
                 heatmap_size=(128, 128),
                 sigma=4,
                 generate_keypoint_heatmaps=True,
             )
 
-        codec = RootDisplacement(
+        codec = SPR(
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, 2),
@@ -100,7 +100,7 @@ class TestRootDisplacement(TestCase):
 
         # root_type
         with self.assertRaises(ValueError):
-            codec = RootDisplacement(
+            codec = SPR(
                 input_size=(512, 512),
                 heatmap_size=(128, 128),
                 sigma=(4, ),
@@ -109,7 +109,7 @@ class TestRootDisplacement(TestCase):
             encoded = codec.encode(data['keypoints'],
                                    data['keypoints_visible'])
 
-        codec = RootDisplacement(
+        codec = SPR(
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, ),
@@ -132,7 +132,7 @@ class TestRootDisplacement(TestCase):
         data = get_coco_sample(img_shape=(512, 512), num_instances=1)
 
         # decode w/o keypoint heatmaps
-        codec = RootDisplacement(
+        codec = SPR(
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, ),
@@ -150,7 +150,7 @@ class TestRootDisplacement(TestCase):
         self.assertEqual(root_scores.shape, data['keypoints'].shape[:1])
 
         # decode w/ keypoint heatmaps
-        codec = RootDisplacement(
+        codec = SPR(
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, 2),
@@ -171,7 +171,7 @@ class TestRootDisplacement(TestCase):
     def test_cicular_verification(self):
         data = get_coco_sample(img_shape=(512, 512), num_instances=1)
 
-        codec = RootDisplacement(
+        codec = SPR(
             input_size=(512, 512),
             heatmap_size=(128, 128),
             sigma=(4, ),

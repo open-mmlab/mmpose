@@ -35,6 +35,7 @@ codec = dict(
     input_size=(512, 512),
     heatmap_size=(128, 128),
     sigma=(4, 2),
+    minimal_diagonal_length=32**0.5,
     generate_keypoint_heatmaps=True,
     decode_max_instances=30)
 
@@ -107,7 +108,7 @@ model = dict(
         multiscale_test=False,
         flip_test=True,
         nms_dist_thr=0.05,
-        shift_heatmap=False,
+        shift_heatmap=True,
         align_corners=False))
 
 # enable DDP training when rescore net is used
@@ -121,8 +122,8 @@ data_root = 'data/crowdpose/'
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
-    dict(type='RandomFlip', direction='horizontal'),
     dict(type='BottomupRandomAffine', input_size=codec['input_size']),
+    dict(type='RandomFlip', direction='horizontal'),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs'),
 ]

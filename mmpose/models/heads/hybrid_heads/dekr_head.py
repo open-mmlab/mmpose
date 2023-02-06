@@ -375,7 +375,7 @@ class DEKRHead(BaseHead):
         displacement_weights = torch.stack(
             [d.gt_fields.displacement_weights for d in batch_data_samples])
 
-        if 'heatmap_mask' in batch_data_samples[0].keys():
+        if 'heatmap_mask' in batch_data_samples[0].gt_fields.keys():
             heatmap_mask = torch.stack(
                 [d.gt_fields.heatmap_mask for d in batch_data_samples])
         else:
@@ -466,7 +466,7 @@ class DEKRHead(BaseHead):
                     _displacements_flip,
                     flip_mode='offset',
                     flip_indices=flip_indices,
-                    shift_heatmap=test_cfg.get('shift_heatmap', False))
+                    shift_heatmap=False)
 
                 # this is a coordinate amendment.
                 x_scale_factor = s * (

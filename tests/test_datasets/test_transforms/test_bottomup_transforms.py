@@ -110,15 +110,16 @@ class TestBottomupResize(TestCase):
         # single-scale, fit
         transform = BottomupResize(input_size=(256, 256), resize_mode='fit')
         results = transform(deepcopy(self.data_info))
-        # the upper-half is the resized image content, and the lower-half is
-        # the padded zeros
+        # the middle section of the image is the resized content, while the
+        # top and bottom are padded with zeros
         self.assertEqual(results['img'].shape, (256, 256, 3))
         self.assertTrue(
-            np.allclose(results['input_scale'], np.array([480., 240.])))
+            np.allclose(results['input_scale'], np.array([480., 480.])))
         self.assertTrue(
             np.allclose(results['input_center'], np.array([240., 120.])))
-        self.assertTrue(np.all(results['img'][:128] > 0))
-        self.assertTrue(np.all(results['img'][128:] == 0))
+        self.assertTrue(np.all(results['img'][64:192] > 0))
+        self.assertTrue(np.all(results['img'][:64] == 0))
+        self.assertTrue(np.all(results['img'][192:] == 0))
 
         # single-scale, expand
         transform = BottomupResize(input_size=(256, 256), resize_mode='expand')
