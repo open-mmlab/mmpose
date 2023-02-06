@@ -12,7 +12,7 @@ from .utils import (batch_heatmap_nms, generate_displacement_heatmap,
 
 
 @KEYPOINT_CODECS.register_module()
-class RootDisplacement(BaseKeypointCodec):
+class SPR(BaseKeypointCodec):
     """Encode/decode keypoints with the method introduced in the paper SPM.
 
     See the paper `Single-stage multi-person pose machines`_
