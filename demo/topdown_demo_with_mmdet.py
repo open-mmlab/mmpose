@@ -8,17 +8,16 @@ import json_tricks as json
 import mmcv
 import mmengine
 import numpy as np
+from mmengine.registry import init_default_scope
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
-from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
     from mmdet.apis import inference_detector, init_detector
-    from mmdet.utils import register_all_modules as register_mmdet_modules
     has_mmdet = True
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
@@ -29,7 +28,7 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
     """Visualize predicted keypoints (and heatmaps) of one image."""
 
     # predict bbox
-    register_mmdet_modules()
+    init_default_scope('mmdet')
     det_result = inference_detector(detector, img_path)
     pred_instance = det_result.pred_instances.cpu().numpy()
     bboxes = np.concatenate(
@@ -39,7 +38,7 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
     bboxes = bboxes[nms(bboxes, args.nms_thr), :4]
 
     # predict keypoints
-    register_mmpose_modules()
+    init_default_scope('mmpose')
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
     data_samples = merge_data_samples(pose_results)
 
@@ -146,12 +145,12 @@ def main():
             f'{os.path.splitext(os.path.basename(args.input))[0]}.json'
 
     # build detector
-    register_mmdet_modules()
+    init_default_scope('mmdet')
     detector = init_detector(
         args.det_config, args.det_checkpoint, device=args.device)
 
     # build pose estimator
-    register_mmpose_modules()
+    init_default_scope('mmpose')
     pose_estimator = init_pose_estimator(
         args.pose_config,
         args.pose_checkpoint,

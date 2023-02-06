@@ -2,11 +2,11 @@
 from argparse import ArgumentParser
 
 from mmcv.image import imread
+from mmengine.registry import init_default_scope
 
 from mmpose.apis import inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
-from mmpose.utils import register_all_modules
 
 
 def parse_args():
@@ -29,7 +29,7 @@ def main():
     args = parse_args()
 
     # register all modules in mmpose into the registries
-    register_all_modules()
+    init_default_scope('mmpose')
 
     # build the model from a config file and a checkpoint file
     if args.draw_heatmap:
