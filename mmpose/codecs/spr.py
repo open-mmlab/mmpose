@@ -13,7 +13,7 @@ from .utils import (batch_heatmap_nms, generate_displacement_heatmap,
 
 @KEYPOINT_CODECS.register_module()
 class SPR(BaseKeypointCodec):
-    """Encode/decode keypoints with the method introduced in the paper SPM.
+    """Encode/decode keypoints with Structured Pose Representation (SPR).
 
     See the paper `Single-stage multi-person pose machines`_
     by Nie et al (2017) for details
