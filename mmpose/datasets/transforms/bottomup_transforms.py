@@ -478,12 +478,16 @@ class BottomupResize(BaseTransform):
                     output_size=actual_input_size)
             else:
                 center = np.array([img_w / 2, img_h / 2], dtype=np.float32)
-                scale = np.array([img_w, img_h], dtype=np.float32)
+                scale = np.array([
+                    img_w * padded_input_size[0] / actual_input_size[0],
+                    img_h * padded_input_size[1] / actual_input_size[1]
+                ],
+                                 dtype=np.float32)
                 warp_mat = get_warp_matrix(
                     center=center,
                     scale=scale,
                     rot=0,
-                    output_size=actual_input_size)
+                    output_size=padded_input_size)
 
             _img = cv2.warpAffine(
                 img, warp_mat, padded_input_size, flags=cv2.INTER_LINEAR)
@@ -495,7 +499,7 @@ class BottomupResize(BaseTransform):
                 results['img_shape'] = padded_input_size[::-1]
                 results['input_center'] = center
                 results['input_scale'] = scale
-                results['input_size'] = actual_input_size
+                results['input_size'] = padded_input_size
 
         if self.aug_scales:
             results['img'] = imgs
