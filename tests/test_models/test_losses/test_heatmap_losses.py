@@ -3,11 +3,12 @@ from unittest import TestCase
 
 import torch
 
-from mmpose.models.losses.heatmap_loss import AdaptiveWingLoss, FocalHeatmapLoss
+from mmpose.models.losses.heatmap_loss import (AdaptiveWingLoss,
+                                               FocalHeatmapLoss)
 
 
 class TestAdaptiveWingLoss(TestCase):
-    
+
     def test_loss(self):
 
         # test loss w/o target_weight
@@ -32,7 +33,7 @@ class TestAdaptiveWingLoss(TestCase):
         fake_weight = torch.tensor([1, 0, 1]).reshape(1, 3).float()
         self.assertTrue(
             torch.allclose(
-                loss(fake_pred, fake_label, fake_weight), torch.tensor(0.)))    
+                loss(fake_pred, fake_label, fake_weight), torch.tensor(0.)))
 
 
 class TestFocalHeatmapLoss(TestCase):

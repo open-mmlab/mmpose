@@ -11,6 +11,6 @@ from .udp_heatmap import UDPHeatmap
 
 __all__ = [
     'MSRAHeatmap', 'MegviiHeatmap', 'UDPHeatmap', 'RegressionLabel',
-    'SimCCLabel', 'IntegralRegressionLabel', 'AssociativeEmbedding', 'SPR', 
+    'SimCCLabel', 'IntegralRegressionLabel', 'AssociativeEmbedding', 'SPR',
     'DecoupledHeatmap'
 ]

@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import math
 from typing import Dict, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -431,7 +432,7 @@ class CIDHead(BaseHead):
                  in_channels: Union[int, Sequence[int]],
                  gfd_channels: int,
                  num_keypoints: int,
-                 max_train_instances=200,
+                 prior_prob: float = 0.01,
                  input_transform: str = 'select',
                  input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
@@ -452,7 +453,6 @@ class CIDHead(BaseHead):
         self.num_keypoints = num_keypoints
         self.align_corners = align_corners
         self.input_transform = input_transform
-        self.max_train_instances = max_train_instances
         self.input_index = input_index
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
@@ -467,8 +467,36 @@ class CIDHead(BaseHead):
                 'multiple input features.')
 
         # build sub-modules
-        self.iia_module = IIAModule(in_channels, num_keypoints + 1)
-        self.gfd_module = GFDModule(in_channels, num_keypoints, gfd_channels)
+        bias_value = -math.log((1 - prior_prob) / prior_prob)
+        self.iia_module = IIAModule(
+            in_channels,
+            num_keypoints + 1,
+            init_cfg=init_cfg + [
+                dict(
+                    type='Normal',
+                    layer=['Conv2d', 'Linear'],
+                    std=0.001,
+                    override=dict(
+                        name='keypoint_root_conv',
+                        type='Normal',
+                        std=0.001,
+                        bias=bias_value))
+            ])
+        self.gfd_module = GFDModule(
+            in_channels,
+            num_keypoints,
+            gfd_channels,
+            init_cfg=init_cfg + [
+                dict(
+                    type='Normal',
+                    layer=['Conv2d', 'Linear'],
+                    std=0.001,
+                    override=dict(
+                        name='heatmap_conv',
+                        type='Normal',
+                        std=0.001,
+                        bias=bias_value))
+            ])
 
         # build losses
         self.loss_module = ModuleDict(
@@ -484,8 +512,7 @@ class CIDHead(BaseHead):
     @property
     def default_init_cfg(self):
         init_cfg = [
-            dict(
-                type='Normal', layer=['Conv2d', 'ConvTranspose2d'], std=0.001),
+            dict(type='Normal', layer=['Conv2d', 'Linear'], std=0.001),
             dict(type='Constant', layer='BatchNorm2d', val=1)
         ]
         return init_cfg
@@ -623,70 +650,89 @@ class CIDHead(BaseHead):
         """
 
         # load targets
-        gt_heatmaps = torch.stack(
-            [d.gt_fields.heatmaps for d in batch_data_samples])
-        gt_instance_coords = torch.cat(
-            [d.gt_instances.instance_coords for d in batch_data_samples])
-        keypoint_weights = torch.cat([
-            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
-        ])
-        if 'heatmap_mask' in batch_data_samples[0].keys():
-            heatmap_mask = torch.stack(
-                [d.gt_fields.heatmap_mask for d in batch_data_samples])
-        else:
-            heatmap_mask = None
-
+        gt_heatmaps, gt_instance_coords, keypoint_weights = [], [], []
+        heatmap_mask = []
         instance_indices, gt_instance_heatmaps = [], []
         for i, d in enumerate(batch_data_samples):
+            gt_heatmaps.append(d.gt_fields.heatmaps)
+            gt_instance_coords.append(d.gt_instance_labels.instance_coords)
+            keypoint_weights.append(d.gt_instance_labels.keypoint_weights)
             instance_indices.append(
                 torch.ones(
-                    len(d.gt_instances.instance_coords),
-                    dtype=torch.long,
-                    device=gt_heatmaps.device) * i)
+                    len(d.gt_instance_labels.instance_coords),
+                    dtype=torch.long) * i)
+
             instance_heatmaps = d.gt_fields.instance_heatmaps.reshape(
                 -1, self.num_keypoints,
                 *d.gt_fields.instance_heatmaps.shape[1:])
             gt_instance_heatmaps.append(instance_heatmaps)
-        instance_indices = torch.cat(instance_indices, dim=0)
-        gt_instance_heatmaps = torch.cat(gt_instance_heatmaps, dim=0)
 
-        # limit the number of instances
-        if len(instance_indices) > self.max_train_instances:
-            selected_indices = torch.randperm(
-                len(instance_indices),
-                device=gt_heatmaps.device,
-                dtype=torch.long)[:self.max_train_instances]
-            gt_instance_coords = gt_instance_coords[selected_indices]
-            keypoint_weights = keypoint_weights[selected_indices]
-            gt_instance_heatmaps = gt_instance_heatmaps[selected_indices]
+            if 'heatmap_mask' in d.gt_fields:
+                heatmap_mask.append(d.gt_fields.heatmap_mask)
+
+        gt_heatmaps = torch.stack(gt_heatmaps)
+        heatmap_mask = torch.stack(heatmap_mask) if heatmap_mask else None
+
+        gt_instance_coords = torch.cat(gt_instance_coords, dim=0)
+        gt_instance_heatmaps = torch.cat(gt_instance_heatmaps, dim=0)
+        keypoint_weights = torch.cat(keypoint_weights, dim=0)
+        instance_indices = torch.cat(instance_indices).to(gt_heatmaps.device)
 
         # feed-forward
         feats = self._transform_inputs(feats)
         pred_instance_feats, pred_heatmaps = self.iia_module.forward_train(
             feats, gt_instance_coords, instance_indices)
+
+        # conpute contrastive loss
+        contrastive_loss = 0
+        for i in range(len(batch_data_samples)):
+            pred_instance_feat = pred_instance_feats[instance_indices == i]
+            contrastive_loss += self.loss_module['contrastive'](
+                pred_instance_feat)
+        contrastive_loss = contrastive_loss / max(1, len(instance_indices))
+
+        # limit the number of instances
+        max_train_instances = train_cfg.get('max_train_instances', -1)
+        if (max_train_instances > 0
+                and len(instance_indices) > max_train_instances):
+            selected_indices = torch.randperm(
+                len(instance_indices),
+                device=gt_heatmaps.device,
+                dtype=torch.long)[:max_train_instances]
+            gt_instance_coords = gt_instance_coords[selected_indices]
+            keypoint_weights = keypoint_weights[selected_indices]
+            gt_instance_heatmaps = gt_instance_heatmaps[selected_indices]
+            instance_indices = instance_indices[selected_indices]
+            pred_instance_feats = instance_indices[selected_indices]
+
         pred_instance_heatmaps = self.gfd_module(feats, pred_instance_feats,
                                                  gt_instance_coords,
                                                  instance_indices)
+
+        # not sure if it is useful now
+        # instance_heatmap_mask = heatmap_mask[
+        #     instance_indices] if heatmap_mask is not None else None
 
         # calculate losses
         losses = {
             'loss/heatmap_coupled':
             self.loss_module['heatmap_coupled'](pred_heatmaps, gt_heatmaps,
-                                                None, heatmap_mask),
-            'loss/heatmap_decoupled':
-            self.loss_module['heatmap_decoupled'](pred_instance_heatmaps,
-                                                  gt_instance_heatmaps,
-                                                  keypoint_weights,
-                                                  heatmap_mask),
-            'loss/contrastive':
-            self.loss_module['contrastive'](pred_instance_feats)
+                                                None, heatmap_mask)
         }
+        if len(instance_indices) > 0:
+            losses.update({
+                'loss/heatmap_decoupled':
+                self.loss_module['heatmap_decoupled'](pred_instance_heatmaps,
+                                                      gt_instance_heatmaps,
+                                                      keypoint_weights, None),
+                'loss/contrastive':
+                contrastive_loss
+            })
 
         return losses
 
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
-        # TODO: modify the docstring
         """A hook function to convert old-version state dict of
         :class:`CIDHead` (before MMPose v1.0.0) to a compatible format
         of :class:`CIDHead`.

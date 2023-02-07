@@ -88,7 +88,6 @@ class PackPoseInputs(BaseTransform):
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
-        'instance_coords': 'instance_coords'
     }
 
     # items in `label_mapping_table` will be packed into
@@ -98,7 +97,8 @@ class PackPoseInputs(BaseTransform):
         'keypoint_labels': 'keypoint_labels',
         'keypoint_x_labels': 'keypoint_x_labels',
         'keypoint_y_labels': 'keypoint_y_labels',
-        'keypoint_weights': 'keypoint_weights'
+        'keypoint_weights': 'keypoint_weights',
+        'instance_coords': 'instance_coords'
     }
 
     # items in `field_mapping_table` will be packed into
@@ -106,10 +106,9 @@ class PackPoseInputs(BaseTransform):
     # used for computing losses
     field_mapping_table = {
         'heatmaps': 'heatmaps',
-        'instance_heatmaps': 'inst_heatmaps',
+        'instance_heatmaps': 'instance_heatmaps',
         'heatmap_mask': 'heatmap_mask',
         'heatmap_weights': 'heatmap_weights',
-        'inst_heatmap_weights': 'inst_heatmap_weights',
         'displacements': 'displacements',
         'displacement_weights': 'displacement_weights',
     }

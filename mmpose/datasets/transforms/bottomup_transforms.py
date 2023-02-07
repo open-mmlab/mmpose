@@ -311,6 +311,11 @@ class BottomupRandomAffine(BaseTransform):
             results['keypoints'][..., :2] = cv2.transform(
                 results['keypoints'][..., :2], warp_mat)
 
+        if 'bbox' in results:
+            bbox = np.tile(results['bbox'], 2).reshape(-1, 4, 2)
+            bbox[:, 1:3, 0] = bbox[:, 0:2, 0]
+            results['bbox'] = cv2.transform(bbox, warp_mat).reshape(-1, 8)
+
         results['input_size'] = self.input_size
         results['warp_mat'] = warp_mat
 

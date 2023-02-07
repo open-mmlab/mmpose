@@ -942,6 +942,7 @@ class GenerateTarget(BaseTransform):
                 ' \'keypoints\' in the results.')
 
         keypoints_visible = results['keypoints_visible']
+        bbox = results.get('bbox', None)
 
         # Encoded items from the encoder(s) will be updated into the results.
         # Please refer to the document of the specific codec for details about
@@ -950,7 +951,9 @@ class GenerateTarget(BaseTransform):
             # For single encoding, the encoded items will be directly added
             # into results.
             encoded = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
+                keypoints=keypoints,
+                keypoints_visible=keypoints_visible,
+                bbox=bbox)
 
         else:
             encoded_list = [

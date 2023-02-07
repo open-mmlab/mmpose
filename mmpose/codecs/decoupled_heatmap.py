@@ -82,8 +82,7 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
     def _get_instance_wise_sigmas(
         self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None,
+        bbox: np.ndarray,
     ) -> np.ndarray:
         """Get sigma values for each instance according to their size.
 
@@ -95,19 +94,13 @@ class DecoupledHeatmap(BaseKeypointCodec):
         Returns:
             np.ndarray: Array containing the sigma values for each instance.
         """
-        sigmas = np.zeros((keypoints.shape[0], ), dtype=np.float32)
+        sigmas = np.zeros((bbox.shape[0], ), dtype=np.float32)
 
-        for i in range(keypoints.shape[0]):
-            # collect visible keypoints
-            if keypoints_visible is not None:
-                visible_keypoints = keypoints[i][keypoints_visible[i] > 0]
-            else:
-                visible_keypoints = keypoints[i]
-            if visible_keypoints.size == 0:
-                continue
+        heights = np.sqrt(np.power(bbox[:, 0] - bbox[:, 1], 2).sum(axis=-1))
+        widths = np.sqrt(np.power(bbox[:, 0] - bbox[:, 2], 2).sum(axis=-1))
 
-            w, h = visible_keypoints.max(axis=0) - visible_keypoints.min(
-                axis=0)
+        for i in range(bbox.shape[0]):
+            h, w = heights[i], widths[i]
 
             # compute sigma for each instance
             # condition 1
@@ -131,12 +124,13 @@ class DecoupledHeatmap(BaseKeypointCodec):
             sq3 = np.sqrt(b3**2 - 4 * a3 * c3)
             r3 = (b3 + sq3) / 2
 
-            sigmas[i] = max(0, min(r1, r2, r3) / 3)
+            sigmas[i] = min(r1, r2, r3) / 3
 
         return sigmas
 
     def encode(self,
                keypoints: np.ndarray,
+               bbox: Optional[np.ndarray] = None,
                keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encode keypoints into heatmaps.
 
@@ -162,20 +156,22 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
         # keypoint coordinates in heatmap
         _keypoints = keypoints / self.scale_factor
+        _bbox = bbox.reshape(-1, 4, 2) / self.scale_factor
 
         # compute the root and scale of each instance
         roots, roots_visible = get_instance_root(_keypoints, keypoints_visible,
                                                  self.root_type)
 
-        sigmas = self._get_instance_wise_sigmas(_keypoints, keypoints_visible)
+        sigmas = self._get_instance_wise_sigmas(_bbox)
 
         # generate global heatmaps
-        heatmaps, _ = generate_gaussian_heatmaps(
+        heatmaps, keypoint_weights = generate_gaussian_heatmaps(
             heatmap_size=self.heatmap_size,
             keypoints=np.concatenate((_keypoints, roots[:, None]), axis=1),
             keypoints_visible=np.concatenate(
                 (keypoints_visible, roots_visible[:, None]), axis=1),
             sigma=sigmas)
+        roots_visible = keypoint_weights[:, -1]
 
         # select instances
         inst_roots, inst_indices = [], []
@@ -207,9 +203,14 @@ class DecoupledHeatmap(BaseKeypointCodec):
             inst_heatmaps.append(inst_heatmap)
             inst_heatmap_weights.append(inst_heatmap_weight)
 
-        inst_heatmaps = np.concatenate(inst_heatmaps)
-        inst_heatmap_weights = np.concatenate(inst_heatmap_weights)
-        inst_roots = np.array(inst_roots, dtype=np.int32)
+        if len(inst_indices) > 0:
+            inst_heatmaps = np.concatenate(inst_heatmaps)
+            inst_heatmap_weights = np.concatenate(inst_heatmap_weights)
+            inst_roots = np.array(inst_roots, dtype=np.int32)
+        else:
+            inst_heatmaps = np.empty((0, *self.heatmap_size[::-1]))
+            inst_heatmap_weights = np.empty((0, ))
+            inst_roots = np.empty((0, 2), dtype=np.int32)
 
         encoded = dict(
             heatmaps=heatmaps,
