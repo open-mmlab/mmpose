@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 from mmengine.config import Config
 from mmengine.dataset import Compose, pseudo_collate
+from mmengine.registry import init_default_scope
 from mmengine.runner import load_checkpoint
 from PIL import Image
 
@@ -93,6 +94,9 @@ def init_model(config: Union[str, Path, Config],
         config.model.backbone.init_cfg = None
     config.model.train_cfg = None
 
+    # register all modules in mmpose into the registries
+    init_default_scope(config.get('default_scope', 'mmpose'))
+
     model = build_pose_estimator(config.model)
     # get dataset_meta in this priority: checkpoint > config > default (COCO)
     dataset_meta = None
@@ -143,6 +147,7 @@ def inference_topdown(model: nn.Module,
         ``data_sample.pred_instances.keypoints`` and
         ``data_sample.pred_instances.keypoint_scores``.
     """
+    init_default_scope(model.cfg.get('default_scope', 'mmpose'))
     pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
 
     if bboxes is None:

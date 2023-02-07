@@ -4,7 +4,6 @@ from functools import partial
 
 import torch
 from mmengine.config import DictAction
-from mmengine.registry import init_default_scope
 
 from mmpose.apis.inference import init_model
 
@@ -70,7 +69,6 @@ def batch_constructor(flops_model, batch_size, input_shape):
 
 
 def main():
-    init_default_scope('mmpose')
 
     args = parse_args()
 

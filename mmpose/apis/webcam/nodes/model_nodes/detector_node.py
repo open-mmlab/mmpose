@@ -90,7 +90,6 @@ class DetectorNode(Node):
         self.bbox_thr = bbox_thr
 
         # Init model
-        init_default_scope('mmdet')
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
 
@@ -110,7 +109,7 @@ class DetectorNode(Node):
 
         img = input_msg.get_image()
 
-        init_default_scope('mmdet')
+        init_default_scope(self.model.cfg.get('default_scope', 'mmdet'))
         preds = inference_detector(self.model, img)
         objects = self._post_process(preds)
         input_msg.update_objects(objects)

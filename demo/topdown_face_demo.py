@@ -8,7 +8,6 @@ import json_tricks as json
 import mmcv
 import mmengine
 import numpy as np
-from mmengine.registry import init_default_scope
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
@@ -146,7 +145,6 @@ def main():
             f'{os.path.splitext(os.path.basename(args.input))[0]}.json'
 
     # build pose estimator
-    init_default_scope('mmpose')
     pose_estimator = init_pose_estimator(
         args.pose_config,
         args.pose_checkpoint,

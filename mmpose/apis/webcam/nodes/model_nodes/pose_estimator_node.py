@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import List, Optional, Union
 
 import numpy as np
-from mmengine.registry import init_default_scope
 
 from mmpose.apis import inference_topdown, init_model
 from ...utils import get_config_path
@@ -91,7 +90,6 @@ class TopDownPoseEstimatorNode(Node):
         self.bbox_thr = bbox_thr
 
         # Init model
-        init_default_scope('mmpose')
         self.model = init_model(
             self.model_config, self.model_checkpoint, device=self.device)
 
@@ -119,7 +117,6 @@ class TopDownPoseEstimatorNode(Node):
         if len(objects) > 0:
             # Inference pose
             bboxes = np.stack([object['bbox'] for object in objects])
-            init_default_scope('mmpose')
             pose_results = inference_topdown(self.model, img, bboxes)
 
             # Update objects

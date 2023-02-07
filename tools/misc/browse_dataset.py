@@ -83,7 +83,7 @@ def main():
     file_client = mmengine.FileClient(**file_client_args)
 
     # register all modules in mmpose into the registries
-    init_default_scope('mmpose')
+    init_default_scope(cfg.get('default_scope', 'mmpose'))
 
     if args.mode == 'original':
         cfg[f'{args.phase}_dataloader'].dataset.pipeline = []
