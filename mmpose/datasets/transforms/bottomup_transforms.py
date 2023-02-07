@@ -484,7 +484,7 @@ class BottomupResize(BaseTransform):
                     output_size=actual_input_size)
             else:
                 center = np.array([img_w / 2, img_h / 2], dtype=np.float32)
-                center = np.round(center)
+                # center = np.round(center)
                 scale = np.array([
                     img_w * padded_input_size[0] / actual_input_size[0],
                     img_h * padded_input_size[1] / actual_input_size[1]

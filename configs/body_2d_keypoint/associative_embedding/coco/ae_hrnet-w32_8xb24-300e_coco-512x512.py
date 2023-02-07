@@ -147,7 +147,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_val2017_tiny_clean.json',
+        ann_file='annotations/person_keypoints_val2017.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=val_pipeline,
@@ -157,8 +157,7 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root +
-    'annotations/person_keypoints_val2017_tiny_clean.json',
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json',
     nms_mode='none',
     score_mode='keypoint',
 )

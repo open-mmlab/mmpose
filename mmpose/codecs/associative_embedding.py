@@ -1,12 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import namedtuple
-from copy import deepcopy
+# from copy import deepcopy
 from itertools import product
 from typing import Any, List, Optional, Tuple
 
 import numpy as np
 import torch
-from mmengine import dump
+# from mmengine import dump
 from munkres import Munkres
 from torch import Tensor
 
@@ -77,7 +77,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             tag_list=[])
         return _group
 
-    group_history = []
+    # group_history = []
 
     for idx, i in enumerate(keypoint_order):
         # Get all valid candidate of the i-th keypoints
@@ -105,7 +105,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                 group.tag_list.append(tag)
 
                 groups.append(group)
-            costs_copy = None
+            # costs_copy = None
             matches = None
 
         else:  # Match keypoints to existing groups
@@ -126,7 +126,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             if num_kpts > num_groups:
                 padding = np.full((num_kpts, num_kpts - num_groups), 1e10)
                 costs = np.concatenate((costs, padding), axis=1)
-            costs_copy = costs.copy()
+            # costs_copy = costs.copy()
 
             # Match keypoints and groups by Munkres algorithm
             matches = munkres.compute(costs)
@@ -148,18 +148,18 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                     group.scores[i] = vals_i[kpt_idx]
                     group.tag_list.append(tags_i[kpt_idx])
 
-        out = {
-            'idx': idx,
-            'i': i,
-            'costs': costs_copy,
-            'matches': matches,
-            'kpts': np.array([g.kpts for g in groups]),
-            'scores': np.array([g.scores for g in groups]),
-            'tag_list': [np.array(g.tag_list) for g in groups],
-        }
-        group_history.append(deepcopy(out))
+        # out = {
+        #     'idx': idx,
+        #     'i': i,
+        #     'costs': costs_copy,
+        #     'matches': matches,
+        #     'kpts': np.array([g.kpts for g in groups]),
+        #     'scores': np.array([g.scores for g in groups]),
+        #     'tag_list': [np.array(g.tag_list) for g in groups],
+        # }
+        # group_history.append(deepcopy(out))
 
-    dump(group_history, 'group_history.pkl')
+    # dump(group_history, 'group_history.pkl')
 
     groups = groups[:max_groups]
     if groups:
@@ -369,10 +369,10 @@ class AssociativeEmbedding(BaseKeypointCodec):
         L = batch_tags.shape[1] // K
 
         # Heatmap NMS
-        dump(batch_heatmaps.cpu().numpy(), 'heatmaps.pkl')
+        # dump(batch_heatmaps.cpu().numpy(), 'heatmaps.pkl')
         batch_heatmaps = batch_heatmap_nms(batch_heatmaps,
                                            self.decode_nms_kernel)
-        dump(batch_heatmaps.cpu().numpy(), 'heatmaps_nms.pkl')
+        # dump(batch_heatmaps.cpu().numpy(), 'heatmaps_nms.pkl')
 
         # shape of topk_val, top_indices: (B, K, TopK)
         topk_vals, topk_indices = batch_heatmaps.flatten(-2, -1).topk(
@@ -534,7 +534,13 @@ class AssociativeEmbedding(BaseKeypointCodec):
                         blur_kernel_size=self.decode_gaussian_kernel)
                 else:
                     keypoints = refine_keypoints(keypoints, heatmaps)
-                    # keypoints += 0.75
+                    # The following 0.5-pixel shift is adapted from mmpose 0.x
+                    # where the heatmap center is calculated by a biased
+                    # rounding ``mu=[int(x), int(y)]``. We keep this shift
+                    # operation for now to to compatible with 0.x checkpoints
+                    # In mmpose 1.x, AE heatmap center is calculated by the
+                    # unbiased rounding ``mu=[int(x+0.5), int(y+0.5)], so the
+                    # following shift will be removed in the future.
                     keypoints += 0.5
 
             batch_keypoints.append(keypoints)
