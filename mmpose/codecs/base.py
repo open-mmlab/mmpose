@@ -14,6 +14,10 @@ class BaseKeypointCodec(metaclass=ABCMeta):
     the methods :meth:`encode` and :meth:`decode`.
     """
 
+    # pass additional encoding arguments to the `encode` method, beyond the
+    # mandatory `keypoints` and `keypoints_visible` arguments.
+    auxiliary_encode_keys = tuple()
+
     @abstractmethod
     def encode(self,
                keypoints: np.ndarray,

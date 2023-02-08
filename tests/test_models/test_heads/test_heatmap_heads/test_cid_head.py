@@ -2,6 +2,7 @@
 from typing import List, Tuple
 from unittest import TestCase
 
+import numpy as np
 import torch
 
 from mmpose.models.heads import CIDHead
@@ -83,6 +84,8 @@ class TestCIDHead(TestCase):
 
     def test_loss(self):
         data = get_coco_sample(img_shape=(512, 512), num_instances=1)
+        data['bbox'] = np.tile(data['bbox'], 2).reshape(-1, 4, 2)
+        data['bbox'][:, 1:3, 0] = data['bbox'][:, 0:2, 0]
 
         codec_cfg = dict(
             type='DecoupledHeatmap',
@@ -101,7 +104,7 @@ class TestCIDHead(TestCase):
             contrastive_loss=dict(type='InfoNCELoss', loss_weight=1.0))
 
         encoded = head.decoder.encode(data['keypoints'],
-                                      data['keypoints_visible'])
+                                      data['keypoints_visible'], data['bbox'])
         feats = self._get_feats()
         data_samples = self._get_data_samples()
         for data_sample in data_samples:
@@ -111,7 +114,7 @@ class TestCIDHead(TestCase):
                 'instance_heatmaps':
                 to_tensor(encoded['instance_heatmaps'])
             })
-            data_sample.gt_instances.set_data(
+            data_sample.gt_instance_labels.set_data(
                 {'instance_coords': to_tensor(encoded['instance_coords'])})
             data_sample.gt_instance_labels.set_data(
                 {'keypoint_weights': to_tensor(encoded['keypoint_weights'])})

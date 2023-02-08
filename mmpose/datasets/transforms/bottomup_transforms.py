@@ -313,6 +313,7 @@ class BottomupRandomAffine(BaseTransform):
 
         if 'bbox' in results:
             bbox = np.tile(results['bbox'], 2).reshape(-1, 4, 2)
+            # corner order: left_top, left_bottom, right_top, right_bottom
             bbox[:, 1:3, 0] = bbox[:, 0:2, 0]
             results['bbox'] = cv2.transform(bbox, warp_mat).reshape(-1, 8)
 

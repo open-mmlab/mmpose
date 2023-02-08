@@ -7,7 +7,7 @@ import numpy as np
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
 from .utils import (generate_gaussian_heatmaps, get_diagonal_lengths,
-                    get_instance_root)
+                    get_instance_bbox, get_instance_root)
 from .utils.post_processing import get_heatmap_maximum
 from .utils.refinement import refine_keypoints
 
@@ -61,6 +61,8 @@ class DecoupledHeatmap(BaseKeypointCodec):
     CVPR_2022_paper.html
     """
 
+    auxiliary_encode_keys = ('bbox', )
+
     def __init__(
         self,
         input_size: Tuple[int, int],
@@ -87,9 +89,7 @@ class DecoupledHeatmap(BaseKeypointCodec):
         """Get sigma values for each instance according to their size.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
-            keypoints_visible (np.ndarray): Keypoint visibilities in shape
-                (N, K)
+            bbox (np.ndarray): Bounding box in shape (N, 4, 2)
 
         Returns:
             np.ndarray: Array containing the sigma values for each instance.
@@ -130,14 +130,16 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
     def encode(self,
                keypoints: np.ndarray,
-               bbox: Optional[np.ndarray] = None,
-               keypoints_visible: Optional[np.ndarray] = None) -> dict:
+               keypoints_visible: Optional[np.ndarray] = None,
+               bbox: Optional[np.ndarray] = None) -> dict:
         """Encode keypoints into heatmaps.
 
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
+            bbox (np.ndarray): Bounding box in shape (N, 8) which includes
+                coordinates of 4 corners.
 
         Returns:
             dict:
@@ -153,6 +155,12 @@ class DecoupledHeatmap(BaseKeypointCodec):
 
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
+        if bbox is None:
+            # generate pseudo bbox via visible keypoints
+            bbox = get_instance_bbox(keypoints, keypoints_visible)
+            bbox = np.tile(bbox, 2).reshape(-1, 4, 2)
+            # corner order: left_top, left_bottom, right_top, right_bottom
+            bbox[:, 1:3, 0] = bbox[:, 0:2, 0]
 
         # keypoint coordinates in heatmap
         _keypoints = keypoints / self.scale_factor
