@@ -950,7 +950,7 @@ class GenerateTarget(BaseTransform):
             # For single encoding, the encoded items will be directly added
             # into results.
             auxiliary_encode_args = {
-                results[key]
+                key: results[key]
                 for key in self.encoder.auxiliary_encode_keys
             }
             encoded = self.encoder.encode(
@@ -962,7 +962,7 @@ class GenerateTarget(BaseTransform):
             encoded_list = []
             for _encoder in self.encoder:
                 auxiliary_encode_args = {
-                    results[key]
+                    key: results[key]
                     for key in _encoder.auxiliary_encode_keys
                 }
                 encoded_list.append(

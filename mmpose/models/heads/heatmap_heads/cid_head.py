@@ -138,13 +138,13 @@ class IIAModule(BaseModule):
         return maxm
 
     def forward_train(self, feats: Tensor, instance_coords: Tensor,
-                      instance_indices: Tensor) -> Tuple[Tensor, Tensor]:
+                      instance_imgids: Tensor) -> Tuple[Tensor, Tensor]:
         """Forward pass during training.
 
         Args:
             feats (Tensor): Input feature tensor.
             instance_coords (Tensor): Coordinates of the instance roots.
-            instance_indices (Tensor): Sample indices of each instances
+            instance_imgids (Tensor): Sample indices of each instances
                 in the batch.
 
         Returns:
@@ -152,8 +152,7 @@ class IIAModule(BaseModule):
                 for the instances.
         """
         heatmaps = self.forward(feats)
-        indices = torch.cat((instance_indices[:, None], instance_coords),
-                            dim=1)
+        indices = torch.cat((instance_imgids[:, None], instance_coords), dim=1)
         instance_feats = self._sample_feats(feats, indices)
 
         return instance_feats, heatmaps
@@ -345,7 +344,7 @@ class GFDModule(BaseModule):
         feats: Tensor,
         instance_feats: Tensor,
         instance_coords: Tensor,
-        instance_indices: Tensor,
+        instance_imgids: Tensor,
     ) -> Tensor:
         """Extract decoupled heatmaps for each instance.
 
@@ -355,7 +354,7 @@ class GFDModule(BaseModule):
                 vectors.
             instance_coords (Tensor): Tensor containing the root coordinates
                 of the instances.
-            instance_indices (Tensor): Sample indices of each instances
+            instance_imgids (Tensor): Sample indices of each instances
                 in the batch.
 
         Returns:
@@ -363,7 +362,7 @@ class GFDModule(BaseModule):
         """
 
         global_feats = self.conv_down(feats)
-        global_feats = global_feats[instance_indices]
+        global_feats = global_feats[instance_imgids]
         cond_instance_feats = torch.cat(
             (self.channel_attention(global_feats, instance_feats),
              self.spatial_attention(global_feats, instance_feats,
@@ -530,10 +529,10 @@ class CIDHead(BaseHead):
         feats = self._transform_inputs(feats)
         instance_info = self.iia_module.forward_test(feats, {})
         instance_feats, instance_coords, instance_scores = instance_info
-        instance_indices = torch.zeros(
+        instance_imgids = torch.zeros(
             instance_coords.size(0), dtype=torch.long, device=feats.device)
         instance_heatmaps = self.gfd_module(feats, instance_feats,
-                                            instance_coords, instance_indices)
+                                            instance_coords, instance_imgids)
 
         return instance_heatmaps
 
@@ -585,15 +584,15 @@ class CIDHead(BaseHead):
         instance_info = self.iia_module.forward_test(feats, test_cfg)
         instance_feats, instance_coords, instance_scores = instance_info
         if len(instance_coords) > 0:
-            instance_indices = torch.zeros(
+            instance_imgids = torch.zeros(
                 instance_coords.size(0), dtype=torch.long, device=feats.device)
             if test_cfg.get('flip_test', False):
                 instance_coords = torch.cat((instance_coords, instance_coords))
-                instance_indices = torch.cat(
-                    (instance_indices, instance_indices + 1))
+                instance_imgids = torch.cat(
+                    (instance_imgids, instance_imgids + 1))
             instance_heatmaps = self.gfd_module(feats, instance_feats,
                                                 instance_coords,
-                                                instance_indices)
+                                                instance_imgids)
             if test_cfg.get('flip_test', False):
                 flip_indices = batch_data_samples[0].metainfo['flip_indices']
                 instance_heatmaps, instance_heatmaps_flip = torch.chunk(
@@ -652,12 +651,12 @@ class CIDHead(BaseHead):
         # load targets
         gt_heatmaps, gt_instance_coords, keypoint_weights = [], [], []
         heatmap_mask = []
-        instance_indices, gt_instance_heatmaps = [], []
+        instance_imgids, gt_instance_heatmaps = [], []
         for i, d in enumerate(batch_data_samples):
             gt_heatmaps.append(d.gt_fields.heatmaps)
             gt_instance_coords.append(d.gt_instance_labels.instance_coords)
             keypoint_weights.append(d.gt_instance_labels.keypoint_weights)
-            instance_indices.append(
+            instance_imgids.append(
                 torch.ones(
                     len(d.gt_instance_labels.instance_coords),
                     dtype=torch.long) * i)
@@ -676,42 +675,39 @@ class CIDHead(BaseHead):
         gt_instance_coords = torch.cat(gt_instance_coords, dim=0)
         gt_instance_heatmaps = torch.cat(gt_instance_heatmaps, dim=0)
         keypoint_weights = torch.cat(keypoint_weights, dim=0)
-        instance_indices = torch.cat(instance_indices).to(gt_heatmaps.device)
+        instance_imgids = torch.cat(instance_imgids).to(gt_heatmaps.device)
 
         # feed-forward
         feats = self._transform_inputs(feats)
         pred_instance_feats, pred_heatmaps = self.iia_module.forward_train(
-            feats, gt_instance_coords, instance_indices)
+            feats, gt_instance_coords, instance_imgids)
 
         # conpute contrastive loss
         contrastive_loss = 0
         for i in range(len(batch_data_samples)):
-            pred_instance_feat = pred_instance_feats[instance_indices == i]
+            pred_instance_feat = pred_instance_feats[instance_imgids == i]
             contrastive_loss += self.loss_module['contrastive'](
                 pred_instance_feat)
-        contrastive_loss = contrastive_loss / max(1, len(instance_indices))
+        contrastive_loss = contrastive_loss / max(1, len(instance_imgids))
 
         # limit the number of instances
         max_train_instances = train_cfg.get('max_train_instances', -1)
         if (max_train_instances > 0
-                and len(instance_indices) > max_train_instances):
+                and len(instance_imgids) > max_train_instances):
             selected_indices = torch.randperm(
-                len(instance_indices),
+                len(instance_imgids),
                 device=gt_heatmaps.device,
                 dtype=torch.long)[:max_train_instances]
             gt_instance_coords = gt_instance_coords[selected_indices]
             keypoint_weights = keypoint_weights[selected_indices]
             gt_instance_heatmaps = gt_instance_heatmaps[selected_indices]
-            instance_indices = instance_indices[selected_indices]
-            pred_instance_feats = instance_indices[selected_indices]
+            instance_imgids = instance_imgids[selected_indices]
+            pred_instance_feats = pred_instance_feats[selected_indices]
 
+        # calculate the decoupled heatmaps for each instance
         pred_instance_heatmaps = self.gfd_module(feats, pred_instance_feats,
                                                  gt_instance_coords,
-                                                 instance_indices)
-
-        # not sure if it is useful now
-        # instance_heatmap_mask = heatmap_mask[
-        #     instance_indices] if heatmap_mask is not None else None
+                                                 instance_imgids)
 
         # calculate losses
         losses = {
@@ -719,12 +715,12 @@ class CIDHead(BaseHead):
             self.loss_module['heatmap_coupled'](pred_heatmaps, gt_heatmaps,
                                                 None, heatmap_mask)
         }
-        if len(instance_indices) > 0:
+        if len(instance_imgids) > 0:
             losses.update({
                 'loss/heatmap_decoupled':
                 self.loss_module['heatmap_decoupled'](pred_instance_heatmaps,
                                                       gt_instance_heatmaps,
-                                                      keypoint_weights, None),
+                                                      keypoint_weights),
                 'loss/contrastive':
                 contrastive_loss
             })
