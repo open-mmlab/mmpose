@@ -12,9 +12,6 @@ optim_wrapper = dict(optimizer=dict(
 # learning policy
 param_scheduler = [
     dict(
-        type='LinearLR', begin=0, end=500, start_factor=0.001,
-        by_epoch=False),  # warm-up
-    dict(
         type='MultiStepLR',
         begin=0,
         end=140,
@@ -84,17 +81,16 @@ model = dict(
         input_index=(0, 1, 2, 3),
         coupled_heatmap_loss=dict(type='FocalHeatmapLoss', loss_weight=1.0),
         decoupled_heatmap_loss=dict(type='FocalHeatmapLoss', loss_weight=4.0),
-        contrastive_loss=dict(type='InfoNCELoss', loss_weight=1.0),
+        contrastive_loss=dict(
+            type='InfoNCELoss', temperature=0.05, loss_weight=1.0),
         decoder=codec,
     ),
+    train_cfg=dict(max_train_instances=200),
     test_cfg=dict(
         multiscale_test=False,
         flip_test=True,
         shift_heatmap=False,
         align_corners=False))
-
-# enable DDP training when rescore net is used
-find_unused_parameters = True
 
 # base dataset settings
 dataset_type = 'CocoDataset'
