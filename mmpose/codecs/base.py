@@ -16,7 +16,7 @@ class BaseKeypointCodec(metaclass=ABCMeta):
 
     # pass additional encoding arguments to the `encode` method, beyond the
     # mandatory `keypoints` and `keypoints_visible` arguments.
-    auxiliary_encode_keys = tuple()
+    auxiliary_encode_keys = set()
 
     @abstractmethod
     def encode(self,

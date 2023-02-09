@@ -61,7 +61,9 @@ class DecoupledHeatmap(BaseKeypointCodec):
     CVPR_2022_paper.html
     """
 
-    auxiliary_encode_keys = ('bbox', )
+    # DecoupledHeatmap requires bounding boxes to determine the size of each
+    # instance, so that it can assign varying sigmas based on their size
+    auxiliary_encode_keys = {'bbox'}
 
     def __init__(
         self,
