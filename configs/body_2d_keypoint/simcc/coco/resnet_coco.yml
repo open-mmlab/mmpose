@@ -7,6 +7,7 @@ Collections:
 Models:
 - Config: configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192.py
   In Collection: SimCC
+  Alias: human
   Metadata:
     Architecture: &id001
     - SimCC
