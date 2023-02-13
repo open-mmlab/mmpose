@@ -20,6 +20,11 @@ def parse_args():
         '--draw-heatmap',
         action='store_true',
         help='Visualize the predicted heatmap')
+    parser.add_argument(
+        '--show',
+        action='store_true',
+        default=False,
+        help='whether to show img')
     args = parser.parse_args()
     return args
 
@@ -56,7 +61,7 @@ def main():
         draw_gt=False,
         draw_bbox=True,
         draw_heatmap=args.draw_heatmap,
-        show=True,
+        show=args.show,
         out_file=args.out_file)
 
 
