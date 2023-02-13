@@ -5,66 +5,17 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 import mmcv
-import torch
-from mmengine.infer.infer import BaseInferencer
 
-from mmpose.apis.inferencers import Pose2DInferencer
+from mmpose.apis.inferencers import MMPoseInferencer
 from mmpose.structures import PoseDataSample
 
 
-class TestPose2DInferencer(TestCase):
-
-    def _test_init(self):
-
-        # 1. init with config path and checkpoint
-        inferencer = Pose2DInferencer(
-            model='configs/body_2d_keypoint/simcc/coco/'
-            'simcc_res50_8xb64-210e_coco-256x192.py',
-            weights='https://download.openmmlab.com/mmpose/'
-            'v1/body_2d_keypoint/simcc/coco/'
-            'simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth',
-        )
-        self.assertIsInstance(inferencer.model, torch.nn.Module)
-        self.assertIsInstance(inferencer.detector, BaseInferencer)
-        self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
-
-        # 2. init with config name
-        inferencer = Pose2DInferencer(
-            model='td-hm_res50_8xb32-210e_onehand10k-256x256')
-        self.assertIsInstance(inferencer.model, torch.nn.Module)
-        self.assertIsInstance(inferencer.detector, BaseInferencer)
-        self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
-
-        # 3. init with alias
-        with self.assertWarnsRegex(
-                Warning, 'dataset_meta are not saved in '
-                'the checkpoint\'s meta data, load via config.'):
-            inferencer = Pose2DInferencer(model='animal')
-        self.assertIsInstance(inferencer.model, torch.nn.Module)
-        self.assertIsInstance(inferencer.detector, BaseInferencer)
-        self.assertSequenceEqual(inferencer.det_cat_ids,
-                                 (15, 16, 17, 18, 19, 20, 21, 22, 23))
-
-        # 4. init with bottom-up model
-        inferencer = Pose2DInferencer(
-            model='configs/body_2d_keypoint/dekr/coco/'
-            'dekr_hrnet-w32_8xb10-140e_coco-512x512.py',
-            weights='https://download.openmmlab.com/mmpose/v1/'
-            'body_2d_keypoint/dekr/coco/'
-            'dekr_hrnet-w32_8xb10-140e_coco-512x512_ac7c17bf-20221228.pth',
-        )
-        self.assertIsInstance(inferencer.model, torch.nn.Module)
-        self.assertFalse(hasattr(inferencer, 'detector'))
-
-        # init with incorrect `instance_type`
-        with self.assertRaises(ValueError):
-            inferencer = Pose2DInferencer(
-                model='animal', instance_type='aminal')
+class TestMMPoseInferencer(TestCase):
 
     def test_call(self):
 
         # top-down model
-        inferencer = Pose2DInferencer('human')
+        inferencer = MMPoseInferencer('human')
 
         img_path = 'tests/data/coco/000000197388.jpg'
         img = mmcv.imread(img_path)
@@ -111,5 +62,4 @@ class TestPose2DInferencer(TestCase):
                           os.listdir(f'{tmp_dir}/visualizations'))
             self.assertIn('000001_mpiinew_test.json',
                           os.listdir(f'{tmp_dir}/predictions'))
-        self.assertTrue(inferencer.video_input)
         self.assertIn(len(results['predictions']), (4, 5))

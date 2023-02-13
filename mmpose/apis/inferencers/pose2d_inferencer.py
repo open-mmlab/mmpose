@@ -77,10 +77,7 @@ class Pose2DInferencer(BaseInferencer):
         'kpt_thr',
         'vis_out_dir',
     }
-    postprocess_kwargs: set = {
-        'pred_out_dir',
-        'return_datasample',
-    }
+    postprocess_kwargs: set = {'pred_out_dir'}
 
     def __init__(self,
                  model: Union[ModelType, str],
@@ -295,7 +292,7 @@ class Pose2DInferencer(BaseInferencer):
     def __call__(
         self,
         inputs: InputsType,
-        return_datasamples: bool = False,
+        return_datasample: bool = False,
         batch_size: int = 1,
         out_dir: Optional[str] = None,
         **kwargs,
@@ -304,10 +301,10 @@ class Pose2DInferencer(BaseInferencer):
 
         Args:
             inputs (InputsType): Inputs for the inferencer.
-            return_datasamples (bool): Whether to return results as
+            return_datasample (bool): Whether to return results as
                 :obj:`BaseDataElement`. Defaults to False.
             batch_size (int): Batch size. Defaults to 1.
-            vis_out_dir (str, optional): directory to save visualization
+            out_dir (str, optional): directory to save visualization
                 results and predictions. Will be overoden if vis_out_dir or
                 pred_out_dir are given. Defaults to None
             **kwargs: Key words arguments passed to :meth:`preprocess`,
@@ -321,9 +318,9 @@ class Pose2DInferencer(BaseInferencer):
         """
         if out_dir is not None:
             if 'vis_out_dir' not in kwargs:
-                kwargs['vis_out_dir'] = out_dir
+                kwargs['vis_out_dir'] = f'{out_dir}/visualizations'
             if 'pred_out_dir' not in kwargs:
-                kwargs['pred_out_dir'] = out_dir
+                kwargs['pred_out_dir'] = f'{out_dir}/predictions'
 
         (
             preprocess_kwargs,
@@ -340,10 +337,8 @@ class Pose2DInferencer(BaseInferencer):
             inputs = track(inputs, description='Inference')
         for data in inputs:
             preds.extend(self.forward(data, **forward_kwargs))
-        visualization = self.visualize(
-            ori_inputs, preds,
-            **visualize_kwargs)  # type: ignore  # noqa: E501
-        results = self.postprocess(preds, visualization, return_datasamples,
+        visualization = self.visualize(ori_inputs, preds, **visualize_kwargs)
+        results = self.postprocess(preds, visualization, return_datasample,
                                    **postprocess_kwargs)
         return results
 
@@ -356,7 +351,7 @@ class Pose2DInferencer(BaseInferencer):
                   radius: int = 3,
                   thickness: int = 1,
                   kpt_thr: float = 0.3,
-                  vis_out_dir: Optional[str] = None) -> List[np.ndarray]:
+                  vis_out_dir: str = '') -> List[np.ndarray]:
         """Visualize predictions.
 
         Args:
@@ -371,7 +366,8 @@ class Pose2DInferencer(BaseInferencer):
             kpt_thr (float): The threshold to visualize the keypoints.
                 Defaults to 0.3
             vis_out_dir (str, optional): directory to save visualization
-                results. Defaults to None.
+                results w/o predictions. If left as empty, no file will
+                be saved. Defaults to ''.
 
         Returns:
             List[np.ndarray]: Visualization results.
@@ -420,6 +416,7 @@ class Pose2DInferencer(BaseInferencer):
 
         if self.video_input and vis_out_dir:
             # merge saved frame images into video
+            os.makedirs(vis_out_dir, exist_ok=True)
             mmcv.frames2video(
                 self.video_info['tmp_folder'].name,
                 f'{vis_out_dir}/{self.video_info["name"]}',
@@ -475,14 +472,12 @@ class Pose2DInferencer(BaseInferencer):
                 pred = split_instances(pred.pred_instances)
             result_dict['predictions'].append(pred)
 
-        if self.video_input:
-            result_dict['predictions'] = [{
-                'frame_id': i,
-                'instances': pred
-            } for i, pred in enumerate(result_dict['predictions'])]
-
         if pred_out_dir != '':
             if self.video_input:
+                result_dict['predictions'] = [{
+                    'frame_id': i,
+                    'instances': pred
+                } for i, pred in enumerate(result_dict['predictions'])]
                 fname = os.path.splitext(self.video_info['name'])[0] + '.json'
                 mmengine.dump(result_dict['predictions'],
                               join_path(pred_out_dir, fname))
