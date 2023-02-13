@@ -11,7 +11,6 @@ import mmengine
 from mmpose.apis import inference_bottomup, init_model
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import split_instances
-from mmpose.utils import register_all_modules
 
 
 def process_one_image(args, img_path, pose_estimator, visualizer,
@@ -98,9 +97,6 @@ def main():
         assert args.output_root != ''
         args.pred_save_path = f'{args.output_root}/results_' \
             f'{os.path.splitext(os.path.basename(args.input))[0]}.json'
-
-    # register all modules in mmpose into the registries
-    register_all_modules()
 
     # build the model from a config file and a checkpoint file
     if args.draw_heatmap:

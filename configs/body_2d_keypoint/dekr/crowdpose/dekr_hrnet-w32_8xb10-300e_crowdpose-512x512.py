@@ -31,7 +31,7 @@ default_hooks = dict(checkpoint=dict(save_best='crowdpose/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='RootDisplacement',
+    type='SPR',
     input_size=(512, 512),
     heatmap_size=(128, 128),
     sigma=(4, 2),

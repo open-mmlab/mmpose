@@ -7,12 +7,11 @@ import mmcv
 import mmengine
 import numpy as np
 from mmengine import Config, DictAction
-from mmengine.registry import build_from_cfg
+from mmengine.registry import build_from_cfg, init_default_scope
 from mmengine.structures import InstanceData
 
 from mmpose.registry import DATASETS, VISUALIZERS
 from mmpose.structures import PoseDataSample
-from mmpose.utils import register_all_modules
 
 
 def parse_args():
@@ -84,7 +83,7 @@ def main():
     file_client = mmengine.FileClient(**file_client_args)
 
     # register all modules in mmpose into the registries
-    register_all_modules()
+    init_default_scope(cfg.get('default_scope', 'mmpose'))
 
     if args.mode == 'original':
         cfg[f'{args.phase}_dataloader'].dataset.pipeline = []

@@ -14,7 +14,6 @@ from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
-from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
     import face_recognition
@@ -146,7 +145,6 @@ def main():
             f'{os.path.splitext(os.path.basename(args.input))[0]}.json'
 
     # build pose estimator
-    register_mmpose_modules()
     pose_estimator = init_pose_estimator(
         args.pose_config,
         args.pose_checkpoint,

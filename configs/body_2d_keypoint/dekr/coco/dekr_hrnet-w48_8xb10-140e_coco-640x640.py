@@ -31,7 +31,7 @@ default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='RootDisplacement',
+    type='SPR',
     input_size=(640, 640),
     heatmap_size=(160, 160),
     sigma=(4, 2),

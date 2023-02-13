@@ -2,6 +2,7 @@
 from typing import Dict, List, Optional, Union
 
 import numpy as np
+from mmengine.registry import init_default_scope
 
 from ...utils import get_config_path
 from ..node import Node
@@ -9,7 +10,6 @@ from ..registry import NODES
 
 try:
     from mmdet.apis import inference_detector, init_detector
-    from mmdet.utils import register_all_modules
     has_mmdet = True
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
@@ -90,7 +90,6 @@ class DetectorNode(Node):
         self.bbox_thr = bbox_thr
 
         # Init model
-        register_all_modules()
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
 
@@ -110,7 +109,7 @@ class DetectorNode(Node):
 
         img = input_msg.get_image()
 
-        register_all_modules()
+        init_default_scope(self.model.cfg.get('default_scope', 'mmdet'))
         preds = inference_detector(self.model, img)
         objects = self._post_process(preds)
         input_msg.update_objects(objects)

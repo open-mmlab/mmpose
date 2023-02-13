@@ -150,7 +150,8 @@ class PoseVisualizationHook(Hook):
 
             out_file = None
             if self.out_dir is not None:
-                out_file_name, postfix = os.path.basename(img_path).split('.')
+                out_file_name, postfix = os.path.basename(img_path).rsplit(
+                    '.', 1)
                 index = len([
                     fname for fname in os.listdir(self.out_dir)
                     if fname.startswith(out_file_name)
