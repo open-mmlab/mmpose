@@ -6,7 +6,6 @@ import torch
 from mmengine.config import DictAction
 
 from mmpose.apis.inference import init_model
-from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
     from mmcv.cnn import get_model_complexity_info
@@ -70,7 +69,6 @@ def batch_constructor(flops_model, batch_size, input_shape):
 
 
 def main():
-    register_mmpose_modules()
 
     args = parse_args()
 
