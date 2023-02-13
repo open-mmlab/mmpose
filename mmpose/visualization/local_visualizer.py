@@ -479,3 +479,5 @@ class PoseLocalVisualizer(Visualizer):
         else:
             # save drawn_img to backends
             self.add_image(name, drawn_img, step)
+
+        return self.get_image()
