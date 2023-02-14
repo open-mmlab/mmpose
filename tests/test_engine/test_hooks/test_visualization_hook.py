@@ -27,7 +27,7 @@ def _rand_poses(num_boxes, h, w):
 class TestVisualizationHook(TestCase):
 
     def setUp(self) -> None:
-        PoseLocalVisualizer.get_instance('visualizer')
+        PoseLocalVisualizer.get_instance('test_visualization_hook')
 
         data_sample = PoseDataSample()
         data_sample.set_metainfo({
