@@ -5,11 +5,11 @@ from copy import deepcopy
 import mmcv
 import numpy as np
 
-from mmpose.apis.webcam.nodes import TopDownPoseEstimatorNode
+from mmpose.apis.webcam.nodes import TopdownPoseEstimatorNode
 from mmpose.apis.webcam.utils.message import FrameMessage
 
 
-class TestTopDownPoseEstimatorNode(unittest.TestCase):
+class TestTopdownPoseEstimatorNode(unittest.TestCase):
     model_config = dict(
         name='human pose estimator',
         model_config='configs/wholebody_2d_keypoint/'
@@ -41,7 +41,7 @@ class TestTopDownPoseEstimatorNode(unittest.TestCase):
         return msg
 
     def test_init(self):
-        node = TopDownPoseEstimatorNode(**self.model_config)
+        node = TopdownPoseEstimatorNode(**self.model_config)
 
         self.assertEqual(len(node._input_buffers), 1)
         self.assertEqual(len(node._output_buffers), 1)
@@ -50,7 +50,7 @@ class TestTopDownPoseEstimatorNode(unittest.TestCase):
         self.assertEqual(node.device, 'cpu')
 
     def test_process(self):
-        node = TopDownPoseEstimatorNode(**self.model_config)
+        node = TopdownPoseEstimatorNode(**self.model_config)
 
         input_msg = self._get_input_msg()
         self.assertEqual(len(input_msg.get_objects()), 1)
@@ -68,19 +68,19 @@ class TestTopDownPoseEstimatorNode(unittest.TestCase):
         # select objects by class_id
         model_config = self.model_config.copy()
         model_config['class_ids'] = [0]
-        node = TopDownPoseEstimatorNode(**model_config)
+        node = TopdownPoseEstimatorNode(**model_config)
         output_msg = node.process(dict(input=input_msg))
         self.assertGreaterEqual(len(objects), 1)
 
         # select objects by label
         model_config = self.model_config.copy()
         model_config['labels'] = ['cat']
-        node = TopDownPoseEstimatorNode(**model_config)
+        node = TopdownPoseEstimatorNode(**model_config)
         output_msg = node.process(dict(input=input_msg))
         self.assertGreaterEqual(len(objects), 0)
 
     def test_bypass(self):
-        node = TopDownPoseEstimatorNode(**self.model_config)
+        node = TopdownPoseEstimatorNode(**self.model_config)
 
         input_msg = self._get_input_msg()
         input_objects = input_msg.get_objects()
