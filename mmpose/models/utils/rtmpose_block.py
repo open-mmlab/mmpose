@@ -48,6 +48,8 @@ class Scale(nn.Module):
             init_value * torch.ones(dim), requires_grad=trainable)
 
     def forward(self, x):
+        """Forward function."""
+
         return x * self.scale
 
 
@@ -61,6 +63,8 @@ class ScaleNorm(nn.Module):
         self.g = nn.Parameter(torch.ones(1))
 
     def forward(self, x):
+        """Forward function."""
+
         norm = torch.norm(x, dim=-1, keepdim=True) * self.scale
         return x / norm.clamp(min=self.eps) * self.g
 
@@ -165,6 +169,8 @@ class RTMBlock(nn.Module):
             self.dropout = nn.Dropout(dropout_rate)
 
     def rel_pos_bias(self, seq_len, k_len=None):
+        """Add relative position bias."""
+
         if self.attn_type == 'self-attn':
             t = F.pad(self.w[:2 * seq_len - 1], [0, seq_len]).repeat(seq_len)
             t = t[..., :-seq_len].reshape(-1, seq_len, 3 * seq_len - 2)
@@ -177,6 +183,8 @@ class RTMBlock(nn.Module):
         return t
 
     def _forward(self, inputs):
+        """GAU Forward function."""
+
         if self.attn_type == 'self-attn':
             x = inputs
         else:
@@ -227,6 +235,8 @@ class RTMBlock(nn.Module):
         return x
 
     def forward(self, x):
+        """Forward function."""
+
         if self.shortcut:
             if self.attn_type == 'cross-attn':
                 res_shortcut = x[0]

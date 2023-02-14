@@ -205,6 +205,7 @@ class SimCCHead(BaseHead):
                           input_transform: str = 'select',
                           input_index: Union[int, Sequence[int]] = -1,
                           align_corners: bool = False) -> nn.Module:
+        """Create deconvolutional layers by given parameters."""
 
         if deconv_type == 'heatmap':
             deconv_head = MODELS.build(

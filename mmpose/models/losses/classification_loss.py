@@ -72,16 +72,22 @@ class JSDiscretLoss(nn.Module):
         self.kl_loss = nn.KLDivLoss(reduction='none')
 
     def kl(self, p, q):
+        """Kullback-Leibler Divergence."""
+
         eps = 1e-24
         kl_values = self.kl_loss((q + eps).log(), p)
         return kl_values
 
     def js(self, pred_hm, gt_hm):
+        """Jensen-Shannon Divergence."""
+
         m = 0.5 * (pred_hm + gt_hm)
         js_values = 0.5 * (self.kl(pred_hm, m) + self.kl(gt_hm, m))
         return js_values
 
     def forward(self, pred_hm, gt_hm, target_weight=None):
+        """Forward function."""
+
         if self.use_target_weight:
             assert target_weight is not None
             assert pred_hm.ndim >= target_weight.ndim

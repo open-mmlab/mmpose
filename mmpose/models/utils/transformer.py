@@ -87,6 +87,8 @@ class AdaptivePadding(nn.Module):
         self.dilation = dilation
 
     def get_pad_shape(self, input_shape):
+        """Get horizontal and vertical padding shapes."""
+
         input_h, input_w = input_shape
         kernel_h, kernel_w = self.kernel_size
         stride_h, stride_w = self.stride
@@ -99,6 +101,8 @@ class AdaptivePadding(nn.Module):
         return pad_h, pad_w
 
     def forward(self, x):
+        """Forward function."""
+
         pad_h, pad_w = self.get_pad_shape(x.size()[-2:])
         if pad_h > 0 or pad_w > 0:
             if self.padding == 'corner':
