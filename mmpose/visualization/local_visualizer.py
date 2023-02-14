@@ -387,8 +387,6 @@ class PoseLocalVisualizer(Visualizer):
             heatmaps = torch.from_numpy(heatmaps)
         out_image = SimCCVisualizer().draw_instance_xy_heatmap(
             heatmaps, overlaid_image, n)
-        img = out_image[:, :, ::-1]
-        self.show(img)
         return out_image
 
     @master_only
