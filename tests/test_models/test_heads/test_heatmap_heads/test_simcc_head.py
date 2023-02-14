@@ -161,13 +161,15 @@ class TestSimCCHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(
+            preds, pred_heatmaps = head.predict(
                 feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
             self.assertEqual(preds[0].keypoint_x_labels.shape,
                              (1, 17, 192 * 2))
             self.assertEqual(preds[0].keypoint_y_labels.shape,
                              (1, 17, 256 * 2))
+            self.assertTrue(len(pred_heatmaps), 2)
+            self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 512, 384))
 
     def test_tta(self):
         # flip test

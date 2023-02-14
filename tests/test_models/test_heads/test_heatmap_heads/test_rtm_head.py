@@ -215,7 +215,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -246,7 +246,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             # hidden dims
             head = RTMHead(
@@ -271,7 +271,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -302,7 +302,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -333,7 +333,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -364,7 +364,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -395,7 +395,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -426,7 +426,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -457,7 +457,7 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(feats, batch_data_samples)
+            preds, _ = head.predict(feats, batch_data_samples)
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
@@ -489,16 +489,17 @@ class TestRTMHead(TestCase):
                 batch_size=2,
                 simcc_split_ratio=decoder_cfg['simcc_split_ratio'],
                 with_simcc_label=True)['data_samples']
-            preds = head.predict(
+            preds, pred_heatmaps = head.predict(
                 feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
             self.assertTrue(len(preds), 2)
             self.assertIsInstance(preds[0], InstanceData)
-            self.assertIsNotNone(preds[0].keypoint_x_labels)
-            self.assertIsNotNone(preds[0].keypoint_y_labels)
+            self.assertEqual(preds[0].keypoint_x_labels.shape, (1, 17, 384))
+            self.assertEqual(preds[0].keypoint_y_labels.shape, (1, 17, 512))
             self.assertEqual(
                 preds[0].keypoints.shape,
                 batch_data_samples[0].gt_instances.keypoints.shape)
+            self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 512, 384))
 
     def test_tta(self):
         # flip test
