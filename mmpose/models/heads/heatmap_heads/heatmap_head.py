@@ -72,24 +72,22 @@ class HeatmapHead(BaseHead):
 
     _version = 2
 
-    def __init__(
-        self,
-        in_channels: Union[int, Sequence[int]],
-        out_channels: int,
-        deconv_out_channels: OptIntSeq = (256, 256, 256),
-        deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
-        conv_out_channels: OptIntSeq = None,
-        conv_kernel_sizes: OptIntSeq = None,
-        has_final_layer: bool = True,
-        input_transform: str = 'select',
-        input_index: Union[int, Sequence[int]] = -1,
-        align_corners: bool = False,
-        loss: ConfigType = dict(
-            type='KeypointMSELoss', use_target_weight=True),
-        decoder: OptConfigType = None,
-        init_cfg: OptConfigType = None,
-        extra=None
-    ):
+    def __init__(self,
+                 in_channels: Union[int, Sequence[int]],
+                 out_channels: int,
+                 deconv_out_channels: OptIntSeq = (256, 256, 256),
+                 deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+                 conv_out_channels: OptIntSeq = None,
+                 conv_kernel_sizes: OptIntSeq = None,
+                 has_final_layer: bool = True,
+                 input_transform: str = 'select',
+                 input_index: Union[int, Sequence[int]] = -1,
+                 align_corners: bool = False,
+                 loss: ConfigType = dict(
+                     type='KeypointMSELoss', use_target_weight=True),
+                 decoder: OptConfigType = None,
+                 init_cfg: OptConfigType = None,
+                 extra=None):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
@@ -110,7 +108,7 @@ class HeatmapHead(BaseHead):
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
-        
+
         kernel_size = 1
         padding = 0
         if extra is not None:
