@@ -3,7 +3,7 @@ from typing import Sequence, Union
 
 import numpy as np
 import torch
-from mmcv.transforms import BaseTransform, to_tensor
+from mmcv.transforms import BaseTransform
 from mmengine.structures import InstanceData, PixelData
 from mmengine.utils import is_seq_of
 
@@ -27,8 +27,8 @@ def image_to_tensor(img: Union[np.ndarray,
     if isinstance(img, np.ndarray):
         if len(img.shape) < 3:
             img = np.expand_dims(img, -1)
-        img = np.ascontiguousarray(img.transpose(2, 0, 1))
-        tensor = to_tensor(img)
+
+        tensor = torch.from_numpy(img).permute(2, 0, 1).contiguous()
     else:
         assert is_seq_of(img, np.ndarray)
         tensor = torch.stack([image_to_tensor(_img) for _img in img])
