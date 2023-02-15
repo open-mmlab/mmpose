@@ -5,7 +5,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 
 # optimizer
 custom_imports = dict(
-    imports=['mmpose.engine.optim_wrapper.layer_decay_optim_wrapper'],
+    imports=['mmpose.engine.optim_wrappers.layer_decay_optim_wrapper'],
     allow_failed_imports=False)
 
 optim_wrapper = dict(
@@ -67,6 +67,7 @@ model = dict(
         drop_path_rate=0.3,
         with_cls_token=False,
         output_cls_token=False,
+        patch_cfg=dict(padding=2),
         init_cfg=dict(
             type='Pretrained',
             checkpoint='pretrained/mae_pretrain_vit_base.pth'),

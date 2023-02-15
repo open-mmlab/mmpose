@@ -12,7 +12,7 @@ optim_wrapper = dict(
     optimizer=dict(
         type='AdamW', lr=5e-4, betas=(0.9, 0.999), weight_decay=0.1),
     paramwise_cfg=dict(
-        num_layers=24,
+        num_layers=12,
         layer_decay_rate=0.8,
         custom_keys={
             'bias': dict(decay_multi=0.0),
@@ -60,26 +60,33 @@ model = dict(
         bgr_to_rgb=True),
     backbone=dict(
         type='mmcls.VisionTransformer',
-        arch='large',
+        arch={
+            'embed_dims': 384,
+            'num_layers': 12,
+            'num_heads': 12,
+            'feedforward_channels': 384 * 4
+        },
         img_size=(256, 192),
         patch_size=16,
         qkv_bias=True,
-        drop_path_rate=0.5,
+        drop_path_rate=0.1,
         with_cls_token=False,
         output_cls_token=False,
         patch_cfg=dict(padding=2),
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='pretrained/mae_pretrain_vit_large.pth'),
+            checkpoint='pretrained/mae_pretrain_vit_small.pth'),
     ),
     head=dict(
         type='HeatmapHead',
-        in_channels=1024,
+        in_channels=384,
         out_channels=17,
-        deconv_out_channels=(256, 256),
-        deconv_kernel_sizes=(4, 4),
+        deconv_out_channels=[],
+        deconv_kernel_sizes=[],
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        decoder=codec),
+        decoder=codec,
+        extra=dict(upsample=4, final_conv_kernel=3),
+    ),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
