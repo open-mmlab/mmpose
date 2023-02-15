@@ -52,7 +52,7 @@ RTMPose is a long-term project dedicated to the training, optimization and deplo
 Feel free to join our community group for more help:
 
 - WeChat Group
-- Discord Group: https://discord.gg/2wuD8HPf
+- Discord Group: https://discord.gg/raweFPmdzG
 
 ## Pipeline Performance
 

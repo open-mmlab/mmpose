@@ -52,7 +52,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 欢迎加入我们的社区交流群获得更多帮助：
 
 - 微信用户群
-- Discord Group: https://discord.gg/2wuD8HPf
+- Discord Group: https://discord.gg/raweFPmdzG
 
 ## Pipeline 性能
 
