@@ -92,6 +92,16 @@ Feel free to join our community group for more help:
 | [RTMPose-m](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py) |  256x192   |       75.8        |   13.59   |   1.93   |               11.06                |                   2.29                    |                     26.44                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth) |
 | [RTMPose-l](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py) |  256x192   |       76.5        |   27.66   |   4.16   |               18.85                |                   3.46                    |                     45.37                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth) |
 
+#### Model Pruning
+
+**Notes**
+
+- Model pruning is supported by [MMRazor](https://github.com/open-mmlab/mmrazor)
+
+|   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs     |  Download   |
+| :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------: | :---------: |
+| pruning-s-t |  256x192   |       69.2        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
+
 ### WholeBody 2d (133 Keypoints)
 
 | Config                         | Input Size | Whole AP | Whole AR | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |             Logs             |             Download              |
