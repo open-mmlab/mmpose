@@ -5,7 +5,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 
 # optimizer
 custom_imports = dict(
-    imports=['mmpose.engine.optim_wrapper.layer_decay_optim_wrapper'],
+    imports=['mmpose.engine.optim_wrappers.layer_decay_optim_wrapper'],
     allow_failed_imports=False)
 
 optim_wrapper = dict(
@@ -13,7 +13,7 @@ optim_wrapper = dict(
         type='AdamW', lr=5e-4, betas=(0.9, 0.999), weight_decay=0.1),
     paramwise_cfg=dict(
         num_layers=12,
-        layer_decay_rate=0.9,
+        layer_decay_rate=0.8,
         custom_keys={
             'bias': dict(decay_multi=0.0),
             'pos_embed': dict(decay_mult=0.0),
@@ -69,9 +69,10 @@ model = dict(
         img_size=(256, 192),
         patch_size=16,
         qkv_bias=True,
-        drop_path_rate=0.3,
+        drop_path_rate=0.1,
         with_cls_token=False,
         output_cls_token=False,
+        patch_cfg=dict(padding=2),
         init_cfg=dict(
             type='Pretrained',
             checkpoint='pretrained/mae_pretrain_vit_small.pth'),
