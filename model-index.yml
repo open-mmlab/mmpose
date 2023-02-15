@@ -109,8 +109,8 @@ Import:
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_dark_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.yml
 - configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/resnet_deepfashion.yml
-- configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/resnet_deepfashion.yml
 - configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion2/resnet_deepfashion2.yml
+- configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/resnet_deepfashion.yml
 - configs/hand/2d_kpt_sview_rgb_img/deeppose/onehand10k/resnet_onehand10k.yml
 - configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/resnet_panoptic2d.yml
 - configs/hand/2d_kpt_sview_rgb_img/deeppose/rhd2d/resnet_rhd2d.yml
