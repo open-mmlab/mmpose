@@ -117,11 +117,9 @@ python demo/image_demo.py \
     --draw-heatmap
 ```
 
-If everything goes fine, you will get this visualization result:
+If everything goes fine, you will be able to get the following visualization result from `vis_results.jpg` in your current folder, which displays the predicted keypoints and heatmaps overlaid on the person in the image.
 
 ![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
-
-And the visualization result will be saved as `vis_results.jpg` on your current folder, where the predicted keypoints and heatmaps are plotted on the person in the image.
 
 Option (B). If you install mmpose with pip, open you python interpreter and copy & paste the following codes.
 
