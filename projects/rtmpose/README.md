@@ -148,7 +148,7 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 
 ## Visualization
 
-![simcc_visualization](https://user-images.githubusercontent.com/13503330/218374365-009f540e-98db-4d29-9bcc-943596d71ea9.png)
+![vis_simcc](https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png)
 
 ## How To Deploy
 
