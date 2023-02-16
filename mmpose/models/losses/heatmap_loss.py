@@ -378,6 +378,9 @@ class FocalHeatmapLoss(KeypointMSELoss):
     This loss function is exactly the same as the one used in CornerNet. It
     runs faster and costs a little bit more memory.
 
+    `CornerNet: Detecting Objects as Paired Keypoints
+    arXiv: <https://arxiv.org/abs/1808.01244>`_.
+
     Arguments:
         alpha (int): The alpha parameter in the focal loss equation.
         beta (int): The beta parameter in the focal loss equation.

@@ -160,6 +160,9 @@ class InfoNCELoss(nn.Module):
     """InfoNCE loss for training a discriminative representation space with a
     contrastive manner.
 
+    `Representation Learning with Contrastive Predictive Coding
+    arXiv: <https://arxiv.org/abs/1611.05424>`_.
+
     Args:
         temperature (float, optional): The temperature to use in the softmax
             function. Higher temperatures lead to softer probability
