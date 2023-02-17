@@ -1,19 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import mimetypes
-import os
-import tempfile
-from collections import defaultdict
+import warnings
 from typing import Dict, List, Optional, Sequence, Union
 
-import mmcv
 import numpy as np
 from mmengine.config import Config, ConfigDict
-from mmengine.fileio import (get_file_backend, isdir, join_path,
-                             list_dir_or_file)
-from mmengine.infer.infer import BaseInferencer, ModelType
+from mmengine.fileio import join_path
+from mmengine.infer.infer import ModelType
 from mmengine.structures import InstanceData
+from rich.progress import track
 
 from mmpose.structures import PoseDataSample
+from .base_mmpose_inferencer import BaseMMPoseInferencer
 from .pose2d_inferencer import Pose2DInferencer
 
 InstanceList = List[InstanceData]
@@ -25,7 +22,7 @@ ConfigType = Union[Config, ConfigDict]
 ResType = Union[Dict, List[Dict], InstanceData, List[InstanceData]]
 
 
-class MMPoseInferencer(BaseInferencer):
+class MMPoseInferencer(BaseMMPoseInferencer):
     """MMPose Inferencer. It's a unified inferencer interface for pose
     estimation task, currently including: Pose2D. and it can be used to perform
     2D keypoint detection.
@@ -41,16 +38,16 @@ class MMPoseInferencer(BaseInferencer):
 
             Defaults to ``None``.
         pose2d_weights (str, optional): Path to the custom checkpoint file of
-            the selected rec model. If it is not specified and "pose2d" is a
-            model name of metafile, the weights will be loaded from metafile.
-            Defaults to None.
+            the selected pose2d model. If it is not specified and "pose2d" is
+            a model name of metafile, the weights will be loaded from
+            metafile. Defaults to None.
         device (str, optional): Device to run inference. If None, the
             available device will be automatically used. Defaults to None.
         scope (str, optional): The scope of the model. Defaults to "mmpose".
         instance_type (str, optional): The name of the instances, such as
-            "human", "hand", "animal", and etc. This argument works as the
-            alias for the detection models, which will be utilized in
-            topdown methods. Defaults to None.
+            "human", "hand", "animal", and etc. This argument serve as
+            aliases for the detection models to be used in top-down
+            pose2d methods. Defaults to None.
         det_model(str, optional): Path to the config of detection model.
             Defaults to None.
         det_weights(str, optional): Path to the checkpoints of detection
@@ -93,29 +90,42 @@ class MMPoseInferencer(BaseInferencer):
                                                       det_weights, det_cat_ids)
             self.mode = 'pose2d'
 
-    def _init_pipeline(self, cfg: ConfigType) -> None:
-        pass
+    def preprocess(self, inputs: InputsType, batch_size: int = 1, **kwargs):
+        """Process the inputs into a model-feedable format.
 
-    def forward(self, inputs: InputType, batch_size: int,
-                **forward_kwargs) -> PredType:
+        Args:
+            inputs (InputsType): Inputs given by user.
+            batch_size (int): batch size. Defaults to 1.
+
+        Yields:
+            Any: Data processed by the ``pipeline`` and ``collate_fn``.
+            List[str or np.ndarray]: List of original inputs in the batch
+        """
+
+        for i, input in enumerate(inputs):
+            data_batch = {}
+            if 'pose2d' in self.mode:
+                data_infos = self.pose2d_inferencer.preprocess_single(
+                    input, index=i, **kwargs)
+                data_batch['pose2d'] = self.pose2d_inferencer.collate_fn(
+                    data_infos)
+            # only supports inference with batch size 1
+            yield data_batch, [input]
+
+    def forward(self, inputs: InputType, **forward_kwargs) -> PredType:
         """Forward the inputs to the model.
 
         Args:
             inputs (InputsType): The inputs to be forwarded.
-            batch_size (int): Batch size. Defaults to 1.
 
         Returns:
             Dict: The prediction results. Possibly with keys "pose2d".
         """
         result = {}
         if self.mode == 'pose2d':
-            predictions = self.pose2d_inferencer(
-                inputs,
-                return_datasample=True,
-                return_vis=False,
-                batch_size=batch_size,
-                **forward_kwargs)['predictions']
-            result['pose2d'] = predictions
+            data_samples = self.pose2d_inferencer.forward(
+                inputs['pose2d'], **forward_kwargs)
+            result['pose2d'] = data_samples
 
         return result
 
@@ -158,73 +168,37 @@ class MMPoseInferencer(BaseInferencer):
             postprocess_kwargs,
         ) = self._dispatch_kwargs(**kwargs)
 
-        ori_inputs = self._inputs_to_list(inputs)
+        # preprocessing
+        if isinstance(inputs, str) and inputs.startswith('webcam'):
+            inputs = self._get_webcam_inputs(inputs)
+            batch_size = 1
+            if not visualize_kwargs.get('show', False):
+                warnings.warn('The display mode is closed when using webcam '
+                              'input. It will be turned on automatically.')
+            visualize_kwargs['show'] = True
+        else:
+            inputs = self._inputs_to_list(inputs)
 
-        preds = self.forward(ori_inputs, batch_size, **preprocess_kwargs,
-                             **forward_kwargs)
+        inputs = self.preprocess(
+            inputs, batch_size=batch_size, **preprocess_kwargs)
 
-        visualization = self.visualize(ori_inputs, preds, **visualize_kwargs)
-        results = self.postprocess(preds, visualization, return_datasample,
-                                   **postprocess_kwargs)
-        return results
+        preds = []
+        if 'pose2d' not in self.mode or not hasattr(self.pose2d_inferencer,
+                                                    'detector'):
+            inputs = track(inputs, description='Inference')
 
-    def _inputs_to_list(self, inputs: InputsType) -> list:
-        """Preprocess the inputs to a list.
+        for proc_inputs, ori_inputs in inputs:
+            preds = self.forward(proc_inputs, **forward_kwargs)
 
-        Preprocess inputs to a list according to its type:
+            visualization = self.visualize(ori_inputs, preds,
+                                           **visualize_kwargs)
+            results = self.postprocess(preds, visualization, return_datasample,
+                                       **postprocess_kwargs)
+            yield results
 
-        - list or tuple: return inputs
-        - str:
-            - Directory path: return all files in the directory
-            - other cases: return a list containing the string. The string
-              could be a path to file, a url or other types of string
-              according to the task.
-
-        Args:
-            inputs (InputsType): Inputs for the inferencer.
-
-        Returns:
-            list: List of input for the :meth:`preprocess`.
-        """
-        if isinstance(inputs, str):
-            backend = get_file_backend(inputs)
-            if hasattr(backend, 'isdir') and isdir(inputs):
-                # Backends like HttpsBackend do not implement `isdir`, so only
-                # those backends that implement `isdir` could accept the
-                # inputs as a directory
-                filepath_list = [
-                    join_path(inputs, fname)
-                    for fname in list_dir_or_file(inputs, list_dir=False)
-                ]
-                inputs = []
-                for filepath in filepath_list:
-                    input_type = mimetypes.guess_type(filepath)[0].split(
-                        '/')[0]
-                    if input_type == 'image':
-                        inputs.append(filepath)
-                inputs = inputs
-            else:
-                # if inputs is a path to a video file, it will be converted
-                # to a list containing separated frame filenames
-                input_type = mimetypes.guess_type(inputs)[0].split('/')[0]
-                if input_type == 'video':
-                    if hasattr(self, 'pose2d_inferencer'):
-                        self.pose2d_inferencer.video_input = True
-                    # split video frames into a temperory folder
-                    tmp_folder = tempfile.TemporaryDirectory()
-                    video = mmcv.VideoReader(inputs)
-                    self.pose2d_inferencer.video_info = dict(
-                        fps=video.fps,
-                        name=os.path.basename(inputs),
-                        tmp_folder=tmp_folder)
-                    video.cvt2frames(tmp_folder.name, show_progress=False)
-                    frames = sorted(os.listdir(tmp_folder.name))
-                    inputs = [os.path.join(tmp_folder.name, f) for f in frames]
-
-        if not isinstance(inputs, (list, tuple)):
-            inputs = [inputs]
-
-        return list(inputs)
+        # merge visualization and prediction results
+        if self._video_input:
+            self._merge_outputs(**visualize_kwargs, **postprocess_kwargs)
 
     def visualize(self, inputs: InputsType, preds: PredType,
                   **kwargs) -> List[np.ndarray]:
@@ -250,33 +224,58 @@ class MMPoseInferencer(BaseInferencer):
         """
 
         if 'pose2d' in self.mode:
-            return self.pose2d_inferencer.visualize(inputs, preds['pose2d'],
-                                                    **kwargs)
+            window_name = ''
+            if self._video_input:
+                window_name = self.video_info['name']
+                if kwargs.get('vis_out_dir', ''):
+                    kwargs['vis_out_dir'] = join_path(kwargs['vis_out_dir'],
+                                                      'vis_frames')
+                if kwargs.get('show', False):
+                    kwargs['wait_time'] = 1e-5
+            return self.pose2d_inferencer.visualize(
+                inputs,
+                preds['pose2d'],
+                window_name=window_name,
+                window_close_event_handler=self._visualization_window_on_close,
+                **kwargs)
 
-    def postprocess(self,
-                    preds: List[PoseDataSample],
-                    visualization: List[np.ndarray],
-                    return_datasample=False,
-                    pred_out_dir: str = '',
-                    **kwargs) -> dict:
-        """Simply apply postprocess of pose2d_inferencer.
+    def postprocess(
+        self,
+        preds: List[PoseDataSample],
+        visualization: List[np.ndarray],
+        return_datasample=False,
+        pred_out_dir: str = '',
+    ) -> dict:
+        """Process the predictions and visualization results from ``forward``
+        and ``visualize``.
+
+        This method should be responsible for the following tasks:
+
+        1. Convert datasamples into a json-serializable dict if needed.
+        2. Pack the predictions and visualization results and return them.
+        3. Dump or log the predictions.
 
         Args:
             preds (List[Dict]): Predictions of the model.
             visualization (np.ndarray): Visualized predictions.
-            return_datasample (bool): Whether to return results as datasamples.
-                Defaults to False.
+            return_datasample (bool): Whether to return results as
+                datasamples. Defaults to False.
             pred_out_dir (str): Directory to save the inference results w/o
                 visualization. If left as empty, no file will be saved.
                 Defaults to ''.
-        """
-        result_dict = defaultdict(list)
 
-        result_dict['visualization'] = visualization
+        Returns:
+            dict: Inference and visualization results with key ``predictions``
+            and ``visualization``
+
+            - ``visualization (Any)``: Returned by :meth:`visualize`
+            - ``predictions`` (dict or DataSample): Returned by
+              :meth:`forward` and processed in :meth:`postprocess`.
+              If ``return_datasample=False``, it usually should be a
+              json-serializable dict containing only basic data elements such
+              as strings and numbers.
+        """
 
         if 'pose2d' in self.mode:
-            result_dict['predictions'] = self.pose2d_inferencer.postprocess(
-                preds['pose2d'], visualization, return_datasample,
-                pred_out_dir, **kwargs)['predictions']
-
-        return result_dict
+            return super().postprocess(preds['pose2d'], visualization,
+                                       return_datasample, pred_out_dir)

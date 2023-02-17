@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+from collections import defaultdict
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
@@ -71,7 +72,7 @@ class TestPose2DInferencer(TestCase):
 
         # `inputs` is path to an image
         inputs = img_path
-        results1 = inferencer(inputs, return_vis=True)
+        results1 = next(inferencer(inputs, return_vis=True))
         self.assertIn('visualization', results1)
         self.assertSequenceEqual(results1['visualization'][0].shape, img.shape)
         self.assertIn('predictions', results1)
@@ -80,36 +81,44 @@ class TestPose2DInferencer(TestCase):
 
         # `inputs` is an image array
         inputs = img
-        results2 = inferencer(inputs)
+        results2 = next(inferencer(inputs))
         self.assertEqual(
             len(results1['predictions'][0]), len(results2['predictions'][0]))
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
                                  results2['predictions'][0][0]['keypoints'])
-        results2 = inferencer(inputs, return_datasample=True)
+        results2 = next(inferencer(inputs, return_datasample=True))
         self.assertIsInstance(results2['predictions'][0], PoseDataSample)
 
         # `inputs` is path to a directory
         inputs = osp.dirname(img_path)
+
         with TemporaryDirectory() as tmp_dir:
             # only save visualizations
-            results3 = inferencer(inputs, vis_out_dir=tmp_dir)
+            for res in inferencer(inputs, vis_out_dir=tmp_dir):
+                pass
             self.assertEqual(len(os.listdir(tmp_dir)), 4)
             # save both visualizations and predictions
-            results3 = inferencer(inputs, out_dir=tmp_dir)
+            results3 = defaultdict(list)
+            for res in inferencer(inputs, out_dir=tmp_dir):
+                for key in res:
+                    results3[key].extend(res[key])
             self.assertEqual(len(os.listdir(f'{tmp_dir}/visualizations')), 4)
             self.assertEqual(len(os.listdir(f'{tmp_dir}/predictions')), 4)
         self.assertEqual(len(results3['predictions']), 4)
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
-                                 results3['predictions'][3][0]['keypoints'])
+                                 results3['predictions'][2][0]['keypoints'])
 
         # `inputs` is path to a video
         inputs = 'tests/data/posetrack18/videos/000001_mpiinew_test/' \
                  '000001_mpiinew_test.mp4'
         with TemporaryDirectory() as tmp_dir:
-            results = inferencer(inputs, out_dir=tmp_dir)
+            results = defaultdict(list)
+            for res in inferencer(inputs, out_dir=tmp_dir):
+                for key in res:
+                    results[key].extend(res[key])
             self.assertIn('000001_mpiinew_test.mp4',
                           os.listdir(f'{tmp_dir}/visualizations'))
             self.assertIn('000001_mpiinew_test.json',
                           os.listdir(f'{tmp_dir}/predictions'))
-        self.assertTrue(inferencer.video_input)
+        self.assertTrue(inferencer._video_input)
         self.assertIn(len(results['predictions']), (4, 5))

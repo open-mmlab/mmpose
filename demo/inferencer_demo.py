@@ -19,8 +19,8 @@ def parse_args():
         type=str,
         default=None,
         help='Path to the custom checkpoint file of the selected pose model. '
-        'If it is not specified and "rec" is a model name of metafile, the '
-        'weights will be loaded from metafile.')
+        'If it is not specified and "pose2d" is a model name of metafile, '
+        'the weights will be loaded from metafile.')
     parser.add_argument(
         '--instance-type',
         type=str,
@@ -52,7 +52,7 @@ def parse_args():
     parser.add_argument(
         '--show',
         action='store_true',
-        help='Display the video in a popup window.')
+        help='Display the image/video in a popup window.')
     parser.add_argument(
         '--bbox-thr',
         type=float,
@@ -69,22 +69,22 @@ def parse_args():
         '--radius',
         type=int,
         default=3,
-        help='Keypoint radius for visualization')
+        help='Keypoint radius for visualization.')
     parser.add_argument(
         '--thickness',
         type=int,
         default=1,
-        help='Link thickness for visualization')
+        help='Link thickness for visualization.')
     parser.add_argument(
         '--vis-out-dir',
         type=str,
         default='',
-        help='Output directory of visualization results.')
+        help='Directory for saving visualized results.')
     parser.add_argument(
         '--pred-out-dir',
         type=str,
         default='',
-        help='Output directory to save the inference results.')
+        help='Directory for saving inference results.')
 
     call_args = vars(parser.parse_args())
 
@@ -101,8 +101,9 @@ def parse_args():
 
 def main():
     init_args, call_args = parse_args()
-    mmaction2 = MMPoseInferencer(**init_args)
-    mmaction2(**call_args)
+    inferencer = MMPoseInferencer(**init_args)
+    for _ in inferencer(**call_args):
+        pass
 
 
 if __name__ == '__main__':
