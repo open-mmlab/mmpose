@@ -949,15 +949,27 @@ class GenerateTarget(BaseTransform):
         if not isinstance(self.encoder, list):
             # For single encoding, the encoded items will be directly added
             # into results.
+            auxiliary_encode_kwargs = {
+                key: results[key]
+                for key in self.encoder.auxiliary_encode_keys
+            }
             encoded = self.encoder.encode(
-                keypoints=keypoints, keypoints_visible=keypoints_visible)
+                keypoints=keypoints,
+                keypoints_visible=keypoints_visible,
+                **auxiliary_encode_kwargs)
 
         else:
-            encoded_list = [
-                _encoder.encode(
-                    keypoints=keypoints, keypoints_visible=keypoints_visible)
-                for _encoder in self.encoder
-            ]
+            encoded_list = []
+            for _encoder in self.encoder:
+                auxiliary_encode_kwargs = {
+                    key: results[key]
+                    for key in _encoder.auxiliary_encode_keys
+                }
+                encoded_list.append(
+                    _encoder.encode(
+                        keypoints=keypoints,
+                        keypoints_visible=keypoints_visible,
+                        **auxiliary_encode_kwargs))
 
             if self.multilevel:
                 # For multilevel encoding, the encoded items from each encoder

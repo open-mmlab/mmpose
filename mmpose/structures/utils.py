@@ -115,7 +115,7 @@ def revert_heatmap(heatmap, bbox_center, bbox_scale, img_shape):
     return heatmap
 
 
-def split_instances(instances: InstanceData):
+def split_instances(instances: InstanceData) -> List[InstanceData]:
     """Convert instances into a list where each element is a dict that contains
     information about one instance."""
     results = []
