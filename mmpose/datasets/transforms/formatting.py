@@ -87,17 +87,18 @@ class PackPoseInputs(BaseTransform):
         'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
-        'keypoints_visible': 'keypoints_visible'
+        'keypoints_visible': 'keypoints_visible',
     }
 
     # items in `label_mapping_table` will be packed into
-    # PoseDataSample.gt_instances and converted to Tensor. These items will
-    # be used for computing losses
+    # PoseDataSample.gt_instance_labels and converted to Tensor. These items
+    # will be used for computing losses
     label_mapping_table = {
         'keypoint_labels': 'keypoint_labels',
         'keypoint_x_labels': 'keypoint_x_labels',
         'keypoint_y_labels': 'keypoint_y_labels',
-        'keypoint_weights': 'keypoint_weights'
+        'keypoint_weights': 'keypoint_weights',
+        'instance_coords': 'instance_coords'
     }
 
     # items in `field_mapping_table` will be packed into
@@ -105,6 +106,7 @@ class PackPoseInputs(BaseTransform):
     # used for computing losses
     field_mapping_table = {
         'heatmaps': 'heatmaps',
+        'instance_heatmaps': 'instance_heatmaps',
         'heatmap_mask': 'heatmap_mask',
         'heatmap_weights': 'heatmap_weights',
         'displacements': 'displacements',
