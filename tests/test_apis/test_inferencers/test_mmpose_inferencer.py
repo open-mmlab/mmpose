@@ -56,7 +56,7 @@ class TestMMPoseInferencer(TestCase):
             self.assertEqual(len(os.listdir(f'{tmp_dir}/predictions')), 4)
         self.assertEqual(len(results3['predictions']), 4)
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
-                                 results3['predictions'][2][0]['keypoints'])
+                                 results3['predictions'][3][0]['keypoints'])
 
         # `inputs` is path to a video
         inputs = 'tests/data/posetrack18/videos/000001_mpiinew_test/' \
