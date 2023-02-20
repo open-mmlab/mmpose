@@ -120,11 +120,15 @@ Feel free to join our community group for more help:
 
 ### Face 2d
 
-Coming soon!
+|                        Config                        | Input Size | NME<sup><br>(COCO-WholeBody-Face) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
+| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
+| [RTMPose-m](./rtmpose/face_2d_keypoint/wflw/rtmpose-m_8xb64-60e_coco-wholebody-face-256x256.py) |  256x256   |               4.57                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
 
 ### Hand 2d
 
-Coming soon!
+|                        Config                        | Input Size | PCK<sup><br>(COCO-WholeBody-Hand) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
+| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
+| [RTMPose-m](./rtmpose/hand_2d_keypoint/coco_wholebody_hand/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |               81.5                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
 
 ### Pretrained Models
 
@@ -149,6 +153,30 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 ## Visualization
 
 ![vis_simcc](https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png)
+
+## Demo
+
+MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html) with Pytorch.
+
+### Pytorch
+
+```shell
+# go to the mmpose folder
+cd ${PATH_TO_MMPOSE}
+
+# inference with rtmdet
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input {YOUR_TEST_IMG}
+    --show
+```
+
+Result is as follows:
+
+![topdown_inference_with_mmdet](https://user-images.githubusercontent.com/13503330/219999566-e157798a-e4a0-47a5-b327-a42c39e0e0a5.png)
 
 ## How To Deploy
 
@@ -201,7 +229,7 @@ In this tutorial, we organize files as follows:
 
 #### ONNX
 
-```
+```shell
 # go to the mmdeploy folder
 cd ${PATH_TO_MMDEPLOY}
 
@@ -230,7 +258,7 @@ The converted model file is `{work-dir}/end2end.onnx` by defaults.
 
 #### TensorRT
 
-```
+```shell
 # go to the mmdeploy folder
 cd ${PATH_TO_MMDEPLOY}
 
@@ -265,7 +293,7 @@ If the script runs successfully, you will see the following files:
 
 To convert the model with TRT-FP16, you can enable the fp16 mode in your deploy config:
 
-```
+```Python
 # in MMDeploy config
 backend_config = dict(
     type='tensorrt',
@@ -280,7 +308,7 @@ We provide both Python and C++ inference API with MMDeploy SDK.
 
 To use SDK, you need to dump the required info during converting the model. Just add --dump-info to the model conversion command:
 
-```
+```shell
 # RTMDet
 python tools/deploy.py \
     configs/mmdet/detection/detection_onnxrumtime_dynamic.py \
@@ -466,7 +494,7 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 If the user has MMDeploy compiled correctly, you will see the `pose_tracker` executable under the `mmdeploy/build/bin/`.
 
-```
+```shell
 # go to the mmdeploy folder
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
@@ -487,7 +515,7 @@ If you need to test the inference speed of the model under the deployment framew
 
 The user needs to prepare a folder for the test images `./test_images`, the profiler will randomly read images from this directory for the model speed test.
 
-```
+```shell
 python tools/profiler.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
     {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
@@ -501,7 +529,7 @@ python tools/profiler.py \
 
 The result is as follows:
 
-```
+```shell
 01/30 15:06:35 - mmengine - INFO - [onnxruntime]-70 times per count: 8.73 ms, 114.50 FPS
 01/30 15:06:36 - mmengine - INFO - [onnxruntime]-90 times per count: 9.05 ms, 110.48 FPS
 01/30 15:06:37 - mmengine - INFO - [onnxruntime]-110 times per count: 9.87 ms, 101.32 FPS
@@ -536,7 +564,7 @@ If you want to learn more details of profiler, you can refer to the [Profiler Do
 
 If you need to test the inference accuracy of the model on the deployment backend, MMDeploy provides a convenient `tools/test.py` script.
 
-```
+```shell
 python tools/test.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
     {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \

@@ -119,11 +119,15 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ### 脸部 2d 关键点
 
-Coming soon!
+|                        Config                        | Input Size | NME<sup><br>(COCO-WholeBody-Face) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
+| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
+| [RTMPose-m](./rtmpose/face_2d_keypoint/wflw/rtmpose-m_8xb64-60e_coco-wholebody-face-256x256.py) |  256x256   |               4.57                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
 
 ### 手部 2d 关键点
 
-Coming soon!
+|                        Config                        | Input Size | PCK<sup><br>(COCO-WholeBody-Hand) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
+| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
+| [RTMPose-m](./rtmpose/hand_2d_keypoint/coco_wholebody_hand/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |               81.5                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
 
 ### 预训练模型
 
@@ -148,6 +152,30 @@ Coming soon!
 ## 可视化
 
 ![vis_simcc](https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png)
+
+## 快速尝试
+
+通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行模型推理和效果验证。
+
+### Pytorch
+
+```shell
+# 前往 mmpose 目录
+cd ${PATH_TO_MMPOSE}
+
+# RTMDet 与 RTMPose 联合推理
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input {YOUR_TEST_IMG}
+    --show
+```
+
+效果展示：
+
+![topdown_inference_with_mmdet](https://user-images.githubusercontent.com/13503330/219999566-e157798a-e4a0-47a5-b327-a42c39e0e0a5.png)
 
 ## 部署教程
 
@@ -205,7 +233,7 @@ Coming soon!
 
 运行如下命令：
 
-```Python
+```shell
 # 前往 mmdeploy 目录
 cd ${PATH_TO_MMDEPLOY}
 
@@ -236,7 +264,7 @@ python tools/deploy.py \
 
 运行如下命令：
 
-```Python
+```shell
 # 前往 mmdeploy 目录
 cd ${PATH_TO_MMDEPLOY}
 
@@ -286,7 +314,7 @@ backend_config = dict(
 
 此处以 onnxruntime 的 cpu 模型为例，运行如下命令：
 
-```Python
+```shell
 # RTMDet
 python tools/deploy.py \
     configs/mmdet/detection/detection_onnxrumtime_dynamic.py \
@@ -312,7 +340,7 @@ python tools/deploy.py \
 
 默认会导出三个 json 文件：
 
-```Python
+```
 |----sdk
      |----end2end.onnx    # ONNX model
      |----end2end.engine  # TensorRT engine file
@@ -380,7 +408,7 @@ if __name__ == '__main__':
 
 #### C++ API
 
-```Python
+```C++
 #include "mmdeploy/detector.hpp"
 
 #include "opencv2/imgcodecs/imgcodecs.hpp"
@@ -448,7 +476,7 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 
 如果用户有跟随 MMDeploy 安装教程进行正确编译，在 `mmdeploy/build/bin/` 路径下会看到 `det_pose` 的可执行文件。
 
-```Python
+```shell
 # 前往 mmdeploy 目录
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
@@ -466,7 +494,7 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 如果用户有跟随 MMDeploy 安装教程进行正确编译，在 `mmdeploy/build/bin/` 路径下会看到 `pose_tracker` 的可执行文件。
 
-```Python
+```shell
 # 前往 mmdeploy 目录
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
@@ -488,7 +516,7 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 此处以 onnxruntime 的 cpu 模型为例。进入 mmdeploy 目录，首先按照 Step 2 中的步骤导出 ONNX 模型。用户需要准备一个存放测试图片的文件夹`./test_images`，profiler 将随机从该目录下抽取图片用于模型测速。
 
-```Python
+```shell
 python tools/profiler.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
     {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
@@ -502,7 +530,7 @@ python tools/profiler.py \
 
 测试结果如下：
 
-```Python
+```shell
 01/30 15:06:35 - mmengine - INFO - [onnxruntime]-70 times per count: 8.73 ms, 114.50 FPS
 01/30 15:06:36 - mmengine - INFO - [onnxruntime]-90 times per count: 9.05 ms, 110.48 FPS
 01/30 15:06:37 - mmengine - INFO - [onnxruntime]-110 times per count: 9.87 ms, 101.32 FPS
@@ -537,7 +565,7 @@ python tools/profiler.py \
 
 如果需要测试模型在部署框架下的推理精度，MMDeploy 提供了方便的 `tools/test.py` 脚本。
 
-```CMake
+```shell
 python tools/test.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
     {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
