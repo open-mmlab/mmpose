@@ -23,7 +23,8 @@ img_path = 'tests/data/coco/000000000785.jpg'   # you can specify your own pictu
 # build the inferencer with model alias
 inferencer = MMPoseInferencer('human')
 
-# The MMPoseInferencer API utilizes a lazy inference strategy, whereby it generates a prediction generator when provided with input
+# The MMPoseInferencer API utilizes a lazy inference strategy,
+# whereby it generates a prediction generator when provided with input
 result_generator = inferencer(img_path, show=True)
 result = next(result_generator)
 ```
@@ -38,7 +39,8 @@ The variable `result` is a dictionary that contains two keys, `'visualization'` 
 A command-line interface (CLI) tool for the inferencer is also available: `demo/inferencer_demo.py`. This tool enables users to perform inference with the same model and inputs using the following command:
 
 ```bash
-python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' --pose2d 'human' --show --pred-out-dir 'predictions'
+python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' \
+    --pose2d 'human' --show --pred-out-dir 'predictions'
 ```
 
 The predictions will be save in `predictions/000000000785.json`.
@@ -58,8 +60,10 @@ inferencer = MMPoseInferencer('td-hm_hrnet-w32_8xb64-210e_coco-256x192')
 
 # build the inferencer with model config path and checkpoint path/URL
 inferencer = MMPoseInferencer(
-    pose2d='configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py',
-    pose2d_weights='https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth'
+    pose2d='configs/body_2d_keypoint/topdown_heatmap/coco/' \
+           'td-hm_hrnet-w32_8xb64-210e_coco-256x192.py',
+    pose2d_weights='https://download.openmmlab.com/mmpose/top_down/' \
+                   'hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth'
 )
 ```
 
@@ -68,7 +72,8 @@ In addition, top-down pose estimators also require an object detection model. Th
 ```python
 
 # specify detection model by alias
-# the available aliases include 'human', 'hand', 'face', 'animal', as well as any additional aliases defined in mmdet
+# the available aliases include 'human', 'hand', 'face', 'animal',
+# as well as any additional aliases defined in mmdet
 inferencer = MMPoseInferencer(
     # suppose the pose estimator is trained on custom dataset
     pose2d='custom_human_pose_estimator.py',
@@ -87,7 +92,9 @@ inferencer = MMPoseInferencer(
 inferencer = MMPoseInferencer(
     pose2d='human',
     det_model=f'{PATH_TO_MMDET}/configs/yolox/yolox_l_8x8_300e_coco.py',
-    det_weights='https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_l_8x8_300e_coco/yolox_l_8x8_300e_coco_20211126_140236-d3bd2b23.pth',
+    det_weights='https://download.openmmlab.com/mmdetection/v2.0/'
+                'yolox/yolox_l_8x8_300e_coco/' \
+                'yolox_l_8x8_300e_coco_20211126_140236-d3bd2b23.pth',
     det_cat_ids=[0],  # the category id of 'human' class
 )
 ```
