@@ -5,10 +5,10 @@ from typing import Dict, Optional, Sequence, Union
 import numpy as np
 from mmengine.evaluator import BaseMetric
 from mmengine.logging import MMLogger
+from mmeval.metrics import KeypointAUC as MMEVAL_KeypointAUC
 
 from mmpose.registry import METRICS
-from ..functional import (keypoint_auc, keypoint_epe, keypoint_nme,
-                          keypoint_pck_accuracy)
+from ..functional import keypoint_epe, keypoint_nme, keypoint_pck_accuracy
 
 
 @METRICS.register_module()
@@ -533,7 +533,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
 
 
 @METRICS.register_module()
-class AUC(BaseMetric):
+class AUC(MMEVAL_KeypointAUC):
     """AUC evaluation metric.
 
     Calculate the Area Under Curve (AUC) of keypoint PCK accuracy.
@@ -549,83 +549,57 @@ class AUC(BaseMetric):
     Args:
         norm_factor (float): AUC normalization factor, Default: 30 (pixels).
         num_thrs (int): number of thresholds to calculate auc. Default: 20.
-        collect_device (str): Device name used for collecting results from
-            different ranks during distributed training. Must be ``'cpu'`` or
-            ``'gpu'``. Default: ``'cpu'``.
-        prefix (str, optional): The prefix that will be added in the metric
-            names to disambiguate homonymous metrics of different evaluators.
-            If prefix is not provided in the argument, ``self.default_prefix``
-            will be used instead. Default: ``None``.
+        **kwargs: Keyword parameters passed to :class:`mmeval.BaseMetric`. Must
+            include ``dataset_meta`` in order to compute the metric.
     """
 
     def __init__(self,
                  norm_factor: float = 30,
                  num_thrs: int = 20,
-                 collect_device: str = 'cpu',
-                 prefix: Optional[str] = None) -> None:
-        super().__init__(collect_device=collect_device, prefix=prefix)
-        self.norm_factor = norm_factor
-        self.num_thrs = num_thrs
+                 **kwargs) -> None:
+        super().__init__(norm_factor=norm_factor, num_thrs=num_thrs, **kwargs)
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
-        """Process one batch of data samples and predictions. The processed
-        results should be stored in ``self.results``, which will be used to
-        compute the metrics when all batches have been processed.
+        """Process one batch of data samples.
+
+        Parse predictions and groundtruths from ``data_samples`` and invoke
+        ``self.add``.
 
         Args:
-            data_batch (Sequence[dict]): A batch of data
-                from the dataloader.
-            data_sample (Sequence[dict]): A batch of outputs from
-                the model.
+            data_batch: A batch of data from the dataloader.
+            data_samples (Sequence[dict]): A batch of outputs from the model.
         """
+        predictions, groundtruths = [], []
+
         for data_sample in data_samples:
-            # predicted keypoints coordinates, [1, K, D]
             pred_coords = data_sample['pred_instances']['keypoints']
+            prediction = {
+                # predicted keypoints coordinates, [1, K, D]
+                'coords': pred_coords
+            }
             # ground truth data_info
             gt = data_sample['gt_instances']
-            # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
-            # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
-
-            result = {
-                'pred_coords': pred_coords,
-                'gt_coords': gt_coords,
-                'mask': mask,
+            groundtruth = {
+                # ground truth keypoints coordinates, [1, K, D]
+                'coords': gt_coords,
+                # ground truth keypoints_visible, [1, K, 1]
+                'mask': gt['keypoints_visible'].astype(bool).reshape(1, -1)
             }
 
-            self.results.append(result)
+            predictions.append(prediction)
+            groundtruths.append(groundtruth)
 
-    def compute_metrics(self, results: list) -> Dict[str, float]:
-        """Compute the metrics from processed results.
+        self.add(predictions, groundtruths)
 
-        Args:
-            results (list): The processed results of each batch.
+    def evaluate(self, *args, **kwargs) -> Dict:
+        """Returns metric results and reset state.
 
-        Returns:
-            Dict[str, float]: The computed metrics. The keys are the names of
-            the metrics, and the values are corresponding results.
+        This method would be invoked by ``mmengine.Evaluator``.
         """
-        logger: MMLogger = MMLogger.get_current_instance()
-
-        # pred_coords: [N, K, D]
-        pred_coords = np.concatenate(
-            [result['pred_coords'] for result in results])
-        # gt_coords: [N, K, D]
-        gt_coords = np.concatenate([result['gt_coords'] for result in results])
-        # mask: [N, K]
-        mask = np.concatenate([result['mask'] for result in results])
-
-        logger.info(f'Evaluating {self.__class__.__name__}...')
-
-        auc = keypoint_auc(pred_coords, gt_coords, mask, self.norm_factor,
-                           self.num_thrs)
-
-        metrics = dict()
-        metrics['AUC'] = auc
-
-        return metrics
+        metric_results = self.compute(*args, **kwargs)
+        return metric_results
 
 
 @METRICS.register_module()

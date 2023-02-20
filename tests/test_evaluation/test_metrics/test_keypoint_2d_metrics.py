@@ -269,7 +269,7 @@ class TestAUCandEPE(TestCase):
         auc_metric = AUC(norm_factor=20, num_thrs=4)
         auc_metric.process(self.data_batch, self.data_samples)
         auc = auc_metric.evaluate(1)
-        target = {'AUC': 0.375}
+        target = {'AUC@4': 0.375}
         self.assertDictEqual(auc, target)
 
     def test_epe_evaluate(self):
