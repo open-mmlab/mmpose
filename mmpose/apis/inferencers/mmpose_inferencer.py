@@ -44,11 +44,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         device (str, optional): Device to run inference. If None, the
             available device will be automatically used. Defaults to None.
         scope (str, optional): The scope of the model. Defaults to "mmpose".
-        instance_type (str, optional): The name of the instances, such as
-            "human", "hand", "animal", and etc. This argument serve as
-            aliases for the detection models to be used in top-down
-            pose2d methods. Defaults to None.
-        det_model(str, optional): Path to the config of detection model.
+        det_model(str, optional): Config path or alias of detection model.
             Defaults to None.
         det_weights(str, optional): Path to the checkpoints of detection
             model. Defaults to None.
@@ -74,7 +70,6 @@ class MMPoseInferencer(BaseMMPoseInferencer):
                  pose2d_weights: Optional[str] = None,
                  device: Optional[str] = None,
                  scope: str = 'mmpose',
-                 instance_type: Optional[str] = None,
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
                  det_cat_ids: Optional[Union[int, List]] = None) -> None:
@@ -85,8 +80,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         self.visualizer = None
         if pose2d is not None:
             self.pose2d_inferencer = Pose2DInferencer(pose2d, pose2d_weights,
-                                                      device, scope,
-                                                      instance_type, det_model,
+                                                      device, scope, det_model,
                                                       det_weights, det_cat_ids)
             self.mode = 'pose2d'
 

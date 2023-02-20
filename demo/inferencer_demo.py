@@ -22,16 +22,10 @@ def parse_args():
         'If it is not specified and "pose2d" is a model name of metafile, '
         'the weights will be loaded from metafile.')
     parser.add_argument(
-        '--instance-type',
-        type=str,
-        default=None,
-        help='The name of the target instances, such as'
-        '"human", "hand", "animal", and etc.')
-    parser.add_argument(
         '--det-model',
         type=str,
         default=None,
-        help='Path to the config of detection model.')
+        help='Config path or alias of detection model.')
     parser.add_argument(
         '--det-weights',
         type=str,
@@ -89,8 +83,8 @@ def parse_args():
     call_args = vars(parser.parse_args())
 
     init_kws = [
-        'pose2d', 'pose2d_weights', 'device', 'instance_type', 'det_model',
-        'det_weights', 'det_cat_ids'
+        'pose2d', 'pose2d_weights', 'device', 'det_model', 'det_weights',
+        'det_cat_ids'
     ]
     init_args = {}
     for init_kw in init_kws:

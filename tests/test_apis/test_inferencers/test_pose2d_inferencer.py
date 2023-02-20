@@ -57,11 +57,6 @@ class TestPose2DInferencer(TestCase):
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertFalse(hasattr(inferencer, 'detector'))
 
-        # init with incorrect `instance_type`
-        with self.assertRaises(ValueError):
-            inferencer = Pose2DInferencer(
-                model='animal', instance_type='aminal')
-
     def test_call(self):
 
         # top-down model

@@ -47,11 +47,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         device (str, optional): Device to run inference. If None, the
             available device will be automatically used. Defaults to None.
         scope (str, optional): The scope of the model. Defaults to "mmpose".
-        instance_type (str, optional): The name of the instances, such as
-            "human", "hand", "animal", and etc. This argument serve as
-            aliases for the detection models to be used in top-down
-            approaches. Defaults to None.
-        det_model(str, optional): Path to the config of detection model.
+        det_model(str, optional): Config path or alias of detection model.
             Defaults to None.
         det_weights(str, optional): Path to the checkpoints of detection
             model. Defaults to None.
@@ -77,7 +73,6 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                  weights: Optional[str] = None,
                  device: Optional[str] = None,
                  scope: Optional[str] = 'mmpose',
-                 instance_type: Optional[str] = None,
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
                  det_cat_ids: Optional[Union[int, Tuple]] = None) -> None:
@@ -92,16 +87,10 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         # initialize detector for top-down models
         if self.cfg.data_mode == 'topdown':
             if det_model is None:
-                if instance_type is None:
-                    instance_type = DATASETS.get(
-                        self.cfg.dataset_type).__module__.split(
-                            'datasets.')[-1].split('.')[0]
-                if instance_type not in default_det_models:
-                    raise ValueError(
-                        f'detector for {instance_type} has not been '
-                        'provided. You need to specify `det_model`, '
-                        '`det_weights` and `det_cat_ids` manually')
-                det_info = default_det_models[instance_type.lower()]
+                det_model = DATASETS.get(
+                    self.cfg.dataset_type).__module__.split(
+                        'datasets.')[-1].split('.')[0].lower()
+                det_info = default_det_models[det_model]
                 det_model, det_weights, det_cat_ids = det_info[
                     'model'], det_info['weights'], det_info['cat_ids']
 
