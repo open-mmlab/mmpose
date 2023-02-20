@@ -118,7 +118,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                         '/')[0]
                     if input_type == 'image':
                         inputs.append(filepath)
-                inputs = inputs
+                inputs.sort()
             else:
                 # if inputs is a path to a video file, it will be converted
                 # to a list containing separated frame filenames
