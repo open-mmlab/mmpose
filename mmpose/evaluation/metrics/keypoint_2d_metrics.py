@@ -5,10 +5,10 @@ from typing import Dict, Optional, Sequence, Union
 import numpy as np
 from mmengine.evaluator import BaseMetric
 from mmengine.logging import MMLogger
+from mmeval.metrics import KeypointNME as MMEVAL_KeypointNME
 
 from mmpose.registry import METRICS
-from ..functional import (keypoint_auc, keypoint_epe, keypoint_nme,
-                          keypoint_pck_accuracy)
+from ..functional import keypoint_auc, keypoint_epe, keypoint_pck_accuracy
 
 
 @METRICS.register_module()
@@ -710,7 +710,7 @@ class EPE(BaseMetric):
 
 
 @METRICS.register_module()
-class NME(BaseMetric):
+class NME(MMEVAL_KeypointNME):
     """NME evaluation metric.
 
     Calculate the normalized mean error (NME) of keypoints.
@@ -739,13 +739,7 @@ class NME(BaseMetric):
             If set as None, will use the default ``keypoint_indices`` in
             `DEFAULT_KEYPOINT_INDICES` for specific datasets, else use the
             given ``keypoint_indices`` of the dataset. Default: ``None``.
-        collect_device (str): Device name used for collecting results from
-            different ranks during distributed training. Must be ``'cpu'`` or
-            ``'gpu'``. Default: ``'cpu'``.
-        prefix (str, optional): The prefix that will be added in the metric
-            names to disambiguate homonymous metrics of different evaluators.
-            If prefix is not provided in the argument, ``self.default_prefix``
-            will be used instead. Default: ``None``.
+        **kwargs: Keyword parameters passed to :class:`mmeval.BaseMetric`.
     """
 
     DEFAULT_KEYPOINT_INDICES = {
@@ -766,49 +760,39 @@ class NME(BaseMetric):
                  norm_mode: str,
                  norm_item: Optional[str] = None,
                  keypoint_indices: Optional[Sequence[int]] = None,
-                 collect_device: str = 'cpu',
-                 prefix: Optional[str] = None) -> None:
-        super().__init__(collect_device=collect_device, prefix=prefix)
-        allowed_norm_modes = ['use_norm_item', 'keypoint_distance']
-        if norm_mode not in allowed_norm_modes:
-            raise KeyError("`norm_mode` should be 'use_norm_item' or "
-                           f"'keypoint_distance', but got {norm_mode}.")
+                 **kwargs) -> None:
+        super().__init__(
+            norm_mode=norm_mode,
+            norm_item=norm_item,
+            keypoint_indices=keypoint_indices,
+            **kwargs)
 
-        self.norm_mode = norm_mode
-        if self.norm_mode == 'use_norm_item':
-            if not norm_item:
-                raise KeyError('`norm_mode` is set to `"use_norm_item"`, '
-                               'please specify the `norm_item` in the '
-                               'datainfo used as the normalization factor.')
-        self.norm_item = norm_item
-        self.keypoint_indices = keypoint_indices
+    def process(self, data_batch, data_samples: Sequence[dict]):
+        """Process one batch of data samples.
 
-    def process(self, data_batch: Sequence[dict],
-                data_samples: Sequence[dict]) -> None:
-        """Process one batch of data samples and predictions. The processed
-        results should be stored in ``self.results``, which will be used to
-        compute the metrics when all batches have been processed.
+        Parse predictions and groundtruths from ``data_samples`` and invoke
+        ``self.add``.
 
         Args:
-            data_batch (Sequence[dict]): A batch of data
-                from the dataloader.
-            data_samples (Sequence[dict]): A batch of outputs from
-                the model.
+            data_batch: A batch of data from the dataloader.
+            data_samples (Sequence[dict]): A batch of outputs from the model.
         """
+        predictions, groundtruths = [], []
         for data_sample in data_samples:
-            # predicted keypoints coordinates, [1, K, D]
             pred_coords = data_sample['pred_instances']['keypoints']
+            prediction = {
+                # predicted keypoints coordinates, [1, K, D]
+                'coords': pred_coords
+            }
             # ground truth data_info
             gt = data_sample['gt_instances']
-            # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
-            # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
-            result = {
-                'pred_coords': pred_coords,
-                'gt_coords': gt_coords,
-                'mask': mask,
+            groundtruth = {
+                # ground truth keypoints coordinates, [1, K, D]
+                'coords': gt_coords,
+                # ground truth keypoints_visible, [1, K, 1]
+                'mask': gt['keypoints_visible'].astype(bool).reshape(1, -1)
             }
 
             if self.norm_item:
@@ -819,92 +803,25 @@ class NME(BaseMetric):
                     # ground truth bboxes, [1, 4]
                     bbox_size = np.max(gt['bboxes'][0][2:] -
                                        gt['bboxes'][0][:2])
-                    result['bbox_size'] = np.array([bbox_size]).reshape(-1, 1)
+                    groundtruth['bbox_size'] = np.array([bbox_size
+                                                         ]).reshape(-1, 1)
                 else:
                     assert self.norm_item in gt, f'The ground truth data ' \
                         f'info do not have the expected normalized factor ' \
                         f'"{self.norm_item}"'
                     # ground truth norm_item
-                    result[self.norm_item] = np.array(
+                    groundtruth[self.norm_item] = np.array(
                         gt[self.norm_item]).reshape([-1, 1])
 
-            self.results.append(result)
+            predictions.append(prediction)
+            groundtruths.append(groundtruth)
 
-    def compute_metrics(self, results: list) -> Dict[str, float]:
-        """Compute the metrics from processed results.
+        self.add(predictions, groundtruths)
 
-        Args:
-            results (list): The processed results of each batch.
+    def evaluate(self, *args, **kwargs) -> Dict:
+        """Returns metric results and reset state.
 
-        Returns:
-            Dict[str, float]: The computed metrics. The keys are the names of
-            the metrics, and the values are corresponding results.
+        This method would be invoked by ``mmengine.Evaluator``.
         """
-        logger: MMLogger = MMLogger.get_current_instance()
-
-        # pred_coords: [N, K, D]
-        pred_coords = np.concatenate(
-            [result['pred_coords'] for result in results])
-        # gt_coords: [N, K, D]
-        gt_coords = np.concatenate([result['gt_coords'] for result in results])
-        # mask: [N, K]
-        mask = np.concatenate([result['mask'] for result in results])
-
-        logger.info(f'Evaluating {self.__class__.__name__}...')
-        metrics = dict()
-
-        if self.norm_mode == 'use_norm_item':
-            normalize_factor_ = np.concatenate(
-                [result[self.norm_item] for result in results])
-            # normalize_factor: [N, 2]
-            normalize_factor = np.tile(normalize_factor_, [1, 2])
-            nme = keypoint_nme(pred_coords, gt_coords, mask, normalize_factor)
-            metrics['NME'] = nme
-
-        else:
-            if self.keypoint_indices is None:
-                # use default keypoint_indices in some datasets
-                dataset_name = self.dataset_meta['dataset_name']
-                if dataset_name not in self.DEFAULT_KEYPOINT_INDICES:
-                    raise KeyError(
-                        '`norm_mode` is set to `keypoint_distance`, and the '
-                        'keypoint_indices is set to None, can not find the '
-                        'keypoint_indices in `DEFAULT_KEYPOINT_INDICES`, '
-                        'please specify `keypoint_indices` appropriately.')
-                self.keypoint_indices = self.DEFAULT_KEYPOINT_INDICES[
-                    dataset_name]
-            else:
-                assert len(self.keypoint_indices) == 2, 'The keypoint '\
-                    'indices used for normalization should be a pair.'
-                keypoint_id2name = self.dataset_meta['keypoint_id2name']
-                dataset_name = self.dataset_meta['dataset_name']
-                for idx in self.keypoint_indices:
-                    assert idx in keypoint_id2name, f'The {dataset_name} '\
-                        f'dataset does not contain the required '\
-                        f'{idx}-th keypoint.'
-            # normalize_factor: [N, 2]
-            normalize_factor = self._get_normalize_factor(gt_coords=gt_coords)
-            nme = keypoint_nme(pred_coords, gt_coords, mask, normalize_factor)
-            metrics['NME'] = nme
-
-        return metrics
-
-    def _get_normalize_factor(self, gt_coords: np.ndarray) -> np.ndarray:
-        """Get the normalize factor. generally inter-ocular distance measured
-        as the Euclidean distance between the outer corners of the eyes is
-        used.
-
-        Args:
-            gt_coords (np.ndarray[N, K, 2]): Groundtruth keypoint coordinates.
-
-        Returns:
-            np.ndarray[N, 2]: normalized factor
-        """
-        idx1, idx2 = self.keypoint_indices
-
-        interocular = np.linalg.norm(
-            gt_coords[:, idx1, :] - gt_coords[:, idx2, :],
-            axis=1,
-            keepdims=True)
-
-        return np.tile(interocular, [1, 2])
+        metric_results = self.compute(*args, **kwargs)
+        return metric_results
