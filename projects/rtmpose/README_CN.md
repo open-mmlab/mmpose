@@ -177,6 +177,12 @@ python demo/topdown_demo_with_mmdet.py \
 
 ![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
 
+## 模型训练
+
+请参考 [训练与测试](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html) 进行 RTMPose 的训练。
+
+为了在你自己的数据集上得到更好的模型性能，我们推荐你使用我们提供的在 AIC-COCO 数据集上预训练的模型进行微调。
+
 ## 部署教程
 
 本教程将展示如何通过 [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x) 部署 RTMPose 项目。

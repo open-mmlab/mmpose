@@ -178,6 +178,12 @@ Result is as follows:
 
 ![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
 
+## How To Train
+
+Please refer to [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html).
+
+To get the best performance on your custom dataset, we recommend you to conduct transfer learning on the AIC-COCO pre-trained models.
+
 ## How To Deploy
 
 Here is a basic example of deploy RTMPose with [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x).
