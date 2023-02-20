@@ -176,7 +176,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 Result is as follows:
 
-![topdown_inference_with_mmdet](https://user-images.githubusercontent.com/13503330/219999566-e157798a-e4a0-47a5-b327-a42c39e0e0a5.png)
+![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
 
 ## How To Deploy
 
