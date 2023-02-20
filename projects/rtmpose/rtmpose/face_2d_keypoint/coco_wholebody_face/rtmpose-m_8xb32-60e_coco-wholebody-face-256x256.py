@@ -1,11 +1,11 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-max_epochs = 210
-stage2_num_epochs = 30
+max_epochs = 60
+stage2_num_epochs = 10
 base_lr = 4e-3
 
-train_cfg = dict(max_epochs=max_epochs, val_interval=10)
+train_cfg = dict(max_epochs=max_epochs, val_interval=1)
 randomness = dict(seed=21)
 
 # optimizer
@@ -74,7 +74,7 @@ model = dict(
     head=dict(
         type='RTMHead',
         in_channels=768,
-        out_channels=17,
+        out_channels=68,
         input_size=codec['input_size'],
         in_featuremap_size=(8, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
@@ -97,16 +97,16 @@ model = dict(
     test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
-dataset_type = 'AP10KDataset'
+dataset_type = 'CocoWholeBodyFaceDataset'
 data_mode = 'topdown'
-data_root = 'data/ap10k/'
+data_root = 'data/coco/'
 
 file_client_args = dict(backend='disk')
 # file_client_args = dict(
 #     backend='petrel',
 #     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/',
-#         f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/'
+#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
+#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
 #     }))
 
 # pipelines
@@ -114,7 +114,7 @@ train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
+    # dict(type='RandomHalfBody'),
     dict(
         type='RandomBBoxTransform', scale_factor=[0.6, 1.4], rotate_factor=80),
     dict(type='TopdownAffine', input_size=codec['input_size']),
@@ -148,7 +148,7 @@ train_pipeline_stage2 = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
+    # dict(type='RandomHalfBody'),
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.,
@@ -177,7 +177,7 @@ train_pipeline_stage2 = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=10,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -185,8 +185,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/ap10k-train-split1.json',
-        data_prefix=dict(img='data/'),
+        ann_file='annotations/coco_wholebody_train_v1.0.json',
+        data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -199,30 +199,17 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/ap10k-val-split1.json',
-        data_prefix=dict(img='data/'),
+        ann_file='annotations/coco_wholebody_val_v1.0.json',
+        data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
-test_dataloader = dict(
-    batch_size=32,
-    num_workers=10,
-    persistent_workers=True,
-    drop_last=False,
-    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
-    dataset=dict(
-        type=dataset_type,
-        data_root=data_root,
-        data_mode=data_mode,
-        ann_file='annotations/ap10k-test-split1.json',
-        data_prefix=dict(img='data/'),
-        test_mode=True,
-        pipeline=val_pipeline,
-    ))
+test_dataloader = val_dataloader
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=1))
+    checkpoint=dict(
+        save_best='NME', rule='less', max_keep_ckpts=1, interval=1))
 
 custom_hooks = [
     dict(
@@ -239,8 +226,7 @@ custom_hooks = [
 
 # evaluators
 val_evaluator = dict(
-    type='CocoMetric',
-    ann_file=data_root + 'annotations/ap10k-val-split1.json')
-test_evaluator = dict(
-    type='CocoMetric',
-    ann_file=data_root + 'annotations/ap10k-test-split1.json')
+    type='NME',
+    norm_mode='keypoint_distance',
+)
+test_evaluator = val_evaluator
