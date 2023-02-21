@@ -234,10 +234,10 @@ def _demo_cid_inputs(input_shape=(1, 3, 512, 512)):
     imgs = rng.rand(*input_shape)
     multi_heatmap = np.zeros([N, 18, H // 4, W // 4], dtype=np.float32)
     multi_mask = np.ones([N, 1, H // 4, W // 4], dtype=np.float32)
-    instance_coord = np.zeros([N, 30, 2], dtype=np.int64)
+    instance_coord = np.zeros([N, 30, 2], dtype=int)
     instance_heatmap = np.zeros([N, 30, 17, H // 4, W // 4], dtype=np.float32)
     instance_mask = np.ones([N, 30, 17, 1, 1], dtype=np.float32)
-    instance_valid = np.ones([N, 30], dtype=np.int64)
+    instance_valid = np.ones([N, 30], dtype=int)
 
     img_metas = [{
         'image_file':

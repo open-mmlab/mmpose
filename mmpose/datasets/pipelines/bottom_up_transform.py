@@ -169,8 +169,7 @@ class HeatmapGenerator:
             assert len(output_size) == 2
             self.output_size = output_size
         else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+            self.output_size = np.array([output_size, output_size], dtype=int)
         self.num_joints = num_joints
         if sigma < 0:
             sigma = self.output_size.prod()**0.5 / 64
@@ -243,8 +242,7 @@ class OffsetGenerator:
             assert len(output_size) == 2
             self.output_size = output_size
         else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+            self.output_size = np.array([output_size, output_size], dtype=int)
         self.num_joints = num_joints
         assert radius > 0, f'`radius` must be a positive value, ' \
                            f'but got {radius}'
@@ -320,8 +318,7 @@ class JointsEncoder:
             assert len(output_size) == 2
             self.output_size = output_size
         else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+            self.output_size = np.array([output_size, output_size], dtype=int)
         self.tag_per_joint = tag_per_joint
 
     def __call__(self, joints):
@@ -371,8 +368,7 @@ class PAFGenerator:
             assert len(output_size) == 2
             self.output_size = output_size
         else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+            self.output_size = np.array([output_size, output_size], dtype=int)
         self.limb_width = limb_width
         self.skeleton = skeleton
 
@@ -527,7 +523,7 @@ class BottomUpRandomFlip:
                     assert len(_output_size) == 2
                 else:
                     _output_size = np.array([_output_size, _output_size],
-                                            dtype=np.int)
+                                            dtype=int)
                 mask[i] = mask[i][:, ::-1].copy()
                 joints[i] = joints[i][:, self.flip_index]
                 joints[i][:, :, 0] = _output_size[0] - joints[i][:, :, 0] - 1
@@ -1053,13 +1049,13 @@ class CIDGenerateTarget:
         results['multi_heatmap'] = heatmap_with_center
         results['multi_mask'] = mask[None, :, :]
         # pad instance targets for batching
-        instance_coord = np.zeros((self.max_num_people, 2), dtype=np.int32)
+        instance_coord = np.zeros((self.max_num_people, 2), dtype=int)
         instance_heatmap = np.zeros(
             (self.max_num_people, num_keypoints, output_size, output_size),
             dtype=np.float32)
         instance_mask = np.zeros((self.max_num_people, num_keypoints, 1, 1),
                                  dtype=np.float32)
-        instance_valid = np.zeros((self.max_num_people), dtype=np.int32)
+        instance_valid = np.zeros((self.max_num_people), dtype=int)
         if len(inst_coords) > 0:
             idx_list = list(range(len(inst_coords)))
             random.shuffle(idx_list)
@@ -1156,7 +1152,7 @@ class BottomUpGetImgSize:
         if input_size.size > 1:
             assert len(input_size) == 2
         else:
-            input_size = np.array([input_size, input_size], dtype=np.int)
+            input_size = np.array([input_size, input_size], dtype=int)
         img = results['img']
 
         base_size, center, scale = _get_multi_scale_size(
@@ -1199,7 +1195,7 @@ class BottomUpResizeAlign:
         if input_size.size > 1:
             assert len(input_size) == 2
         else:
-            input_size = np.array([input_size, input_size], dtype=np.int)
+            input_size = np.array([input_size, input_size], dtype=int)
         test_scale_factor = results['ann_info']['test_scale_factor']
         aug_data = []
 
