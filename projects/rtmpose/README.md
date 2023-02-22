@@ -18,12 +18,15 @@ Coming soon
 - [🥳 🚀 What's New](#--whats-new-)
 - [📖 Introduction](#-introduction-)
 - [🙌 Community](#-community-)
-- [⚡ Pipeline Performance](#-pipeline-)
+- [⚡ Pipeline Performance](#-pipeline-performance-)
 - [📊 Model Zoo](#-model-zoo-)
 - [👀 Visualization](#-visualization-)
 - [😎 Demo](#-demo-)
 - [👨‍🏫 How to Train](#-acknowledgement-)
 - [🏗️ How To Deploy](#️-citation-)
+- [📚 Common Usage](#️-common-usage-)
+  - [🚀 Inference Speed Test](#-inference-speed-test-)
+  - [📊 Model Test](#-model-test-)
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
@@ -200,7 +203,7 @@ To get the best performance on your custom dataset, we recommend you to conduct 
 
 Here is a basic example of deploy RTMPose with [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x).
 
-### Step1. Install MMDeploy
+### 🧩 Step1. Install MMDeploy
 
 Before starting the deployment, please make sure you install MMPose-1.x and MMDeploy-1.x correctly.
 
@@ -214,7 +217,7 @@ Depending on the deployment backend, some backends require compilation of custom
 - [OPENVINO SUPPORT](https://mmdeploy.readthedocs.io/en/1.x/05-supported-backends/openvino.html)
 - [More](https://github.com/open-mmlab/mmdeploy/tree/1.x/docs/en/05-supported-backends)
 
-### Step2. Convert Model
+### 🛠️ Step2. Convert Model
 
 After the installation, you can enjoy the model deployment journey starting from converting PyTorch model to backend model by running MMDeploy's `tools/deploy.py`.
 
@@ -320,7 +323,7 @@ backend_config = dict(
     ))
 ```
 
-### Step3. Inference with SDK
+### 🕹️ Step3. Inference with SDK
 
 We provide both Python and C++ inference API with MMDeploy SDK.
 
@@ -489,7 +492,7 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 - [C# API Examples](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/csharp)
 - [JAVA API Examples](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/java)
 
-## Step4. Pipeline Inference
+## 🚀 Step4. Pipeline Inference
 
 ### Inference for images
 
@@ -525,9 +528,9 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 - [`pose_tracker.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/pose_tracker.py)
 - [`pose_tracker.cxx`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/csrc/cpp/pose_tracker.cxx)
 
-## Common Usage
+## 📚 Common Usage [🔝](#-table-of-contents)
 
-### Inference Speed Test
+### 🚀 Inference Speed Test [🔝](#-table-of-contents)
 
 If you need to test the inference speed of the model under the deployment framework, MMDeploy provides a convenient `tools/profiler.py` script.
 
@@ -578,7 +581,7 @@ The result is as follows:
 
 If you want to learn more details of profiler, you can refer to the [Profiler Docs](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/useful_tools.html#profiler).
 
-### Model Test
+### 📊 Model Test [🔝](#-table-of-contents)
 
 If you need to test the inference accuracy of the model on the deployment backend, MMDeploy provides a convenient `tools/test.py` script.
 

@@ -24,6 +24,9 @@ Coming soon
 - [😎 快速尝试](#-快速尝试-)
 - [👨‍🏫 模型训练](#-模型训练-)
 - [🏗️ 部署教程](#️-部署教程-)
+- [📚 常用功能](#️-常用功能-)
+  - [🚀 模型测速](#-模型测速-)
+  - [📊 精度验证](#-精度验证-)
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
@@ -199,7 +202,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 本教程将展示如何通过 [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x) 部署 RTMPose 项目。
 
-### 安装
+### 🧩 安装
 
 在开始部署之前，首先你需要确保正确安装了 MMPose, MMDetection, MMDeploy，相关安装教程如下：
 
@@ -213,7 +216,7 @@ python demo/topdown_demo_with_mmdet.py \
 - [OpenVINO](https://mmdeploy.readthedocs.io/zh_CN/1.x/05-supported-backends/openvino.html)
 - [更多](https://github.com/open-mmlab/mmdeploy/tree/1.x/docs/en/05-supported-backends)
 
-### 模型转换
+### 🛠️ 模型转换
 
 在完成安装之后，你就可以开始模型部署了。通过 MMDeploy 提供的 `tools/deploy.py` 可以方便地将 Pytorch 模型转换到不同的部署后端。
 
@@ -326,7 +329,7 @@ backend_config = dict(
     ))
 ```
 
-### SDK 推理
+### 🕹️ SDK 推理
 
 要进行 Pipeline 推理，需要先用 MMDeploy 导出 SDK 版本的 det 和 pose 模型，只需要在参数中加上`--dump-info`。
 
@@ -488,7 +491,7 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 - [C# API 示例](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/csharp)
 - [JAVA API 示例](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/java)
 
-### Pipeline 推理
+### 🚀 Pipeline 推理
 
 #### 图片推理
 
@@ -526,9 +529,9 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 \- [`pose_tracker.cxx`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/csrc/cpp/pose_tracker.cxx)
 
-### 常用功能
+## 📚 常用功能 [🔝](#-table-of-contents)
 
-#### 模型测速
+### 🚀 模型测速 [🔝](#-table-of-contents)
 
 如果需要测试模型在部署框架下的推理速度，MMDeploy 提供了方便的 `tools/profiler.py` 脚本。
 
@@ -579,7 +582,7 @@ python tools/profiler.py \
 
 如果你希望详细了解 profiler 的更多参数设置与功能，可以前往 [Profiler Docs](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/useful_tools.html#profiler)
 
-#### 精度验证
+### 📊 精度验证 [🔝](#-table-of-contents)
 
 如果需要测试模型在部署框架下的推理精度，MMDeploy 提供了方便的 `tools/test.py` 脚本。
 
