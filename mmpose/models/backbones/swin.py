@@ -670,7 +670,7 @@ class SwinTransformer(BaseBackbone):
             state_dict = get_state_dict(
                 self.init_cfg['checkpoint'], map_location='cpu')
             if self.convert_weights:
-                # supported loading weight from original repo,
+                # supported loading weight from original repo
                 state_dict = swin_converter(state_dict)
 
             # strip prefix of state_dict
