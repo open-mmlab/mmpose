@@ -9,37 +9,49 @@ To further evaluate RTMPose's capability in critical real-time applications, we 
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-## Citation
+## 🖊️ Citation
 
 Coming soon
 
-## Introduction
+## 📄 Table of Contents
+
+- [🥳 🚀 What's New](#--whats-new-)
+- [📖 Introduction](#-introduction-)
+- [🙌 Community](#-community-)
+- [⚡ Pipeline Performance](#-pipeline-)
+- [📊 Model Zoo](#-model-zoo-)
+- [👀 Visualization](#-visualization-)
+- [😎 Demo](#-demo-)
+- [👨‍🏫 How to Train](#-acknowledgement-)
+- [🏗️ How To Deploy](#️-citation-)
+
+## 🥳 🚀 What's New [🔝](#-table-of-contents)
+
+- Feb 2023: RTMPose is released. RTMPose-m runs at 90+ FPS on COCO val set and achieves 75.8 mAP.
+
+## 📖 Introduction [🔝](#-table-of-contents)
 
 English | [简体中文](README_CN.md)
 
-### Major Features
+### ✨ Major Features
 
-- **High efficiency and high accuracy**
+- 🚀 **High efficiency and high accuracy**
 
   - t | 68.5 AP on COCO with CPU: 300+ FPS / GPU: 940+ FPS
   - s | 72.2 AP on COCO with CPU: 200+ FPS / GPU: 710+ FPS
   - m | 75.8 AP on COCO with CPU: 90+ FPS / GPU: 430+ FPS
   - l | 76.5 AP on COCO with CPU: 50+ FPS / GPU: 280+ FPS
 
-- **Easy to deploy**
+- 🛠️ **Easy to deploy**
 
   - Step-by-step deployment tutorials.
   - Support various backends including ONNX, TensorRT, ncnn, OpenVINO, etc. Powered by MMDeploy.
 
-- **Design for practical applications**
+- 🏗️ **Design for practical applications**
 
   Pipeline inference API and SDK for Python, C++, etc.
 
-## What's New
-
-- Feb 2023: RTMPose is released. RTMPose-m runs at 90+ FPS on COCO val set and achieves 75.8 mAP.
-
-## Community
+## 🙌 Community [🔝](#-table-of-contents)
 
 RTMPose is a long-term project dedicated to the training, optimization and deployment of high-performance real-time pose estimation algorithms in practical scenarios, so we are looking forward to the power from the community. Welcome to share the training configurations and tricks based on RTMPose in different business applications to help more community users!
 
@@ -54,7 +66,7 @@ Feel free to join our community group for more help:
 - WeChat Group
 - Discord Group: https://discord.gg/raweFPmdzG
 
-## Pipeline Performance
+## ⚡ Pipeline Performance [🔝](#-table-of-contents)
 
 **Notes**
 
@@ -76,7 +88,7 @@ Feel free to join our community group for more help:
 | [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-m](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>75.3       |            75.7            |        24.66<br/>13.59        |        38.95<br/>1.93        |                 -                  |                   6.923                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)    |
 | [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-l](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>76.3       |            76.6            |        24.66<br/>27.66        |        38.95<br/>4.16        |                 -                  |                   7.204                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)    |
 
-## Models
+## 📊 Model Zoo [🔝](#-table-of-contents)
 
 **Notes**
 
@@ -150,11 +162,11 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 |  CSPNeXt-m   |  224x224   |   13.05   |   1.93   |   79.27   |   94.79   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-m_8xb256-rsb-a1-600e_in1k-ecb3bbd9.pth) |
 |  CSPNeXt-l   |  224x224   |   27.16   |   4.19   |   81.30   |   95.62   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-l_8xb256-rsb-a1-600e_in1k-6a760974.pth) |
 
-## Visualization
+## 👀 Visualization [🔝](#-table-of-contents)
 
 ![vis_simcc](https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png)
 
-## Demo
+## 😎 Demo [🔝](#-table-of-contents)
 
 MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html) with Pytorch.
 
@@ -178,13 +190,13 @@ Result is as follows:
 
 ![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
 
-## How To Train
+## 👨‍🏫 How To Train [🔝](#-table-of-contents)
 
 Please refer to [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html).
 
 To get the best performance on your custom dataset, we recommend you to conduct transfer learning on the AIC-COCO pre-trained models.
 
-## How To Deploy
+## 🏗️ How To Deploy [🔝](#-table-of-contents)
 
 Here is a basic example of deploy RTMPose with [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x).
 

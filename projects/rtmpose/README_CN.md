@@ -9,37 +9,49 @@ To further evaluate RTMPose's capability in critical real-time applications, we 
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-## 引用我们
+## 🖊️ 引用我们
 
 Coming soon
 
-## 简介
+## 📄 Table of Contents
+
+- [🥳 🚀 最新进展](#--最新进展-)
+- [📖 简介](#-简介-)
+- [🙌 社区共建](#-社区共建-)
+- [⚡ Pipeline 性能](#-pipeline-性能-)
+- [📊 模型库](#-模型库-)
+- [👀 可视化](#-可视化-)
+- [😎 快速尝试](#-快速尝试-)
+- [👨‍🏫 模型训练](#-模型训练-)
+- [🏗️ 部署教程](#️-部署教程-)
+
+## 🥳 最新进展 [🔝](#-table-of-contents)
+
+- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 90+ FPS 。
+
+## 📖 简介 [🔝](#-table-of-contents)
 
 [English](README.md) | 简体中文
 
-### 主要特性
+### ✨ 主要特性
 
-- **高精度，低延迟**
+- 🚀 **高精度，低延迟**
 
   - t | COCO 68.5 AP | CPU: 300+ FPS / GPU: 940+ FPS
   - s | COCO 72.2 AP | CPU: 200+ FPS / GPU: 710+ FPS
   - m | COCO 75.8 AP | CPU: 90+ FPS / GPU: 430+ FPS
   - l | COCO 76.5 AP | CPU: 50+ FPS / GPU: 280+ FPS
 
-- **易部署**
+- 🛠️ **易部署**
 
   - 详细的部署代码教程，手把手教你模型部署
   - MMDeploy 助力，支持多种部署后端: ONNX, TensorRT, ncnn, OpenVINO 等
 
-- **为实际业务设计**
+- 🏗️ **为实际业务设计**
 
   提供多种 Pipeline 推理接口和 SDK: Python, C++, C# 等
 
-## 最新进展
-
-- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 90+ FPS 。
-
-## 社区共建
+## 🙌 社区共建 [🔝](#-table-of-contents)
 
 RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性能实时姿态估计算法的训练、优化和部署，因此我们十分期待来自社区的力量，欢迎分享不同业务场景中 RTMPose 的训练配置与技巧，助力更多的社区用户！
 
@@ -54,7 +66,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 - 微信用户群
 - Discord Group: https://discord.gg/raweFPmdzG
 
-## Pipeline 性能
+## ⚡ Pipeline 性能 [🔝](#-table-of-contents)
 
 **说明**
 
@@ -75,7 +87,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 | [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-m](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>75.3       |            75.7            |        24.66<br/>13.59        |        38.95<br/>1.93        |                 -                  |                   6.923                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)    |
 | [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-l](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>76.3       |            76.6            |        24.66<br/>27.66        |        38.95<br/>4.16        |                 -                  |                   7.204                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)    |
 
-## 模型库
+## 📊 模型库 [🔝](#-table-of-contents)
 
 **说明**
 
@@ -149,11 +161,11 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 |  CSPNeXt-m   |  224x224   |   13.05   |   1.93   |   79.27   |   94.79   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-m_8xb256-rsb-a1-600e_in1k-ecb3bbd9.pth) |
 |  CSPNeXt-l   |  224x224   |   27.16   |   4.19   |   81.30   |   95.62   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-l_8xb256-rsb-a1-600e_in1k-6a760974.pth) |
 
-## 可视化
+## 👀 可视化 [🔝](#-table-of-contents)
 
 ![vis_simcc](https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png)
 
-## 快速尝试
+## 😎 快速尝试 [🔝](#-table-of-contents)
 
 通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行模型推理和效果验证。
 
@@ -177,13 +189,13 @@ python demo/topdown_demo_with_mmdet.py \
 
 ![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
 
-## 模型训练
+## 👨‍🏫 模型训练 [🔝](#-table-of-contents)
 
 请参考 [训练与测试](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html) 进行 RTMPose 的训练。
 
 为了在你自己的数据集上得到更好的模型性能，我们推荐你使用我们提供的在 AIC-COCO 数据集上预训练的模型进行微调。
 
-## 部署教程
+## 🏗️ 部署教程 [🔝](#-table-of-contents)
 
 本教程将展示如何通过 [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x) 部署 RTMPose 项目。
 
