@@ -131,4 +131,4 @@ KEYPOINT_CODECS = Registry('KEYPOINT_CODECS', locations=['mmpose.codecs'])
 INFERENCERS = Registry(
     'inferencer',
     parent=MMENGINE_INFERENCERS,
-    locations=['mmaction.apis.inferencers'])
+    locations=['mmpose.apis.inferencers'])
