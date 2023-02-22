@@ -10,12 +10,13 @@ optim_wrapper = dict(
         lr=5e-4,
         betas=(0.9, 0.999),
         weight_decay=0.01,
-        paramwise_cfg=dict(
-            custom_keys={
-                'absolute_pos_embed': dict(decay_mult=0.),
-                'relative_position_bias_table': dict(decay_mult=0.),
-                'norm': dict(decay_mult=0.)
-            })))
+    ),
+    paramwise_cfg=dict(
+        custom_keys={
+            'absolute_pos_embed': dict(decay_mult=0.),
+            'relative_position_bias_table': dict(decay_mult=0.),
+            'norm': dict(decay_mult=0.)
+        }))
 
 # learning policy
 param_scheduler = [
