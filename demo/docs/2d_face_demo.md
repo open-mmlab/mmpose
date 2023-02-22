@@ -66,7 +66,13 @@ python demo/topdown_demo_with_mmdet.py \
 Videos share the same interface with images. The difference is that the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
 
 ```shell
-python demo/topdown_demo_with_mmdet.py     demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py     https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth     configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth     --input data/demo/demo_face.mp4 --draw-heatmap --output-root vis_results --device cpu
+python demo/topdown_demo_with_mmdet.py \
+    demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py \
+    https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth \
+    configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
+    https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
+    --input demo/resources/<demo_face.mp4> \
+    --show --draw-heatmap --output-root vis_results
 ```
 
 <img src="https://user-images.githubusercontent.com/26127467/220541430-6ade5a59-3d06-466a-a94d-00c82ff96a00.gif" height="500px" alt><br>
