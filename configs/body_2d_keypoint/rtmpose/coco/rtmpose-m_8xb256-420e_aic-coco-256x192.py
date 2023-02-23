@@ -1,7 +1,7 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-max_epochs = 270
+max_epochs = 420
 stage2_num_epochs = 30
 base_lr = 4e-3
 
@@ -24,7 +24,7 @@ param_scheduler = [
         begin=0,
         end=1000),
     dict(
-        # use cosine lr from 150 to 300 epoch
+        # use cosine lr from 210 to 420 epoch
         type='CosineAnnealingLR',
         eta_min=base_lr * 0.05,
         begin=max_epochs // 2,
@@ -35,7 +35,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=1024)
 
 # codec settings
 codec = dict(
@@ -59,8 +59,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=1.,
-        widen_factor=1.,
+        deepen_factor=0.67,
+        widen_factor=0.75,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -69,12 +69,12 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth'  # noqa
+            'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
         )),
     head=dict(
         type='RTMHead',
-        in_channels=1024,
-        out_channels=133,
+        in_channels=768,
+        out_channels=17,
         input_size=codec['input_size'],
         in_featuremap_size=(6, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
@@ -97,16 +97,16 @@ model = dict(
     test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
-dataset_type = 'CocoWholeBodyDataset'
+dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+data_root = 'data/'
 
 file_client_args = dict(backend='disk')
 # file_client_args = dict(
 #     backend='petrel',
 #     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
+#         f'{data_root}': 's3://openmmlab/datasets/',
+#         f'{data_root}': 's3://openmmlab/datasets/'
 #     }))
 
 # pipelines
@@ -175,22 +175,62 @@ train_pipeline_stage2 = [
     dict(type='PackPoseInputs')
 ]
 
-# data loaders
-train_dataloader = dict(
-    batch_size=64,
-    num_workers=10,
-    persistent_workers=True,
-    sampler=dict(type='DefaultSampler', shuffle=True),
+# train datasets
+dataset_coco = dict(
+    type='RepeatDataset',
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_train_v1.0.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='coco/annotations/person_keypoints_train2017.json',
+        data_prefix=dict(img='detection/coco/train2017/'),
+        pipeline=[],
+    ),
+    times=3)
+
+dataset_aic = dict(
+    type='AicDataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='aic/annotations/aic_train.json',
+    data_prefix=dict(img='pose/ai_challenge/ai_challenger_keypoint'
+                     '_train_20170902/keypoint_train_images_20170902/'),
+    pipeline=[
+        dict(
+            type='KeypointConverter',
+            num_keypoints=17,
+            mapping=[
+                (0, 6),
+                (1, 8),
+                (2, 10),
+                (3, 5),
+                (4, 7),
+                (5, 9),
+                (6, 12),
+                (7, 14),
+                (8, 16),
+                (9, 11),
+                (10, 13),
+                (11, 15),
+            ])
+    ],
+)
+
+# data loaders
+train_dataloader = dict(
+    batch_size=128 * 2,
+    num_workers=10,
+    persistent_workers=True,
+    sampler=dict(type='DefaultSampler', shuffle=True),
+    dataset=dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        datasets=[dataset_coco, dataset_aic],
         pipeline=train_pipeline,
+        test_mode=False,
     ))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=64,
     num_workers=10,
     persistent_workers=True,
     drop_last=False,
@@ -199,8 +239,10 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_val_v1.0.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file='coco/annotations/person_keypoints_val2017.json',
+        # bbox_file='data/coco/person_detection_results/'
+        # 'COCO_val2017_detections_AP_H_56_person.json',
+        data_prefix=dict(img='detection/coco/val2017/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -208,8 +250,7 @@ test_dataloader = val_dataloader
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(
-        save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
+    checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=1))
 
 custom_hooks = [
     dict(
@@ -226,6 +267,6 @@ custom_hooks = [
 
 # evaluators
 val_evaluator = dict(
-    type='CocoWholeBodyMetric',
-    ann_file=data_root + 'annotations/coco_wholebody_val_v1.0.json')
+    type='CocoMetric',
+    ann_file=data_root + 'coco/annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator

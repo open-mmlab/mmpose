@@ -1,7 +1,7 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-max_epochs = 270
+max_epochs = 210
 stage2_num_epochs = 30
 base_lr = 4e-3
 
@@ -40,8 +40,8 @@ auto_scale_lr = dict(base_batch_size=512)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(192, 256),
-    sigma=(4.9, 5.66),
+    input_size=(256, 256),
+    sigma=(5.66, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -59,8 +59,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=1.,
-        widen_factor=1.,
+        deepen_factor=0.67,
+        widen_factor=0.75,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -69,14 +69,14 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth'  # noqa
+            'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
         )),
     head=dict(
         type='RTMHead',
-        in_channels=1024,
-        out_channels=133,
+        in_channels=768,
+        out_channels=17,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=(8, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
         final_layer_kernel_size=7,
         gau_cfg=dict(
@@ -97,16 +97,16 @@ model = dict(
     test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
-dataset_type = 'CocoWholeBodyDataset'
+dataset_type = 'AP10KDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+data_root = 'data/ap10k/'
 
 file_client_args = dict(backend='disk')
 # file_client_args = dict(
 #     backend='petrel',
 #     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
+#         f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/',
+#         f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/'
 #     }))
 
 # pipelines
@@ -185,8 +185,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_train_v1.0.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='annotations/ap10k-train-split1.json',
+        data_prefix=dict(img='data/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -199,17 +199,30 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_val_v1.0.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file='annotations/ap10k-val-split1.json',
+        data_prefix=dict(img='data/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
-test_dataloader = val_dataloader
+test_dataloader = dict(
+    batch_size=32,
+    num_workers=10,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=dict(
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file='annotations/ap10k-test-split1.json',
+        data_prefix=dict(img='data/'),
+        test_mode=True,
+        pipeline=val_pipeline,
+    ))
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(
-        save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
+    checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=1))
 
 custom_hooks = [
     dict(
@@ -226,6 +239,8 @@ custom_hooks = [
 
 # evaluators
 val_evaluator = dict(
-    type='CocoWholeBodyMetric',
-    ann_file=data_root + 'annotations/coco_wholebody_val_v1.0.json')
-test_evaluator = val_evaluator
+    type='CocoMetric',
+    ann_file=data_root + 'annotations/ap10k-val-split1.json')
+test_evaluator = dict(
+    type='CocoMetric',
+    ann_file=data_root + 'annotations/ap10k-test-split1.json')

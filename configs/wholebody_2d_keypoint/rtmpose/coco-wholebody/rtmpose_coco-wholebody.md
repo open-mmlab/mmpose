@@ -1,5 +1,21 @@
 <!-- [ALGORITHM] -->
 
+<!-- [BACKBONE] -->
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2212.07784">RTMDet (2022)</a></summary>
+
+```bibtex
+@misc{lyu2022rtmdet,
+      title={RTMDet: An Empirical Study of Designing Real-Time Object Detectors},
+      author={Chengqi Lyu and Wenwei Zhang and Haian Huang and Yue Zhou and Yudong Wang and Yanyi Liu and Shilong Zhang and Kai Chen},
+      year={2022},
+      eprint={2212.07784},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
+
 </details>
 
 <!-- [DATASET] -->
@@ -22,6 +38,6 @@ Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO
 
 | Arch                                    | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR | Hand AP | Hand AR | Whole AP | Whole AR |                   ckpt                   |                   log                   |
 | :-------------------------------------- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :------: | :--------------------------------------: | :-------------------------------------: |
-| [rtmpose-m](./rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |  0.687  |  0.734  |  0.640  |  0.733  |  0.821  |  0.856  |  0.459  |  0.542  |  0.591   |  0.656   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.json) |
-| [rtmpose-l](./rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |  0.712  |  0.756  |  0.683  |  0.770  |  0.848  |  0.879  |  0.502  |  0.581  |  0.622   |  0.685   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.json) |
-| [rtmpose-l](./rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |  0.728  |  0.769  |  0.727  |  0.800  |  0.892  |  0.915  |  0.572  |  0.643  |  0.661   |  0.716   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.json) |
+| [rtmpose-m](./rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |  0.697  |  0.743  |  0.660  |  0.749  |  0.822  |  0.858  |  0.483  |  0.564  |  0.604   |  0.667   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.json) |
+| [rtmpose-l](./rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |  0.721  |  0.764  |  0.693  |  0.780  |  0.844  |  0.876  |  0.523  |  0.600  |  0.632   |  0.694   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.json) |
+| [rtmpose-l](./rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |  0.736  |  0.776  |  0.738  |  0.810  |  0.895  |  0.918  |  0.591  |  0.659  |  0.670   |  0.723   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.json) |

@@ -82,14 +82,14 @@ Feel free to join our community group for more help:
   - cuDNN 8.3.2
   - CUDA 11.3
 
-| Detection Config                                                    | Pose Config                                                                                                     | Input Size<sup><br>(Det/Pose) | Model AP<sup><br>(COCO) | Pipeline AP<sup><br>(COCO) | Params (M)<sup><br>(Det/Pose) | Flops (G)<sup><br>(Det/Pose) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                                                                                                                                 Download                                                                                                                                 |
-| :------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------- | :---------------------------: | :---------------------: | :------------------------: | :---------------------------: | :--------------------------: | :--------------------------------: | :---------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-t](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-tiny_8xb256-420e_aic-coco-256x192.py) |      320x320<br>256x192       |      40.3<br>67.1       |            64.4            |         0.99<br/>3.34         |        0.31<br/>0.36         |               12.403               |                   2.467                   | [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth) |
-| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-s](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-s_8xb256-420e_aic-coco-256x192.py)    |      320x320<br>256x192       |      40.3<br>71.1       |            68.5            |         0.99<br/>5.47         |        0.31<br/>0.68         |               16.658               |                   2.730                   |  [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth)   |
-| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-m](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py)    |      320x320<br>256x192       |      40.3<br>75.3       |            73.2            |        0.99<br/>13.59         |        0.31<br/>1.93         |               26.613               |                   4.312                   |  [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)   |
-| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-l](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py)    |      320x320<br>256x192       |      40.3<br>76.3       |            74.2            |        0.99<br/>27.66         |        0.31<br/>4.16         |               36.311               |                   4.644                   |  [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)   |
-| [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-m](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>75.3       |            75.7            |        24.66<br/>13.59        |        38.95<br/>1.93        |                 -                  |                   6.923                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)    |
-| [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-l](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>76.3       |            76.6            |        24.66<br/>27.66        |        38.95<br/>4.16        |                 -                  |                   7.204                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)    |
+| Detection Config                                                    | Pose Config                                                                      | Input Size<sup><br>(Det/Pose) | Model AP<sup><br>(COCO) | Pipeline AP<sup><br>(COCO) | Params (M)<sup><br>(Det/Pose) | Flops (G)<sup><br>(Det/Pose) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                                                                                                                                 Download                                                                                                                                 |
+| :------------------------------------------------------------------ | :------------------------------------------------------------------------------- | :---------------------------: | :---------------------: | :------------------------: | :---------------------------: | :--------------------------: | :--------------------------------: | :---------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-t](./rtmpose/body_2d_keypoint/rtmpose-tiny_8xb256-420e_coco-256x192.py) |      320x320<br>256x192       |      40.3<br>67.1       |            64.4            |         0.99<br/>3.34         |        0.31<br/>0.36         |               12.403               |                   2.467                   | [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth) |
+| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-s](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py)    |      320x320<br>256x192       |      40.3<br>71.1       |            68.5            |         0.99<br/>5.47         |        0.31<br/>0.68         |               16.658               |                   2.730                   |  [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth)   |
+| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py)    |      320x320<br>256x192       |      40.3<br>75.3       |            73.2            |        0.99<br/>13.59         |        0.31<br/>1.93         |               26.613               |                   4.312                   |  [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)   |
+| [RTMDet-nano](./rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py) | [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py)    |      320x320<br>256x192       |      40.3<br>76.3       |            74.2            |        0.99<br/>27.66         |        0.31<br/>4.16         |               36.311               |                   4.644                   |  [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)   |
+| [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>75.3       |            75.7            |        24.66<br/>13.59        |        38.95<br/>1.93        |                 -                  |                   6.923                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)    |
+| [RTMDet-m](./rtmdet/person/rtmdet_m_640-8xb32_coco-person.py)       | [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py)    |      640x640<br>256x192       |      62.5<br>76.3       |            76.6            |        24.66<br/>27.66        |        38.95<br/>4.16        |                 -                  |                   7.204                   |    [det](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth)<br/>[pose](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)    |
 
 ## 📊 Model Zoo [🔝](#-table-of-contents)
 
@@ -104,10 +104,10 @@ Feel free to join our community group for more help:
 
 |   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs    |    Download    |
 | :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :--------: | :------------: |
-| [RTMPose-t](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-tiny_8xb256-420e_aic-coco-256x192.py) |  256x192   |       68.5        |   3.34    |   0.36   |                3.20                |                   1.06                    |                      9.02                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth) |
-| [RTMPose-s](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-s_8xb256-420e_aic-coco-256x192.py) |  256x192   |       72.2        |   5.47    |   0.68   |                4.48                |                   1.39                    |                     13.89                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth) |
-| [RTMPose-m](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py) |  256x192   |       75.8        |   13.59   |   1.93   |               11.06                |                   2.29                    |                     26.44                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth) |
-| [RTMPose-l](./rtmpose/body_2d_keypoint/combined_datasets/aic-coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py) |  256x192   |       76.5        |   27.66   |   4.16   |               18.85                |                   3.46                    |                     45.37                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth) |
+| [RTMPose-t](./rtmpose/body_2d_keypoint/rtmpose-tiny_8xb256-420e_coco-256x192.py) |  256x192   |       68.5        |   3.34    |   0.36   |                3.20                |                   1.06                    |                      9.02                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth) |
+| [RTMPose-s](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |       72.2        |   5.47    |   0.68   |                4.48                |                   1.39                    |                     13.89                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth) |
+| [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |       75.8        |   13.59   |   1.93   |               11.06                |                   2.29                    |                     26.44                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth) |
+| [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |       76.5        |   27.66   |   4.16   |               18.85                |                   3.46                    |                     45.37                      | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth) |
 
 #### Model Pruning
 
@@ -123,27 +123,23 @@ Feel free to join our community group for more help:
 
 | Config                         | Input Size | Whole AP | Whole AR | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |             Logs             |             Download              |
 | :----------------------------- | :--------: | :------: | :------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------: | :-------------------------------: |
-| [RTMPose-m](./config/wholebody_2d_keypoint/rtmpose-m_finetune-aic-coco_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   60.4   |   66.7   |   2.22   |               13.50                |                   4.00                    | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
-| [RTMPose-l](./config/wholebody_2d_keypoint/rtmpose-l_finetune-aic-coco_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   63.2   |   69.4   |   4.52   |               23.41                |                   5.67                    | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
-| [RTMPose-l](./config/wholebody_2d_keypoint/rtmpose-l_finetune-aic-coco_8xb64-270e_coco-wholebody-384x288.py) |  384x288   |   67.0   |   72.3   |  10.07   |               44.58                |                   7.68                    | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
+| [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   60.4   |   66.7   |   2.22   |               13.50                |                   4.00                    | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   63.2   |   69.4   |   4.52   |               23.41                |                   5.67                    | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   67.0   |   72.3   |  10.07   |               44.58                |                   7.68                    | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
 
 ### Animal 2d (17 Keypoints)
 
 |            Config             | Input Size | AP<sup><br>(AP10K) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |             Logs             |             Download             |
 | :---------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------: | :------------------------------: |
-| [RTMPose-m](./rtmpose/animal_2d_keypoint/ap10k/rtmpose-m_finetune-aic-coco_8xb64-210e_ap10k-256x256.py) |  256x256   |        72.2        |   2.57   |               14.157               |                   2.404                   | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth) |
+| [RTMPose-m](./rtmpose/animal_2d_keypoint/rtmpose-m_8xb64-210e_ap10k-256x256.py) |  256x256   |        72.2        |   2.57   |               14.157               |                   2.404                   | [Log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.json) | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth) |
 
 ### Face 2d
 
-|                        Config                        | Input Size | NME<sup><br>(COCO-WholeBody-Face) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
-| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
-| [RTMPose-m](./rtmpose/face_2d_keypoint/wflw/rtmpose-m_8xb64-60e_coco-wholebody-face-256x256.py) |  256x256   |               4.57                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
+Coming soon
 
 ### Hand 2d
 
-|                        Config                        | Input Size | PCK<sup><br>(COCO-WholeBody-Hand) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
-| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
-| [RTMPose-m](./rtmpose/hand_2d_keypoint/coco_wholebody_hand/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |               81.5                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
+Coming soon
 
 ### Pretrained Models
 
@@ -183,7 +179,7 @@ cd ${PATH_TO_MMPOSE}
 python demo/topdown_demo_with_mmdet.py \
     projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
     {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
-    projects/rtmpose/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     --input {YOUR_TEST_IMG}
     --show
@@ -241,10 +237,8 @@ In this tutorial, we organize files as follows:
 |----mmdetection
 |----mmpose
 |----rtmdet_nano
-|    |----rtmdet_nano_320-8xb32_coco-person.py
 |    |----rtmdet_nano.pth
 |----rtmpose_m
-     |----rtmpose-m_8xb256-420e_coco-256x192.py
      |----rtmpose_m.pth
 ```
 
@@ -267,7 +261,7 @@ python tools/deploy.py \
 # run the command to convert RTMPose
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     ../rtmpose_m/rtmpose_m.pth \
     demo/resources/human-pose.jpg \
     --work-dir mmdeploy_models/mmpose/ort \
@@ -296,7 +290,7 @@ python tools/deploy.py \
 # run the command to convert RTMPose
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     ../rtmpose_m/rtmpose_m.pth \
     demo/resources/human-pose.jpg \
     --work-dir mmdeploy_models/mmpose/trt \
@@ -344,7 +338,7 @@ python tools/deploy.py \
 # RTMPose
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     ../rtmpose_m/rtmpose_m.pth \
     demo/resources/human-pose.jpg \
     --work-dir mmdeploy_models/mmpose/sdk \
@@ -539,7 +533,7 @@ The user needs to prepare a folder for the test images `./test_images`, the prof
 ```shell
 python tools/profiler.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     ../test_images \
     --model {WORK_DIR}/end2end.onnx \
     --shape 256x192 \
@@ -588,7 +582,7 @@ If you need to test the inference accuracy of the model on the deployment backen
 ```shell
 python tools/test.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/coco/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     --model {PATH_TO_MODEL}/rtmpose_m.pth \
     --device cpu
 ```

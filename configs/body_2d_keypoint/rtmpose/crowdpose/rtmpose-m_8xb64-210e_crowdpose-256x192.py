@@ -1,4 +1,4 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
 max_epochs = 210
@@ -69,8 +69,8 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'
-        )),  # noqa
+            'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
+        )),
     head=dict(
         type='RTMHead',
         in_channels=768,
@@ -191,7 +191,7 @@ train_dataloader = dict(
     ))
 val_dataloader = dict(
     batch_size=32,
-    num_workers=2,
+    num_workers=10,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),

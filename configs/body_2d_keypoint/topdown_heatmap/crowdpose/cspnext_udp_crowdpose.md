@@ -1,9 +1,7 @@
 <!-- [ALGORITHM] -->
 
-<!-- [BACKBONE] -->
-
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/2212.07784">RTMDet (2022)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/2212.07784">RTMDet (ArXiv 2022)</a></summary>
 
 ```bibtex
 @misc{lyu2022rtmdet,
@@ -13,6 +11,23 @@
       eprint={2212.07784},
       archivePrefix={arXiv},
       primaryClass={cs.CV}
+}
+```
+
+</details>
+
+<!-- [ALGORITHM] -->
+
+<details>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html">UDP (CVPR'2020)</a></summary>
+
+```bibtex
+@InProceedings{Huang_2020_CVPR,
+  author = {Huang, Junjie and Zhu, Zheng and Guo, Feng and Huang, Guan},
+  title = {The Devil Is in the Details: Delving Into Unbiased Data Processing for Human Pose Estimation},
+  booktitle = {The IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  month = {June},
+  year = {2020}
 }
 ```
 
@@ -38,4 +53,4 @@ Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTor
 
 | Arch                                           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) |                      ckpt                      |                      log                      |
 | :--------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :----: | :----: | :----: | :--------------------------------------------: | :-------------------------------------------: |
-| [rtmpose-m](./rtmpose-m_8xb64-210e_crowdpose-256x192.py) |  256x192   | 0.686 |      0.831      |      0.745      | 0.781  | 0.699  | 0.564  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-crowdpose_pt-aic-coco_210e-256x192-07ffad87_20230123.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-crowdpose_pt-aic-coco_210e-256x192-07ffad87_20230123.json) |
+| [pose_cspnext_m](/configs/body_2d_keypoint/topdown_heatmap/crowdpose/cspnext-m_udp_8xb64-210e_crowpose-256x192.py) |  256x192   | 0.662 |      0.821      |      0.723      | 0.759  | 0.675  | 0.539  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_udp-crowdpose_pt-in1k_210e-256x192-f591079f_20230123.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_udp-crowdpose_pt-in1k_210e-256x192-f591079f_20230123.json) |

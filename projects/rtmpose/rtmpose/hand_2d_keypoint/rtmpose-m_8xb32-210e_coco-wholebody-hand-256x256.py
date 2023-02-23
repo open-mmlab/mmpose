@@ -1,7 +1,7 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-max_epochs = 270
+max_epochs = 210
 stage2_num_epochs = 30
 base_lr = 4e-3
 
@@ -35,13 +35,13 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(192, 256),
-    sigma=(4.9, 5.66),
+    input_size=(256, 256),
+    sigma=(5.66, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -59,8 +59,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=1.,
-        widen_factor=1.,
+        deepen_factor=0.67,
+        widen_factor=0.75,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -69,14 +69,14 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth'  # noqa
+            'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
         )),
     head=dict(
         type='RTMHead',
-        in_channels=1024,
-        out_channels=133,
+        in_channels=768,
+        out_channels=21,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=(8, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
         final_layer_kernel_size=7,
         gau_cfg=dict(
@@ -97,7 +97,7 @@ model = dict(
     test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
-dataset_type = 'CocoWholeBodyDataset'
+dataset_type = 'CocoWholeBodyHandDataset'
 data_mode = 'topdown'
 data_root = 'data/coco/'
 
@@ -113,10 +113,11 @@ file_client_args = dict(backend='disk')
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
+    # dict(type='RandomHalfBody'),
     dict(
-        type='RandomBBoxTransform', scale_factor=[0.6, 1.4], rotate_factor=80),
+        type='RandomBBoxTransform', scale_factor=[0.5, 1.5],
+        rotate_factor=180),
+    dict(type='RandomFlip', direction='horizontal'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(
@@ -147,13 +148,13 @@ val_pipeline = [
 train_pipeline_stage2 = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
+    # dict(type='RandomHalfBody'),
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.,
         scale_factor=[0.75, 1.25],
-        rotate_factor=60),
+        rotate_factor=180),
+    dict(type='RandomFlip', direction='horizontal'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(
@@ -177,7 +178,7 @@ train_pipeline_stage2 = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=10,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -208,8 +209,7 @@ test_dataloader = val_dataloader
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(
-        save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
+    checkpoint=dict(save_best='AUC', rule='greater', max_keep_ckpts=1))
 
 custom_hooks = [
     dict(
@@ -225,7 +225,9 @@ custom_hooks = [
 ]
 
 # evaluators
-val_evaluator = dict(
-    type='CocoWholeBodyMetric',
-    ann_file=data_root + 'annotations/coco_wholebody_val_v1.0.json')
+val_evaluator = [
+    dict(type='PCKAccuracy', thr=0.2),
+    dict(type='AUC'),
+    dict(type='EPE')
+]
 test_evaluator = val_evaluator
