@@ -1,4 +1,4 @@
-_base_ = ['mmpose::_base_/default_runtime.py']
+_base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
 max_epochs = 420
