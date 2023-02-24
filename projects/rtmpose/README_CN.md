@@ -181,9 +181,76 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ## 😎 快速尝试 [🔝](#-table-of-contents)
 
-通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)和效果验证。
+我们提供了两种途径来让用户尝试 RTMPose 模型：
 
-### Pytorch
+- MMDeploy SDK 预编译包 （推荐）
+- MMPose demo 脚本
+
+### MMDeploy SDK 预编译包 （推荐）
+
+MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行推理。
+
+#### ONNX
+
+```shell
+# 下载预编译包
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+
+# 解压文件
+tar -xzvf mmdeploy-1.0.0rc2-linux-x86_64-onnxruntime1.8.1.tar.gz
+
+# 切换到 sdk 目录
+cd mmdeploy-1.0.0rc2-linux-x86_64-onnxruntime1.8.1/sdk
+
+# 设置环境变量
+source env.sh
+
+# 如果系统中没有安装 opencv 3+，请执行以下命令。如果已安装，可略过
+bash opencv.sh
+
+# 编译可执行程序
+bash build.sh
+
+# 运行 pose_tracker
+./bin/pose_tracker {PATH_TO_RTMDET_SDK} \
+                   {PATH_TO_RTMDET_SDK} \
+                   {YOUR_TEST_IMG_OR_VIDEO} \
+                   --device {cpu}
+```
+
+#### TensorRT
+
+```shell
+# 下载预编译包
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+
+# 解压文件
+tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+
+# 切换到 sdk 目录
+cd mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0/sdk
+
+# 设置环境变量
+source env.sh
+
+# 如果系统中没有安装 opencv 3+，请执行以下命令。如果已安装，可略过
+bash opencv.sh
+
+# 编译可执行程序
+bash build.sh
+
+# 运行 pose_tracker
+./bin/pose_tracker {PATH_TO_RTMDET_SDK} \
+                   {PATH_TO_RTMDET_SDK} \
+                   {YOUR_TEST_IMG_OR_VIDEO} \
+                   --device cuda
+```
+
+然后你就可以开始使用 [Pipeline 推理](#🚀-pipeline-推理)了。
+
+### MMPose demo 脚本
+
+通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)和效果验证。
 
 ```shell
 # 前往 mmpose 目录
@@ -520,6 +587,25 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 ./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 ```
 
+参数：
+
+```shell
+  det_model           Detection 模型路径 [string]
+  pose_model          Pose 模型路径 [string]
+  image               输入图片路径 [string]
+
+optional arguments:
+  --device            推理设备 "cpu", "cuda" [string = "cpu"]
+  --output            导出图片路径 [string = "det_pose_output.jpg"]
+  --skeleton          骨架定义文件路径，或使用预定义骨架:
+                      "coco" [string = "coco", "coco-wholoebody"]
+  --det_label         用于姿势估计的检测标签 [int32 = 0]
+                      (0 在 coco 中对应 person)
+  --det_thr           检测分数阈值 [double = 0.5]
+  --det_min_bbox_size 最小检测框大小 [double = -1]
+  --pose_thr          关键点置信度阈值 [double = 0]
+```
+
 **API** **示例**
 
 \- [`det_pose.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/det_pose.py)
@@ -536,6 +622,43 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # 视频推理
 ./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+```
+
+参数：
+
+```shell
+  det_model             Detection 模型路径 [string]
+  pose_model            Pose 模型路径 [string]
+  input                 输入图片路径或摄像头序号 [string]
+
+optional arguments:
+  --device              推理设备 "cpu", "cuda" [string = "cpu"]
+  --output              导出视频路径 [string = ""]
+  --output_size         输出视频帧的长边 [int32 = 0]
+  --flip                设置为1，用于水平翻转输入 [int32 = 0]
+  --show                使用`cv::imshow`时，传递给`cv::waitKey`的延迟;
+                        -1: 关闭 [int32 = 1]
+  --skeleton            骨架数据的路径或预定义骨架的名称:
+                        "coco", "coco-wholebody" [string = "coco"]
+  --background          导出视频背景颜色, "default": 原图, "black":
+                        纯黑背景 [string = "default"]
+  --det_interval        检测间隔 [int32 = 1]
+  --det_label           用于姿势估计的检测标签 [int32 = 0]
+                        (0 在 coco 中对应 person)
+  --det_thr             检测分数阈值 [double = 0.5]
+  --det_min_bbox_size   最小检测框大小 [double = -1]
+  --det_nms_thr         NMS IOU阈值，用于合并检测到的bboxes和
+                        追踪到的目标的 bboxes [double = 0.7]
+  --pose_max_num_bboxes 每一帧用于姿势估计的 bboxes 的最大数量
+                        [int32 = -1]
+  --pose_kpt_thr        可见关键点的阈值 [double = 0.5]
+  --pose_min_keypoints  有效姿势的最小关键点数量，-1表示上限(n_kpts/2) [int32 = -1]
+  --pose_bbox_scale     将关键点扩展到 bbox 的比例 [double = 1.25]
+  --pose_min_bbox_size  最小追踪尺寸，尺寸小于阈值的 bbox 将被剔除 [double = -1]
+  --pose_nms_thr        用于抑制重叠姿势的 NMS OKS/IOU阈值。
+                        当多个姿态估计重叠到同一目标时非常有用 [double = 0.5]
+  --track_iou_thr       追踪 IOU 阈值 [double = 0.4]
+  --track_max_missing   最大追踪容错 [int32 = 10]
 ```
 
 **API** **示例**

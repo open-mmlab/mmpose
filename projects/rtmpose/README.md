@@ -23,7 +23,7 @@ Coming soon
 - [⚡ Pipeline Performance](#-pipeline-performance-)
 - [📊 Model Zoo](#-model-zoo-)
 - [👀 Visualization](#-visualization-)
-- [😎 Demo](#-demo-)
+- [😎 Get Started](#-get-started-)
 - [👨‍🏫 How to Train](#-acknowledgement-)
 - [🏗️ How To Deploy](#️-citation-)
 - [📚 Common Usage](#️-common-usage-)
@@ -176,11 +176,68 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 
 ![vis_simcc](https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png)
 
-## 😎 Demo [🔝](#-table-of-contents)
+## 😎 Get Started [🔝](#-table-of-contents)
 
-MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html) with Pytorch.
+We provide two appoaches to try RTMPose:
 
-### Pytorch
+- Pre-compiled MMDeploy SDK (Recommended)
+- MMPose demo scripts
+
+### Pre-compiled MMDeploy SDK (Recommended)
+
+MMDeploy provides pre-compiled SDK to conduct inference with RTMPose projects.
+
+#### ONNX
+
+```shell
+# Download pre-compiled files
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+
+# Unzip files
+tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+
+# Go to the sdk folder
+cd mmdeploy-1.0.0rc2-linux-x86_64-onnxruntime1.8.1/sdk
+
+# Init environment
+source env.sh
+
+# If opencv 3+ is not installed on your system, execute the following command.
+# If it is installed, skip this command
+bash opencv.sh
+
+# Compile executable programs
+bash build.sh
+```
+
+#### TensorRT
+
+```shell
+# Download pre-compiled files
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+
+# Unzip files
+tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+
+# Go to the sdk folder
+cd mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0/sdk
+
+# Init environment
+source env.sh
+
+# If opencv 3+ is not installed on your system, execute the following command.
+# If it is installed, skip this command
+bash opencv.sh
+
+# Compile executable programs
+bash build.sh
+```
+
+Then you can start to use [Pipeline Inference](#🚀-step4-pipeline-inference).
+
+### MMPose demo scripts
+
+MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html).
 
 ```shell
 # go to the mmpose folder
@@ -192,7 +249,7 @@ python demo/topdown_demo_with_mmdet.py \
     {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
-    --input {YOUR_TEST_IMG}
+    --input {YOUR_TEST_IMG_OR_VIDEO}
     --show
 ```
 
@@ -517,6 +574,25 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 ./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 ```
 
+Required arguments:
+
+```shell
+  det_model           Object detection model path [string]
+  pose_model          Pose estimation model path [string]
+  image               Input image path [string]
+
+optional arguments:
+  --device            Device name, e.g. "cpu", "cuda" [string = "cpu"]
+  --output            Output image path [string = "det_pose_output.jpg"]
+  --skeleton          Path to skeleton data or name of predefined skeletons:
+                      "coco" [string = "coco", "coco-wholoebody"]
+  --det_label         Detection label use for pose estimation [int32 = 0]
+                      (0 refers to 'person' in coco)
+  --det_thr           Detection score threshold [double = 0.5]
+  --det_min_bbox_size Detection minimum bbox size [double = -1]
+  --pose_thr          Pose key-point threshold [double = 0]
+```
+
 #### API Example
 
 - [`det_pose.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/det_pose.py)
@@ -532,6 +608,48 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # inference for a video
 ./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+```
+
+Required arguments:
+
+```shell
+  det_model             Object detection model path [string]
+  pose_model            Pose estimation model path [string]
+  input                 Input video path or camera index [string]
+
+optional arguments:
+  --device              Device name, e.g. "cpu", "cuda" [string = "cpu"]
+  --output              Output video path or format string [string = ""]
+  --output_size         Long-edge of output frames [int32 = 0]
+  --flip                Set to 1 for flipping the input horizontally [int32 = 0]
+  --show                Delay passed to `cv::waitKey` when using `cv::imshow`;
+                        -1: disable [int32 = 1]
+  --skeleton            Path to skeleton data or name of predefined skeletons:
+                        "coco", "coco-wholebody" [string = "coco"]
+  --background          Output background, "default": original image, "black":
+                        black background [string = "default"]
+  --det_interval        Detection interval [int32 = 1]
+  --det_label           Detection label use for pose estimation [int32 = 0]
+                        (0 refers to 'person' in coco)
+  --det_thr             Detection score threshold [double = 0.5]
+  --det_min_bbox_size   Detection minimum bbox size [double = -1]
+  --det_nms_thr         NMS IOU threshold for merging detected bboxes and
+                        bboxes from tracked targets [double = 0.7]
+  --pose_max_num_bboxes Max number of bboxes used for pose estimation per frame
+                        [int32 = -1]
+  --pose_kpt_thr        Threshold for visible key-points [double = 0.5]
+  --pose_min_keypoints  Min number of key-points for valid poses, -1 indicates
+                        ceil(n_kpts/2) [int32 = -1]
+  --pose_bbox_scale     Scale for expanding key-points to bbox [double = 1.25]
+  --pose_min_bbox_size  Min pose bbox size, tracks with bbox size smaller than
+                        the threshold will be dropped [double = -1]
+  --pose_nms_thr        NMS OKS/IOU threshold for suppressing overlapped poses,
+                        useful when multiple pose estimations collapse to the
+                        same target [double = 0.5]
+  --track_iou_thr       IOU threshold for associating missing tracks
+                        [double = 0.4]
+  --track_max_missing   Max number of missing frames before a missing tracks is
+                        removed [int32 = 10]
 ```
 
 #### API Example
