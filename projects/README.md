@@ -2,7 +2,7 @@
 
 In this folder, we welcome all contribution of keypoint detection techniques from community.
 
-Here, these requirements, e.g. code standards, are not that strict as in core package. Thus, developers from the community can implement their algorithms much more easily and efficiently in MMPose. We appreciate all contributions from community to make MMPose greater.
+Here, these requirements, e.g. code standards, are not as strict as in the core package. Thus, developers from the community can implement their algorithms much more easily and efficiently in MMPose. We appreciate all contributions from the community that makes MMPose greater.
 
 Here is an [example project](./example_project) about how to add your algorithms easily. For common questions about projects, please read our [faq](faq.md).
 
