@@ -211,11 +211,11 @@ bash opencv.sh
 # 编译可执行程序
 bash build.sh
 
-# 运行 pose_tracker
-./bin/pose_tracker {PATH_TO_RTMDET_SDK} \
-                   {PATH_TO_RTMDET_SDK} \
-                   {YOUR_TEST_IMG_OR_VIDEO} \
-                   --device {cpu}
+# 图片推理
+./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+
+# 视频推理
+./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
 #### TensorRT
@@ -239,14 +239,14 @@ bash opencv.sh
 # 编译可执行程序
 bash build.sh
 
-# 运行 pose_tracker
-./bin/pose_tracker {PATH_TO_RTMDET_SDK} \
-                   {PATH_TO_RTMDET_SDK} \
-                   {YOUR_TEST_IMG_OR_VIDEO} \
-                   --device cuda
+# 图片推理
+./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
+
+# 视频推理
+./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
-然后你就可以开始使用 [Pipeline 推理](#🚀-pipeline-推理)了。
+详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
 
 ### MMPose demo 脚本
 

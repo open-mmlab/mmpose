@@ -231,9 +231,13 @@ bash opencv.sh
 
 # Compile executable programs
 bash build.sh
+
+# img inference
+# video inference
+./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
-Then you can start to use [Pipeline Inference](#🚀-step4-pipeline-inference).
+For details, see [Pipeline Inference](#-step4-pipeline-inference).
 
 ### MMPose demo scripts
 
@@ -566,11 +570,11 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 
 If the user has MMDeploy compiled correctly, you will see the `det_pose` executable under the `mmdeploy/build/bin/`.
 
-```
+```shell
 # go to the mmdeploy folder
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
-# inference for one image
+# inference for an image
 ./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 ```
 
