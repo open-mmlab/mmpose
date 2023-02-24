@@ -6,7 +6,7 @@
 
 Recent studies on 2D pose estimation have achieved excellent performance on public benchmarks, yet its application in the industrial community still suffers from heavy model parameters and high latency.
 In order to bridge this gap, we empirically study five aspects that affect the performance of multi-person pose estimation algorithms: paradigm, backbone network, localization algorithm, training strategy, and deployment inference, and present a high-performance real-time multi-person pose estimation framework, **RTMPose**, based on MMPose.
-Our RTMPose-m achieves **75.8% AP** on COCO with **90+ FPS** on an Intel i7-11700 CPU and **400+ FPS** on an NVIDIA GTX 1660 Ti GPU, and RTMPose-l achieves **67.0% AP** on COCO-WholeBody with **130+ FPS**, outperforming existing open-source libraries.
+Our RTMPose-m achieves **75.8% AP** on COCO with **90+ FPS** on an Intel i7-11700 CPU and **430+ FPS** on an NVIDIA GTX 1660 Ti GPU, and RTMPose-l achieves **67.0% AP** on COCO-WholeBody with **130+ FPS**, outperforming existing open-source libraries.
 To further evaluate RTMPose's capability in critical real-time applications, we also report the performance after deploying on the mobile device.
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
@@ -32,10 +32,24 @@ Coming soon
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
-- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 400+ FPS 。
+- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 430+ FPS 。
 
 ## 📖 简介 [🔝](#-table-of-contents)
 
+<center class="half">
+<img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=350 height=440/>
+<img src="https://user-images.githubusercontent.com/13503330/221125176-85015a13-9648-4f0d-a17c-1cbb469efacf.gif" width=350 height=440/>
+<img src="https://user-images.githubusercontent.com/13503330/221125310-7eeb2212-907e-427f-97af-af799d70a4c5.gif" width=350 height=440/>
+</center>
+
+<center class="half">
+<img src="https://user-images.githubusercontent.com/13503330/221125768-8e0d6754-e66d-4941-ac53-ded8db9b60f9.gif" width=525 height=320/>
+<img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=525 height=320/>
+</center>
+
+<center class="half">
+<img src="https://user-images.githubusercontent.com/13503330/221126913-2ede1b75-c0cf-486f-9084-3c78681a1891.gif" width=800 height=420/>
+</center>
 ### ✨ 主要特性
 
 - 🚀 **高精度，低延迟**
