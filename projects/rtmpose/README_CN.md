@@ -37,19 +37,20 @@ Coming soon
 ## 📖 简介 [🔝](#-table-of-contents)
 
 <center class="half">
-<img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=350 height=440/>
-<img src="https://user-images.githubusercontent.com/13503330/221125176-85015a13-9648-4f0d-a17c-1cbb469efacf.gif" width=350 height=440/>
-<img src="https://user-images.githubusercontent.com/13503330/221125310-7eeb2212-907e-427f-97af-af799d70a4c5.gif" width=350 height=440/>
+<img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=250 height=340/>
+<img src="https://user-images.githubusercontent.com/13503330/221125176-85015a13-9648-4f0d-a17c-1cbb469efacf.gif" width=250 height=340/>
+<img src="https://user-images.githubusercontent.com/13503330/221125310-7eeb2212-907e-427f-97af-af799d70a4c5.gif" width=250 height=340/>
 </center>
 
 <center class="half">
-<img src="https://user-images.githubusercontent.com/13503330/221125768-8e0d6754-e66d-4941-ac53-ded8db9b60f9.gif" width=525 height=320/>
-<img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=525 height=320/>
+<img src="https://user-images.githubusercontent.com/13503330/221125768-8e0d6754-e66d-4941-ac53-ded8db9b60f9.gif" width=325 height=220/>
+<img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=325 height=220/>
 </center>
 
 <center class="half">
-<img src="https://user-images.githubusercontent.com/13503330/221126913-2ede1b75-c0cf-486f-9084-3c78681a1891.gif" width=800 height=420/>
+<img src="https://user-images.githubusercontent.com/13503330/221126913-2ede1b75-c0cf-486f-9084-3c78681a1891.gif" width=750 height=420/>
 </center>
+
 ### ✨ 主要特性
 
 - 🚀 **高精度，低延迟**
