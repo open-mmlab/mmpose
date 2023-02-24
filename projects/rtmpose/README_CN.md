@@ -585,11 +585,8 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # 单张图片推理
 ./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
-```
 
-参数：
-
-```shell
+required arguments:
   det_model           Detection 模型路径 [string]
   pose_model          Pose 模型路径 [string]
   image               输入图片路径 [string]
@@ -622,11 +619,8 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # 视频推理
 ./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
-```
 
-参数：
-
-```shell
+required arguments:
   det_model             Detection 模型路径 [string]
   pose_model            Pose 模型路径 [string]
   input                 输入图片路径或摄像头序号 [string]

@@ -584,11 +584,8 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # inference for an image
 ./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
-```
 
-Required arguments:
-
-```shell
+required arguments:
   det_model           Object detection model path [string]
   pose_model          Pose estimation model path [string]
   image               Input image path [string]
@@ -620,11 +617,8 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # inference for a video
 ./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
-```
 
-Required arguments:
-
-```shell
+required arguments:
   det_model             Object detection model path [string]
   pose_model            Pose estimation model path [string]
   input                 Input video path or camera index [string]
