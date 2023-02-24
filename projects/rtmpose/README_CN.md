@@ -36,16 +36,16 @@ Coming soon
 
 ## 📖 简介 [🔝](#-table-of-contents)
 
-<center class="half">
+<div align=center>
 <img src="https://user-images.githubusercontent.com/13503330/221138554-110240d8-e887-4b9a-90b1-2fbdc982e9de.gif" width=400 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125176-85015a13-9648-4f0d-a17c-1cbb469efacf.gif" width=250 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125310-7eeb2212-907e-427f-97af-af799d70a4c5.gif" width=250 height=300/>
-</center>
+</div>
 
-<center class="half">
+<div align=center>
 <img src="https://user-images.githubusercontent.com/13503330/221125768-8e0d6754-e66d-4941-ac53-ded8db9b60f9.gif" width=450 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=450 height=300/>
-</center>
-<center class="half">
+</div>
+<div align=center>
 <img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=300 height=350/><img src="https://user-images.githubusercontent.com/13503330/221138017-10431ab4-e515-4c32-8fa7-8748e2d17a58.gif" width=600 height=350/>
-</center>
+</div>
 
 ### ✨ 主要特性
 
