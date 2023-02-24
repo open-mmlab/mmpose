@@ -208,6 +208,12 @@ bash opencv.sh
 
 # Compile executable programs
 bash build.sh
+
+# inference for an image
+./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+
+# inference for a video
+./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
 #### TensorRT
@@ -232,9 +238,11 @@ bash opencv.sh
 # Compile executable programs
 bash build.sh
 
-# img inference
-# video inference
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+# inference for an image
+./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
+
+# inference for a video
+./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
 For details, see [Pipeline Inference](#-step4-pipeline-inference).
