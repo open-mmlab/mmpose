@@ -1,5 +1,7 @@
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+[English](README.md) | 简体中文
+
 ## Abstract
 
 Recent studies on 2D pose estimation have achieved excellent performance on public benchmarks, yet its application in the industrial community still suffers from heavy model parameters and high latency.
@@ -30,11 +32,9 @@ Coming soon
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
-- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 90+ FPS 。
+- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 400+ FPS 。
 
 ## 📖 简介 [🔝](#-table-of-contents)
-
-[English](README.md) | 简体中文
 
 ### ✨ 主要特性
 
@@ -196,7 +196,13 @@ python demo/topdown_demo_with_mmdet.py \
 
 请参考 [训练与测试](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html) 进行 RTMPose 的训练。
 
-为了在你自己的数据集上得到更好的模型性能，我们推荐你使用我们提供的在 AIC-COCO 数据集上预训练的模型进行微调。
+**提示**：
+
+- RTMPose 默认开启了 `drop_last=True`，当用户的数据集较小时请根据情况缩小 `batch_size` 和 `base_lr`。
+- 模型选择
+  - m：推荐首选使用
+  - t/s：适用于极端低算力的移动设备，或对推理速度要求严格的场景
+  - l：适用于算力较强、对速度不敏感的场景
 
 ## 🏗️ 部署教程 [🔝](#-table-of-contents)
 
@@ -533,7 +539,7 @@ cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 如果需要测试模型在部署框架下的推理速度，MMDeploy 提供了方便的 `tools/profiler.py` 脚本。
 
-此处以 onnxruntime 的 cpu 模型为例。进入 mmdeploy 目录，首先按照 Step 2 中的步骤导出 ONNX 模型。用户需要准备一个存放测试图片的文件夹`./test_images`，profiler 将随机从该目录下抽取图片用于模型测速。
+用户需要准备一个存放测试图片的文件夹`./test_images`，profiler 将随机从该目录下抽取图片用于模型测速。
 
 ```shell
 python tools/profiler.py \

@@ -1,5 +1,7 @@
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+English | [简体中文](README_CN.md)
+
 ## Abstract
 
 Recent studies on 2D pose estimation have achieved excellent performance on public benchmarks, yet its application in the industrial community still suffers from heavy model parameters and high latency.
@@ -30,11 +32,9 @@ Coming soon
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
-- Feb 2023: RTMPose is released. RTMPose-m runs at 90+ FPS on COCO val set and achieves 75.8 mAP.
+- Feb 2023: RTMPose is released. RTMPose-m runs at 400+ FPS on COCO val set and achieves 75.8 mAP.
 
 ## 📖 Introduction [🔝](#-table-of-contents)
-
-English | [简体中文](README_CN.md)
 
 ### ✨ Major Features
 
@@ -193,7 +193,13 @@ Result is as follows:
 
 Please refer to [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html).
 
-To get the best performance on your custom dataset, we recommend you to conduct transfer learning on the AIC-COCO pre-trained models.
+**Tips**:
+
+- RTMPose has `drop_last=True` enabled by default, please accordinally reduce `batch_size` and `base_lr` when your dataset is small.
+- Guidelines to choose a model
+  - m: Recommended and Preferred Use
+  - t/s: For mobile devices with extremely low computing power, or scenarios with stringent inference speed requirements
+  - l: Suitable for scenarios with strong computing power and not sensitive to speed
 
 ## 🏗️ How To Deploy [🔝](#-table-of-contents)
 
