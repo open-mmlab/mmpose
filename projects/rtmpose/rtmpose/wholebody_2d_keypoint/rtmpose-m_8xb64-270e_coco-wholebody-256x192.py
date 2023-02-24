@@ -3,7 +3,7 @@ _base_ = ['mmpose::_base_/default_runtime.py']
 # runtime
 max_epochs = 270
 stage2_num_epochs = 30
-base_lr = 5e-4
+base_lr = 4e-3
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)
