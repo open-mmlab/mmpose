@@ -20,7 +20,13 @@ model = dict(
         share_conv=False,
         exp_on_reg=False,
         use_depthwise=True,
-        num_classes=1))
+        num_classes=1),
+    test_cfg=dict(
+        nms_pre=1000,
+        min_bbox_size=0,
+        score_thr=0.05,
+        nms=dict(type='nms', iou_threshold=0.6),
+        max_per_img=100))
 
 train_pipeline = [
     dict(
