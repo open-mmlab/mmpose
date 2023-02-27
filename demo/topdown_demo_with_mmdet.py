@@ -175,11 +175,7 @@ def main():
             pose_estimator,
             visualizer,
             show_interval=0)
-
-        if pred_instances is not None:
-            pred_instances_list = split_instances(pred_instances)
-        else:
-            pred_instances_list = []
+        pred_instances_list = split_instances(pred_instances)
 
     elif input_type == 'video':
         tmp_folder = tempfile.TemporaryDirectory()
@@ -199,14 +195,11 @@ def main():
                 visualizer,
                 show_interval=1)
 
-            if pred_instances is not None:
-                instances = split_instances(pred_instances)
-            else:
-                instances = []
-
             progressbar.update()
             pred_instances_list.append(
-                dict(frame_id=frame_id, instances=instances))
+                dict(
+                    frame_id=frame_id,
+                    instances=split_instances(pred_instances)))
 
         if output_root:
             mmcv.frames2video(
