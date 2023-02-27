@@ -86,7 +86,17 @@ class JSDiscretLoss(nn.Module):
         return js_values
 
     def forward(self, pred_hm, gt_hm, target_weight=None):
-        """Forward function."""
+        """Forward function.
+
+        Args:
+            pred_hm (torch.Tensor[N, K, H, W]): Predicted heatmaps.
+            gt_hm (torch.Tensor[N, K, H, W]): Target heatmaps.
+            target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
+                Weights across different labels.
+
+        Returns:
+            torch.Tensor: Loss value.
+        """
 
         if self.use_target_weight:
             assert target_weight is not None
@@ -128,6 +138,8 @@ class KLDiscretLoss(nn.Module):
         self.kl_loss = nn.KLDivLoss(reduction='none')
 
     def criterion(self, dec_outs, labels):
+        """Criterion function."""
+
         scores = self.log_softmax(dec_outs * self.beta)
         if self.label_softmax:
             labels = F.softmax(labels * self.beta, dim=1)

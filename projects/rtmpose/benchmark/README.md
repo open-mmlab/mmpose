@@ -15,7 +15,7 @@ Currently tested:
 
 ## Body 2d (17 Keypoints)
 
-### Model Details
+### Model Info
 
 |                                      Config                                       | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) |
 | :-------------------------------------------------------------------------------: | :--------: | :---------------: | :-------: | :------: |
@@ -35,7 +35,7 @@ Currently tested:
 
 ## WholeBody 2d (133 Keypoints)
 
-### Model Details
+### Model Info
 
 | Config                                                                                       | Input Size | Whole AP | Whole AR | FLOPS(G) |
 | :------------------------------------------------------------------------------------------- | :--------: | :------: | :------: | :------: |

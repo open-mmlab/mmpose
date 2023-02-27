@@ -13,9 +13,8 @@ from mmpose.registry import DATA_SAMPLERS
 
 @DATA_SAMPLERS.register_module()
 class MultiSourceSampler(Sampler):
-    r"""Multi-Source Sampler.
-    According to the sampling ratio, sample data from different
-    datasets to form batches.
+    """Multi-Source Sampler. According to the sampling ratio, sample data from
+    different datasets to form batches.
 
     Args:
         dataset (Sized): The dataset

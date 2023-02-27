@@ -146,8 +146,10 @@ class RTMHead(BaseHead):
 
         The input is multi scale feature maps and the
         output is the heatmap.
+
         Args:
             feats (Tuple[Tensor]): Multi scale feature maps.
+
         Returns:
             pred_x (Tensor): 1d representation of x.
             pred_y (Tensor): 1d representation of y.
@@ -175,6 +177,7 @@ class RTMHead(BaseHead):
         test_cfg: OptConfigType = {},
     ) -> InstanceList:
         """Predict results from features.
+
         Args:
             feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
                 features (or multiple multi-stage features in TTA)
@@ -182,6 +185,7 @@ class RTMHead(BaseHead):
                 data samples
             test_cfg (dict): The runtime config for testing process. Defaults
                 to {}
+
         Returns:
             List[InstanceData]: The pose predictions, each contains
             the following fields:
