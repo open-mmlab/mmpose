@@ -60,7 +60,10 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         out_file=out_file,
         kpt_score_thr=args.kpt_thr)
 
-    return data_samples.pred_instances
+    if hasattr(data_samples, 'pred_instances'):
+        return data_samples.pred_instances
+    else:
+        return None
 
 
 def main():
@@ -172,7 +175,11 @@ def main():
             pose_estimator,
             visualizer,
             show_interval=0)
-        pred_instances_list = split_instances(pred_instances)
+
+        if pred_instances is not None:
+            pred_instances_list = split_instances(pred_instances)
+        else:
+            pred_instances_list = []
 
     elif input_type == 'video':
         tmp_folder = tempfile.TemporaryDirectory()
@@ -191,11 +198,15 @@ def main():
                 pose_estimator,
                 visualizer,
                 show_interval=1)
+
+            if pred_instances is not None:
+                instances = split_instances(pred_instances)
+            else:
+                instances = []
+
             progressbar.update()
             pred_instances_list.append(
-                dict(
-                    frame_id=frame_id,
-                    instances=split_instances(pred_instances)))
+                dict(frame_id=frame_id, instances=instances))
 
         if output_root:
             mmcv.frames2video(
