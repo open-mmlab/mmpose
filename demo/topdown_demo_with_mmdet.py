@@ -60,7 +60,8 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         out_file=out_file,
         kpt_score_thr=args.kpt_thr)
 
-    return data_samples.pred_instances
+    # if there is no instance detected, return None
+    return data_samples.get('pred_instances', None)
 
 
 def main():
@@ -191,6 +192,7 @@ def main():
                 pose_estimator,
                 visualizer,
                 show_interval=1)
+
             progressbar.update()
             pred_instances_list.append(
                 dict(

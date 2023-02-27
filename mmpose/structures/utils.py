@@ -120,6 +120,10 @@ def split_instances(instances: InstanceData) -> List[InstanceData]:
     information about one instance."""
     results = []
 
+    # return an empty list if there is no instance detected by the model
+    if instances is None:
+        return results
+
     for i in range(len(instances.keypoints)):
         result = dict(
             keypoints=instances.keypoints[i].tolist(),
