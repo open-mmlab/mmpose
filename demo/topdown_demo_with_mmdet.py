@@ -60,6 +60,7 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         out_file=out_file,
         kpt_score_thr=args.kpt_thr)
 
+    # if there is no instance detected, return None
     if hasattr(data_samples, 'pred_instances'):
         return data_samples.pred_instances
     else:
