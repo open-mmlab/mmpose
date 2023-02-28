@@ -39,4 +39,4 @@ The model is trained on WFLW train.
 
 | Arch                                                           | Input Size | NME  |                              ckpt                              |                              log                               |
 | :------------------------------------------------------------- | :--------: | :--: | :------------------------------------------------------------: | :------------------------------------------------------------: |
-| [pose_rtmpose_m](/configs/face_2d_keypoint/rtmpose/wflw/rtmpose-m_8xb64-60e_wflw-256x256.py) |  256x256   | 4.01 | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/) |
+| [pose_rtmpose_m](/configs/face_2d_keypoint/rtmpose/wflw/rtmpose-m_8xb64-60e_wflw-256x256.py) |  256x256   | 4.01 | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-wflw_pt-aic-coco_60e-256x256-dc1dcdcf_20230228.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-wflw_pt-aic-coco_60e-256x256-dc1dcdcf_20230228.json) |
