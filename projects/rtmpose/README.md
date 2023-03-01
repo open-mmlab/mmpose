@@ -24,15 +24,15 @@ Coming soon
 - [📊 Model Zoo](#-model-zoo-)
 - [👀 Visualization](#-visualization-)
 - [😎 Get Started](#-get-started-)
-- [👨‍🏫 How to Train](#-acknowledgement-)
-- [🏗️ How To Deploy](#️-citation-)
+- [👨‍🏫 How to Train](#-how-to-train-)
+- [🏗️ How To Deploy](#️-how-to-deploy-)
 - [📚 Common Usage](#️-common-usage-)
   - [🚀 Inference Speed Test](#-inference-speed-test-)
   - [📊 Model Test](#-model-test-)
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
-- Feb 2023: RTMPose is released. RTMPose-m runs at 430+ FPS on COCO val set and achieves 75.8 mAP.
+- Mar. 2023: RTMPose is released. RTMPose-m runs at 430+ FPS and achieves 75.8 mAP on COCO val set.
 
 ## 📖 Introduction [🔝](#-table-of-contents)
 
@@ -131,7 +131,7 @@ Feel free to join our community group for more help:
 
 |   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs     |  Download   |
 | :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------: | :---------: |
-| pruning-s-t |  256x192   |       69.2        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
+| pruning-s-t |  256x192   |       69.4        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
 
 ### WholeBody 2d (133 Keypoints)
 

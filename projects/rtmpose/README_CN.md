@@ -32,7 +32,7 @@ Coming soon
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
-- 2023 年 2 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 430+ FPS 。
+- 2023 年 3 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 430+ FPS 。
 
 ## 📖 简介 [🔝](#-table-of-contents)
 
@@ -129,7 +129,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 |   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs     |  Download   |
 | :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------: | :---------: |
-| pruning-s-t |  256x192   |       69.2        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
+| pruning-s-t |  256x192   |       69.4        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
 
 ### 人体全身 2d 关键点 (133 Keypoints)
 
