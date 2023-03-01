@@ -23,6 +23,8 @@
 |  [RTMPose-s](../rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py)   |  256x192   |       72.2        |   5.47    |   0.68   |
 |  [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py)   |  256x192   |       75.8        |   13.59   |   1.93   |
 |  [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py)   |  256x192   |       76.5        |   27.66   |   4.16   |
+|  [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py)   |  384x288   |       77.0        |   13.72   |   4.33   |
+|  [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py)   |  384x288   |       77.3        |   27.79   |   9.35   |
 
 ### Speed Benchmark
 
@@ -32,6 +34,8 @@
 | [RTMPose-s](../rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |                4.48                |                   1.39                    |                     13.89                      |
 | [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |               11.06                |                   2.29                    |                     26.44                      |
 | [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |               18.85                |                   3.46                    |                     45.37                      |
+| [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |               24.78                |                   3.66                    |                     26.44                      |
+| [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |                 -                  |                   6.05                    |                       -                        |
 
 ### 人体全身 2d 关键点 (133 Keypoints)
 
