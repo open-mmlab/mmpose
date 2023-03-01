@@ -202,10 +202,10 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行推理。
 wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
 
 # 解压文件
-tar -xzvf mmdeploy-1.0.0rc2-linux-x86_64-onnxruntime1.8.1.tar.gz
+tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
 
 # 切换到 sdk 目录
-cd mmdeploy-1.0.0rc2-linux-x86_64-onnxruntime1.8.1/sdk
+cd mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/sdk
 
 # 设置环境变量
 source env.sh
@@ -217,10 +217,10 @@ bash opencv.sh
 bash build.sh
 
 # 图片推理
-./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 
 # 视频推理
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
 #### TensorRT
@@ -245,10 +245,10 @@ bash opencv.sh
 bash build.sh
 
 # 图片推理
-./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
+./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
 
 # 视频推理
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
+./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
 详细参数设置见 [Pipeline 推理](#-pipeline-推理)。

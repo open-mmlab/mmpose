@@ -203,7 +203,7 @@ wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy
 tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
 
 # Go to the sdk folder
-cd mmdeploy-1.0.0rc2-linux-x86_64-onnxruntime1.8.1/sdk
+cd mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/sdk
 
 # Init environment
 source env.sh
@@ -216,10 +216,10 @@ bash opencv.sh
 bash build.sh
 
 # inference for an image
-./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 
 # inference for a video
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
 #### TensorRT
@@ -245,10 +245,10 @@ bash opencv.sh
 bash build.sh
 
 # inference for an image
-./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
+./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
 
 # inference for a video
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
+./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
 For details, see [Pipeline Inference](#-step4-pipeline-inference).
