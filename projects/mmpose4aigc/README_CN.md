@@ -1,7 +1,7 @@
 # MMPose for AIGC (AI Generated Content)
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222402253-266b9738-a452-4f0e-8329-e4c51b41244b.png" width=900 />
+<img src="https://user-images.githubusercontent.com/13503330/222403836-c65ba905-4bdd-4a44-834c-ff8d5959649d.png" width=1000 />
 </div>
 
 本项目将支持使用 MMPose 来生成骨架图片，用于姿态引导的 AI 图像生成。

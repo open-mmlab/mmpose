@@ -1,7 +1,7 @@
 # MMPose for AIGC (AI Generated Content)
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222402253-266b9738-a452-4f0e-8329-e4c51b41244b.png" width=900 />
+<img src="https://user-images.githubusercontent.com/13503330/222403836-c65ba905-4bdd-4a44-834c-ff8d5959649d.png" width=1000 />
 </div>
 
 This project will demonstrate how to use MMPose to generate skeleton images for pose guided AI image generation.
