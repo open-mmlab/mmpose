@@ -33,6 +33,7 @@ bash build.sh
 #### 下载模型
 
 ```shell
+# 切换目录
 cd ../
 
 # 下载模型
@@ -79,13 +80,18 @@ unzip rtmpose-cpu.zip
 ### Step 3: 使用 T2I-Adapter
 
 T2I- Adapter 在线试玩请点击 [这里](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 
-https://user-images.githubusercontent.com/13503330/222319401-883daca0-ba99-4d21-850c-199aa7868e0f.png
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/222319401-883daca0-ba99-4d21-850c-199aa7868e0f.png" width=900 />
+</div>
 
 示例：
 
-https://user-images.githubusercontent.com/13503330/222319507-c8862ac3-43a9-4672-8f57-ae2f3c2834e6.png
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/222319507-c8862ac3-43a9-4672-8f57-ae2f3c2834e6.png" width=900 />
+</div>
 
 ## 结果展示
 
