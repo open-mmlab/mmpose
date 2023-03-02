@@ -59,7 +59,20 @@ Coming soon
 - 🛠️ **Easy to deploy**
 
   - Step-by-step deployment tutorials.
-  - Support various backends including ONNX, TensorRT, ncnn, OpenVINO, etc. Powered by MMDeploy.
+  - Powered by MMDeploy.
+  - Support various backends including
+    - ONNX
+    - TensorRT
+    - ncnn
+    - OpenVINO
+    - etc.
+  - Support various platforms including
+    - Linux
+    - Windows
+    - Android
+    - NVIDIA Jetson
+    - ARM
+    - etc.
 
 - 🏗️ **Design for practical applications**
 
