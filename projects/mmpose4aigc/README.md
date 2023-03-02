@@ -1,3 +1,7 @@
+# MMPose for AIGC
+
+This project will demonstrate how to use MMPose to generate skeleton images for pose guided AI image generation.
+
 ## Get Started
 
 English | [简体中文](./README_CN.md)
@@ -32,9 +36,9 @@ bash build.sh
 ```shell
 cd ../
 
-wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-ort.zip
+wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
 
-unzip rtmpose-ort.zip
+unzip rtmpose-cpu.zip
 ```
 
 The files are organized as follows:
@@ -62,6 +66,8 @@ The files are organized as follows:
     --pose_kpt_thr 0.4 \
     --show -1
 ```
+
+For details, you can refer to [here](../rtmpose/README.md).
 
 The input image and its skeleton are as follows:
 

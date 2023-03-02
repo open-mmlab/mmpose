@@ -1,3 +1,7 @@
+# MMPose for AIGC
+
+本项目将演示如何使用 MMPose 来生成骨架图片，用于姿态引导的 AI 图像生成。
+
 ## 快速上手
 
 简体中文 | [English](./README.md)
@@ -32,10 +36,10 @@ bash build.sh
 cd ../
 
 # 下载模型
-wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-ort.zip
+wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
 
 # 解压
-unzip rtmpose-ort.zip
+unzip rtmpose-cpu.zip
 ```
 
 最终的文件结构如下：
@@ -63,6 +67,8 @@ unzip rtmpose-ort.zip
     --pose_kpt_thr 0.4 \
     --show -1
 ```
+
+更多参数信息可以查看 [这里](../rtmpose/README_CN.md)。
 
 输入图片与生成骨架图片如下:
 
