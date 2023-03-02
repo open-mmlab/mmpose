@@ -1,4 +1,4 @@
-# MMPose for AIGC
+# MMPose for AIGC (AI Generated Content)
 
 This project will demonstrate how to use MMPose to generate skeleton images for pose guided AI image generation.
 
