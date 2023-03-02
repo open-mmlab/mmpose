@@ -14,6 +14,10 @@ from mmpose.registry import MODELS
 class ExpMomentumEMA(ExponentialMovingAverage):
     """Exponential moving average (EMA) with exponential momentum strategy,
     which is used in YOLOX.
+
+    Ported from ` the implementation of MMDetection
+    <https://github.com/open-mmlab/mmdetection/blob/3.x/mmdet/models/layers/ema.py>`_.
+
     Args:
         model (nn.Module): The model to be averaged.
         momentum (float): The momentum used for updating ema parameter.

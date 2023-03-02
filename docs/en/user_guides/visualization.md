@@ -21,9 +21,9 @@ python demo/image_demo.py ${IMG} ${CONFIG} ${CHECKPOINT} [-h] [--out-file OUT_FI
 | `--device DEVICE`     | Device used for inference.       |
 | `--draw-heatmap`      | Visualize the predicted heatmap. |
 
-Here is an example of SimCC visualization:
+Here is an example of Heatmap visualization:
 
-![simcc_visualization](https://user-images.githubusercontent.com/13503330/218374365-009f540e-98db-4d29-9bcc-943596d71ea9.png)
+![000000196141](https://user-images.githubusercontent.com/13503330/222373580-88d93603-e00e-45e9-abdd-f504a62b4ca5.jpg)
 
 ## Browse Dataset
 
