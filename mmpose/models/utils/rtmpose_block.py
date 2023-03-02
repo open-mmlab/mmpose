@@ -8,7 +8,21 @@ from mmcv.cnn.bricks import DropPath
 
 
 def rope(x, dim):
-    """Rotary Position Embedding."""
+    """Applies Rotary Position Embedding to input tensor.
+
+    Args:
+        x (torch.Tensor): Input tensor.
+        dim (int | list[int]): The spatial dimension(s) to apply
+            rotary position embedding.
+
+    Returns:
+        torch.Tensor: The tensor after applying rotary position
+            embedding.
+
+    Reference:
+        `RoFormer: Enhanced Transformer with Rotary
+        Position Embedding <https://arxiv.org/abs/2104.09864>`_
+    """
     shape = x.shape
     if isinstance(dim, int):
         dim = [dim]
@@ -40,7 +54,15 @@ def rope(x, dim):
 
 
 class Scale(nn.Module):
-    """Scale vector by element multiplications."""
+    """Scale vector by element multiplications.
+
+    Args:
+        dim (int): The dimension of the scale vector.
+        init_value (float, optional): The initial value of the scale vector.
+            Defaults to 1.0.
+        trainable (bool, optional): Whether the scale vector is trainable.
+            Defaults to True.
+    """
 
     def __init__(self, dim, init_value=1., trainable=True):
         super().__init__()
@@ -54,7 +76,16 @@ class Scale(nn.Module):
 
 
 class ScaleNorm(nn.Module):
-    """Scale Norm."""
+    """Scale Norm.
+
+    Args:
+        dim (int): The dimension of the scale vector.
+        eps (float, optional): The minimum value in clamp. Defaults to 1e-5.
+
+    Reference:
+        `Transformers without Tears: Improving the Normalization
+        of Self-Attention <https://arxiv.org/abs/1910.05895>`_
+    """
 
     def __init__(self, dim, eps=1e-5):
         super().__init__()
@@ -63,42 +94,57 @@ class ScaleNorm(nn.Module):
         self.g = nn.Parameter(torch.ones(1))
 
     def forward(self, x):
-        """Forward function."""
+        """Forward function.
+
+        Args:
+            x (torch.Tensor): Input tensor.
+
+        Returns:
+            torch.Tensor: The tensor after applying scale norm.
+        """
 
         norm = torch.norm(x, dim=-1, keepdim=True) * self.scale
         return x / norm.clamp(min=self.eps) * self.g
 
 
 class RTMBlock(nn.Module):
-    """Gated Attention Unit used in RTMPose.
+    """Gated Attention Unit (GAU) in RTMBlock.
 
     Args:
-        num_token (int): Number of tokens.
-        in_token_dims (int): Input length of each token.
-        out_token_dims (int): Output length of each token.
-        expansion_factor (int): The expansion factor in GAU.
-        s (int): The length of self-attention feature in GAU.
-        eps (int): Minimum value in clamp.
-        dropout_rate (float): The dropout rate.
-        drop_path (float): Prob. of activating the shortcut.
-        attn_type (str): Type of attention which should be one of the
-            following options:
+        num_token (int): The number of tokens.
+        in_token_dims (int): The input token dimension.
+        out_token_dims (int): The output token dimension.
+        expansion_factor (int, optional): The expansion factor of the
+            intermediate token dimension. Defaults to 2.
+        s (int, optional): The self-attention feature dimension.
+            Defaults to 128.
+        eps (float, optional): The minimum value in clamp. Defaults to 1e-5.
+        dropout_rate (float, optional): The dropout rate. Defaults to 0.0.
+        drop_path (float, optional): The drop path rate. Defaults to 0.0.
+        attn_type (str, optional): Type of attention which should be one of
+            the following options:
 
-                - ``'self-attn'``: Self-attention mode.
-                - ``'cross-attn'``: Cross-Attention mode.
+            - 'self-attn': Self-attention.
+            - 'cross-attn': Cross-attention.
 
-            Defaults to ``'self-attn'``
-        act_fn (str): Activation function which should be one of the
-            following options:
+            Defaults to 'self-attn'.
+        act_fn (str, optional): The activation function which should be one
+            of the following options:
 
-                - ``'SiLU'``: The SiLU function is also known as the
-                    swish function.
-                - ``'ReLU'``: Rectified Linear Unit.
+            - 'ReLU': ReLU activation.
+            - 'SiLU': SiLU activation.
 
-            Defaults to ``'SiLU'``
-        bias (bool): Bias in fully-connected layer.
-        use_rel_bias (bool): Whether to use relative positional bias in GAU.
-        pos_enc (bool): Whether to use positional encoding in GAU.
+            Defaults to 'SiLU'.
+        bias (bool, optional): Whether to use bias in linear layers.
+            Defaults to False.
+        use_rel_bias (bool, optional): Whether to use relative bias.
+            Defaults to True.
+        pos_enc (bool, optional): Whether to use rotary position
+            embedding. Defaults to False.
+
+    Reference:
+        `Transformer Quality in Linear Time
+        <https://arxiv.org/abs/2202.10447>`_
     """
 
     def __init__(self,

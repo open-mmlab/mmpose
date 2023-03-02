@@ -26,13 +26,24 @@ class RTMHead(BaseHead):
 
     Args:
         in_channels (int | sequence[int]): Number of channels in the input
-            feature map
-        out_channels (int): Number of channels in the output heatmap
-        input_size (tuple): Input image size in shape [w, h]
-        in_featuremap_size (int | sequence[int]): Size of input feature map
-        simcc_split_ratio (float): Split ratio of pixels
-        final_layer_kernel_size (int): Kernel size of the convolutional layer
-        gau_cfg (Config): Config of the Gated Attention Unit
+            feature map.
+        out_channels (int): Number of channels in the output heatmap.
+        input_size (tuple): Size of input image in shape [w, h].
+        in_featuremap_size (int | sequence[int]): Size of input feature map.
+        simcc_split_ratio (float): Split ratio of pixels.
+            Default: 2.0.
+        final_layer_kernel_size (int): Kernel size of the convolutional layer.
+            Default: 1.
+        gau_cfg (Config): Config dict for the Gated Attention Unit.
+            Default: dict(
+                hidden_dims=256,
+                s=128,
+                expansion_factor=2,
+                dropout_rate=0.,
+                drop_path=0.,
+                act_fn='ReLU',
+                use_rel_bias=False,
+                pos_enc=False).
         input_transform (str): Transformation of input features which should
             be one of the following options:
 
