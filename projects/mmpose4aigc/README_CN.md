@@ -104,23 +104,35 @@ T2I- Adapter 在线试玩请点击 [这里](https://huggingface.co/spaces/Adapte
 > A lady with a fish
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222319618-ee71ea71-88e2-4b61-81a0-bf675e0f8fbc.jpg" width=450  height=500 /><img src="https://user-images.githubusercontent.com/13503330/222319709-c19bef9a-ff02-4b09-a499-afd24f62399b.png" width=450  height=500/>
+<img src="https://user-images.githubusercontent.com/13503330/222319618-ee71ea71-88e2-4b61-81a0-bf675e0f8fbc.jpg" width=280 height=300 /><img src="https://user-images.githubusercontent.com/13503330/222319709-c19bef9a-ff02-4b09-a499-afd24f62399b.png" width=280 height=300/>
 </div>
 
 > An astronaut riding a bike on the moon
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=450  height=500 /><img src="https://user-images.githubusercontent.com/13503330/222319895-c753620e-9c02-49ea-8586-c021d50f7225.png" width=450  height=500/>
+<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=280 height=300 /><img src="https://user-images.githubusercontent.com/13503330/222319895-c753620e-9c02-49ea-8586-c021d50f7225.png" width=280 height=300/>
 </div>
 
 > An astronaut riding a bike on Mars
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=450  height=500 /><img src="https://user-images.githubusercontent.com/13503330/222319949-e4b4f5ff-888e-4080-9c1e-9bcafd17f306.png" width=450  height=500/>
+<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=280 height=300 /><img src="https://user-images.githubusercontent.com/13503330/222319949-e4b4f5ff-888e-4080-9c1e-9bcafd17f306.png" width=280 height=300/>
 </div>
 
 > An astronaut riding a bike on Jupiter
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=450  height=500 /><img src="https://user-images.githubusercontent.com/13503330/222320017-ae7fe863-fda6-4dcc-b9fb-2a44609c170f.png" width=450  height=500/>
+<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=280 height=300 /><img src="https://user-images.githubusercontent.com/13503330/222320017-ae7fe863-fda6-4dcc-b9fb-2a44609c170f.png" width=280 height=300/>
+</div>
+
+> Monkey king
+
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=280 height=300 /><img src="https://user-images.githubusercontent.com/13503330/222341871-4beac696-7d51-490b-94b2-2e3f1adb6927.jpg" width=280 height=300/>
+</div>
+
+> Young man likes singing dancing rapping and balling
+
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/222318943-6dba5f52-158a-427a-8222-03628addc051.jpg" width=280 height=300 /><img src="https://user-images.githubusercontent.com/13503330/222341981-b49fb835-dbe5-4c0d-9210-ffb19643c290.jpg" width=280 height=300/>
 </div>
