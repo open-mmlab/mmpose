@@ -2,6 +2,12 @@
 
 本项目将演示如何使用 MMPose 来生成骨架图片，用于姿态引导的 AI 图像生成。
 
+当前已支持：
+
+- [T2I Adapter](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+
+欢迎分享更多姿态引导的 AIGC 项目给我们！
+
 ## 快速上手
 
 简体中文 | [English](./README.md)

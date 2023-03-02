@@ -2,6 +2,12 @@
 
 This project will demonstrate how to use MMPose to generate skeleton images for pose guided AI image generation.
 
+Currently, we support:
+
+- [T2I Adapter](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+
+Please feel free to share interesting pose-guided AIGC projects to us!
+
 ## Get Started
 
 English | [简体中文](./README_CN.md)
