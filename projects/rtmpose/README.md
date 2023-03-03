@@ -90,7 +90,11 @@ RTMPose is a long-term project dedicated to the training, optimization and deplo
 
 Feel free to join our community group for more help:
 
-- WeChat Group
+- WeChat Group:
+
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/222644591-e08536a4-c35b-4218-b932-bafe16a2cf59.png" width=150 />
+</div>
 - Discord Group: https://discord.gg/raweFPmdzG
 
 ## ⚡ Pipeline Performance [🔝](#-table-of-contents)

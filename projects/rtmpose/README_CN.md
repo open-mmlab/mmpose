@@ -86,6 +86,10 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 欢迎加入我们的社区交流群获得更多帮助：
 
 - 微信用户群
+
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/222644591-e08536a4-c35b-4218-b932-bafe16a2cf59.png" width=150 />
+</div>
 - Discord Group: https://discord.gg/raweFPmdzG
 
 ## ⚡ Pipeline 性能 [🔝](#-table-of-contents)
