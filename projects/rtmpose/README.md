@@ -92,10 +92,12 @@ Feel free to join our community group for more help:
 
 - WeChat Group:
 
-<div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/222644591-e08536a4-c35b-4218-b932-bafe16a2cf59.png" width=150 />
+<div align=left>
+<img src="https://user-images.githubusercontent.com/13503330/222647056-875bed70-85ec-455c-9016-c024772915c4.jpg" width=200 />
 </div>
-- Discord Group: https://discord.gg/raweFPmdzG
+- Discord Group:
+
+- 🙌 https://discord.gg/raweFPmdzG 🙌
 
 ## ⚡ Pipeline Performance [🔝](#-table-of-contents)
 
