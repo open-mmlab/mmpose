@@ -89,9 +89,9 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 <div align=left>
 <img src="https://user-images.githubusercontent.com/13503330/222647056-875bed70-85ec-455c-9016-c024772915c4.jpg" width=200 />
-- Discord Group:
 
-- 🙌 https://discord.gg/raweFPmdzG 🙌
+- Discord Group:
+  - 🙌 https://discord.gg/raweFPmdzG 🙌
 
 ## ⚡ Pipeline 性能 [🔝](#-table-of-contents)
 

@@ -95,9 +95,9 @@ Feel free to join our community group for more help:
 <div align=left>
 <img src="https://user-images.githubusercontent.com/13503330/222647056-875bed70-85ec-455c-9016-c024772915c4.jpg" width=200 />
 </div>
-- Discord Group:
 
-- 🙌 https://discord.gg/raweFPmdzG 🙌
+- Discord Group:
+  - 🙌 https://discord.gg/raweFPmdzG 🙌
 
 ## ⚡ Pipeline Performance [🔝](#-table-of-contents)
 
