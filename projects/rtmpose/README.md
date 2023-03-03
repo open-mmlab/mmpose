@@ -206,6 +206,10 @@ We provide two appoaches to try RTMPose:
 
 MMDeploy provides pre-compiled SDK to conduct inference with RTMPose projects.
 
+Notes:
+
+- GCC >= 8.0 is required to compile MMDeploy SDK.
+
 #### ONNX
 
 ```shell

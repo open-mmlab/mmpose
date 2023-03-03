@@ -203,6 +203,10 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行推理。
 
+说明：
+
+- 系统 GCC 版本需大于 8.0
+
 #### ONNX
 
 ```shell
