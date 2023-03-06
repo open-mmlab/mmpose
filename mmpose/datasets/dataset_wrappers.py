@@ -86,15 +86,6 @@ class CombinedDataset(BaseDataset):
 
         data_info = self.get_data_info(idx)
 
-        # Add metainfo items that are required in the pipeline and the model
-        metainfo_keys = [
-            'upper_body_ids', 'lower_body_ids', 'flip_pairs',
-            'dataset_keypoint_weights', 'flip_indices'
-        ]
-
-        for key in metainfo_keys:
-            data_info[key] = deepcopy(self._metainfo[key])
-
         return self.pipeline(data_info)
 
     def get_data_info(self, idx: int) -> dict:
@@ -108,6 +99,15 @@ class CombinedDataset(BaseDataset):
         subset_idx, sample_idx = self._get_subset_index(idx)
         # Get data sample processed by ``subset.pipeline``
         data_info = self.datasets[subset_idx][sample_idx]
+
+        # Add metainfo items that are required in the pipeline and the model
+        metainfo_keys = [
+            'upper_body_ids', 'lower_body_ids', 'flip_pairs',
+            'dataset_keypoint_weights', 'flip_indices'
+        ]
+
+        for key in metainfo_keys:
+            data_info[key] = deepcopy(self._metainfo[key])
 
         return data_info
 
