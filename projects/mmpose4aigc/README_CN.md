@@ -79,7 +79,45 @@ unzip rtmpose-cpu.zip
     --show -1
 ```
 
-更多参数信息可以查看 [这里](../rtmpose/README_CN.md)。
+**参数说明：**
+
+```shell
+required arguments:
+  det_model             Detection 模型路径 [string]
+  pose_model            Pose 模型路径 [string]
+  input                 输入图片路径或摄像头序号 [string]
+
+optional arguments:
+  --device              推理设备 "cpu", "cuda" [string = "cpu"]
+  --output              导出视频路径 [string = ""]
+  --output_size         输出视频帧的长边 [int32 = 0]
+  --flip                设置为1，用于水平翻转输入 [int32 = 0]
+  --show                使用`cv::imshow`时，传递给`cv::waitKey`的延迟;
+                        -1: 关闭 [int32 = 1]
+  --skeleton            骨架数据的路径或预定义骨架的名称:
+                        "coco", "coco-wholebody" [string = "coco"]
+  --background          导出视频背景颜色, "default": 原图, "black":
+                        纯黑背景 [string = "default"]
+  --det_interval        检测间隔 [int32 = 1]
+  --det_label           用于姿势估计的检测标签 [int32 = 0]
+                        (0 在 coco 中对应 person)
+  --det_thr             检测分数阈值 [double = 0.5]
+  --det_min_bbox_size   最小检测框大小 [double = -1]
+  --det_nms_thr         NMS IOU阈值，用于合并检测到的bboxes和
+                        追踪到的目标的 bboxes [double = 0.7]
+  --pose_max_num_bboxes 每一帧用于姿势估计的 bboxes 的最大数量
+                        [int32 = -1]
+  --pose_kpt_thr        可见关键点的阈值 [double = 0.5]
+  --pose_min_keypoints  有效姿势的最小关键点数量，-1表示上限(n_kpts/2) [int32 = -1]
+  --pose_bbox_scale     将关键点扩展到 bbox 的比例 [double = 1.25]
+  --pose_min_bbox_size  最小追踪尺寸，尺寸小于阈值的 bbox 将被剔除 [double = -1]
+  --pose_nms_thr        用于抑制重叠姿势的 NMS OKS/IOU阈值。
+                        当多个姿态估计重叠到同一目标时非常有用 [double = 0.5]
+  --track_iou_thr       追踪 IOU 阈值 [double = 0.4]
+  --track_max_missing   最大追踪容错 [int32 = 10]
+```
+
+更多详细信息可以查看 [RTMPose](../rtmpose/README_CN.md)。
 
 输入图片与生成骨架图片如下:
 
