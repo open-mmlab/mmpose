@@ -23,7 +23,7 @@ Please feel free to share interesting pose-guided AIGC projects to us!
 - GCC >= 7.5
 - cmake >= 3.14
 
-Run following commands to install the project:
+Run the following commands to install the project:
 
 ```shell
 bash install_linux.sh
@@ -43,7 +43,7 @@ After installation, files are organized as follows:
 
 ### Step 2: Generate a Skeleton Image
 
-Run following command to generate a skeleton image:
+Run the following command to generate a skeleton image:
 
 ```shell
 # generate a skeleton image
