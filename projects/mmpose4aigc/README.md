@@ -26,10 +26,10 @@ Please feel free to share interesting pose-guided AIGC projects to us!
 Run following commands to install the project:
 
 ```shell
-bash install.sh
+bash install_linux.sh
 ```
 
-The files are organized as follows:
+After installation, files are organized as follows:
 
 ```shell
 |----mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1
@@ -46,7 +46,9 @@ The files are organized as follows:
 Run following command to generate a skeleton image:
 
 ```shell
-bash mmpose_t2i-adapter.sh rtmpose-ort/000000147979.jpg
+# generate a skeleton image
+bash mmpose_t2i-adapter.sh \
+    mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/rtmpose-ort/000000147979.jpg
 ```
 
 For more details, you can refer to [RTMPose](../rtmpose/README.md).

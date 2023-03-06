@@ -26,7 +26,7 @@
 运行以下命令安装项目：
 
 ```shell
-bash install.sh
+bash install_linux.sh
 ```
 
 最终的文件结构如下：
@@ -46,7 +46,9 @@ bash install.sh
 运行以下命令生成姿态骨架图片：
 
 ```shell
-bash mmpose_t2i-adapter.sh rtmpose-ort/000000147979.jpg
+# 生成骨架图片
+bash mmpose_t2i-adapter.sh \
+    mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/rtmpose-ort/000000147979.jpg
 ```
 
 更多详细信息可以查看 [RTMPose](../rtmpose/README_CN.md)。
