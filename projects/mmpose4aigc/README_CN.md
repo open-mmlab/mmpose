@@ -67,6 +67,8 @@ unzip rtmpose-cpu.zip
 
 ### Step 2: 生成姿态骨架图片
 
+运行以下命令生成姿态骨架图片：
+
 ```shell
 bash mmpose4aigc.sh rtmpose-ort/000000147979.jpg
 ```

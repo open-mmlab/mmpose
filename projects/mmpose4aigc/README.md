@@ -68,6 +68,8 @@ The files are organized as follows:
 
 ### Step 2: Generate a Skeleton Image
 
+Run following command to generate a skeleton image:
+
 ```shell
 bash mmpose4aigc.sh rtmpose-ort/000000147979.jpg
 ```
