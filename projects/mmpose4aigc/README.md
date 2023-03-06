@@ -4,6 +4,8 @@
 <img src="https://user-images.githubusercontent.com/13503330/222403836-c65ba905-4bdd-4a44-834c-ff8d5959649d.png" width=1000 />
 </div>
 
+English | [简体中文](./README_CN.md)
+
 This project will demonstrate how to use MMPose to generate skeleton images for pose guided AI image generation.
 
 Currently, we support:
@@ -13,8 +15,6 @@ Currently, we support:
 Please feel free to share interesting pose-guided AIGC projects to us!
 
 ## Get Started
-
-English | [简体中文](./README_CN.md)
 
 ### Step 1: Preparation
 

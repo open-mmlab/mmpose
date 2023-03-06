@@ -4,6 +4,8 @@
 <img src="https://user-images.githubusercontent.com/13503330/222403836-c65ba905-4bdd-4a44-834c-ff8d5959649d.png" width=1000 />
 </div>
 
+简体中文 | [English](./README.md)
+
 本项目将支持使用 MMPose 来生成骨架图片，用于姿态引导的 AI 图像生成。
 
 当前已支持：
@@ -13,8 +15,6 @@
 欢迎分享更多姿态引导的 AIGC 项目给我们！
 
 ## 快速上手
-
-简体中文 | [English](./README.md)
 
 ### Step 1: 准备
 

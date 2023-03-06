@@ -6,8 +6,9 @@ English | [简体中文](README_CN.md)
 
 Recent studies on 2D pose estimation have achieved excellent performance on public benchmarks, yet its application in the industrial community still suffers from heavy model parameters and high latency.
 In order to bridge this gap, we empirically study five aspects that affect the performance of multi-person pose estimation algorithms: paradigm, backbone network, localization algorithm, training strategy, and deployment inference, and present a high-performance real-time multi-person pose estimation framework, **RTMPose**, based on MMPose.
-Our RTMPose-m achieves **75.8% AP** on COCO with **90+ FPS** on an Intel i7-11700 CPU and **430+ FPS** on an NVIDIA GTX 1660 Ti GPU, and RTMPose-l achieves **67.0% AP** on COCO-WholeBody with **130+ FPS**, outperforming existing open-source libraries.
-To further evaluate RTMPose's capability in critical real-time applications, we also report the performance after deploying on the mobile device.
+Our RTMPose-m achieves **75.8% AP** on COCO with **90+ FPS** on an Intel i7-11700 CPU and **430+ FPS** on an NVIDIA GTX 1660 Ti GPU, and RTMPose-l achieves **67.0% AP** on COCO-WholeBody with **130+ FPS**.
+To further evaluate RTMPose's capability in critical real-time applications, we also report the performance after deploying on the mobile device. Our RTMPose-s achieves **72.2% AP** on COCO with **70+ FPS** on a Snapdragon 865 chip, outperforming existing open-source libraries.
+With the help of MMDeploy, our project supports various platforms like CPU, GPU, NVIDIA Jetson, and mobile devices and multiple inference backends such as ONNXRuntime, TensorRT, ncnn, etc.
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
@@ -59,7 +60,6 @@ Coming soon
 - 🛠️ **Easy to deploy**
 
   - Step-by-step deployment tutorials.
-  - Powered by MMDeploy.
   - Support various backends including
     - ONNX
     - TensorRT
@@ -69,14 +69,18 @@ Coming soon
   - Support various platforms including
     - Linux
     - Windows
-    - Android
     - NVIDIA Jetson
     - ARM
     - etc.
 
 - 🏗️ **Design for practical applications**
 
-  Pipeline inference API and SDK for Python, C++, etc.
+  - Pipeline inference API and SDK for
+    - Python
+    - C++
+    - C#
+    - JAVA
+    - etc.
 
 ## 🙌 Community [🔝](#-table-of-contents)
 
