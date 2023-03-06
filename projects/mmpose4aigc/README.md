@@ -18,40 +18,15 @@ Please feel free to share interesting pose-guided AIGC projects to us!
 
 ### Step 1: Preparation
 
-#### Download Pre-compiled MMdeploy and Build
+**Env Requirements:**
+
+- GCC >= 7.5
+- cmake >= 3.14
+
+Run following commands to install the project:
 
 ```shell
-# Download pre-compiled files
-wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
-
-# Unzip files
-tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
-
-# Go to the sdk folder
-cd mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/sdk
-
-# Init environment
-source env.sh
-
-# If opencv 3+ is not installed on your system, execute the following command.
-# If it is installed, skip this command
-bash opencv.sh
-
-# Compile executable programs
-bash build.sh
-```
-
-#### Download Models
-
-```shell
-# Go to mmdeploy folder
-cd ../
-
-# Download models
-wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
-
-# Unzip files
-unzip rtmpose-cpu.zip
+bash install.sh
 ```
 
 The files are organized as follows:
@@ -71,7 +46,7 @@ The files are organized as follows:
 Run following command to generate a skeleton image:
 
 ```shell
-bash mmpose4aigc.sh rtmpose-ort/000000147979.jpg
+bash mmpose_t2i-adapter.sh rtmpose-ort/000000147979.jpg
 ```
 
 For more details, you can refer to [RTMPose](../rtmpose/README.md).

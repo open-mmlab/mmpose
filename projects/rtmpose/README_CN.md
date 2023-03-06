@@ -213,7 +213,8 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行推理。
 
 说明：
 
-- 系统 GCC 版本需大于 8.0
+- GCC 版本需大于 7.5
+- cmake 版本需大于 3.14
 
 #### ONNX
 

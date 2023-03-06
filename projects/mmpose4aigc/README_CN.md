@@ -18,39 +18,15 @@
 
 ### Step 1: 准备
 
-#### 安装环境
+**环境要求：**
+
+- GCC >= 7.5
+- cmake >= 3.14
+
+运行以下命令安装项目：
 
 ```shell
-# 下载预编译包
-wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
-
-# 解压
-tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
-
-# 切换目录
-cd mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/sdk
-
-# 初始化环境
-source env.sh
-
-# 安装 OpenCV
-bash opencv.sh
-
-# 本地编译
-bash build.sh
-```
-
-#### 下载模型
-
-```shell
-# 切换目录
-cd ../
-
-# 下载模型
-wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
-
-# 解压
-unzip rtmpose-cpu.zip
+bash install.sh
 ```
 
 最终的文件结构如下：
@@ -70,7 +46,7 @@ unzip rtmpose-cpu.zip
 运行以下命令生成姿态骨架图片：
 
 ```shell
-bash mmpose4aigc.sh rtmpose-ort/000000147979.jpg
+bash mmpose_t2i-adapter.sh rtmpose-ort/000000147979.jpg
 ```
 
 更多详细信息可以查看 [RTMPose](../rtmpose/README_CN.md)。
