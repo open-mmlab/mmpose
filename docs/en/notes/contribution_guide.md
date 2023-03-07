@@ -60,7 +60,7 @@ Open `id_rsa.pub` with a text editor, copy the content of the file, and paste it
 
 Click `New SSH key` to add a new SSH keys, and paste the copied content into Key.
 
-![](https://user-images.githubusercontent.com/90811472/221549754-53670c19-5efe-48b2-9ac5-bafb43891903.png)
+![](https://user-images.githubusercontent.com/90811472/221577720-af5536b3-47ba-48bc-adcc-c2b83f22081d.png)
 
 Verify that SSH matches the GitHub account by running the command in git bash or terminal. If it matches, enter yes to succeed.
 
