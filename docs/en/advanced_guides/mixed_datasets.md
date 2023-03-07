@@ -17,7 +17,8 @@ Some keypoints, such as "left hand", are defined in both datasets, but they have
 <img src="https://user-images.githubusercontent.com/26127467/223338755-d838dd39-901b-4e7d-af8b-b94b5f5f9ef3.png" height="200px" alt><br>
 
 Next, we will discuss two methods of mixing datasets.
-- [Merge](#merge-aic-into-coco) 
+
+- [Merge](#merge-aic-into-coco)
 - [Combine](#combine-aic-and-coco)
 
 ### Merge AIC into COCO
