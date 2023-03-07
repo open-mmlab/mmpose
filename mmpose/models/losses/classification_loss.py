@@ -72,16 +72,32 @@ class JSDiscretLoss(nn.Module):
         self.kl_loss = nn.KLDivLoss(reduction='none')
 
     def kl(self, p, q):
+        """Kullback-Leibler Divergence."""
+
         eps = 1e-24
         kl_values = self.kl_loss((q + eps).log(), p)
         return kl_values
 
     def js(self, pred_hm, gt_hm):
+        """Jensen-Shannon Divergence."""
+
         m = 0.5 * (pred_hm + gt_hm)
         js_values = 0.5 * (self.kl(pred_hm, m) + self.kl(gt_hm, m))
         return js_values
 
     def forward(self, pred_hm, gt_hm, target_weight=None):
+        """Forward function.
+
+        Args:
+            pred_hm (torch.Tensor[N, K, H, W]): Predicted heatmaps.
+            gt_hm (torch.Tensor[N, K, H, W]): Target heatmaps.
+            target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
+                Weights across different labels.
+
+        Returns:
+            torch.Tensor: Loss value.
+        """
+
         if self.use_target_weight:
             assert target_weight is not None
             assert pred_hm.ndim >= target_weight.ndim
@@ -102,24 +118,31 @@ class JSDiscretLoss(nn.Module):
 @MODELS.register_module()
 class KLDiscretLoss(nn.Module):
     """Discrete KL Divergence loss for SimCC with Gaussian Label Smoothing.
+    Modified from `the official implementation.
 
-    Modified from `the official implementation
     <https://github.com/leeyegy/SimCC>`_.
-
     Args:
+        beta (float): Temperature factor of Softmax.
+        label_softmax (bool): Whether to use Softmax on labels.
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
     """
 
-    def __init__(self, use_target_weight=True):
+    def __init__(self, beta=1.0, label_softmax=False, use_target_weight=True):
         super(KLDiscretLoss, self).__init__()
-
+        self.beta = beta
+        self.label_softmax = label_softmax
         self.use_target_weight = use_target_weight
-        self.log_softmax = nn.LogSoftmax(dim=1)  # [B,LOGITS]
+
+        self.log_softmax = nn.LogSoftmax(dim=1)
         self.kl_loss = nn.KLDivLoss(reduction='none')
 
     def criterion(self, dec_outs, labels):
-        scores = self.log_softmax(dec_outs)
+        """Criterion function."""
+
+        scores = self.log_softmax(dec_outs * self.beta)
+        if self.label_softmax:
+            labels = F.softmax(labels * self.beta, dim=1)
         loss = torch.mean(self.kl_loss(scores, labels), dim=1)
         return loss
 
@@ -127,9 +150,11 @@ class KLDiscretLoss(nn.Module):
         """Forward function.
 
         Args:
-            pred_simcc (Tuple[Tensor, Tensor]): _description_
-            gt_simcc (Tuple[Tensor, Tensor]): _description_
-            target_weight (Tensor): _description_
+            pred_simcc (Tuple[Tensor, Tensor]): Predicted SimCC vectors of
+                x-axis and y-axis.
+            gt_simcc (Tuple[Tensor, Tensor]): Target representations.
+            target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
+                Weights across different labels.
         """
         output_x, output_y = pred_simcc
         target_x, target_y = gt_simcc

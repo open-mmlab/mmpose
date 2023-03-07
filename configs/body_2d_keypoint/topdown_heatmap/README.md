@@ -20,6 +20,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |    HRNet-w48    |  256x192   | 0.756 | 0.809 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |   HRFormer-B    |  256x192   | 0.754 | 0.807 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
 |    RSN-50-3x    |  256x192   | 0.750 | 0.814 |          [rsn_coco.md](./coco/rsn_coco.md)          |
+|    CSPNeXt-l    |  256x192   | 0.750 | 0.800 |  [cspnext_udp_coco.md](./coco/cspnext_udp_coco.md)  |
 |    HRNet-w32    |  256x192   | 0.749 | 0.804 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |     Swin-L      |  256x192   | 0.743 | 0.798 |         [swin_coco.md](./coco/swin_coco.md)         |
 |   HRFormer-S    |  256x192   | 0.738 | 0.793 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
@@ -27,6 +28,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |  SEResNet-101   |  256x192   | 0.734 | 0.790 |     [seresnet_coco.md](./coco/seresnet_coco.md)     |
 |    SCNet-101    |  256x192   | 0.733 | 0.789 |        [scnet_coco.md](./coco/scnet_coco.md)        |
 | ResNet-101+Dark |  256x192   | 0.733 | 0.786 |  [resnet_dark_coco.md](./coco/resnet_dark_coco.md)  |
+|    CSPNeXt-m    |  256x192   | 0.732 | 0.785 |  [cspnext_udp_coco.md](./coco/cspnext_udp_coco.md)  |
 |  ResNetV1d-101  |  256x192   | 0.732 | 0.785 |    [resnetv1d_coco.md](./coco/resnetv1d_coco.md)    |
 |   SEResNet-50   |  256x192   | 0.729 | 0.784 |     [seresnet_coco.md](./coco/seresnet_coco.md)     |
 |    SCNet-50     |  256x192   | 0.728 | 0.784 |        [scnet_coco.md](./coco/scnet_coco.md)        |
@@ -42,7 +44,9 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |    ResNet-50    |  256x192   | 0.718 | 0.774 |       [resnet_coco.md](./coco/resnet_coco.md)       |
 |   ResNeXt-50    |  256x192   | 0.715 | 0.771 |      [resnext_coco.md](./coco/resnext_coco.md)      |
 |      PVT-S      |  256x192   | 0.714 | 0.773 |          [pvt_coco.md](./coco/pvt_coco.md)          |
+|    CSPNeXt-s    |  256x192   | 0.697 | 0.753 |  [cspnext_udp_coco.md](./coco/cspnext_udp_coco.md)  |
 |  LiteHRNet-30   |  256x192   | 0.676 | 0.736 |    [litehrnet_coco.md](./coco/litehrnet_coco.md)    |
+|  CSPNeXt-tiny   |  256x192   | 0.665 | 0.723 |  [cspnext_udp_coco.md](./coco/cspnext_udp_coco.md)  |
 |  MobileNet-v2   |  256x192   | 0.648 | 0.709 |  [mobilenetv2_coco.md](./coco/mobilenetv2_coco.md)  |
 |  LiteHRNet-18   |  256x192   | 0.642 | 0.705 |    [litehrnet_coco.md](./coco/litehrnet_coco.md)    |
 |       CPM       |  256x192   | 0.627 | 0.689 |          [cpm_coco.md](./coco/cpm_coco.md)          |
@@ -55,6 +59,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |     Model      | Input Size | PCKh@0.5 | PCKh@0.1 |                Details and Download                 |
 | :------------: | :--------: | :------: | :------: | :-------------------------------------------------: |
 | HRNet-w48+Dark |  256x256   |  0.905   |  0.360   |   [hrnet_dark_mpii.md](./mpii/hrnet_dark_mpii.md)   |
+|   HRNet-w48    |  256x256   |  0.902   |  0.303   |     [hrnet_mpii.md](./mpii/cspnext_udp_mpii.md)     |
 |   HRNet-w48    |  256x256   |  0.901   |  0.337   |        [hrnet_mpii.md](./mpii/hrnet_mpii.md)        |
 |   HRNet-w32    |  256x256   |  0.900   |  0.334   |        [hrnet_mpii.md](./mpii/hrnet_mpii.md)        |
 |  HourglassNet  |  256x256   |  0.889   |  0.317   |    [hourglass_mpii.md](./mpii/hourglass_mpii.md)    |
@@ -76,11 +81,12 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector
 
-|   Model    | Input Size |  AP   |  AR   |                  Details and Download                  |
-| :--------: | :--------: | :---: | :---: | :----------------------------------------------------: |
-| HRNet-w32  |  256x192   | 0.675 | 0.816 |  [hrnet_crowdpose.md](./crowdpose/hrnet_crowdpose.md)  |
-| ResNet-101 |  256x192   | 0.647 | 0.800 | [resnet_crowdpose.md](./crowdpose/resnet_crowdpose.md) |
-| HRNet-w32  |  256x192   | 0.637 | 0.785 | [resnet_crowdpose.md](./crowdpose/resnet_crowdpose.md) |
+|   Model    | Input Size |  AP   |  AR   |                    Details and Download                    |
+| :--------: | :--------: | :---: | :---: | :--------------------------------------------------------: |
+| HRNet-w32  |  256x192   | 0.675 | 0.816 |    [hrnet_crowdpose.md](./crowdpose/hrnet_crowdpose.md)    |
+| CSPNeXt-m  |  256x192   | 0.662 | 0.755 | [hrnet_crowdpose.md](./crowdpose/cspnext_udp_crowdpose.md) |
+| ResNet-101 |  256x192   | 0.647 | 0.800 |   [resnet_crowdpose.md](./crowdpose/resnet_crowdpose.md)   |
+| HRNet-w32  |  256x192   | 0.637 | 0.785 |   [resnet_crowdpose.md](./crowdpose/resnet_crowdpose.md)   |
 
 ### AIC Dataset
 
