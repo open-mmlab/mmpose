@@ -27,6 +27,19 @@ class MultipleLossWrapper(nn.Module):
         self.loss_modules = nn.ModuleList(loss_modules)
 
     def forward(self, input_list, target_list, keypoint_weights=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            input_list (List[Tensor]): List of inputs.
+            target_list (List[Tensor]): List of targets.
+            keypoint_weights (Tensor[N, K, D]):
+                Weights across different joint types.
+        """
         assert isinstance(input_list, list), ''
         assert isinstance(target_list, list), ''
         assert len(input_list) == len(target_list), ''

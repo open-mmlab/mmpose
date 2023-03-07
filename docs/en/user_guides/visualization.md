@@ -1,7 +1,29 @@
 # Visualization
 
+- [Single Image](#single-image)
 - [Browse Dataset](#browse-dataset)
 - [Visualizer Hook](#visualizer-hook)
+
+## Single Image
+
+`demo/image_demo.py` helps the user to visualize the prediction result of a single image, including the skeleton and heatmaps.
+
+```shell
+python demo/image_demo.py ${IMG} ${CONFIG} ${CHECKPOINT} [-h] [--out-file OUT_FILE] [--device DEVICE] [--draw-heatmap]
+```
+
+| ARGS                  | Description                      |
+| --------------------- | -------------------------------- |
+| `IMG`                 | The path to the test image.      |
+| `CONFIG`              | The path to the config file.     |
+| `CHECKPOINT`          | The path to the checkpoint file. |
+| `--out-file OUT_FILE` | Path to output file.             |
+| `--device DEVICE`     | Device used for inference.       |
+| `--draw-heatmap`      | Visualize the predicted heatmap. |
+
+Here is an example of Heatmap visualization:
+
+![000000196141](https://user-images.githubusercontent.com/13503330/222373580-88d93603-e00e-45e9-abdd-f504a62b4ca5.jpg)
 
 ## Browse Dataset
 

@@ -13,9 +13,9 @@ from mmpose.registry import DATA_SAMPLERS
 
 @DATA_SAMPLERS.register_module()
 class MultiSourceSampler(Sampler):
-    r"""Multi-Source Sampler.
-    According to the sampling ratio, sample data from different
-    datasets to form batches.
+    """Multi-Source Sampler. According to the sampling ratio, sample data from
+    different datasets to form batches.
+
     Args:
         dataset (Sized): The dataset
         batch_size (int): Size of mini-batch
@@ -23,6 +23,8 @@ class MultiSourceSampler(Sampler):
             source datasets in a mini-batch
         shuffle (bool): Whether shuffle the dataset or not. Defaults to
             ``True``
+        round_up (bool): Whether to add extra samples to make the number of
+            samples evenly divisible by the world size. Defaults to True.
         seed (int, optional): Random seed. If ``None``, set a random seed.
             Defaults to ``None``
     """
@@ -32,6 +34,7 @@ class MultiSourceSampler(Sampler):
                  batch_size: int,
                  source_ratio: List[Union[int, float]],
                  shuffle: bool = True,
+                 round_up: bool = True,
                  seed: Optional[int] = None) -> None:
 
         assert isinstance(dataset, CombinedDataset),\
@@ -53,9 +56,7 @@ class MultiSourceSampler(Sampler):
         self.cumulative_sizes = [0] + list(itertools.accumulate(dataset._lens))
         self.batch_size = batch_size
         self.source_ratio = source_ratio
-
-        self.num_samples = math.ceil(len(self.dataset) / world_size)
-
+        self.num_samples = int(math.ceil(len(self.dataset) * 1.0 / world_size))
         self.num_per_source = [
             int(batch_size * sr / sum(source_ratio)) for sr in source_ratio
         ]
@@ -67,6 +68,7 @@ class MultiSourceSampler(Sampler):
 
         self.seed = sync_random_seed() if seed is None else seed
         self.shuffle = shuffle
+        self.round_up = round_up
         self.source2inds = {
             source: self._indices_of_rank(len(ds))
             for source, ds in enumerate(dataset.datasets)
@@ -90,7 +92,10 @@ class MultiSourceSampler(Sampler):
 
     def __iter__(self) -> Iterator[int]:
         batch_buffer = []
-        while True:
+        num_iters = self.num_samples // self.batch_size
+        if self.round_up and self.num_samples > num_iters * self.batch_size:
+            num_iters += 1
+        for i in range(num_iters):
             for source, num in enumerate(self.num_per_source):
                 batch_buffer_per_source = []
                 for idx in self.source2inds[source]:
@@ -99,8 +104,7 @@ class MultiSourceSampler(Sampler):
                     if len(batch_buffer_per_source) == num:
                         batch_buffer += batch_buffer_per_source
                         break
-            yield from batch_buffer
-            batch_buffer = []
+        return iter(batch_buffer)
 
     def __len__(self) -> int:
         return self.num_samples

@@ -28,7 +28,7 @@ class SimCCVisualizer:
             np.ndarray: the drawn image which channel is RGB.
         """
         heatmap2d = heatmap.data.max(0, keepdim=True)[0]
-        xy_heatmap, K = self.split_simCC_xy(heatmap)
+        xy_heatmap, K = self.split_simcc_xy(heatmap)
         K = K if K <= n else n
         blank_size = tuple(heatmap.size()[1:])
         maps = {'x': [], 'y': []}
@@ -46,7 +46,7 @@ class SimCCVisualizer:
         white = self.add_1d_heatmaps(maps, white, blank_size, K)
         return white
 
-    def split_simCC_xy(self, heatmap: Union[np.ndarray, torch.Tensor]):
+    def split_simcc_xy(self, heatmap: Union[np.ndarray, torch.Tensor]):
         """Extract one-dimensional heatmap from two-dimensional heatmap and
         calculate the number of keypoint."""
         size = heatmap.size()
@@ -105,19 +105,25 @@ class SimCCVisualizer:
                         K: int,
                         interval: int = 10):
         """Paste one-dimensional heatmaps onto the background in turn."""
-        y_startPoint, x_startPoint = [int(1.1*map2d_size[1]),
+        y_startpoint, x_startpoint = [int(1.1*map2d_size[1]),
                                       int(0.1*map2d_size[0])],\
                                      [int(0.1*map2d_size[1]),
                                       int(1.1*map2d_size[0])]
-        x_startPoint[1] += interval * 2
-        y_startPoint[0] += interval * 2
+        x_startpoint[1] += interval * 2
+        y_startpoint[0] += interval * 2
         add = interval + 10
         for i in range(K):
-            self.image_cover(background, maps['x'][i], x_startPoint[0],
-                             x_startPoint[1])
-            self.image_cover(background, maps['y'][i], y_startPoint[0],
-                             y_startPoint[1])
-            x_startPoint[1] += add
-            y_startPoint[0] += add
-        return background[:x_startPoint[1] + y_startPoint[1] +
-                          1, :y_startPoint[0] + x_startPoint[0] + 1]
+            self.image_cover(background, maps['x'][i], x_startpoint[0],
+                             x_startpoint[1])
+            cv.putText(background, str(i),
+                       (x_startpoint[0] - 30, x_startpoint[1] + 10),
+                       cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+            self.image_cover(background, maps['y'][i], y_startpoint[0],
+                             y_startpoint[1])
+            cv.putText(background, str(i),
+                       (y_startpoint[0], y_startpoint[1] - 5),
+                       cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+            x_startpoint[1] += add
+            y_startpoint[0] += add
+        return background[:x_startpoint[1] + y_startpoint[1] +
+                          1, :y_startpoint[0] + x_startpoint[0] + 1]
