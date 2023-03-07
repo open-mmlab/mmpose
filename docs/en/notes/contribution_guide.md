@@ -3,7 +3,7 @@
 Welcome to join the MMPOSE community, we are committed to building cutting-edge computer vision foundational library. All kinds of contributions are welcomed, including but not limited to:
 
 - **Fix bugs**
-  1. If the modification involves significant changes, you should create an issue first and describe the error information and how to trigger the bug. Other developers will discuss it with you and propose a proper solution.
+  1. If the modification involves significant changes, it's recommended to create an issue first that describes the error information and how to trigger the bug. Other developers will discuss it with you and propose a proper solution.
   2. Fix the bug and add the corresponding unit test, submit the PR.
 - **Add new features or components**
   1. If the new feature or module involves a large amount of code changes, we suggest you to submit an issue first, and we will confirm the necessity of the function with you.
