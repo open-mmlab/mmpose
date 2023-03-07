@@ -14,7 +14,7 @@ Welcome to join the MMPOSE community, we are committed to building cutting-edge 
 ```{note}
 - If you hope to contribute to MMPose 1.0, please create a new branch from dev-1.x and submit a PR to the dev-1.x branch.
 - If you are the author of papers in this field and would like to include your work to MMPose, please contact us. We will much appreciate your contribution.
-- If you hope to share your MMPose-based projects with the community at once, consider creating a PR to `Projects` directory, which will simplify the review process and bring in the projects as soon as possible. Checkout our ]example project](/projects/example_project)
+- If you hope to share your MMPose-based projects with the community at once, consider creating a PR to `Projects` directory, which will simplify the review process and bring in the projects as soon as possible. Checkout our [example project](/projects/example_project)
 - If you wish to join the MMPose developers, please feel free to contact us and we will invite you to join the MMPose developers group.
 ```
 
