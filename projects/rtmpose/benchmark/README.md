@@ -49,11 +49,11 @@ Currently tested:
 
 ### Speed Benchmark
 
-| Config                                                                                       | Input Size | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |
-| :------------------------------------------------------------------------------------------- | :--------: | :--------------------------------: | :---------------------------------------: |
-| [RTMPose-m](../rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |               13.50                |                   4.00                    |
-| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |               23.41                |                   5.67                    |
-| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |               44.58                |                   7.68                    |
+| Config                                                                                       | Input Size | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |  TRT-FP16-Latency(ms)<sup><br>(GTX 3090)  |
+| :------------------------------------------------------------------------------------------- | :--------: | :--------------------------------: | :---------------------------------------: | :---------------------------------------: |
+| [RTMPose-m](../rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |               13.50                |                   4.00                    |                   1.84                    |
+| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |               23.41                |                   5.67                    |                   2.61                    |
+| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |               44.58                |                   7.68                    |                   4.24                    |
 
 ## How To Test Speed
 
