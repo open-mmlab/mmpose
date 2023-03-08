@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import unittest
+import warnings
 from typing import List, Tuple
 from unittest import TestCase
 
@@ -25,6 +26,10 @@ class TestRTMHead(TestCase):
         return feats
 
     def test_init(self):
+
+        if torch.__version__.split('.')[1] < '7':
+            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
+            return
 
         # original version
         head = RTMHead(
@@ -151,6 +156,11 @@ class TestRTMHead(TestCase):
         self.assertTrue(isinstance(head.cls_y, nn.Linear))
 
     def test_predict(self):
+
+        if torch.__version__.split('.')[1] < '7':
+            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
+            return
+
         decoder_cfg_list = []
         # original version
         decoder_cfg = dict(
@@ -502,6 +512,10 @@ class TestRTMHead(TestCase):
             self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 512, 384))
 
     def test_tta(self):
+        if torch.__version__.split('.')[1] < '7':
+            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
+            return
+
         # flip test
         decoder_cfg = dict(
             type='SimCCLabel',
@@ -542,6 +556,10 @@ class TestRTMHead(TestCase):
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
+        if torch.__version__.split('.')[1] < '7':
+            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
+            return
+
         decoder_cfg_list = []
         decoder_cfg = dict(
             type='SimCCLabel',
@@ -665,6 +683,10 @@ class TestRTMHead(TestCase):
             self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
+        if torch.__version__.split('.')[1] < '7':
+            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
+            return
+
         # Invalid arguments
         with self.assertRaisesRegex(ValueError, 'multiple input features'):
             _ = RTMHead(

@@ -197,6 +197,9 @@ class RTMBlock(nn.Module):
         nn.init.xavier_uniform_(self.uv.weight)
 
         if act_fn == 'SiLU':
+            assert torch.__version__.split('.')[1] >= '7', \
+                'SiLU activation requires PyTorch version >= 1.7'
+
             self.act_fn = nn.SiLU(True)
         else:
             self.act_fn = nn.ReLU(True)
