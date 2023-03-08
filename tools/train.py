@@ -142,7 +142,9 @@ def main():
     cfg = merge_args(cfg, args)
 
     # set preprocess configs to model
-    cfg.model.setdefault('data_preprocessor', cfg.get('preprocess_cfg', {}))
+    if 'preprocess_cfg' in cfg:
+        cfg.model.setdefault('data_preprocessor',
+                             cfg.get('preprocess_cfg', {}))
 
     # build the runner from config
     runner = Runner.from_cfg(cfg)
