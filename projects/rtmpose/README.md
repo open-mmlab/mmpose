@@ -152,9 +152,11 @@ Feel free to join our community group for more help:
 
 - Model pruning is supported by [MMRazor](https://github.com/open-mmlab/mmrazor)
 
-|   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs     |  Download   |
-| :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------: | :---------: |
-| pruning-s-t |  256x192   |       69.4        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
+|   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs    |    Download    |
+| :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :--------: | :------------: |
+| RTMPose-s-aic-coco-pruned |  256x192   |       69.4        |   3.43    |   0.35   |                 -                  |                     -                     |                       -                        | [log](https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.json) | [model](https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.pth) |
+
+For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pruning/README.md).
 
 ### WholeBody 2d (133 Keypoints)
 

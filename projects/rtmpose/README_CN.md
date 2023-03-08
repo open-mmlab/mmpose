@@ -143,9 +143,11 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 - 模型剪枝由 [MMRazor](https://github.com/open-mmlab/mmrazor) 提供
 
-|   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs     |  Download   |
-| :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------: | :---------: |
-| pruning-s-t |  256x192   |       69.4        |   3.42    |   0.34   |                 -                  |                     -                     |                       -                        | Coming soon | Coming soon |
+|   Config    | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |    Logs    |    Download    |
+| :---------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :--------: | :------------: |
+| RTMPose-s-aic-coco-pruned |  256x192   |       69.4        |   3.43    |   0.35   |                 -                  |                     -                     |                       -                        | [log](https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.json) | [model](https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.pth) |
+
+更多信息，请参考 [GroupFisher Pruning for RTMPose](./rtmpose/pruning/README.md).
 
 ### 人体全身 2d 关键点 (133 Keypoints)
 
