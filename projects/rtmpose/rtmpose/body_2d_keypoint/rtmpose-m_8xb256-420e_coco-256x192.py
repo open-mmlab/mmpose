@@ -180,7 +180,6 @@ train_dataloader = dict(
     batch_size=256,
     num_workers=10,
     persistent_workers=True,
-    drop_last=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
