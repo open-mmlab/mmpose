@@ -147,6 +147,19 @@ class BaseCocoStyleDataset(BaseDataset):
         """
         data_info = self.get_data_info(idx)
 
+        return self.pipeline(data_info)
+
+    def get_data_info(self, idx: int) -> dict:
+        """Get data info by index.
+
+        Args:
+            idx (int): Index of data info.
+
+        Returns:
+            dict: Data info.
+        """
+        data_info = super().get_data_info(idx)
+
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [
             'upper_body_ids', 'lower_body_ids', 'flip_pairs',
@@ -160,7 +173,7 @@ class BaseCocoStyleDataset(BaseDataset):
 
             data_info[key] = deepcopy(self._metainfo[key])
 
-        return self.pipeline(data_info)
+        return data_info
 
     def load_data_list(self) -> List[dict]:
         """Load data list from COCO annotation file or person detection result
