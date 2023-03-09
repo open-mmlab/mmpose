@@ -128,17 +128,9 @@ git checkout -b username/refactor_contributing_doc
 在后续的开发中，如果本地仓库的 dev 分支落后于官方仓库的 dev 分支，需要先拉取 upstream 的 dev 分支，然后 rebase 到本地的开发分支上：
 
 ```Shell
-# 在本地切换回 dev-1.x 分支
-git checkout dev-1.x
-
-# 拉取官方仓库的 dev-1.x 分支
-git pull upstream dev-1.x
-
-# 切换回开发分支
 git checkout username/refactor_contributing_doc
-
-# rebase dev 分支
-git rebase dev-1.x
+git fetch upstream
+git rebase upstream/dev-1.x
 ```
 
 在 rebase 时，如果出现冲突，需要手动解决冲突，然后执行 `git add` 命令，再执行 `git rebase --continue` 命令，直到 rebase 完成。
@@ -180,36 +172,6 @@ git push origin username/refactor_contributing_doc
 ```
 
 ![](https://user-images.githubusercontent.com/57566630/167307569-a794b967-6e28-4eac-a942-00deb657815f.png)
-
-## 指引
-
-### 单元测试
-
-我们使用 [pytest](https://docs.pytest.org/en/latest/) 来进行单元测试。我们的单元测试文件存储在 `tests/` 文件夹下。
-
-在提交修复代码或新增特性的 PR 时，我们应该尽可能地让单元测试覆盖所有提交的代码。如果你的 PR 仅仅是修改了文档，那么你可以跳过单元测试。
-
-单元测试覆盖率计算方法如下：
-
-```Shell
-python -m coverage run -m pytest tests/
-python -m coverage html
-# check file `htmlcov/index.html` to see coverage
-```
-
-### 文档渲染
-
-在提交修复代码或新增特性的 PR 时，可能会需要修改或新增模块的 docstring。我们使用 [sphinx](https://www.sphinx-doc.org/en/master/) 来渲染文档。通过如下方式可以本地生成渲染后的文档：
-
-```Shell
-pip install -r docs/requirements.txt
-
-# cd docs/en or docs/zh_cn
-cd docs/zh_cn
-
-make html
-# check file in ./docs/zh_cn/_build/html/index.html
-```
 
 ## 代码风格
 

@@ -125,13 +125,9 @@ git checkout -b username/refactor_contributing_doc
 In subsequent development, if the dev branch of the local repository lags behind the dev branch of the official repository, you need to pull the upstream dev branch first and then rebase it to the local development branch.
 
 ```Shell
-git checkout dev-1.x
-
-git pull upstream dev-1.x
-
 git checkout username/refactor_contributing_doc
-
-git rebase dev-1.x
+git fetch upstream
+git rebase upstream/dev-1.x
 ```
 
 When rebasing, if a conflict arises, you need to resolve the conflict manually, then execute the `git add` command, and then execute the `git rebase --continue` command until the rebase is complete.
@@ -166,30 +162,6 @@ git push origin username/refactor_contributing_doc
 #### (2) Fill in the Pull Request template
 
 ![](https://user-images.githubusercontent.com/57566630/167307569-a794b967-6e28-4eac-a942-00deb657815f.png)
-
-## Guidance
-
-### Unit Test
-
-We should also make sure the committed code will not decrease the coverage of unit test, we could run the following command to check the coverage of unit test:
-
-```Shell
-python -m coverage run -m pytest tests/
-python -m coverage html
-# check file in htmlcov/index.html
-```
-
-### Document rendering
-
-If the documents are modified/added, we should check the rendering result. We could install the dependencies and run the following command to render the documents and check the results:
-
-```Shell
-pip install -r requirements/docs.txt
-cd docs/en/
-# or docs/zh_cn
-make html
-# check file in ./docs/en/_build/html/index.html
-```
 
 ## Code Style
 
