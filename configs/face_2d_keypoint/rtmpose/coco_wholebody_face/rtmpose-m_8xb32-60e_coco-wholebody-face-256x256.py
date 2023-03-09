@@ -72,7 +72,7 @@ model = dict(
             'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
         )),
     head=dict(
-        type='RTMHead',
+        type='RTMCCHead',
         in_channels=768,
         out_channels=68,
         input_size=codec['input_size'],

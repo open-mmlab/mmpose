@@ -1,19 +1,20 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import unittest
-import warnings
 from typing import List, Tuple
 from unittest import TestCase
 
 import torch
 import torch.nn as nn
 from mmengine.structures import InstanceData
+from mmengine.utils import digit_version
+from mmengine.utils.dl_utils import TORCH_VERSION
 
-from mmpose.models.heads import RTMHead
-from mmpose.models.utils import RTMBlock
+from mmpose.models.heads import RTMCCHead
+from mmpose.models.utils import RTMCCBlock
 from mmpose.testing import get_packed_inputs
 
 
-class TestRTMHead(TestCase):
+class TestRTMCCHead(TestCase):
 
     def _get_feats(self,
                    batch_size: int = 2,
@@ -27,12 +28,11 @@ class TestRTMHead(TestCase):
 
     def test_init(self):
 
-        if torch.__version__.split('.')[1] < '7':
-            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
-            return
+        if digit_version(TORCH_VERSION) < digit_version('1.7.0'):
+            return unittest.skip('RTMCCHead requires PyTorch >= 1.7')
 
         # original version
-        head = RTMHead(
+        head = RTMCCHead(
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
@@ -58,12 +58,12 @@ class TestRTMHead(TestCase):
         self.assertIsNotNone(head.decoder)
         self.assertTrue(isinstance(head.final_layer, nn.Conv2d))
         self.assertTrue(isinstance(head.mlp, nn.Sequential))
-        self.assertTrue(isinstance(head.gau, RTMBlock))
+        self.assertTrue(isinstance(head.gau, RTMCCBlock))
         self.assertTrue(isinstance(head.cls_x, nn.Linear))
         self.assertTrue(isinstance(head.cls_y, nn.Linear))
 
         # w/ 1x1 conv
-        head = RTMHead(
+        head = RTMCCHead(
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
@@ -89,12 +89,12 @@ class TestRTMHead(TestCase):
         self.assertIsNotNone(head.decoder)
         self.assertTrue(isinstance(head.final_layer, nn.Conv2d))
         self.assertTrue(isinstance(head.mlp, nn.Sequential))
-        self.assertTrue(isinstance(head.gau, RTMBlock))
+        self.assertTrue(isinstance(head.gau, RTMCCBlock))
         self.assertTrue(isinstance(head.cls_x, nn.Linear))
         self.assertTrue(isinstance(head.cls_y, nn.Linear))
 
         # hidden_dims
-        head = RTMHead(
+        head = RTMCCHead(
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
@@ -120,12 +120,12 @@ class TestRTMHead(TestCase):
         self.assertIsNotNone(head.decoder)
         self.assertTrue(isinstance(head.final_layer, nn.Conv2d))
         self.assertTrue(isinstance(head.mlp, nn.Sequential))
-        self.assertTrue(isinstance(head.gau, RTMBlock))
+        self.assertTrue(isinstance(head.gau, RTMCCBlock))
         self.assertTrue(isinstance(head.cls_x, nn.Linear))
         self.assertTrue(isinstance(head.cls_y, nn.Linear))
 
         # s = 256
-        head = RTMHead(
+        head = RTMCCHead(
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
@@ -151,15 +151,14 @@ class TestRTMHead(TestCase):
         self.assertIsNotNone(head.decoder)
         self.assertTrue(isinstance(head.final_layer, nn.Conv2d))
         self.assertTrue(isinstance(head.mlp, nn.Sequential))
-        self.assertTrue(isinstance(head.gau, RTMBlock))
+        self.assertTrue(isinstance(head.gau, RTMCCBlock))
         self.assertTrue(isinstance(head.cls_x, nn.Linear))
         self.assertTrue(isinstance(head.cls_y, nn.Linear))
 
     def test_predict(self):
 
-        if torch.__version__.split('.')[1] < '7':
-            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
-            return
+        if digit_version(TORCH_VERSION) < digit_version('1.7.0'):
+            return unittest.skip('RTMCCHead requires PyTorch >= 1.7')
 
         decoder_cfg_list = []
         # original version
@@ -203,7 +202,7 @@ class TestRTMHead(TestCase):
         decoder_cfg_list.append(decoder_cfg)
 
         for decoder_cfg in decoder_cfg_list:
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -234,7 +233,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # 1x1 conv
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -259,7 +258,7 @@ class TestRTMHead(TestCase):
             preds, _ = head.predict(feats, batch_data_samples)
 
             # hidden dims
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -290,7 +289,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # s
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -321,7 +320,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # expansion factor
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -352,7 +351,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # drop path
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -383,7 +382,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # act fn
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -414,7 +413,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # use_rel_bias
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -445,7 +444,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # pos_enc
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -476,7 +475,7 @@ class TestRTMHead(TestCase):
                 batch_data_samples[0].gt_instances.keypoints.shape)
 
             # output_heatmaps
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -512,9 +511,8 @@ class TestRTMHead(TestCase):
             self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 512, 384))
 
     def test_tta(self):
-        if torch.__version__.split('.')[1] < '7':
-            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
-            return
+        if digit_version(TORCH_VERSION) < digit_version('1.7.0'):
+            return unittest.skip('RTMCCHead requires PyTorch >= 1.7')
 
         # flip test
         decoder_cfg = dict(
@@ -525,7 +523,7 @@ class TestRTMHead(TestCase):
             simcc_split_ratio=2.0,
             normalize=False)
 
-        head = RTMHead(
+        head = RTMCCHead(
             in_channels=32,
             out_channels=17,
             input_size=(192, 256),
@@ -556,9 +554,8 @@ class TestRTMHead(TestCase):
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
-        if torch.__version__.split('.')[1] < '7':
-            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
-            return
+        if digit_version(TORCH_VERSION) < digit_version('1.7.0'):
+            return unittest.skip('RTMCCHead requires PyTorch >= 1.7')
 
         decoder_cfg_list = []
         decoder_cfg = dict(
@@ -581,7 +578,7 @@ class TestRTMHead(TestCase):
 
         # decoder
         for decoder_cfg in decoder_cfg_list:
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -615,7 +612,7 @@ class TestRTMHead(TestCase):
             self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
             # beta = 10
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -649,7 +646,7 @@ class TestRTMHead(TestCase):
             self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
             # label softmax
-            head = RTMHead(
+            head = RTMCCHead(
                 in_channels=32,
                 out_channels=17,
                 input_size=(192, 256),
@@ -683,13 +680,12 @@ class TestRTMHead(TestCase):
             self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
-        if torch.__version__.split('.')[1] < '7':
-            warnings.warn('RTMHead is not supported in PyTorch < 1.7')
-            return
+        if digit_version(TORCH_VERSION) < digit_version('1.7.0'):
+            return unittest.skip('RTMCCHead requires PyTorch >= 1.7')
 
         # Invalid arguments
         with self.assertRaisesRegex(ValueError, 'multiple input features'):
-            _ = RTMHead(
+            _ = RTMCCHead(
                 in_channels=(16, 32),
                 out_channels=17,
                 input_size=(192, 256),
