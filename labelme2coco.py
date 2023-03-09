@@ -287,6 +287,6 @@ def convert(path,target):
         shutil.copy(file.replace("json", "jpg"), os.path.join(saved_coco_path, "coco", "val"))
 
 if __name__ == '__main__':
-    path = r'your labelme path'
+    source = r'your labelme path'
     target = r'your coco path'
-    convert(path, target)
+    convert(source, target)
