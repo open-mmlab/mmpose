@@ -1,6 +1,6 @@
 # How to Contribute to MMPose
 
-Welcome to join the MMPOSE community, we are committed to building cutting-edge computer vision foundational library. All kinds of contributions are welcomed, including but not limited to:
+Welcome to join the MMPose community, we are committed to building cutting-edge computer vision foundational library. All kinds of contributions are welcomed, including but not limited to:
 
 - **Fix bugs**
   1. If the modification involves significant changes, it's recommended to create an issue first that describes the error information and how to trigger the bug. Other developers will discuss it with you and propose a proper solution.
