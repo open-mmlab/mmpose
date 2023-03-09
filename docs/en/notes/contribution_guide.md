@@ -22,7 +22,7 @@ Welcome to join the MMPOSE community, we are committed to building cutting-edge 
 
 The commands for processing pull requests are implemented using Git, and this chapter details Git Configuration and associated GitHub.
 
-### 1. Git Configuration
+### Git Configuration
 
 First, you need to install Git and configure your Git username and email.
 
@@ -31,47 +31,14 @@ First, you need to install Git and configure your Git username and email.
 git --version
 ```
 
-Second, check your Git Config.
+Second, check your Git config and ensure that `user.name` and `user.email` are properly configured.
 
 ```shell
 # view the Git config
 git config --global --list
-```
-
-If `user.name` and `user.email` are not configured, you need to configure them.
-
-```shell
-git config --global user.name "Change your username here"
-git config --global user.email "Change your useremail here"
-```
-
-Finally, run the command in git bash or terminal to generate the key file. After the generation is successful, a `.ssh` file will appear in the user directory, and `id_rsa.pub` is the public key file.
-
-```shell
-# useremail is GitHub's email address
-ssh-keygen -t rsa -C "useremail"
-```
-
-### 2. Associated GitHub
-
-Open `id_rsa.pub` with a text editor, copy the content of the file, and paste it into the `SSH and GPG keys` of your GitHub account.
-
-![](https://user-images.githubusercontent.com/90811472/221778382-a075167d-b028-4f68-a1c7-49a8f6f3d97b.png)
-
-Click `New SSH key` to add a new SSH keys, and paste the copied content into Key.
-
-![](https://user-images.githubusercontent.com/90811472/221577720-af5536b3-47ba-48bc-adcc-c2b83f22081d.png)
-
-Verify that SSH matches the GitHub account by running the command in git bash or terminal. If it matches, enter yes to succeed.
-
-```shell
-ssh -T git@github.com
-```
-
-If the following message appears, you have successfully configured Git and Github.
-
-```shell
-Hi username! You've successfully authenticated, but GitHub does not provide shell access.
+# configure the user name and email
+git config --global user.name "Change your user name here"
+git config --global user.email "Change your user email here"
 ```
 
 ## Pull Request Workflow

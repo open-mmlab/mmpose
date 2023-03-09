@@ -22,7 +22,7 @@
 
 PR 操作所使用的命令都是用 Git 去实现的，该章节将介绍如何进行 Git 配置与 GitHub 绑定。
 
-### 1. Git 配置
+### Git 配置
 
 首先，你需要在本地安装 Git，然后配置你的 Git 用户名和邮箱：
 
@@ -31,49 +31,14 @@ PR 操作所使用的命令都是用 Git 去实现的，该章节将介绍如何
 git --version
 ```
 
-然后，你需要检查自己的 Git Config 是否正确配置：
+然后，你需要检查自己的 Git Config 是否正确配置，如果 `user.name` 和 `user.email` 为空，你需要配置你的 Git 用户名和邮箱：
 
 ```Shell
 # 在命令提示符（cmd）或终端（terminal）中输入以下命令，查看 Git 配置
 git config --global --list
-```
-
-如果 `user.name` 和 `user.email` 为空，你需要配置你的 Git 用户名和邮箱：
-
-```Shell
+# 设置 Git 用户名和邮箱
 git config --global user.name "这里填入你的用户名"
 git config --global user.email "这里填入你的邮箱"
-```
-
-最后，在 `git bash` 或者终端中输入以下命令生成 SSH key。生成成功后，会在用户目录下生成 `.ssh` 文件夹，里面包含 `id_rsa` 和 `id_rsa.pub` 两个文件，分别是私钥和公钥。
-
-```Shell
-# usermail 为你的 GitHub 邮箱
-ssh-keygen -t rsa -C "usermail"
-```
-
-## 2. GitHub 绑定
-
-首先，用记事本打开 `id_rsa.pub` 公钥文件，复制里面的全部内容。
-
-然后，登录你的 GitHub 账号，打开 `Settings`，在左侧菜单栏中点击 `SSH and GPG keys`，点击右上角的 `New SSH key`。
-
-![](https://user-images.githubusercontent.com/90811472/221778382-a075167d-b028-4f68-a1c7-49a8f6f3d97b.png)
-
-在 `Title` 中填入一个你自己能识别的名字，比如 `git`，在 `Key` 中粘贴你刚刚复制的公钥，点击 `Add SSH key`，添加成功后，你就可以使用 SSH 连接 GitHub 了。
-
-![](https://user-images.githubusercontent.com/90811472/221549754-53670c19-5efe-48b2-9ac5-bafb43891903.png)
-
-最后，在 `git bash` 或者终端中输入以下命令，测试是否配置成功：
-
-```shell
-ssh -T git@github.com
-```
-
-如果出现以下提示，说明你已经成功配置了 Git 和 GitHub：
-
-```shell
-Hi username! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 ## PR 流程
