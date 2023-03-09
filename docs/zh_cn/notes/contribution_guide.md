@@ -56,11 +56,11 @@ git config --global user.email "这里填入你的邮箱"
 ```Shell
 
 # Clone 你的 Fork 仓库到本地
-git clone git@github.com:{username}/mmpose.git
+git clone https://github.com/username/mmpose.git
 
 # 添加官方仓库作为远程仓库
 cd mmpose
-git remote add upstream git@github.com:open-mmlab/mmpose.git
+git remote add upstream https://github.com/open-mmlab/mmpose.git
 ```
 
 在终端中输入以下命令，查看远程仓库是否成功添加：
@@ -72,10 +72,10 @@ git remote -v
 如果出现以下信息，说明你已经成功添加了远程仓库：
 
 ```Shell
-origin	git@github.com:{username}/mmpose.git (fetch)
-origin	git@github.com:{username}/mmpose.git (push)
-upstream	git@github.com:open-mmlab/mmpose (fetch)
-upstream	git@github.com:open-mmlab/mmpose (push)
+origin	https://github.com/{username}/mmpose.git (fetch)
+origin	https://github.com/{username}/mmpose.git (push)
+upstream	https://github.com/open-mmlab/mmpose.git (fetch)
+upstream	https://github.com/open-mmlab/mmpose.git (push)
 ```
 
 ```{note}

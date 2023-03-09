@@ -55,11 +55,11 @@ Then you need to clone the forked repository to your local machine.
 
 ```shell
 # clone the forked repository
-git clone git@github.com:{username}/mmpose.git
+git clone https://github.com/username/mmpose.git
 
 # Add official repository as upstream remote
 cd mmpose
-git remote add upstream git@github.com:open-mmlab/mmpose.git
+git remote add upstream https://github.com/open-mmlab/mmpose.git
 ```
 
 Enter the following command in the terminal to see if the remote repository was successfully added.
@@ -71,10 +71,10 @@ git remote -v
 If the following message appears, you have successfully added a remote repository.
 
 ```Shell
-origin	git@github.com:{username}/mmpose.git (fetch)
-origin	git@github.com:{username}/mmpose.git (push)
-upstream	git@github.com:open-mmlab/mmpose (fetch)
-upstream	git@github.com:open-mmlab/mmpose (push)
+origin	https://github.com/{username}/mmpose.git (fetch)
+origin	https://github.com/{username}/mmpose.git (push)
+upstream	https://github.com/open-mmlab/mmpose.git (fetch)
+upstream	https://github.com/open-mmlab/mmpose.git (push)
 ```
 
 ```{note}
