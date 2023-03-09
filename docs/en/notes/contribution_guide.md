@@ -1,4 +1,4 @@
-# How to Contribute to MMPOSE
+# How to Contribute to MMPose
 
 Welcome to join the MMPOSE community, we are committed to building cutting-edge computer vision foundational library. All kinds of contributions are welcomed, including but not limited to:
 
