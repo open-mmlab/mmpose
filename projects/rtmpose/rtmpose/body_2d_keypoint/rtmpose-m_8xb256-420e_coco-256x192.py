@@ -72,7 +72,7 @@ model = dict(
             'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
         )),
     head=dict(
-        type='RTMHead',
+        type='RTMCCHead',
         in_channels=768,
         out_channels=17,
         input_size=codec['input_size'],
@@ -180,7 +180,6 @@ train_dataloader = dict(
     batch_size=256,
     num_workers=10,
     persistent_workers=True,
-    drop_last=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,

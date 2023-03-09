@@ -6,19 +6,19 @@ from mmengine.structures import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
+from mmpose.models.utils.rtmcc_block import RTMCCBlock, ScaleNorm
 from mmpose.models.utils.tta import flip_vectors
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
                                  OptSampleList)
-from ...utils.rtmpose_block import RTMBlock, ScaleNorm
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
 
 
 @MODELS.register_module()
-class RTMHead(BaseHead):
+class RTMCCHead(BaseHead):
     """Top-down head introduced in RTMPose (2023). The head is composed of a
     large-kernel convolutional layer, a fully-connected layer and a Gated
     Attention Unit to generate 1d representation from low-resolution feature
@@ -136,7 +136,7 @@ class RTMHead(BaseHead):
         W = int(self.input_size[0] * self.simcc_split_ratio)
         H = int(self.input_size[1] * self.simcc_split_ratio)
 
-        self.gau = RTMBlock(
+        self.gau = RTMCCBlock(
             self.out_channels,
             gau_cfg['hidden_dims'],
             gau_cfg['hidden_dims'],

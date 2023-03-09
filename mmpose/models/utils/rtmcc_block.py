@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn.bricks import DropPath
+from mmengine.utils import digit_version
+from mmengine.utils.dl_utils import TORCH_VERSION
 
 
 def rope(x, dim):
@@ -107,7 +109,7 @@ class ScaleNorm(nn.Module):
         return x / norm.clamp(min=self.eps) * self.g
 
 
-class RTMBlock(nn.Module):
+class RTMCCBlock(nn.Module):
     """Gated Attention Unit (GAU) in RTMBlock.
 
     Args:
@@ -162,7 +164,7 @@ class RTMBlock(nn.Module):
                  use_rel_bias=True,
                  pos_enc=False):
 
-        super(RTMBlock, self).__init__()
+        super(RTMCCBlock, self).__init__()
         self.s = s
         self.num_token = num_token
         self.use_rel_bias = use_rel_bias
@@ -197,6 +199,9 @@ class RTMBlock(nn.Module):
         nn.init.xavier_uniform_(self.uv.weight)
 
         if act_fn == 'SiLU':
+            assert digit_version(TORCH_VERSION) >= digit_version('1.7.0'), \
+                'SiLU activation requires PyTorch version >= 1.7'
+
             self.act_fn = nn.SiLU(True)
         else:
             self.act_fn = nn.ReLU(True)
