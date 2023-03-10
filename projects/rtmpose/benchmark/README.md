@@ -32,7 +32,7 @@ Currently tested:
 
 ### Speed Benchmark
 
-Numbers displayed in the table are inference latencies in millisecond.
+- Numbers displayed in the table are inference latencies in millisecond(ms).
 
 |   Config    | Input Size | ORT<sup><br>(i7-11700) | TRT-FP16<sup><br>(GTX 1660Ti) | TRT-FP16<sup><br>(RTX 3090) | ncnn-FP16<sup><br>(Snapdragon 865) | TRT-FP16<sup><br>(Jetson AGX Orin) | TRT-FP16<sup><br>(Jetson Orin NX) |
 | :---------: | :--------: | :--------------------: | :---------------------------: | :-------------------------: | :--------------------------------: | :--------------------------------: | :-------------------------------: |
@@ -55,7 +55,8 @@ Numbers displayed in the table are inference latencies in millisecond.
 
 ### Speed Benchmark
 
-Numbers displayed in the table are inference latencies in millisecond. Results contributed by different community users are separated by |.
+- Numbers displayed in the table are inference latencies in millisecond(ms).
+- Data from different community users are separated by `|`.
 
 | Config                                        | Input Size | ORT<sup><br>(i7-11700) | TRT-FP16<sup><br>(GTX 1660Ti) | TRT-FP16<sup><br>(RTX 3090) | TRT-FP16<sup><br>(Jetson AGX Orin) | TRT-FP16<sup><br>(Jetson Orin NX) |
 | :-------------------------------------------- | :--------: | :--------------------: | :---------------------------: | :-------------------------: | :--------------------------------: | :-------------------------------: |
