@@ -31,7 +31,7 @@ COCO 和 AIC 都是 2D 人体姿态数据集。但是，这两个数据集在关
 
 ```python
 dataset_coco = dict(
-    type='COCODataset',
+    type='CocoDataset',
     data_root='data/coco/',
     ann_file='annotations/person_keypoints_train2017.json',
     data_prefix=dict(img='train2017/'),
@@ -99,7 +99,7 @@ MMPose 提供了一份完整的 [配置文件](https://github.com/open-mmlab/mmp
 
 ```python
 dataset_coco = dict(
-    type='COCODataset',
+    type='CocoDataset',
     data_root='data/coco/',
     ann_file='annotations/person_keypoints_train2017.json',
     data_prefix=dict(img='train2017/'),

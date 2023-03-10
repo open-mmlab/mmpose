@@ -31,7 +31,7 @@ In this scenario, no data conversion is required for the elements from the COCO 
 
 ```python
 dataset_coco = dict(
-    type='COCODataset',
+    type='CocoDataset',
     data_root='data/coco/',
     ann_file='annotations/person_keypoints_train2017.json',
     data_prefix=dict(img='train2017/'),
@@ -99,7 +99,7 @@ In this scenario, both COCO and AIC datasets need to adjust the keypoint indices
 
 ```python
 dataset_coco = dict(
-    type='COCODataset',
+    type='CocoDataset',
     data_root='data/coco/',
     ann_file='annotations/person_keypoints_train2017.json',
     data_prefix=dict(img='train2017/'),
