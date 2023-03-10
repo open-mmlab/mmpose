@@ -58,7 +58,8 @@ class PackDetPoseInputs(PackDetInputs):
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'scale_factor', 'flip',
-                            'flip_direction', 'flip_indices', 'raw_ann_info')):
+                            'flip_direction', 'flip_indices', 'raw_ann_info'),
+                 pack_transformed=False):
         self.meta_keys = meta_keys
 
     def transform(self, results: dict) -> dict:

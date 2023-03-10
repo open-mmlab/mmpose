@@ -32,6 +32,7 @@ class YOLOXPoseHeadModule(YOLOXHeadModule):
     def _init_layers(self):
         """Initializes the layers in the head module."""
         super()._init_layers()
+        self.stacked_convs *= 2
 
         # Create separate layers for each level of feature maps
         pose_convs, offsets_preds, vis_preds = [], [], []
@@ -89,12 +90,12 @@ class YOLOXPoseHead(YOLOXHead):
         # set up buffers to save variables generated in methods of
         # the class's base class.
         self.log = defaultdict(list)
-        self.prior_generator = OutputSaveObjectWrapper(self.prior_generator)
         self.sampler = OutputSaveObjectWrapper(self.sampler)
+
+        self.assigner.oks_calculator = self.loss_pose
 
     def _clear(self):
         """Clear variable buffers."""
-        self.prior_generator.clear()
         self.sampler.clear()
         self.log.clear()
 
@@ -116,9 +117,6 @@ class YOLOXPoseHead(YOLOXHead):
         """
 
         self._clear()
-        losses = super().loss_by_feat(cls_scores, bbox_preds, objectnesses,
-                                      batch_gt_instances, batch_img_metas,
-                                      batch_gt_instances_ignore)
 
         # collect keypoints coordinates and visibility from model predictions
         kpt_preds = torch.cat([
@@ -126,7 +124,16 @@ class YOLOXPoseHead(YOLOXHead):
             for kpt_pred in kpt_preds
         ],
                               dim=1)
-        grid_priors = torch.cat(self.prior_generator.log['grid_priors'][-1])
+
+        # grid_priors = torch.cat(self.prior_generator.log['grid_priors'][-1])
+        featmap_sizes = [cls_score.shape[2:] for cls_score in cls_scores]
+        mlvl_priors = self.prior_generator.grid_priors(
+            featmap_sizes,
+            dtype=cls_scores[0].dtype,
+            device=cls_scores[0].device,
+            with_stride=True)
+        grid_priors = torch.cat(mlvl_priors)
+
         flatten_kpts = self.decode_pose(grid_priors[..., :2], kpt_preds,
                                         grid_priors[..., 2])
 
@@ -135,6 +142,15 @@ class YOLOXPoseHead(YOLOXHead):
             for vis_pred in vis_preds
         ],
                               dim=1)
+
+        self.log['pred_keypoints'] = list(flatten_kpts.detach().split(
+            1, dim=0))
+        self.log['pred_keypoints_vis'] = list(vis_preds.detach().split(
+            1, dim=0))
+
+        losses = super().loss_by_feat(cls_scores, bbox_preds, objectnesses,
+                                      batch_gt_instances, batch_img_metas,
+                                      batch_gt_instances_ignore)
 
         # collect targets for keypoints predictions
         kpt_targets, vis_targets = [], []
@@ -151,11 +167,12 @@ class YOLOXPoseHead(YOLOXHead):
                 kpt_targets.append(kpt_target)
                 vis_targets.append(vis_target)
 
-        kpt_targets = torch.cat(kpt_targets, 0)
-        vis_targets = torch.cat(vis_targets, 0)
+        if len(kpt_targets) > 0:
+            kpt_targets = torch.cat(kpt_targets, 0)
+            vis_targets = torch.cat(vis_targets, 0)
 
         # compute keypoint losses
-        if kpt_targets.size(0) > 0:
+        if len(kpt_targets) > 0:
             vis_targets = (vis_targets > 0).float()
             pos_masks = torch.cat(self.log['foreground_mask'], 0)
             bbox_targets = torch.cat(self.log['bbox_target'], 0)
@@ -175,7 +192,15 @@ class YOLOXPoseHead(YOLOXHead):
         return losses
 
     @torch.no_grad()
-    def _get_targets_single(self, *args, **kwargs) -> tuple:
+    def _get_targets_single(self,
+                            priors: Tensor,
+                            cls_preds: Tensor,
+                            decoded_bboxes: Tensor,
+                            objectness: Tensor,
+                            gt_instances: InstanceData,
+                            img_meta: dict,
+                            gt_instances_ignore: Optional[InstanceData] = None
+                            ) -> tuple:
         """Calculates targets for a single image, and saves them to the log.
 
         This method is similar to the _get_targets_single method in the base
@@ -183,7 +208,15 @@ class YOLOXPoseHead(YOLOXHead):
         the log.
         """
 
-        targets = super()._get_targets_single(*args, **kwargs)
+        kpt = self.log['pred_keypoints'].pop(0).squeeze(0)
+        kpt_vis = self.log['pred_keypoints_vis'].pop(0).squeeze(0)
+        kpt = torch.cat((kpt, kpt_vis.unsqueeze(-1)), dim=-1)
+        decoded_bboxes = torch.cat((decoded_bboxes, kpt.flatten(1)), dim=1)
+
+        targets = super()._get_targets_single(priors, cls_preds,
+                                              decoded_bboxes, objectness,
+                                              gt_instances, img_meta,
+                                              gt_instances_ignore)
         self.log['foreground_mask'].append(targets[0])
         self.log['bbox_target'].append(targets[3])
         return targets

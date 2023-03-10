@@ -8,7 +8,7 @@ from torch import Tensor
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 
 
-@MODELS.register_module(force=True)
+@MODELS.register_module()
 class OksLoss(nn.Module):
     """A PyTorch implementation of the Object Keypoint Similarity (OKS) loss as
     described in the paper "YOLO-Pose: Enhancing YOLO for Multi Person Pose
@@ -38,9 +38,7 @@ class OksLoss(nn.Module):
             metainfo = parse_pose_metainfo(dict(from_file=metainfo))
             sigmas = metainfo.get('sigmas', None)
             if sigmas is not None:
-                self.register_buffer('sigmas',
-                                     torch.as_tensor(sigmas).reshape(1, -1))
-
+                self.register_buffer('sigmas', torch.as_tensor(sigmas))
         self.loss_weight = loss_weight
 
     def forward(self,
@@ -48,6 +46,15 @@ class OksLoss(nn.Module):
                 target: Tensor,
                 target_weights: Tensor,
                 bboxes: Optional[Tensor] = None) -> Tensor:
+        oks = self.compute_oks(output, target, target_weights, bboxes)
+        loss = 1 - oks
+        return loss * self.loss_weight
+
+    def compute_oks(self,
+                    output: Tensor,
+                    target: Tensor,
+                    target_weights: Tensor,
+                    bboxes: Optional[Tensor] = None) -> Tensor:
         """Calculates the OKS loss.
 
         Args:
@@ -65,15 +72,14 @@ class OksLoss(nn.Module):
             Tensor: The calculated OKS loss.
         """
 
-        dist = torch.norm(output - target, dim=2)
+        dist = torch.norm(output - target, dim=-1)
 
         if hasattr(self, 'sigmas'):
-            dist = dist / self.sigmas
+            sigmas = self.sigmas.reshape(*((1, ) * (dist.ndim - 1)), -1)
+            dist = dist / sigmas
         if bboxes is not None:
-            area = torch.norm(bboxes[..., 2:] - bboxes[..., :2], dim=1)
-            dist = dist / area.clip(min=1e-8).unsqueeze(1)
+            area = torch.norm(bboxes[..., 2:] - bboxes[..., :2], dim=-1)
+            dist = dist / area.clip(min=1e-8).unsqueeze(-1)
 
-        loss = 1 - (torch.exp(-dist.pow(2) / 2) * target_weights).sum(
-            dim=1) / target_weights.sum(dim=1).clip(min=1e-8)
-
-        return loss * self.loss_weight
+        return (torch.exp(-dist.pow(2) / 2) * target_weights).sum(
+            dim=-1) / target_weights.sum(dim=-1).clip(min=1e-8)

@@ -1,17 +1,21 @@
-# Directly inherit the entire recipe you want to use.
-_base_ = 'mmyolo::yolox/yolox_s_fast_8xb8-300e_coco.py'
+_base_ = 'mmyolo::yolox/yolox_s_fast_8xb32-300e-rtmdet-hyp_coco.py'
 
-# This line is to import your own modules.
 custom_imports = dict(imports=['models', 'datasets'])
 
-# Modify the model to use your own head and loss.
+# visualizer
+visualizer = dict(
+    type='mmpose.PoseLocalVisualizer',
+    vis_backends=_base_.vis_backends,
+    name='visualizer')
+
+# model
 model = dict(
     init_cfg=dict(
         _delete_=True,
         type='Pretrained',
-        checkpoint='https://download.openmmlab.com/mmyolo/'
-        'v0/yolox/yolox_s_8xb8-300e_coco/'
-        'yolox_s_8xb8-300e_coco_20220917_030738-d7e60cb2.pth'),
+        checkpoint='https://download.openmmlab.com/mmyolo/v0/yolox/'
+        'yolox_s_fast_8xb32-300e-rtmdet-hyp_coco/yolox_s_fast_'
+        '8xb32-300e-rtmdet-hyp_coco_20230210_134645-3a8dfbd7.pth'),
     data_preprocessor=dict(
         type='mmdet.DetDataPreprocessor',
         batch_augments=[
@@ -19,7 +23,7 @@ model = dict(
                 type='PoseBatchSyncRandomResize',
                 random_size_range=(480, 800),
                 size_divisor=32,
-                interval=10)
+                interval=1)
         ]),
     bbox_head=dict(
         type='YOLOXPoseHead',
@@ -31,10 +35,11 @@ model = dict(
         loss_pose=dict(
             type='OksLoss',
             metainfo='configs/_base_/datasets/coco.py',
-            loss_weight=50),
+            loss_weight=10),
     ),
-    test_cfg=dict(multi_label=False))
+    test_cfg=dict(score_thr=0.1, multi_label=False))
 
+# pipelines
 pre_transform = [
     dict(type='LoadImageFromFile', file_client_args=_base_.file_client_args),
     dict(type='PoseToDetConverter')
@@ -51,12 +56,20 @@ train_pipeline_stage1 = [
 for transform in train_pipeline_stage1:
     if 'pre_transform' in transform:
         transform['pre_transform'] = pre_transform
+    # if 'MixUp' in transform['type']:
+    #     transform['prob'] = 0.1
+    if transform['type'] == 'mmdet.RandomAffine':
+        transform['scaling_ratio_range'] = (0.75, 1)
 
 train_pipeline_stage2 = [
     *pre_transform, *_base_.train_pipeline_stage2[2:-2],
     dict(type='FilterDetPoseAnnotations', keep_empty=False),
     dict(type='PackDetPoseInputs')
 ]
+
+for hook in _base_.custom_hooks:
+    if hook['type'] == 'YOLOXModeSwitchHook':
+        hook['new_train_pipeline'] = train_pipeline_stage2
 
 test_pipeline = [
     *pre_transform, *_base_.test_pipeline[1:-2],
@@ -66,7 +79,7 @@ test_pipeline = [
                    'scale_factor', 'flip_indices'))
 ]
 
-# base dataset settings
+# dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'bottomup'
 data_root = 'data/coco/'
@@ -95,10 +108,6 @@ val_evaluator = dict(
     _delete_=True,
     type='mmpose.CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json',
-    nms_mode='none',
-    # score_mode='keypoint',
 )
 test_evaluator = val_evaluator
-
-# hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
