@@ -17,7 +17,8 @@ python tools/train.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_
 You can also specify the `checkpoint` path for `--resume`. MMPose will automatically read the `checkpoint` and resume training from it. The command is as follows:
 
 ```shell
-python tools/train.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py --resume work_dirs/td-hm_res50_8xb64-210e_coco-256x192/latest.pth
+python tools/train.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py \
+    --resume work_dirs/td-hm_res50_8xb64-210e_coco-256x192/latest.pth
 ```
 
 If you hope to manually specify the `checkpoint` path in the config file, in addition to setting `resume=True`, you also need to set the `load_from`.
