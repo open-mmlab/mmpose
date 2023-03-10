@@ -38,12 +38,15 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 > With classic decoder
 
-| Arch                                                                                                       | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |   ckpt   |
-| :--------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :------: |
-| [ViTPose-S](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-small_8xb64-210e_coco-256x192.py) |  256x192   | 0.739 |      0.903      |      0.816      | 0.792 |      0.942      | \[ckpt\] |
-| [ViTPose-B](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base_8xb64-210e_coco-256x192.py)  |  256x192   | 0.757 |      0.905      |      0.829      | 0.810 |      0.946      | \[ckpt\] |
-| [ViTPose-L](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large_8xb64-210e_coco-256x192.py) |  256x192   | 0.782 |      0.914      |      0.850      | 0.834 |      0.952      | \[ckpt\] |
-| [ViTPose-H](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192.py)  |  256x192   | 0.788 |      0.915      |      0.855      | 0.840 |      0.954      | \[ckpt\] |
+| Arch                                                                                                        | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |   ckpt   |
+| :---------------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :------: |
+| [ViTPose-S](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-small_8xb64-210e_coco-256x192.py)  |  256x192   | 0.739 |      0.903      |      0.816      | 0.792 |      0.942      | \[ckpt\] |
+| [ViTPose-B](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base_8xb64-210e_coco-256x192.py)   |  256x192   | 0.757 |      0.905      |      0.829      | 0.810 |      0.946      | \[ckpt\] |
+| [ViTPose-L](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large_8xb64-210e_coco-256x192.py)  |  256x192   | 0.782 |      0.914      |      0.850      | 0.834 |      0.952      | \[ckpt\] |
+| [ViTPose-H](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192.py)   |  256x192   | 0.788 |      0.917      |      0.855      | 0.839 |      0.954      | \[ckpt\] |
+| [ViTPose-H\*](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192.py) |  256x192   | 0.790 |     0.0.916     |      0.857      | 0.840 |      0.953      | \[ckpt\] |
+
+*Models with * are converted from the [official repo](https://github.com/ViTAE-Transformer/ViTPose).  The config files of these models are only for validation.*
 
 > With simple decoder
 
