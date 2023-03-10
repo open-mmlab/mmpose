@@ -141,12 +141,12 @@ dataset_info = dict(
         17:
         dict(
             name='head_top',
-            id=12,
+            id=17,
             color=[51, 153, 255],
             type='upper',
             swap=''),
         18:
-        dict(name='neck', id=13, color=[51, 153, 255], type='upper', swap='')
+        dict(name='neck', id=18, color=[51, 153, 255], type='upper', swap='')
     },
     skeleton_info={
         0:
