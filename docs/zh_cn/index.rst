@@ -25,6 +25,11 @@ You can change the documentation language at the lower-left corner of the page.
     user_guides/visualization.md
     user_guides/useful_tools.md
 
+.. toctree::
+   :maxdepth: 1
+   :caption: 常用功能
+
+   common_usages/resume_training.md
 
 .. toctree::
    :maxdepth: 1
