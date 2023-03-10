@@ -30,7 +30,7 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 1
    :caption: Advanced Guides
 
-   advanced_guides.md
+   advanced_guides/mixed_datasets.md
 
 .. toctree::
    :maxdepth: 1

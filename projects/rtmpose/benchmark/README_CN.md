@@ -55,13 +55,13 @@
 
 ### Speed Benchmark
 
-图中所示为模型推理时间，单位毫秒。
+图中所示为模型推理时间，单位毫秒。不同社区用户贡献的结果由|分割。
 
 | Config                                        | Input Size | ORT<sup><br>(i7-11700) | TRT-FP16<sup><br>(GTX 1660Ti) | TRT-FP16<sup><br>(RTX 3090) | TRT-FP16<sup><br>(Jetson AGX Orin) | TRT-FP16<sup><br>(Jetson Orin NX) |
 | :-------------------------------------------- | :--------: | :--------------------: | :---------------------------: | :-------------------------: | :--------------------------------: | :-------------------------------: |
-| [RTMPose-m](../rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |         13.50          |             4.00              |            1.17             |                2.79                |               3.51                |
-| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |         23.41          |             5.67              |            1.44             |                3.80                |               4.95                |
-| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |         44.58          |             7.68              |            1.75             |                5.08                |               7.20                |
+| [RTMPose-m](../rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |         13.50          |             4.00              |        1.17 \| 1.84         |                2.79                |               3.51                |
+| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |         23.41          |             5.67              |        1.44 \| 2.61         |                3.80                |               4.95                |
+| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |         44.58          |             7.68              |        1.75 \| 4.24         |                5.08                |               7.20                |
 
 ## 如何测试推理速度
 
