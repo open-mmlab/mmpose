@@ -1,132 +1,6 @@
-# Useful Tools
+# Dataset Tools
 
-Apart from training/testing scripts, We provide lots of useful tools under the `tools/` directory.
-
-<!-- TOC -->
-
-- [Analysis Tools](#analysis-tools)
-  - [Log Analysis](#log-analysis)
-  - [Model Complexity (Experimental)](#model-complexity-experimental)
-  - [Print the entire config](#print-the-entire-config)
-- [Dataset Tools](#dataset-tools)
-  - [Animal Pose](#animal-pose)
-  - [COFW](#cofw)
-  - [DeepposeKit](#deepposekit)
-  - [Macaque](#macaque)
-  - [Human36M](#human36m)
-  - [MPII](#mpii)
-
-<!-- TOC -->
-
-## Analysis Tools
-
-### Log Analysis
-
-`tools/analysis_tools/analyze_logs.py` plots `loss_kpt` / `acc_pose` curves given a training log file. Run `pip install seaborn` first to install the dependency.
-
-![loss_kpt_curve_image](https://user-images.githubusercontent.com/87690686/188538215-5d985aaa-59f8-44cf-b6f9-10890d599e9c.png)
-
-```shell
-python tools/analysis_tools/analyze_logs.py plot_curve ${JSON_LOGS} [--keys ${KEYS}] [--title ${TITLE}] [--legend ${LEGEND}] [--backend ${BACKEND}] [--style ${STYLE}] [--out ${OUT_FILE}]
-```
-
-Examples:
-
-- Plot the `loss_kpt` of some run.
-
-  ```shell
-  python tools/analysis_tools/analyze_logs.py plot_curve log.json --keys loss_kpt --legend loss_kpt
-  ```
-
-- Plot the `acc_pose` of some run, and save the figure to a pdf.
-
-  ```shell
-  python tools/analysis_tools/analyze_logs.py plot_curve log.json --keys acc_pose --out results.pdf
-  ```
-
-- Compare the `loss_kpt` of two runs in the same figure.
-
-  ```shell
-  python tools/analysis_tools/analyze_logs.py plot_curve log1.json log2.json --keys loss_kpt --legend run1 run2 --title loss_kpt --out loss_kpt.png
-  ```
-
-You can also compute the average training speed.
-
-```shell
-python tools/analysis_tools/analyze_logs.py cal_train_time ${JSON_LOGS} [--include-outliers]
-```
-
-- Compute the average training speed for a config file, for example:
-
-  ```shell
-  python tools/analysis_tools/analyze_logs.py cal_train_time log.json
-  ```
-
-  The output is expected to be like the following.
-
-  ```text
-  -----Analyze train time of hrnet_w32_256x192.json-----
-  slowest epoch 56, average time is 0.6924
-  fastest epoch 1, average time is 0.6502
-  time std over epochs is 0.0085
-  average iter time: 0.6688 s/iter
-  ```
-
-### Model Complexity (Experimental)
-
-`/tools/analysis_tools/get_flops.py` is a script adapted from [flops-counter.pytorch](https://github.com/sovrasov/flops-counter.pytorch) to compute the FLOPs and params of a given model.
-
-Usage:
-
-```shell
-python tools/analysis_tools/get_flops.py ${CONFIG_FILE} [--shape ${INPUT_SHAPE}] [--cfg-options ${CFG_OPTIONS}]
-```
-
-Description of all arguments:
-
-- `CONFIG_FILE` : The path of a model config file.
-- `--shape`:  The input shape to the model.
-- `--input-constructor`: If specified as `batch`, it will generate a batch  tensor to calculate FLOPs.
-- `--batch-size`：If `--input-constructor` is specified as `batch`, it will generate a random tensor with shape (batch_size, 3, \*\*input_shape) to calculate FLOPs.
-- `--cfg-options`: If specified, the key-value pair optional cfg will be merged into config file.
-
-Examples:
-
-```shell
-python tools/analysis_tools/get_flops.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py
-```
-
-We will get the following results:
-
-```
-==============================
-Input shape: (1, 3, 256, 192)
-Flops: 7.7 GFLOPs
-Params: 28.54 M
-==============================
-```
-
-```{note}
-This tool is still experimental and we do not guarantee that the number is absolutely correct.
-```
-
-You may use the result for simple comparisons, but double check it before you adopt it in technical reports or papers.
-
-(1) FLOPs are related to the input shape while parameters are not. The default input shape is (1, 3, 256, 192).
-
-(2) Some operators are not counted into FLOPs like GN and custom operators. Refer to [`mmcv.cnn.get_model_complexity_info()`](https://github.com/open-mmlab/mmcv/blob/master/mmcv/cnn/utils/flops_counter.py) for details.
-
-### Print the entire config
-
-`tools/analysis_tools/print_config.py` prints the whole config verbatim, expanding all its imports.
-
-```shell
-python tools/analysis_tools/print_config.py ${CONFIG} [-h] [--options ${OPTIONS [OPTIONS...]}]
-```
-
-## Dataset Tools
-
-### Animal Pose
+## Animal Pose
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Cao_Cross-Domain_Adaptation_for_Animal_Pose_Estimation_ICCV_2019_paper.html">Animal-Pose (ICCV'2019)</a></summary>
@@ -205,7 +79,7 @@ We choose the images from PascalVOC for train & val. In total, we have 3608 imag
 2798 images with 4000 annotations are used for training, and 810 images with 1117 annotations are used for validation.
 Those images from other sources (1000 images with 1000 annotations) are used for testing.
 
-### COFW
+## COFW
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_iccv_2013/html/Burgos-Artizzu_Robust_Face_Landmark_2013_ICCV_paper.html">COFW (ICCV'2013)</a></summary>
@@ -265,7 +139,7 @@ mmpose
             |── 000002.jpg
 ```
 
-### DeepposeKit
+## DeepposeKit
 
 <details>
 <summary align="right"><a href="https://elifesciences.org/articles/47994">Desert Locust (Elife'2019)</a></summary>
@@ -333,7 +207,7 @@ For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data), [Desert Locust]
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation.
 
-### Macaque
+## Macaque
 
 <details>
 <summary align="right"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/">MacaquePose (bioRxiv'2020)</a></summary>
@@ -383,7 +257,7 @@ For [MacaquePose](http://www2.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html
 
 Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation.
 
-### Human36M
+## Human3.6M
 
 <details>
 <summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/6682899/">Human3.6M (TPAMI'2014)</a></summary>
@@ -459,7 +333,7 @@ After that, the annotations need to be transformed into COCO format which is com
 python tools/dataset_converters/h36m_to_coco.py
 ```
 
-### MPII
+## MPII
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
@@ -476,7 +350,7 @@ python tools/dataset_converters/h36m_to_coco.py
 
 </details>
 
-During training and inference for [MPII dataset](<[MPII](http://human-pose.mpi-inf.mpg.de/)>), the prediction result will be saved as '.mat' format by default. We also provide a tool to convert this `.mat` to more readable `.json` format.
+During training and inference for [MPII](http://human-pose.mpi-inf.mpg.de/), the prediction result will be saved as '.mat' format by default. We also provide a tool to convert this `.mat` to more readable `.json` format.
 
 ```shell
 python tools/dataset_converters/mat2json ${PRED_MAT_FILE} ${GT_JSON_FILE} ${OUTPUT_PRED_JSON_FILE}

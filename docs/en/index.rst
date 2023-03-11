@@ -23,7 +23,6 @@ You can change the documentation language at the lower-left corner of the page.
     user_guides/inference.md
     user_guides/train_and_test.md
     user_guides/visualization.md
-    user_guides/useful_tools.md
 
 .. toctree::
    :maxdepth: 1
@@ -33,6 +32,9 @@ You can change the documentation language at the lower-left corner of the page.
    common_usages/resume_training.md
    common_usages/amp_training.md
    common_usages/set_random_seed.md
+   common_usages/model_complexity.md
+   common_usages/log_analysis.md
+   common_usages/dataset_tools.md
 
 .. toctree::
    :maxdepth: 1
