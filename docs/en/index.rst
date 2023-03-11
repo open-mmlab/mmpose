@@ -17,7 +17,6 @@ You can change the documentation language at the lower-left corner of the page.
     :maxdepth: 1
     :caption: User Guides
 
-    user_guides/overall_code_arch.md
     user_guides/configs.md
     user_guides/prepare_datasets.md
     user_guides/codecs.md
@@ -30,6 +29,7 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 1
    :caption: Common Usages
 
+   common_usages/print_entire_config.md
    common_usages/resume_training.md
    common_usages/amp_training.md
    common_usages/set_random_seed.md
@@ -38,6 +38,7 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 1
    :caption: Advanced Guides
 
+   advanced_guides/overall_code_arch.md
    advanced_guides/mixed_datasets.md
 
 .. toctree::
