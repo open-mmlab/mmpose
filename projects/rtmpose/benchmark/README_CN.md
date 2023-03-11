@@ -10,6 +10,10 @@
   - Intel i7-11700
 - GPU
   - NVIDIA GeForce 1660 Ti
+  - NVIDIA GeForce RTX 3090
+- Nvidia Jetson
+  - AGX Orin
+  - Orin NX
 - ARM
   - Snapdragon 865
 
@@ -28,14 +32,16 @@
 
 ### Speed Benchmark
 
-|                                Config                                 | Input Size | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |
-| :-------------------------------------------------------------------: | :--------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: |
-| [RTMPose-t](../rtmpose/body_2d_keypoint/rtmpose-tiny_8xb256-420e_coco-256x192.py) |  256x192   |                3.20                |                   1.06                    |                      9.02                      |
-| [RTMPose-s](../rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |                4.48                |                   1.39                    |                     13.89                      |
-| [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |               11.06                |                   2.29                    |                     26.44                      |
-| [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |               18.85                |                   3.46                    |                     45.37                      |
-| [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |               24.78                |                   3.66                    |                     26.44                      |
-| [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |                 -                  |                   6.05                    |                       -                        |
+图中所示为模型推理时间，单位毫秒。
+
+|   Config    | Input Size | ORT<sup><br>(i7-11700) | TRT-FP16<sup><br>(GTX 1660Ti) | TRT-FP16<sup><br>(RTX 3090) | ncnn-FP16<sup><br>(Snapdragon 865) | TRT-FP16<sup><br>(Jetson AGX Orin) | TRT-FP16<sup><br>(Jetson Orin NX) |
+| :---------: | :--------: | :--------------------: | :---------------------------: | :-------------------------: | :--------------------------------: | :--------------------------------: | :-------------------------------: |
+| [RTMPose-t](../rtmpose/body_2d_keypoint/rtmpose-tiny_8xb256-420e_coco-256x192.py) |  256x192   |          3.20          |             1.06              |            0.98             |                9.02                |                1.63                |               1.97                |
+| [RTMPose-s](../rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |          4.48          |             1.39              |            1.12             |               13.89                |                1.85                |               2.18                |
+| [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |         11.06          |             2.29              |            1.18             |               26.44                |                2.72                |               3.35                |
+| [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |         18.85          |             3.46              |            1.37             |               45.37                |                3.67                |               4.78                |
+| [RTMPose-m](../rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |         24.78          |             3.66              |            1.20             |               26.44                |                3.45                |               5.08                |
+| [RTMPose-l](../rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |           -            |             6.05              |            1.74             |                 -                  |                4.93                |               7.23                |
 
 ### 人体全身 2d 关键点 (133 Keypoints)
 
@@ -49,11 +55,14 @@
 
 ### Speed Benchmark
 
-| Config                                                                       | Input Size | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | TRT-FP16-Latency(ms)<sup><br>(GTX 3090) |
-| :--------------------------------------------------------------------------- | :--------: | :--------------------------------: | :---------------------------------------: | :-------------------------------------: |
-| [RTMPose-m](../rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |               13.50                |                   4.00                    |                  1.84                   |
-| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |               23.41                |                   5.67                    |                  2.61                   |
-| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |               44.58                |                   7.68                    |                  4.24                   |
+- 图中所示为模型推理时间，单位毫秒。
+- 来自不同社区用户的测试数据用 `|` 分隔开。
+
+| Config                                        | Input Size | ORT<sup><br>(i7-11700) | TRT-FP16<sup><br>(GTX 1660Ti) | TRT-FP16<sup><br>(RTX 3090) | TRT-FP16<sup><br>(Jetson AGX Orin) | TRT-FP16<sup><br>(Jetson Orin NX) |
+| :-------------------------------------------- | :--------: | :--------------------: | :---------------------------: | :-------------------------: | :--------------------------------: | :-------------------------------: |
+| [RTMPose-m](../rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |         13.50          |             4.00              |        1.17 \| 1.84         |                2.79                |               3.51                |
+| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |         23.41          |             5.67              |        1.44 \| 2.61         |                3.80                |               4.95                |
+| [RTMPose-l](../rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |         44.58          |             7.68              |        1.75 \| 4.24         |                5.08                |               7.20                |
 
 ## 如何测试推理速度
 
