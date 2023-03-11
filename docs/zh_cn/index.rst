@@ -31,6 +31,7 @@ You can change the documentation language at the lower-left corner of the page.
 
    common_usages/resume_training.md
    common_usages/amp_training.md
+   common_usages/set_random_seed.md
 
 .. toctree::
    :maxdepth: 1
