@@ -17,6 +17,7 @@ You can change the documentation language at the lower-left corner of the page.
     :maxdepth: 1
     :caption: User Guides
 
+    user_guides/overall_code_arch.md
     user_guides/configs.md
     user_guides/prepare_datasets.md
     user_guides/codecs.md
