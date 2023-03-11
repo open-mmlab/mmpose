@@ -30,6 +30,7 @@ You can change the documentation language at the lower-left corner of the page.
    :caption: 常用功能
 
    common_usages/resume_training.md
+   common_usages/amp_training.md
 
 .. toctree::
    :maxdepth: 1
