@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 
-from mmpose.utils import convert_mmdet_test_pipeline
+from mmpose.utils import adapt_mmdet_pipeline
 from ...utils import get_config_path
 from ..node import Node
 from ..registry import NODES
@@ -92,7 +92,7 @@ class DetectorNode(Node):
         # Init model
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
-        self.model.cfg = convert_mmdet_test_pipeline(self.model.cfg)
+        self.model.cfg = adapt_mmdet_pipeline(self.model.cfg)
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', trigger=True)

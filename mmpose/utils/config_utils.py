@@ -2,7 +2,7 @@
 from mmpose.utils.typing import ConfigDict
 
 
-def convert_mmdet_test_pipeline(cfg: ConfigDict) -> ConfigDict:
+def adapt_mmdet_pipeline(cfg: ConfigDict) -> ConfigDict:
     """Converts pipeline types in MMDetection's test dataloader to use the
     'mmdet' namespace.
 

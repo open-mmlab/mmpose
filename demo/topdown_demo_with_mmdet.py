@@ -14,7 +14,7 @@ from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
-from mmpose.utils import convert_mmdet_test_pipeline
+from mmpose.utils import adapt_mmdet_pipeline
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -146,7 +146,7 @@ def main():
     # build detector
     detector = init_detector(
         args.det_config, args.det_checkpoint, device=args.device)
-    detector.cfg = convert_mmdet_test_pipeline(detector.cfg)
+    detector.cfg = adapt_mmdet_pipeline(detector.cfg)
 
     # build pose estimator
     pose_estimator = init_pose_estimator(
