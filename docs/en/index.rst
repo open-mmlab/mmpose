@@ -23,24 +23,14 @@ You can change the documentation language at the lower-left corner of the page.
     user_guides/inference.md
     user_guides/train_and_test.md
     user_guides/visualization.md
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Common Usages
-
-   common_usages/print_entire_config.md
-   common_usages/resume_training.md
-   common_usages/amp_training.md
-   common_usages/set_random_seed.md
-   common_usages/model_complexity.md
-   common_usages/log_analysis.md
-   common_usages/dataset_tools.md
+    user_guides/how_to.md
 
 .. toctree::
    :maxdepth: 1
    :caption: Advanced Guides
 
    advanced_guides/overall_code_arch.md
+   advanced_guides/advanced_training.md
    advanced_guides/mixed_datasets.md
 
 .. toctree::

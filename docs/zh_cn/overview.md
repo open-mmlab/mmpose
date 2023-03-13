@@ -57,7 +57,7 @@ MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs�
    - [编解码器](./user_guides/codecs.md)
    - [训练与测试](./user_guides/train_and_test.md)
    - [可视化](./user_guides/visualization.md)
-   - [常用工具](./user_guides/useful_tools.md)
+   - [How to](./user_guides/how_to.md)
 
 4. 对于希望将自己的项目迁移到 MMPose 的开发者：
 
