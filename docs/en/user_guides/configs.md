@@ -133,8 +133,6 @@ _base_ = ['../../../_base_/default_runtime.py'] # take the config file as the st
 ```
 
 ```{note}
-**Tips**
-
 CheckpointHook:
 
 - save_best: `'coco/AP'` for `CocoMetric`, `'PCK'` for `PCKAccuracy`
@@ -222,9 +220,10 @@ test_dataloader = val_dataloader # use val as test by default
 ```
 
 ```{note}
-**Tips**
-
-You can set the random seed by doing: `randomness=dict(seed=0)`
+Common Usages:
+- [Resume training](../common_usages/resume_training.md)
+- [Automatic mixed precision (AMP) training](../common_usages/amp_training.md)
+- [Set the random seed](../common_usages/set_random_seed.md)
 
 ```
 
