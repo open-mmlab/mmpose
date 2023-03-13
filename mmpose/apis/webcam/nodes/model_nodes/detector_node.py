@@ -2,8 +2,8 @@
 from typing import Dict, List, Optional, Union
 
 import numpy as np
-from mmengine.registry import init_default_scope
 
+from mmpose.utils import adapt_mmdet_pipeline
 from ...utils import get_config_path
 from ..node import Node
 from ..registry import NODES
@@ -92,6 +92,7 @@ class DetectorNode(Node):
         # Init model
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
+        self.model.cfg = adapt_mmdet_pipeline(self.model.cfg)
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', trigger=True)
@@ -109,7 +110,6 @@ class DetectorNode(Node):
 
         img = input_msg.get_image()
 
-        init_default_scope(self.model.cfg.get('default_scope', 'mmdet'))
         preds = inference_detector(self.model, img)
         objects = self._post_process(preds)
         input_msg.update_objects(objects)
