@@ -54,6 +54,7 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         draw_gt=False,
         draw_heatmap=args.draw_heatmap,
         draw_bbox=args.draw_bbox,
+        show_kpt_idx=args.show_kpt_idx,
         show=args.show,
         wait_time=show_interval,
         out_file=out_file,
@@ -115,6 +116,11 @@ def main():
         action='store_true',
         default=False,
         help='Draw heatmap predicted by the model')
+    parser.add_argument(
+        '--show-kpt-idx',
+        action='store_true',
+        default=False,
+        help='Whether to show the index of keypoints')
     parser.add_argument(
         '--radius',
         type=int,
