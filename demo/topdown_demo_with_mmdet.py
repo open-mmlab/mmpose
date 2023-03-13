@@ -8,13 +8,13 @@ import json_tricks as json
 import mmcv
 import mmengine
 import numpy as np
-from mmengine.registry import init_default_scope
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
+from mmpose.utils import adapt_mmdet_pipeline
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -28,7 +28,6 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
     """Visualize predicted keypoints (and heatmaps) of one image."""
 
     # predict bbox
-    init_default_scope(detector.cfg.get('default_scope', 'mmdet'))
     det_result = inference_detector(detector, img_path)
     pred_instance = det_result.pred_instances.cpu().numpy()
     bboxes = np.concatenate(
@@ -147,6 +146,7 @@ def main():
     # build detector
     detector = init_detector(
         args.det_config, args.det_checkpoint, device=args.device)
+    detector.cfg = adapt_mmdet_pipeline(detector.cfg)
 
     # build pose estimator
     pose_estimator = init_pose_estimator(
