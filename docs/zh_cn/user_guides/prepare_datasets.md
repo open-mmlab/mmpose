@@ -4,11 +4,11 @@ MMPose 目前已支持了多个任务和相应的数据集。您可以在 [数�
 
 <!-- TOC -->
 
-- [Customize datasets by reorganizing data to COCO format](#customize-datasets-by-reorganizing-data-to-coco-format)
-- [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset)
-- [Create a custom dataset class](#create-a-custom-dataset-class)
-- [Create a custom training config file](#create-a-custom-training-config-file)
-- [Dataset Wrappers](#dataset-wrappers)
+- [自定义数据集-将数据组织为 COCO 格式](#自定义数据集-将数据组织为-coco-格式)
+- [创建自定义数据集的元信息文件](#创建自定义数据集的元信息文件)
+- [创建自定义数据集类](#创建自定义数据集类)
+- [创建自定义配置文件](#创建自定义配置文件)
+- [数据集封装](#数据集封装)
 
 <!-- TOC -->
 
