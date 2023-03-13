@@ -23,13 +23,14 @@ You can change the documentation language at the lower-left corner of the page.
     user_guides/inference.md
     user_guides/train_and_test.md
     user_guides/visualization.md
-    user_guides/useful_tools.md
-
+    user_guides/how_to.md
 
 .. toctree::
    :maxdepth: 1
    :caption: Advanced Guides
 
+   advanced_guides/dive_into_framework.md
+   advanced_guides/advanced_training.md
    advanced_guides/mixed_datasets.md
 
 .. toctree::
@@ -71,6 +72,7 @@ You can change the documentation language at the lower-left corner of the page.
    dataset_zoo/2d_animal_keypoint.md
    dataset_zoo/3d_body_keypoint.md
    dataset_zoo/3d_hand_keypoint.md
+   dataset_zoo/dataset_tools.md
 
 .. toctree::
    :maxdepth: 1

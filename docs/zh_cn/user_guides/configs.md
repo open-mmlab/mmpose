@@ -138,8 +138,6 @@ _base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位
 ```
 
 ```{note}
-**Tips**
-
 CheckpointHook:
 
 - save_best: `'coco/AP'` 用于 `CocoMetric`, `'PCK'` 用于 `PCKAccuracy`
@@ -227,9 +225,11 @@ test_dataloader = val_dataloader # 默认情况下不区分验证集和测试集
 ```
 
 ```{note}
-**Tips**
 
-设置随机种子： `randomness=dict(seed=0)`
+常用功能可以参考以下教程:
+- [恢复训练](../common_usages/resume_training.md)
+- [自动混合精度训练](../common_usages/amp_training.md)
+- [设置随机种子](../common_usages/set_random_seed.md)
 
 ```
 
