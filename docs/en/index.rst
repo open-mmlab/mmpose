@@ -29,7 +29,7 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 1
    :caption: Advanced Guides
 
-   advanced_guides/overall_code_arch.md
+   advanced_guides/dive_into_framework.md
    advanced_guides/advanced_training.md
    advanced_guides/mixed_datasets.md
 

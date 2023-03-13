@@ -1,4 +1,4 @@
-# Overall Code Architecture
+# Dive into the framework
 
 MMPose 1.0 has made significant BC-breaking changes, with modules redesigned and reorganized to reduce code redundancy and improve efficiency. For developers who have some deep-learning knowledge, this tutorial provides a migration guide.
 
