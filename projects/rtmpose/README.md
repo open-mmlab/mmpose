@@ -26,7 +26,7 @@ Coming soon
 - [👀 Visualization](#-visualization-)
 - [😎 Get Started](#-get-started-)
 - [👨‍🏫 How to Train](#-how-to-train-)
-- [🏗️ How To Deploy](#️-how-to-deploy-)
+- [🏗️ How to Deploy](#️-how-to-deploy-)
 - [📚 Common Usage](#️-common-usage-)
   - [🚀 Inference Speed Test](#-inference-speed-test-)
   - [📊 Model Test](#-model-test-)
@@ -305,7 +305,7 @@ Result is as follows:
 
 ![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
 
-## 👨‍🏫 How To Train [🔝](#-table-of-contents)
+## 👨‍🏫 How to Train [🔝](#-table-of-contents)
 
 Please refer to [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html).
 
@@ -317,7 +317,7 @@ Please refer to [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guide
   - t/s: For mobile devices with extremely low computing power, or scenarios with stringent inference speed requirements
   - l: Suitable for scenarios with strong computing power and not sensitive to speed
 
-## 🏗️ How To Deploy [🔝](#-table-of-contents)
+## 🏗️ How to Deploy [🔝](#-table-of-contents)
 
 Here is a basic example of deploy RTMPose with [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x).
 
