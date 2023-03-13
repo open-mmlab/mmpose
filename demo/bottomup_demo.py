@@ -73,6 +73,11 @@ def parse_args():
         action='store_true',
         help='Visualize the predicted heatmap')
     parser.add_argument(
+        '--show-kpt-idx',
+        action='store_true',
+        default=False,
+        help='Whether to show the index of keypoints')
+    parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
         '--radius',
