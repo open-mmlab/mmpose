@@ -282,7 +282,7 @@ class PoseLocalVisualizer(Visualizer):
                             str(kid),
                             kpt,
                             colors=color,
-                            font_sizes=self.radius * 2,
+                            font_sizes=self.radius * 10,
                             vertical_alignments='bottom',
                             horizontal_alignments='center')
 
