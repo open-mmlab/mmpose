@@ -21,6 +21,11 @@ def parse_args():
         action='store_true',
         help='Visualize the predicted heatmap')
     parser.add_argument(
+        '--show-kpt-idx',
+        action='store_true',
+        default=False,
+        help='Whether to show the index of keypoints')
+    parser.add_argument(
         '--show',
         action='store_true',
         default=False,
@@ -61,6 +66,7 @@ def main():
         draw_gt=False,
         draw_bbox=True,
         draw_heatmap=args.draw_heatmap,
+        show_kpt_idx=args.show_kpt_idx,
         show=args.show,
         out_file=args.out_file)
 

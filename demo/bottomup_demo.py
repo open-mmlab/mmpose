@@ -34,8 +34,9 @@ def process_one_image(args, img_path, pose_estimator, visualizer,
         data_sample=results,
         draw_gt=False,
         draw_bbox=False,
-        show=args.show,
         draw_heatmap=args.draw_heatmap,
+        show_kpt_idx=args.show_kpt_idx,
+        show=args.show,
         wait_time=show_interval,
         out_file=out_file,
         kpt_score_thr=args.kpt_thr)
@@ -71,6 +72,11 @@ def parse_args():
         '--draw-heatmap',
         action='store_true',
         help='Visualize the predicted heatmap')
+    parser.add_argument(
+        '--show-kpt-idx',
+        action='store_true',
+        default=False,
+        help='Whether to show the index of keypoints')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(

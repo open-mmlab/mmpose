@@ -211,7 +211,8 @@ class PoseLocalVisualizer(Visualizer):
     def _draw_instances_kpts(self,
                              image: np.ndarray,
                              instances: InstanceData,
-                             kpt_score_thr: float = 0.3):
+                             kpt_score_thr: float = 0.3,
+                             show_kpt_idx: bool = False):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
         Args:
@@ -276,6 +277,14 @@ class PoseLocalVisualizer(Visualizer):
                         edge_colors=color,
                         alpha=transparency,
                         line_widths=self.radius)
+                    if show_kpt_idx:
+                        self.draw_texts(
+                            str(kid),
+                            kpt,
+                            colors=color,
+                            font_sizes=self.radius * 3,
+                            vertical_alignments='bottom',
+                            horizontal_alignments='center')
 
                 # draw links
                 if self.skeleton is not None and self.link_color is not None:
@@ -400,6 +409,7 @@ class PoseLocalVisualizer(Visualizer):
                        draw_pred: bool = True,
                        draw_heatmap: bool = False,
                        draw_bbox: bool = False,
+                       show_kpt_idx: bool = False,
                        show: bool = False,
                        wait_time: float = 0,
                        out_file: Optional[str] = None,
@@ -448,7 +458,8 @@ class PoseLocalVisualizer(Visualizer):
             # draw bboxes & keypoints
             if 'gt_instances' in data_sample:
                 gt_img_data = self._draw_instances_kpts(
-                    gt_img_data, data_sample.gt_instances, kpt_score_thr)
+                    gt_img_data, data_sample.gt_instances, kpt_score_thr,
+                    show_kpt_idx)
                 if draw_bbox:
                     gt_img_data = self._draw_instances_bbox(
                         gt_img_data, data_sample.gt_instances)
@@ -468,7 +479,8 @@ class PoseLocalVisualizer(Visualizer):
             # draw bboxes & keypoints
             if 'pred_instances' in data_sample:
                 pred_img_data = self._draw_instances_kpts(
-                    pred_img_data, data_sample.pred_instances, kpt_score_thr)
+                    pred_img_data, data_sample.pred_instances, kpt_score_thr,
+                    show_kpt_idx)
                 if draw_bbox:
                     pred_img_data = self._draw_instances_bbox(
                         pred_img_data, data_sample.pred_instances)
