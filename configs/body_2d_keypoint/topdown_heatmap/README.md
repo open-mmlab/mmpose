@@ -14,6 +14,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 |      Model      | Input Size |  AP   |  AR   |                Details and Download                 |
 | :-------------: | :--------: | :---: | :---: | :-------------------------------------------------: |
+|    ViTPose-h    |  256x192   | 0.790 | 0.840 |      [vitpose_coco.md](./coco/vitpose_coco.md)      |
 |  HRNet-w48+UDP  |  256x192   | 0.768 | 0.817 |    [hrnet_udp_coco.md](./coco/hrnet_udp_coco.md)    |
 |   MSPN 4-stg    |  256x192   | 0.765 | 0.826 |         [mspn_coco.md](./coco/mspn_coco.md)         |
 | HRNet-w48+Dark  |  256x192   | 0.764 | 0.814 |   [hrnet_dark_coco.md](./coco/hrnet_dark_coco.md)   |
@@ -23,6 +24,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |    CSPNeXt-l    |  256x192   | 0.750 | 0.800 |  [cspnext_udp_coco.md](./coco/cspnext_udp_coco.md)  |
 |    HRNet-w32    |  256x192   | 0.749 | 0.804 |        [hrnet_coco.md](./coco/hrnet_coco.md)        |
 |     Swin-L      |  256x192   | 0.743 | 0.798 |         [swin_coco.md](./coco/swin_coco.md)         |
+|    ViTPose-s    |  256x192   | 0.739 | 0.792 |      [vitpose_coco.md](./coco/vitpose_coco.md)      |
 |   HRFormer-S    |  256x192   | 0.738 | 0.793 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
 |     Swin-B      |  256x192   | 0.737 | 0.794 |         [swin_coco.md](./coco/swin_coco.md)         |
 |  SEResNet-101   |  256x192   | 0.734 | 0.790 |     [seresnet_coco.md](./coco/seresnet_coco.md)     |
