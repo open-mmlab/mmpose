@@ -214,7 +214,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ### MMDeploy SDK 预编译包 （推荐）
 
-MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推理，其中推理所用的模型为 SDK 版本。导出 SDK 版模型的教程见 [SDK 推理](#🕹️-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
+MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推理，其中推理所用的模型为 SDK 版本。导出 SDK 版模型的教程见 [SDK 推理](#-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
 
 说明：
 
