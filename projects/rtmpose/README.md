@@ -52,7 +52,7 @@ Coming soon
 
 - 🚀 **High efficiency and high accuracy**
 
-  | Model |     mAP      |    CPU-FPS    |    GPU-FPS    |
+  | Model |     mAP      |      CPU      |      GPU      |
   | :---: | :----------: | :-----------: | :-----------: |
   |   t   | COCO 68.5 AP | CPU: 300+ FPS | GPU: 940+ FPS |
   |   s   | COCO 72.2 AP | CPU: 200+ FPS | GPU: 710+ FPS |
