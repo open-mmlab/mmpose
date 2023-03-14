@@ -48,10 +48,12 @@ Coming soon
 
 - 🚀 **高精度，低延迟**
 
-  - t | COCO 68.5 AP | CPU: 300+ FPS / GPU: 940+ FPS
-  - s | COCO 72.2 AP | CPU: 200+ FPS / GPU: 710+ FPS
-  - m | COCO 75.8 AP | CPU: 90+ FPS / GPU: 430+ FPS
-  - l | COCO 76.5 AP | CPU: 50+ FPS / GPU: 280+ FPS
+  | Model | AP(COCO) | CPU-FPS | GPU-FPS |
+  | :---: | :------: | :-----: | :-----: |
+  |   t   |   68.5   |  300+   |  940+   |
+  |   s   |   72.2   |  200+   |  710+   |
+  |   m   |   75.8   |   90+   |  430+   |
+  |   l   |   76.5   |   50+   |  280+   |
 
 - 🛠️ **易部署**
 
@@ -212,7 +214,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ### MMDeploy SDK 预编译包 （推荐）
 
-MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行推理。
+MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推理，其中推理所用的模型为 SDK 版本。导出 SDK 版模型的教程见 [SDK 推理](#%EF%B8%8F-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
 
 说明：
 
@@ -423,7 +425,7 @@ python tools/deploy.py \
 
 默认导出模型文件为 `{work-dir}/end2end.engine`
 
-如果模型顺利导出，你将会看到样例图片上的检测结果：
+🎊 如果模型顺利导出，你将会看到样例图片上的检测结果：
 
 ![convert_models](https://user-images.githubusercontent.com/13503330/217726963-7815dd01-561a-4605-b0c6-07b6fe1956c3.png)
 

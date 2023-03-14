@@ -52,10 +52,12 @@ Coming soon
 
 - 🚀 **High efficiency and high accuracy**
 
-  - t | 68.5 AP on COCO with CPU: 300+ FPS / GPU: 940+ FPS
-  - s | 72.2 AP on COCO with CPU: 200+ FPS / GPU: 710+ FPS
-  - m | 75.8 AP on COCO with CPU: 90+ FPS / GPU: 430+ FPS
-  - l | 76.5 AP on COCO with CPU: 50+ FPS / GPU: 280+ FPS
+  | Model | AP(COCO) | CPU-FPS | GPU-FPS |
+  | :---: | :------: | :-----: | :-----: |
+  |   t   |   68.5   |  300+   |  940+   |
+  |   s   |   72.2   |  200+   |  710+   |
+  |   m   |   75.8   |   90+   |  430+   |
+  |   l   |   76.5   |   50+   |  280+   |
 
 - 🛠️ **Easy to deploy**
 
@@ -217,7 +219,7 @@ We provide two appoaches to try RTMPose:
 
 ### Pre-compiled MMDeploy SDK (Recommended)
 
-MMDeploy provides pre-compiled SDK to conduct inference with RTMPose projects.
+MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, where the model used for reasoning is the SDK version. For the tutorial of exporting the SDK version model, see [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk), and for detailed parameter settings of inference, see [Pipeline Reasoning](#-step4-pipeline-inference).
 
 Env Requirements:
 
@@ -423,7 +425,7 @@ python tools/deploy.py \
 
 The converted model file is `{work-dir}/end2end.engine` by defaults.
 
-If the script runs successfully, you will see the following files:
+🎊 If the script runs successfully, you will see the following files:
 
 ![convert_models](https://user-images.githubusercontent.com/13503330/217726963-7815dd01-561a-4605-b0c6-07b6fe1956c3.png)
 
