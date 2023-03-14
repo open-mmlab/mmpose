@@ -88,21 +88,28 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- 2022-10-14: MMPose [v1.0.0rc0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc0) is released. Major updates include:
+- We are excited to release **RTMPose**, a real-time pose estimation framework including:
 
-  - Support 4 light-weight pose estimation algorithms
-    - SimCC (ECCV'22): [paper](https://doi.org/10.48550/arxiv.2107.03332) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/simcc/README.md)
-    - Debias-IPR (ICCV'21): [paper](https://openaccess.thecvf.com/content/ICCV2021/papers/Gu_Removing_the_Bias_of_Integral_Pose_Regression_ICCV_2021_paper.pdf) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-    - IPR (ECCV'18): [paper](https://arxiv.org/abs/1711.08229) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-    - DSNT (ArXiv'18): [paper](https://arxiv.org/abs/1801.07372v2) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-  - Add [Colab tutorial](https://github.com/open-mmlab/mmpose/blob/1.x/demo/MMPose_Tutorial.ipynb) for MMPose v1.0
+  - A family of lightweight pose estimation models with state-of-the-art performance
+  - Inference APIs for Python/C++/C#/Java/etc. Easy to integrate in your applications and empower real-time stable pose estimation
+  - Cross-platform deployment with various backends
+  - Step-by-step guide to training and deploying your own models
 
-- 2022-09-01: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0b0) is released!
+  Checkout our [project page](/projects/rtmpose/README.md) and [technical report](<>) for more information!
 
-  - This release introduced major refactoring to MMPose towards better performance, extensibility and user-friendliness.
-  - Built upon a brand new and flexible training & test engine, which is still in progress. Welcome to try according to [the documentation](https://mmpose.readthedocs.io/en/1.x/).
-  - There are BC-breaking changes. Please check [the migration tutorial](https://mmpose.readthedocs.io/en/1.x/migration.html).
-  - The beta and release candidate versions will last until the end of 2022, and during the release candidate, we will develop on the `1.x` branch. And we will still maintain 0.x version still at least the end of 2023.
+![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
+
+- Welcome to [*projects of MMPose*](/projects/README.md), where you can meet the latest updates of MMPose, and share your ideas and codes with the community at once with the following advantages:
+
+  - Provide an easy and agile way to integrate algorithms, features and applications into MMPose
+  - Allow flexible code structure and style, and have simple code review process
+  - Build individual projects with full power of MMPose but not bound up with heavy frameworks
+
+- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) is released. Major updates include:
+
+  - Release [RTMPose](/projects/rtmpose/README.md), a high-performance real-time pose estimation framework based on MMPose
+  - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/README.md) (CVPR'21)
+  - Add [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer), a convenient interface for inference and visualization
 
 ## Installation
 
