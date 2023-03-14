@@ -93,7 +93,7 @@ pip install -v -e .
 直接使用 mim 安装即可。
 
 ```shell
-mim install "mmpose>=1.0.0b0"
+mim install "mmpose>=1.0.0rc0"
 ```
 
 ### 验证安装
@@ -219,7 +219,7 @@ MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训
 ```python
 import mmpose
 print(mmpose.__version__)
-# 预期输出： 1.0.0b0
+# 预期输出： 1.0.0rc0
 ```
 
 ```{note}

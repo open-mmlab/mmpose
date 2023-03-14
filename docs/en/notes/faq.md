@@ -14,6 +14,7 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 
 | MMPose version |      MMCV/MMEngine version      |
 | :------------: | :-----------------------------: |
+|    1.0.0rc1    | mmcv>=2.0.0rc4, mmengine>=0.6.0 |
 |    1.0.0rc0    | mmcv>=2.0.0rc0, mmengine>=0.0.1 |
 |    1.0.0b0     | mmcv>=2.0.0rc0, mmengine>=0.0.1 |
 
