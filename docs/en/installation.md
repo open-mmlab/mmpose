@@ -62,13 +62,13 @@ We recommend that users follow our best practices to install MMPose. However, th
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install "mmcv>=2.0.0rc1"
+mim install "mmcv>=2.0.0rc4"
 ```
 
 Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can easily install mmdet as a dependency by running:
 
 ```shell
-mim install "mmdet>=3.0.0rc0"
+mim install "mmdet>=3.0.0rc6"
 ```
 
 **Step 1.** Install MMPose.
@@ -89,7 +89,7 @@ pip install -v -e .
 Case B: To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
-mim install "mmpose>=1.0.0b0"
+mim install "mmpose>=1.0.0rc1"
 ```
 
 ### Verify the installation
@@ -208,7 +208,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 1.0.0b0
+# Example output: 1.0.0rc0
 ```
 
 ```{note}
