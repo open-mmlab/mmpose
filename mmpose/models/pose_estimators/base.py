@@ -90,7 +90,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
     def forward(self,
                 inputs: torch.Tensor,
-                data_samples: OptSampleList,
+                data_samples: OptSampleList = None,
                 mode: str = 'tensor') -> ForwardResults:
         """The unified entry for a forward process in both training and test.
 
