@@ -4,21 +4,16 @@
 
 <details>
 
-<summary  align="right"><a  href="https://arxiv.org/abs/2204.12484">ViTPose</a></summary>
+<summary  align="right"><a  href="https://arxiv.org/abs/2204.12484">ViTPose (NeurIPS'2022)</a></summary>
 
 ```bibtex
-
-@misc{https://doi.org/10.48550/arxiv.2204.12484,
-  doi = {10.48550/ARXIV.2204.12484},
-  url = {https://arxiv.org/abs/2204.12484},
-  author = {Xu, Yufei and Zhang, Jing and Zhang, Qiming and Tao, Dacheng},
-  keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
-  title = {ViTPose: Simple Vision Transformer Baselines for Human Pose Estimation},
-  publisher = {arXiv},
-  year = {2022},
-  copyright = {arXiv.org perpetual, non-exclusive license}
+@inproceedings{
+  xu2022vitpose,
+  title={Vi{TP}ose: Simple Vision Transformer Baselines for Human Pose Estimation},
+  author={Yufei Xu and Jing Zhang and Qiming Zhang and Dacheng Tao},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022},
 }
-
 ```
 
 </details>
