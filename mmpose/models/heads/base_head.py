@@ -9,6 +9,7 @@ from mmengine.model import BaseModule
 from mmengine.structures import InstanceData
 from torch import Tensor
 
+from mmpose.models.utils.ops import resize
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (Features, InstanceList, OptConfigType,
                                  OptSampleList, Predictions)
@@ -88,6 +89,12 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         elif self.input_transform == 'select':
             if isinstance(self.input_index, int):
                 inputs = feats[self.input_index]
+                if hasattr(self, 'upsample') and self.upsample > 0:
+                    inputs = resize(
+                        input=F.relu(inputs),
+                        scale_factor=self.upsample,
+                        mode='bilinear',
+                        align_corners=self.align_corners)
             else:
                 inputs = tuple(feats[i] for i in self.input_index)
         else:
