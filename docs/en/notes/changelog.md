@@ -11,7 +11,7 @@
 
 **New Features**
 
-- Support RTMPose ([#1971](https://github.com/open-mmlab/mmpose/pull/1971), [#2024](https://github.com/open-mmlab/mmpose/pull/2024), [#2028](https://github.com/open-mmlab/mmpose/pull/2028), [#2030](https://github.com/open-mmlab/mmpose/pull/2030), [#2040](https://github.com/open-mmlab/mmpose/pull/2040))
+- Support RTMPose ([#1971](https://github.com/open-mmlab/mmpose/pull/1971), [#2024](https://github.com/open-mmlab/mmpose/pull/2024), [#2028](https://github.com/open-mmlab/mmpose/pull/2028), [#2030](https://github.com/open-mmlab/mmpose/pull/2030), [#2040](https://github.com/open-mmlab/mmpose/pull/2040), [#2057](https://github.com/open-mmlab/mmpose/pull/2057))
 - Support Inferencer ([#1969](https://github.com/open-mmlab/mmpose/pull/1969))
 - Support ViTPose ([#1876](https://github.com/open-mmlab/mmpose/pull/1876), [#2056](https://github.com/open-mmlab/mmpose/pull/2056), [#2058](https://github.com/open-mmlab/mmpose/pull/2058))
 - Support CID ([#1907](https://github.com/open-mmlab/mmpose/pull/1907))
