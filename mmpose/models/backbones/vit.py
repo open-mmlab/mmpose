@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 # Modified from the ViT implementation in mmseg
+# Modified from the ViT implementation in timm
 import math
 from collections import OrderedDict
 
@@ -8,7 +9,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as cp
 from mmcv.cnn import build_norm_layer, constant_init, trunc_normal_init
-from mmcv.cnn.bricks.transformer import FFN, MultiheadAttention
 from mmcv.runner import BaseModule, ModuleList, _load_checkpoint
 from torch.nn.modules.utils import _pair as to_2tuple
 
@@ -16,6 +16,119 @@ from ...utils import get_root_logger
 from ..builder import BACKBONES
 from ..utils.transformer import PatchEmbed
 from .base_backbone import BaseBackbone
+
+
+def drop_path(x, drop_prob: float = 0., training: bool = False):
+    """Drop paths (Stochastic Depth) per sample (when applied in main path of
+    residual blocks).
+
+    This is the same as the DropConnect impl I created for EfficientNet,
+    etc networks, however, the original name is misleading as 'Drop Connect'
+    is a different form of dropout in a separate paper...
+    See discussion:
+    https://github.com/tensorflow/tpu/issues/494#issuecomment-532968956
+    I've opted for changing the layer and argument names to
+    'drop path' rather than mix DropConnect as a layer name
+    and use 'survival rate' as the argument.
+    """
+    if drop_prob == 0. or not training:
+        return x
+    keep_prob = 1 - drop_prob
+    shape = (x.shape[0], ) + (1, ) * (
+        x.ndim - 1)  # work with diff dim tensors, not just 2D ConvNets
+    random_tensor = keep_prob + torch.rand(
+        shape, dtype=x.dtype, device=x.device)
+    random_tensor.floor_()  # binarize
+    output = x.div(keep_prob) * random_tensor
+    return output
+
+
+class DropPath(nn.Module):
+    """Drop paths (Stochastic Depth) per sample  (when applied in main path of
+    residual blocks)."""
+
+    def __init__(self, drop_prob=None):
+        super(DropPath, self).__init__()
+        self.drop_prob = drop_prob
+
+    def forward(self, x):
+        return drop_path(x, self.drop_prob, self.training)
+
+    def extra_repr(self):
+        return 'p={}'.format(self.drop_prob)
+
+
+class Mlp(nn.Module):
+
+    def __init__(self,
+                 in_features,
+                 hidden_features=None,
+                 out_features=None,
+                 act_layer=nn.GELU,
+                 drop=0.):
+        super().__init__()
+        out_features = out_features or in_features
+        hidden_features = hidden_features or in_features
+        self.fc1 = nn.Linear(in_features, hidden_features)
+        self.act = act_layer()
+        self.fc2 = nn.Linear(hidden_features, out_features)
+        self.drop = nn.Dropout(drop)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.act(x)
+        x = self.fc2(x)
+        x = self.drop(x)
+        return x
+
+
+class Attention(nn.Module):
+
+    def __init__(
+        self,
+        dim,
+        num_heads=8,
+        qkv_bias=False,
+        qk_scale=None,
+        attn_drop=0.,
+        proj_drop=0.,
+        attn_head_dim=None,
+    ):
+        super().__init__()
+        self.num_heads = num_heads
+        head_dim = dim // num_heads
+        self.dim = dim
+
+        if attn_head_dim is not None:
+            head_dim = attn_head_dim
+        all_head_dim = head_dim * self.num_heads
+
+        self.scale = qk_scale or head_dim**-0.5
+
+        self.qkv = nn.Linear(dim, all_head_dim * 3, bias=qkv_bias)
+
+        self.attn_drop = nn.Dropout(attn_drop)
+        self.proj = nn.Linear(all_head_dim, dim)
+        self.proj_drop = nn.Dropout(proj_drop)
+
+    def forward(self, x):
+        B, N, _ = x.shape
+        qkv = self.qkv(x)
+        qkv = qkv.reshape(B, N, 3, self.num_heads, -1).permute(2, 0, 3, 1, 4)
+        q, k, v = qkv[0], qkv[1], qkv[
+            2]  # make torchscript happy (cannot use tensor as tuple)
+
+        q = q * self.scale
+        attn = q @ k.transpose(-2, -1)
+
+        attn = attn.softmax(dim=-1)
+        attn = self.attn_drop(attn)
+
+        x = (attn @ v).transpose(1, 2).reshape(B, N, -1)
+        x = self.proj(x)
+        x = self.proj_drop(x)
+
+        return x
 
 
 class TransformerEncoderLayer(BaseModule):
@@ -51,13 +164,8 @@ class TransformerEncoderLayer(BaseModule):
                  drop_rate=0.,
                  attn_drop_rate=0.,
                  drop_path_rate=0.,
-                 num_fcs=2,
                  qkv_bias=True,
-                 act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN'),
-                 batch_first=True,
-                 attn_cfg=dict(),
-                 ffn_cfg=dict(),
                  with_cp=False):
         super(TransformerEncoderLayer, self).__init__()
 
@@ -65,38 +173,27 @@ class TransformerEncoderLayer(BaseModule):
             norm_cfg, embed_dims, postfix=1)
         self.add_module(self.norm1_name, norm1)
 
-        attn_cfg.update(
-            dict(
-                embed_dims=embed_dims,
-                num_heads=num_heads,
-                attn_drop=attn_drop_rate,
-                proj_drop=drop_rate,
-                batch_first=batch_first,
-                bias=qkv_bias))
+        self.drop_path = DropPath(
+            drop_path_rate) if drop_path_rate > 0. else nn.Identity()
 
-        self.build_attn(attn_cfg)
+        self.attn = Attention(
+            dim=embed_dims,
+            num_heads=num_heads,
+            qkv_bias=qkv_bias,
+            attn_drop=attn_drop_rate,
+        )
 
         self.norm2_name, norm2 = build_norm_layer(
             norm_cfg, embed_dims, postfix=2)
         self.add_module(self.norm2_name, norm2)
 
-        ffn_cfg.update(
-            dict(
-                embed_dims=embed_dims,
-                feedforward_channels=feedforward_channels,
-                num_fcs=num_fcs,
-                ffn_drop=drop_rate,
-                dropout_layer=dict(type='DropPath', drop_prob=drop_path_rate)
-                if drop_path_rate > 0 else None,
-                act_cfg=act_cfg))
-        self.build_ffn(ffn_cfg)
+        self.ffn = Mlp(
+            in_features=embed_dims,
+            hidden_features=feedforward_channels,
+            out_features=embed_dims,
+            drop=drop_rate)
+
         self.with_cp = with_cp
-
-    def build_attn(self, attn_cfg):
-        self.attn = MultiheadAttention(**attn_cfg)
-
-    def build_ffn(self, ffn_cfg):
-        self.ffn = FFN(**ffn_cfg)
 
     @property
     def norm1(self):
@@ -109,8 +206,8 @@ class TransformerEncoderLayer(BaseModule):
     def forward(self, x):
 
         def _inner_forward(x):
-            x = self.attn(self.norm1(x), identity=x)
-            x = self.ffn(self.norm2(x), identity=x)
+            x = x + self.drop_path(self.attn(self.norm1(x)))
+            x = x + self.drop_path(self.ffn(self.norm2(x)))
             return x
 
         if self.with_cp and x.requires_grad:
@@ -159,25 +256,23 @@ class VisionTransformer(BaseBackbone):
     """
 
     def __init__(
-        self,
-        img_size=(256, 192),
-        patch_size=16,
-        in_channels=3,
-        padding=0,
-        embed_dims=768,
-        num_layers=12,
-        num_heads=12,
-        mlp_ratio=4,
-        out_indices=-1,
-        qkv_bias=True,
-        drop_rate=0.,
-        attn_drop_rate=0.,
-        drop_path_rate=0.,
-        act_cfg=dict(type='GELU'),
-        norm_cfg=dict(type='LN'),
-        num_fcs=2,
-        with_cp=False,
-        final_norm=False,
+            self,
+            img_size=(256, 192),
+            patch_size=16,
+            in_channels=3,
+            padding=0,
+            embed_dims=768,
+            num_layers=12,
+            num_heads=12,
+            mlp_ratio=4,
+            out_indices=-1,
+            qkv_bias=True,
+            drop_rate=0.,
+            attn_drop_rate=0.,
+            drop_path_rate=0.,
+            norm_cfg=dict(type='LN'),
+            with_cp=False,
+            final_norm=False,
     ):
         super(VisionTransformer, self).__init__()
 
@@ -232,12 +327,10 @@ class VisionTransformer(BaseBackbone):
                     attn_drop_rate=attn_drop_rate,
                     drop_rate=drop_rate,
                     drop_path_rate=dpr[i],
-                    num_fcs=num_fcs,
                     qkv_bias=qkv_bias,
-                    act_cfg=act_cfg,
                     norm_cfg=norm_cfg,
                     with_cp=with_cp,
-                    batch_first=True))
+                ))
 
         self.final_norm = final_norm
         if final_norm:
@@ -274,7 +367,7 @@ class VisionTransformer(BaseBackbone):
             if list(state_dict.keys())[0].startswith('module.'):
                 state_dict = {k[7:]: v for k, v in state_dict.items()}
 
-            # convert the weights from MAE to mmcls
+            # convert the weights from MAE to mmcls and timm
             new_ckpt = OrderedDict()
 
             for k, v in state_dict.items():
@@ -282,16 +375,8 @@ class VisionTransformer(BaseBackbone):
                     new_key = k.replace('blocks', 'layers')
                     if 'norm' in new_key:
                         new_key = new_key.replace('norm', 'ln')
-                    elif 'mlp.fc1' in new_key:
-                        new_key = new_key.replace('mlp.fc1', 'ffn.layers.0.0')
-                    elif 'mlp.fc2' in new_key:
-                        new_key = new_key.replace('mlp.fc2', 'ffn.layers.1')
-                    elif 'attn.qkv' in new_key:
-                        new_key = new_key.replace('attn.qkv.',
-                                                  'attn.attn.in_proj_')
-                    elif 'attn.proj' in new_key:
-                        new_key = new_key.replace('attn.proj',
-                                                  'attn.attn.out_proj')
+                    elif 'mlp' in new_key:
+                        new_key = new_key.replace('mlp', 'ffn')
                     new_ckpt[new_key] = v
                 elif k.startswith('patch_embed'):
                     new_key = k.replace('patch_embed.proj',
