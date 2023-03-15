@@ -221,8 +221,8 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 ## 👀 Visualization [🔝](#-table-of-contents)
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png" width=900 />
 <img src='https://user-images.githubusercontent.com/13503330/221795678-2c4ae2ec-ac23-4368-8083-0ebeb29f0d3c.gif' width=900/>
+<img src="https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png" width=900 />
 </div>
 
 ## 😎 Get Started [🔝](#-table-of-contents)
