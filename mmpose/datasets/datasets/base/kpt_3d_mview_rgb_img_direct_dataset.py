@@ -6,7 +6,6 @@ from abc import ABCMeta, abstractmethod
 
 import json_tricks as json
 import numpy as np
-from scipy.io import loadmat
 from torch.utils.data import Dataset
 
 from mmpose.datasets import DatasetInfo
@@ -249,8 +248,5 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         assert osp.exists(self.gt_pose_db_file), f'gt_pose_db_file ' \
             f"{self.gt_pose_db_file} doesn't exist, please check again"
-        gt = loadmat(self.gt_pose_db_file)
-        self.gt_pose_db = np.array(np.array(
-            gt['actor3D'].tolist()).tolist()).squeeze()
-
+        self.gt_pose_db = np.load(self.gt_pose_db_file)
         self.num_persons = len(self.gt_pose_db)

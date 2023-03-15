@@ -379,7 +379,7 @@ def test_body3dmview_direct_campus_dataset():
         cam_file=f'{data_root}/calibration_campus.json',
         train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
         test_pose_db_file=f'{data_root}/pred_campus_maskrcnn_hrnet_coco.pkl',
-        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+        gt_pose_db_file=f'{data_root}/actorsGT.npy',
     )
 
     test_data_cfg = dict(
@@ -398,7 +398,7 @@ def test_body3dmview_direct_campus_dataset():
         cam_file=f'{data_root}/calibration_campus.json',
         train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
         test_pose_db_file=f'{data_root}/pred_campus_maskrcnn_hrnet_coco.pkl',
-        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+        gt_pose_db_file=f'{data_root}/actorsGT.npy',
     )
 
     # test when dataset_info is None
@@ -507,7 +507,7 @@ def test_body3dmview_direct_shelf_dataset():
         cam_file=f'{data_root}/calibration_shelf.json',
         train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
         test_pose_db_file=f'{data_root}/pred_shelf_maskrcnn_hrnet_coco.pkl',
-        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+        gt_pose_db_file=f'{data_root}/actorsGT.npy',
     )
 
     test_data_cfg = dict(
@@ -526,7 +526,7 @@ def test_body3dmview_direct_shelf_dataset():
         cam_file=f'{data_root}/calibration_shelf.json',
         train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
         test_pose_db_file=f'{data_root}/pred_shelf_maskrcnn_hrnet_coco.pkl',
-        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+        gt_pose_db_file=f'{data_root}/actorsGT.npy',
     )
 
     # test when dataset_info is None
