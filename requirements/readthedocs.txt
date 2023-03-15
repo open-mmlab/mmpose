@@ -4,6 +4,6 @@ munkres
 regex
 scipy
 titlecase
-torch
-torchvision>1.6
+torch>1.6
+torchvision
 xtcocotools>=1.13
