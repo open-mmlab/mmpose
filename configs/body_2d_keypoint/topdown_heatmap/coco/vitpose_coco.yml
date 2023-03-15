@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: 'ViTPose: Simple Vision Transformer Baselines for Human Pose Estimation'
     URL: https://arxiv.org/abs/2204.12484
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/backbones/vitpose.md
+  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/algorithms/vitpose.md
   Metadata:
     Training Resources: 8x A100 GPUs
 Models:
