@@ -1,3 +1,7 @@
+<div align="center">
+  <img width="100%" src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png"/>
+</div>
+
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
 [English](README.md) | 简体中文
