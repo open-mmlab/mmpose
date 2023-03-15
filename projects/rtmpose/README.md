@@ -786,7 +786,7 @@ You can also refer to [MMDeploy Docs](https://github.com/open-mmlab/mmdeploy/blo
 
 ## 📜 Citation [🔝](#-table-of-contents)
 
-If you find RTMPose useful in your research, please condier cite:
+If you find RTMPose useful in your research, please consider cite:
 
 ```bibtex
 @misc{https://doi.org/10.48550/arxiv.2303.07399,
