@@ -31,7 +31,8 @@
 [👀Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo.html) |
 [📜Papers](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html) |
 [🆕Update News](https://mmpose.readthedocs.io/en/1.x/notes/changelog.html) |
-[🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
+[🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose) |
+[🔥RTMPose](/projects/rtmpose/)
 
 </div>
 
@@ -60,7 +61,9 @@ The master branch works with **PyTorch 1.6+**.
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
-<details open>
+<br/>
+
+<details close>
 <summary><b>Major Features</b></summary>
 
 - **Support diverse tasks**
@@ -91,11 +94,11 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - We are excited to release **RTMPose**, a real-time pose estimation framework including:
 
   - A family of lightweight pose estimation models with state-of-the-art performance
-  - Inference APIs for Python/C++/C#/Java/etc. Easy to integrate in your applications and empower real-time stable pose estimation
+  - Inference APIs for Python, C++, C#, Java, etc. Easy to integrate into your applications and empower real-time stable pose estimation
   - Cross-platform deployment with various backends
-  - Step-by-step guide to training and deploying your own models
+  - A step-by-step guide to training and deploying your own models
 
-  Checkout our [project page](/projects/rtmpose/README.md) and [technical report](<>) for more information!
+  Checkout our [project page](/projects/rtmpose/) and [technical report](https://arxiv.org/abs/2303.07399) for more information!
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
@@ -104,7 +107,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - Provide an easy and agile way to integrate algorithms, features and applications into MMPose
   - Allow flexible code structure and style; only need a short code review process
   - Build individual projects with full power of MMPose but not bound up with heavy frameworks
-  - Checkout new projects
+  - Checkout new projects:
     - [RTMPose](/projects/rtmpose/)
     - [YOLOX-Pose (coming soon)](<>)
     - [MMPose4AIGC (coming soon)](<>)
@@ -114,11 +117,11 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) is released. Major updates include:
 
-  - Release [RTMPose](/projects/rtmpose/README.md), a high-performance real-time pose estimation framework based on MMPose
-  - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/README.md) (CVPR'21)
+  - Release [RTMPose](/projects/rtmpose/), a high-performance real-time pose estimation framework based on MMPose
+  - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/) (CVPR'21)
   - Add [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer), a convenient interface for inference and visualization
 
-  See [v1.0.0rc1 release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) for more information!
+  See the full [release note](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) for more exciting updates brought by MMPose v1.0.0rc1!
 
 ## Installation
 

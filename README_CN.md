@@ -31,7 +31,8 @@
 [👀模型库](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo.html) |
 [📜论文库](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/algorithms.html) |
 [🆕更新日志](https://mmpose.readthedocs.io/zh_CN/1.x/notes/changelog.html) |
-[🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
+[🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose) |
+[🔥RTMPose](/projects/rtmpose/)
 
 </div>
 
@@ -74,28 +75,37 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- We are excited to release **RTMPose**, a real-time pose estimation framework including:
+- 我们发布了 **RTMPose**，一个高性能实时多人姿态检测框架。具体包括：
 
-  - A family of lightweight pose estimation models with state-of-the-art performance
-  - Inference APIs for Python/C++/C#/Java/etc. Easy to integrate in your applications and empower real-time stable pose estimation
-  - Cross-platform deployment with various backends
-  - Step-by-step guide to training and deploying your own models
+  - 一组新的轻量化姿态估计模型，在不同算力条件下达到 SOTA 的精度性能
+  - 支持多语言（Python, C++, C#, Java, etc）的模型推理接口，可以轻松集成到您的应用中以支持实时、稳定的姿态估计
+  - 跨平台，多后端的模型部署支持
+  - 提供极易上手的教程，帮助您训练和部署自己的模型
 
-  Checkout our [project page](/projects/rtmpose/README.md) and [technical report](<>) for more information!
+  更多信息敬请参阅 RTMPose [项目主页](/projects/rtmpose/) 和 [技术报告](https://arxiv.org/abs/2303.07399)
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-- Welcome to [*projects of MMPose*](/projects/README.md), where you can meet the latest updates of MMPose, and share your ideas and codes with the community at once with the following advantages:
+- 欢迎使用 [*MMPose 项目*](/projects/README.md)。在这里，您可以发现 MMPose 中的最新功能和算法，并且可以通过最快的方式与社区分享自己的创意和代码实现。向 MMPose 中添加新功能从此变得简单丝滑：
 
-  - Provide an easy and agile way to integrate algorithms, features and applications into MMPose
-  - Allow flexible code structure and style, and have simple code review process
-  - Build individual projects with full power of MMPose but not bound up with heavy frameworks
+  - 提供了一种简单迅捷的方式，将新的算法、功能和应用添加到 MMPose 中
+  - 更灵活的代码结构和风格，更少的限制，更简短的代码审核流程
+  - 通过独立项目的形式，利用 MMPose 的强大功能，同时不被代码框架所束缚
+  - 最新添加的项目包括：
+    - [RTMPose](/projects/rtmpose/)
+    - [YOLOX-Pose (coming soon)](<>)
+    - [MMPose4AIGC (coming soon)](<>)
+  - 从简单的 [示例项目](/projects/example_project/) 开启您的 MMPose 代码贡献者之旅吧，让我们共同打造更好用的 MMPose！
 
-- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) is released. Major updates include:
+<br/>
 
-  - Release [RTMPose](/projects/rtmpose/README.md), a high-performance real-time pose estimation framework based on MMPose
-  - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/README.md) (CVPR'21)
-  - Add [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer), a convenient interface for inference and visualization
+- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) 正式发布了，主要更新包括:
+
+  - 发布了 [RTMPose](/projects/rtmpose/)，一个高性能实时多人姿态估计算法框架
+  - 支持了多个新算法： [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/) (CVPR'21)
+  - 增加了 [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer)，一个非常便捷的模型推理接口，通过 1 行代码完成模型选择、权重加载、模型推理和结果可视化。
+
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) 以了解更多 MMPose v1.0.0rc1 带来的更新!
 
 ## 安装
 

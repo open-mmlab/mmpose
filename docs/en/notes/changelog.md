@@ -4,7 +4,7 @@
 
 **Highlights**
 
-- Release RTMPose, a high-performance real-time pose estimation algorithm with cross-platform deployment and inference support. See details at the [project page](/projects/rtmpose/README.md)
+- Release RTMPose, a high-performance real-time pose estimation algorithm with cross-platform deployment and inference support. See details at the [project page](/projects/rtmpose/)
 - Support several new algorithms: ViTPose (arXiv'2022), CID (CVPR'2022), DEKR (CVPR'2021)
 - Add Inferencer, a convenient inference interface that perform pose estimation and visualization on images, videos and webcam streams with only one line of code
 - Introduce *Project*, a new form for rapid and easy implementation of new algorithms and features in MMPose, which is more handy for community contributors
