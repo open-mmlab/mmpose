@@ -44,6 +44,7 @@ Coming soon
 - [📚 Common Usage](#️-common-usage-)
   - [🚀 Inference Speed Test](#-inference-speed-test-)
   - [📊 Model Test](#-model-test-)
+- [📜 Citation](#-citation-)
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
@@ -782,3 +783,27 @@ python tools/test.py \
 ```
 
 You can also refer to [MMDeploy Docs](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/docs/en/02-how-to-run/profile_model.md) for more details.
+
+## 📜 Citation [🔝](#-table-of-contents)
+
+If you find RTMPose useful in your research, please condier cite:
+
+```bibtex
+@misc{https://doi.org/10.48550/arxiv.2303.07399,
+  doi = {10.48550/ARXIV.2303.07399},
+  url = {https://arxiv.org/abs/2303.07399},
+  author = {Jiang, Tao and Lu, Peng and Zhang, Li and Ma, Ningsheng and Han, Rui and Lyu, Chengqi and Li, Yining and Chen, Kai},
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose},
+  publisher = {arXiv},
+  year = {2023},
+  copyright = {Creative Commons Attribution 4.0 International}
+}
+
+@misc{mmpose2020,
+    title={OpenMMLab Pose Estimation Toolbox and Benchmark},
+    author={MMPose Contributors},
+    howpublished = {\url{https://github.com/open-mmlab/mmpose}},
+    year={2020}
+}
+```

@@ -12,6 +12,7 @@ You can change the documentation language at the lower-left corner of the page.
     overview.md
     installation.md
     quick_run.md
+    guide_to_framework.md
 
 .. toctree::
     :maxdepth: 1
@@ -29,7 +30,6 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 1
    :caption: 进阶教程
 
-   advanced_guides/dive_into_framework.md
    advanced_guides/advanced_training.md
    advanced_guides/mixed_datasets.md
 

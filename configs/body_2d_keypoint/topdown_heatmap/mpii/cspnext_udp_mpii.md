@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/2212.07784">RTMDet (2022)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/2212.07784">RTMDet (arXiv'2022)</a></summary>
 
 ```bibtex
 @misc{lyu2022rtmdet,
