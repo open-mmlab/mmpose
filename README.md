@@ -99,17 +99,26 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-- Welcome to [*projects of MMPose*](/projects/README.md), where you can meet the latest updates of MMPose, and share your ideas and codes with the community at once with the following advantages:
+- Welcome to [*projects of MMPose*](/projects/README.md), where you can access to the latest features of MMPose, and share your ideas and codes with the community at once. Contribution to MMPose will be simple and smooth:
 
   - Provide an easy and agile way to integrate algorithms, features and applications into MMPose
-  - Allow flexible code structure and style, and have simple code review process
+  - Allow flexible code structure and style; only need a short code review process
   - Build individual projects with full power of MMPose but not bound up with heavy frameworks
+  - Checkout new projects
+    - [RTMPose](/projects/rtmpose/)
+    - [YOLOX-Pose (coming soon)](<>)
+    - [MMPose4AIGC (coming soon)](<>)
+  - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
+
+<br/>
 
 - 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) is released. Major updates include:
 
   - Release [RTMPose](/projects/rtmpose/README.md), a high-performance real-time pose estimation framework based on MMPose
   - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/README.md) (CVPR'21)
   - Add [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer), a convenient interface for inference and visualization
+
+  See [v1.0.0rc1 release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) for more information!
 
 ## Installation
 
