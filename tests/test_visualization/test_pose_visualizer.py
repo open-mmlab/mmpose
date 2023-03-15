@@ -97,6 +97,13 @@ class TestPoseLocalVisualizer(TestCase):
             out_file=out_file)
         self._assert_image_and_shape(out_file, ((h * 2), (w * 2), 3))
 
+    def test_simcc_visualization(self):
+        img = np.zeros((512, 512, 3), dtype=np.uint8)
+        heatmap = torch.randn([17, 512, 512])
+        pixelData = PixelData()
+        pixelData.heatmaps = heatmap
+        self.visualizer._draw_instance_xy_heatmap(pixelData, img, 10)
+
     def _assert_image_and_shape(self, out_file, out_shape):
         self.assertTrue(os.path.exists(out_file))
         drawn_img = cv2.imread(out_file)

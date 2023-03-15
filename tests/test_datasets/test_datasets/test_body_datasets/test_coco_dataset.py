@@ -91,7 +91,7 @@ class TestCocoDataset(TestCase):
             len(dataset.metainfo['skeleton_links']),
             len(dataset.metainfo['skeleton_link_colors']))
 
-    def test_top_down(self):
+    def test_topdown(self):
         # test topdown training
         dataset = self.build_coco_dataset(data_mode='topdown')
         self.assertEqual(len(dataset), 12)
@@ -118,7 +118,7 @@ class TestCocoDataset(TestCase):
             filter_cfg=dict(bbox_score_thr=0.3))
         self.assertEqual(len(dataset), 33)
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_coco_dataset(data_mode='bottomup')
         self.assertEqual(len(dataset), 4)

@@ -110,20 +110,20 @@ class TestBottomupResize(TestCase):
         # single-scale, fit
         transform = BottomupResize(input_size=(256, 256), resize_mode='fit')
         results = transform(deepcopy(self.data_info))
-        scale = 256 / 480
-        expected_warp_mat = np.array([[scale, 0, 0], [0, scale, 0]])
-        # the upper-half is the resized image content, and the lower-half is
-        # the padded zeros
+        # the middle section of the image is the resized content, while the
+        # top and bottom are padded with zeros
         self.assertEqual(results['img'].shape, (256, 256, 3))
-        self.assertTrue(np.allclose(results['warp_mat'], expected_warp_mat))
-        self.assertTrue(np.all(results['img'][:128] > 0))
-        self.assertTrue(np.all(results['img'][128:] == 0))
+        self.assertTrue(
+            np.allclose(results['input_scale'], np.array([480., 480.])))
+        self.assertTrue(
+            np.allclose(results['input_center'], np.array([240., 120.])))
+        self.assertTrue(np.all(results['img'][64:192] > 0))
+        self.assertTrue(np.all(results['img'][:64] == 0))
+        self.assertTrue(np.all(results['img'][192:] == 0))
 
         # single-scale, expand
         transform = BottomupResize(input_size=(256, 256), resize_mode='expand')
         results = transform(deepcopy(self.data_info))
-        scale = 256 / 240
-        expected_warp_mat = np.array([[scale, 0, 0], [0, scale, 0]])
         # the actual input size is expanded to (512, 256) according to the
         # original image shape
         self.assertEqual(results['img'].shape, (256, 512, 3))
@@ -138,9 +138,10 @@ class TestBottomupResize(TestCase):
 
         # multi-scale
         transform = BottomupResize(
-            input_size=(256, 256), aux_scales=[1.5], resize_mode='fit')
+            input_size=(256, 256), aug_scales=[1.5], resize_mode='fit')
         results = transform(deepcopy(self.data_info))
         self.assertIsInstance(results['img'], list)
-        self.assertIsInstance(results['warp_mat'], np.ndarray)
+        self.assertIsInstance(results['input_center'], np.ndarray)
+        self.assertIsInstance(results['input_scale'], np.ndarray)
         self.assertEqual(results['img'][0].shape, (256, 256, 3))
         self.assertEqual(results['img'][1].shape, (384, 384, 3))

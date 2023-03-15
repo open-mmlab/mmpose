@@ -41,7 +41,7 @@ class TestPoseTrack18Metric(TestCase):
             'posetrack18/Hip AP': 100.0,
             'posetrack18/Knee AP': 100.0,
             'posetrack18/Ankl AP': 100.0,
-            'posetrack18/Total AP': 100.0,
+            'posetrack18/AP': 100.0,
         }
 
     def _convert_ann_to_topdown_batch_data(self):
@@ -118,8 +118,7 @@ class TestPoseTrack18Metric(TestCase):
         # test score_mode option
         with self.assertRaisesRegex(ValueError,
                                     '`score_mode` should be one of'):
-            _ = PoseTrack18Metric(
-                ann_file=self.ann_file, score_mode='keypoint')
+            _ = PoseTrack18Metric(ann_file=self.ann_file, score_mode='invalid')
 
         # test nms_mode option
         with self.assertRaisesRegex(ValueError, '`nms_mode` should be one of'):

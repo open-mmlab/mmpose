@@ -91,7 +91,7 @@ class TestATRWDataset(TestCase):
             len(dataset.metainfo['skeleton_links']),
             len(dataset.metainfo['skeleton_link_colors']))
 
-    def test_top_down(self):
+    def test_topdown(self):
         # test topdown training
         dataset = self.build_atrw_dataset(data_mode='topdown')
         self.assertEqual(dataset.data_mode, 'topdown')
@@ -106,7 +106,7 @@ class TestATRWDataset(TestCase):
         self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0])
 
-    def test_bottom_up(self):
+    def test_bottomup(self):
         # test bottomup training
         dataset = self.build_atrw_dataset(data_mode='bottomup')
         self.assertEqual(len(dataset), 2)

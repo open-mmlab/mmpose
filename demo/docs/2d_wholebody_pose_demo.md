@@ -47,9 +47,9 @@ python demo/topdown_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --input ${INPUT_PATH} \
-    --output-root ${OUTPUT_DIR} \
-    [--show --draw-heatmap --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--output-root ${OUTPUT_DIR}] [--save-predictions] \
+    [--show] [--draw-heatmap] [--device ${GPU_ID or CPU}] \
+    [--bbox-thr ${BBOX_SCORE_THR}] [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Examples:
@@ -63,6 +63,8 @@ python demo/topdown_demo_with_mmdet.py \
     --input tests/data/coco/000000196141.jpg \
     --output-root vis_results/ --show
 ```
+
+To save the predicted results on disk, please specify `--save-predictions`.
 
 ### 2D Human Whole-Body Pose Top-Down Video Demo
 

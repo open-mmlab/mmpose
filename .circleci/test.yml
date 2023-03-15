@@ -83,10 +83,10 @@ jobs:
         type: string
       cuda:
         type: enum
-        enum: ["10.1", "10.2", "11.1"]
+        enum: ["11.1"]
       cudnn:
         type: integer
-        default: 7
+        default: 8
     machine:
       image: ubuntu-2004-cuda-11.4:202110-01
       # docker_layer_caching: true
@@ -150,15 +150,15 @@ workflows:
                 - 1.x
       - build_cpu:
           name: minimum_version_cpu
-          torch: 1.6.0
-          torchvision: 0.7.0
-          python: 3.6.9  # The lowest python 3.6.x version available on CircleCI images
+          torch: 1.7.1
+          torchvision: 0.8.2
+          python: 3.7.4
           requires:
             - lint
       - build_cpu:
           name: maximum_version_cpu
-          torch: 1.12.1
-          torchvision: 0.13.1
+          torch: 1.13.0
+          torchvision: 0.14.0
           python: 3.9.0
           requires:
             - minimum_version_cpu
@@ -168,10 +168,10 @@ workflows:
             - maximum_version_cpu
       - build_cuda:
           name: mainstream_version_gpu
-          torch: 1.8.1
+          torch: 1.7.1
           # Use double quotation mark to explicitly specify its type
           # as string instead of number
-          cuda: "10.2"
+          cuda: "11.1"
           requires:
             - hold
   merge_stage_test:
@@ -181,10 +181,10 @@ workflows:
     jobs:
       - build_cuda:
           name: minimum_version_gpu
-          torch: 1.6.0
+          torch: 1.7.1
           # Use double quotation mark to explicitly specify its type
           # as string instead of number
-          cuda: "10.1"
+          cuda: "11.1"
           filters:
             branches:
               only:

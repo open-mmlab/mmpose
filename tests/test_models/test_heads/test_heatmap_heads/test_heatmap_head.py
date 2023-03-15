@@ -23,12 +23,6 @@ class TestHeatmapHead(TestCase):
         ]
         return feats
 
-    def _get_data_samples(self, batch_size: int = 2):
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(batch_size)
-        ]
-        return batch_data_samples
-
     def test_init(self):
         # w/o deconv
         head = HeatmapHead(
@@ -87,7 +81,7 @@ class TestHeatmapHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -108,7 +102,7 @@ class TestHeatmapHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -116,7 +110,31 @@ class TestHeatmapHead(TestCase):
         self.assertEqual(preds[0].keypoints.shape,
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
-        # input transform: output heatmap
+        # input transform: none
+        head = HeatmapHead(
+            in_channels=[16, 32],
+            out_channels=17,
+            input_transform='resize_concat',
+            input_index=[0, 1],
+            deconv_out_channels=(256, 256),
+            deconv_kernel_sizes=(4, 4),
+            conv_out_channels=(256, ),
+            conv_kernel_sizes=(1, ),
+            decoder=decoder_cfg)
+        feats = self._get_feats(batch_size=2, feat_shapes=[(48, 16, 12)])[0]
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
+        with self.assertWarnsRegex(
+                Warning,
+                'the input of HeatmapHead is a tensor instead of a tuple '
+                'or list. The argument `input_transform` will be ignored.'):
+            preds = head.predict(feats, batch_data_samples)
+
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
+
+        # output heatmap
         head = HeatmapHead(
             in_channels=[16, 32],
             out_channels=17,
@@ -125,7 +143,7 @@ class TestHeatmapHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         _, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
@@ -149,7 +167,7 @@ class TestHeatmapHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict([feats, feats],
                              batch_data_samples,
                              test_cfg=dict(
@@ -177,7 +195,7 @@ class TestHeatmapHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict([feats, feats],
                              batch_data_samples,
                              test_cfg=dict(
@@ -200,7 +218,7 @@ class TestHeatmapHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         losses = head.loss(feats, batch_data_samples)
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
@@ -208,14 +226,14 @@ class TestHeatmapHead(TestCase):
 
     def test_errors(self):
         # Invalid arguments
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = HeatmapHead(
                 in_channels=[16, 32],
                 out_channels=17,
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(4, 4))
 
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = HeatmapHead(
                 in_channels=[16, 32],
                 out_channels=17,

@@ -31,8 +31,23 @@
 [👀Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo.html) |
 [📜Papers](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html) |
 [🆕Update News](https://mmpose.readthedocs.io/en/1.x/notes/changelog.html) |
-[🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
+[🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose) |
+[🔥RTMPose](/projects/rtmpose/)
 
+</div>
+
+<div align="center">
+  <a href="https://openmmlab.medium.com/" style="text-decoration:none;">
+    <img src="https://user-images.githubusercontent.com/25839884/218352562-cdded397-b0f3-4ca1-b8dd-a60df8dca75b.png" width="3%" alt="" /></a>
+  <img src="https://user-images.githubusercontent.com/25839884/218346358-56cc8e2f-a2b8-487f-9088-32480cceabcf.png" width="3%" alt="" />
+  <a href="https://discord.com/channels/1037617289144569886/1046608014234370059" style="text-decoration:none;">
+    <img src="https://user-images.githubusercontent.com/25839884/218347213-c080267f-cbb6-443e-8532-8e1ed9a58ea9.png" width="3%" alt="" /></a>
+  <img src="https://user-images.githubusercontent.com/25839884/218346358-56cc8e2f-a2b8-487f-9088-32480cceabcf.png" width="3%" alt="" />
+  <a href="https://twitter.com/OpenMMLab" style="text-decoration:none;">
+    <img src="https://user-images.githubusercontent.com/25839884/218346637-d30c8a0f-3eba-4699-8131-512fb06d46db.png" width="3%" alt="" /></a>
+  <img src="https://user-images.githubusercontent.com/25839884/218346358-56cc8e2f-a2b8-487f-9088-32480cceabcf.png" width="3%" alt="" />
+  <a href="https://www.youtube.com/openmmlab" style="text-decoration:none;">
+    <img src="https://user-images.githubusercontent.com/25839884/218346691-ceb2116a-465a-40af-8424-9f30d2348ca9.png" width="3%" alt="" /></a>
 </div>
 
 ## Introduction
@@ -46,7 +61,9 @@ The master branch works with **PyTorch 1.6+**.
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
-<details open>
+<br/>
+
+<details close>
 <summary><b>Major Features</b></summary>
 
 - **Support diverse tasks**
@@ -74,21 +91,37 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- 2022-10-14: MMPose [v1.0.0rc0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc0) is released. Major updates include:
+- We are excited to release **RTMPose**, a real-time pose estimation framework including:
 
-  - Support 4 light-weight pose estimation algorithms
-    - SimCC (ECCV'22): [paper](https://doi.org/10.48550/arxiv.2107.03332) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/simcc/README.md)
-    - Debias-IPR (ICCV'21): [paper](https://openaccess.thecvf.com/content/ICCV2021/papers/Gu_Removing_the_Bias_of_Integral_Pose_Regression_ICCV_2021_paper.pdf) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-    - IPR (ECCV'18): [paper](https://arxiv.org/abs/1711.08229) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-    - DSNT (ArXiv'18): [paper](https://arxiv.org/abs/1801.07372v2) | [models](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-  - Add [Colab tutorial](https://github.com/open-mmlab/mmpose/blob/1.x/demo/MMPose_Tutorial.ipynb) for MMPose v1.0
+  - A family of lightweight pose estimation models with state-of-the-art performance
+  - Inference APIs for Python, C++, C#, Java, etc. Easy to integrate into your applications and empower real-time stable pose estimation
+  - Cross-platform deployment with various backends
+  - A step-by-step guide to training and deploying your own models
 
-- 2022-09-01: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0b0) is released!
+  Checkout our [project page](/projects/rtmpose/) and [technical report](https://arxiv.org/abs/2303.07399) for more information!
 
-  - This release introduced major refactoring to MMPose towards better performance, extensibility and user-friendliness.
-  - Built upon a brand new and flexible training & test engine, which is still in progress. Welcome to try according to [the documentation](https://mmpose.readthedocs.io/en/1.x/).
-  - There are BC-breaking changes. Please check [the migration tutorial](https://mmpose.readthedocs.io/en/1.x/migration.html).
-  - The beta and release candidate versions will last until the end of 2022, and during the release candidate, we will develop on the `1.x` branch. And we will still maintain 0.x version still at least the end of 2023.
+![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
+
+- Welcome to [*projects of MMPose*](/projects/README.md), where you can access to the latest features of MMPose, and share your ideas and codes with the community at once. Contribution to MMPose will be simple and smooth:
+
+  - Provide an easy and agile way to integrate algorithms, features and applications into MMPose
+  - Allow flexible code structure and style; only need a short code review process
+  - Build individual projects with full power of MMPose but not bound up with heavy frameworks
+  - Checkout new projects:
+    - [RTMPose](/projects/rtmpose/)
+    - [YOLOX-Pose (coming soon)](<>)
+    - [MMPose4AIGC (coming soon)](<>)
+  - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
+
+<br/>
+
+- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) is released. Major updates include:
+
+  - Release [RTMPose](/projects/rtmpose/), a high-performance real-time pose estimation framework based on MMPose
+  - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/) (CVPR'21)
+  - Add [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer), a convenient interface for inference and visualization
+
+  See the full [release note](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) for more exciting updates brought by MMPose v1.0.0rc1!
 
 ## Installation
 

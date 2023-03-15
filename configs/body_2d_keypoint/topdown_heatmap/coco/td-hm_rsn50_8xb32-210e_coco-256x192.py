@@ -99,9 +99,7 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec[0]['input_size']),
-    dict(
-        type='GenerateTarget', target_type='multilevel_heatmap',
-        encoder=codec),
+    dict(type='GenerateTarget', multilevel=True, encoder=codec),
     dict(type='PackPoseInputs')
 ]
 

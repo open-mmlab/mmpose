@@ -1,8 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os.path as osp
+from copy import deepcopy
 from typing import Optional
 
 import numpy as np
 import torch
+from mmengine.config import Config
+from mmengine.dataset import pseudo_collate
 from mmengine.structures import InstanceData, PixelData
 
 from mmpose.structures import MultilevelPixelData, PoseDataSample
@@ -53,6 +57,7 @@ def get_coco_sample(
     data = {
         'img': img,
         'img_shape': img_shape,
+        'ori_shape': img_shape,
         'bbox': bbox,
         'keypoints': keypoints,
         'keypoints_visible': keypoints_visible,
@@ -77,7 +82,7 @@ def get_packed_inputs(batch_size=2,
                       num_instances=1,
                       num_keypoints=17,
                       num_levels=1,
-                      img_shape=(128, 128),
+                      img_shape=(256, 192),
                       input_size=(192, 256),
                       heatmap_size=(48, 64),
                       simcc_split_ratio=2.0,
@@ -87,7 +92,7 @@ def get_packed_inputs(batch_size=2,
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
-    packed_inputs = []
+    inputs_list = []
     for idx in range(batch_size):
         inputs = dict()
 
@@ -114,7 +119,6 @@ def get_packed_inputs(batch_size=2,
         # gt_instance
         gt_instances = InstanceData()
         gt_instance_labels = InstanceData()
-
         bboxes = _rand_bboxes(rng, num_instances, w, h)
         bbox_centers, bbox_scales = bbox_xyxy2cs(bboxes)
 
@@ -175,9 +179,10 @@ def get_packed_inputs(batch_size=2,
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
 
-        inputs['data_sample'] = data_sample
-        packed_inputs.append(inputs)
+        inputs['data_samples'] = data_sample
+        inputs_list.append(inputs)
 
+    packed_inputs = pseudo_collate(inputs_list)
     return packed_inputs
 
 
@@ -196,7 +201,8 @@ def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
 
 
 def _rand_bboxes(rng, num_instances, img_w, img_h):
-    cx, cy, bw, bh = rng.rand(num_instances, 4).T
+    cx, cy = rng.rand(num_instances, 2).T
+    bw, bh = 0.2 + 0.8 * rng.rand(num_instances, 2).T
 
     tl_x = ((cx * img_w) - (img_w * bw / 2)).clip(0, img_w)
     tl_y = ((cy * img_h) - (img_h * bh / 2)).clip(0, img_h)
@@ -205,3 +211,38 @@ def _rand_bboxes(rng, num_instances, img_w, img_h):
 
     bboxes = np.vstack([tl_x, tl_y, br_x, br_y]).T
     return bboxes
+
+
+def get_repo_dir():
+    """Return the path of the MMPose repo directory."""
+    try:
+        # Assume the function in invoked is the source mmpose repo
+        repo_dir = osp.dirname(osp.dirname(osp.dirname(__file__)))
+    except NameError:
+        # For IPython development when __file__ is not defined
+        import mmpose
+        repo_dir = osp.dirname(osp.dirname(mmpose.__file__))
+
+    return repo_dir
+
+
+def get_config_file(fn: str):
+    """Return full path of a config file from the given relative path."""
+    repo_dir = get_repo_dir()
+    if fn.startswith('configs'):
+        fn_config = osp.join(repo_dir, fn)
+    else:
+        fn_config = osp.join(repo_dir, 'configs', fn)
+
+    if not osp.isfile(fn_config):
+        raise FileNotFoundError(f'Cannot find config file {fn_config}')
+
+    return fn_config
+
+
+def get_pose_estimator_cfg(fn: str):
+    """Load model config from a config file."""
+
+    fn_config = get_config_file(fn)
+    config = Config.fromfile(fn_config)
+    return deepcopy(config.model)

@@ -28,7 +28,8 @@ auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='posetrack18/Total AP', rule='greater'))
+    checkpoint=dict(
+        save_best='posetrack18/Total AP', rule='greater', interval=1))
 
 # load from the pretrained model
 load_from = 'https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-384x288-ca5956af_20220909.pth'  # noqa: E501
@@ -101,7 +102,7 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 

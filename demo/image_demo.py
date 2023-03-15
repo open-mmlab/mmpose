@@ -6,7 +6,6 @@ from mmcv.image import imread
 from mmpose.apis import inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
-from mmpose.utils import register_all_modules
 
 
 def parse_args():
@@ -21,13 +20,22 @@ def parse_args():
         '--draw-heatmap',
         action='store_true',
         help='Visualize the predicted heatmap')
+    parser.add_argument(
+        '--show-kpt-idx',
+        action='store_true',
+        default=False,
+        help='Whether to show the index of keypoints')
+    parser.add_argument(
+        '--show',
+        action='store_true',
+        default=False,
+        help='whether to show img')
     args = parser.parse_args()
     return args
 
 
-def main(args):
-    # register all modules in mmpose into the registries
-    register_all_modules()
+def main():
+    args = parse_args()
 
     # build the model from a config file and a checkpoint file
     if args.draw_heatmap:
@@ -46,8 +54,8 @@ def main(args):
     visualizer.set_dataset_meta(model.dataset_meta)
 
     # inference a single image
-    results = inference_topdown(model, args.img)
-    results = merge_data_samples(results)
+    batch_results = inference_topdown(model, args.img)
+    results = merge_data_samples(batch_results)
 
     # show the results
     img = imread(args.img, channel_order='rgb')
@@ -58,10 +66,10 @@ def main(args):
         draw_gt=False,
         draw_bbox=True,
         draw_heatmap=args.draw_heatmap,
-        show=True,
+        show_kpt_idx=args.show_kpt_idx,
+        show=args.show,
         out_file=args.out_file)
 
 
 if __name__ == '__main__':
-    args = parse_args()
-    main(args)
+    main()

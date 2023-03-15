@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from itertools import product
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 
@@ -9,7 +9,7 @@ def generate_gaussian_heatmaps(
     heatmap_size: Tuple[int, int],
     keypoints: np.ndarray,
     keypoints_visible: np.ndarray,
-    sigma: float,
+    sigma: Union[float, Tuple[float], np.ndarray],
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Generate gaussian heatmaps of keypoints.
 
@@ -18,7 +18,9 @@ def generate_gaussian_heatmaps(
         keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
         keypoints_visible (np.ndarray): Keypoint visibilities in shape
             (N, K)
-        sigma (float): The sigma value of the Gaussian heatmap
+        sigma (float or List[float]): A list of sigma values of the Gaussian
+            heatmap for each instance. If sigma is given as a single float
+            value, it will be expanded into a tuple
 
     Returns:
         tuple:
@@ -34,51 +36,56 @@ def generate_gaussian_heatmaps(
     heatmaps = np.zeros((K, H, W), dtype=np.float32)
     keypoint_weights = keypoints_visible.copy()
 
-    # 3-sigma rule
-    radius = sigma * 3
+    if isinstance(sigma, (int, float)):
+        sigma = (sigma, ) * N
 
-    # xy grid
-    gaussian_size = 2 * radius + 1
-    x = np.arange(0, gaussian_size, 1, dtype=np.float32)
-    y = x[:, None]
-    x0 = y0 = gaussian_size // 2
+    for n in range(N):
+        # 3-sigma rule
+        radius = sigma[n] * 3
 
-    for n, k in product(range(N), range(K)):
-        # skip unlabled keypoints
-        if keypoints_visible[n, k] < 0.5:
-            continue
+        # xy grid
+        gaussian_size = 2 * radius + 1
+        x = np.arange(0, gaussian_size, 1, dtype=np.float32)
+        y = x[:, None]
+        x0 = y0 = gaussian_size // 2
 
-        # get gaussian center coordinates
-        mu = (keypoints[n, k] + 0.5).astype(np.int64)
+        for k in range(K):
+            # skip unlabled keypoints
+            if keypoints_visible[n, k] < 0.5:
+                continue
 
-        # check that the gaussian has in-bounds part
-        left, top = (mu - radius).astype(np.int64)
-        right, bottom = (mu + radius + 1).astype(np.int64)
+            # get gaussian center coordinates
+            mu = (keypoints[n, k] + 0.5).astype(np.int64)
 
-        if left >= W or top >= H or right < 0 or bottom < 0:
-            keypoint_weights[n, k] = 0
-            continue
+            # check that the gaussian has in-bounds part
+            left, top = (mu - radius).astype(np.int64)
+            right, bottom = (mu + radius + 1).astype(np.int64)
 
-        # The gaussian is not normalized,
-        # we want the center value to equal 1
-        gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
+            if left >= W or top >= H or right < 0 or bottom < 0:
+                keypoint_weights[n, k] = 0
+                continue
 
-        # valid range in gaussian
-        g_x1 = max(0, -left)
-        g_x2 = min(W, right) - left
-        g_y1 = max(0, -top)
-        g_y2 = min(H, bottom) - top
+            # The gaussian is not normalized,
+            # we want the center value to equal 1
+            gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma[n]**2))
 
-        # valid range in heatmap
-        h_x1 = max(0, left)
-        h_x2 = min(W, right)
-        h_y1 = max(0, top)
-        h_y2 = min(H, bottom)
+            # valid range in gaussian
+            g_x1 = max(0, -left)
+            g_x2 = min(W, right) - left
+            g_y1 = max(0, -top)
+            g_y2 = min(H, bottom) - top
 
-        heatmap_region = heatmaps[k, h_y1:h_y2, h_x1:h_x2]
-        gaussian_regsion = gaussian[g_y1:g_y2, g_x1:g_x2]
+            # valid range in heatmap
+            h_x1 = max(0, left)
+            h_x2 = min(W, right)
+            h_y1 = max(0, top)
+            h_y2 = min(H, bottom)
 
-        _ = np.maximum(heatmap_region, gaussian_regsion, out=heatmap_region)
+            heatmap_region = heatmaps[k, h_y1:h_y2, h_x1:h_x2]
+            gaussian_regsion = gaussian[g_y1:g_y2, g_x1:g_x2]
+
+            _ = np.maximum(
+                heatmap_region, gaussian_regsion, out=heatmap_region)
 
     return heatmaps, keypoint_weights
 

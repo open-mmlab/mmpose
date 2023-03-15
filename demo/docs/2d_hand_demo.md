@@ -11,7 +11,7 @@ python demo/topdown_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --input ${INPUT_PATH} [--output-root ${OUTPUT_DIR}] \
-    [--show] [--device ${GPU_ID or CPU}] \
+    [--show] [--device ${GPU_ID or CPU}] [--save-predictions] \
     [--draw-heatmap ${DRAW_HEATMAP}] [--radius ${KPT_RADIUS}] \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}]
 
@@ -47,6 +47,8 @@ python demo/topdown_demo_with_mmdet.py \
     --input tests/data/onehand10k/9.jpg \
     --output-root vis_results --show --draw-heatmap
 ```
+
+To save the predicted results on disk, please specify `--save-predictions`.
 
 To run demos on CPU:
 

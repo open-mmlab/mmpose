@@ -23,17 +23,15 @@ class TestCPMHead(TestCase):
         return feats
 
     def _get_data_samples(self, batch_size: int = 2):
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(
-                batch_size=batch_size,
-                num_instances=1,
-                num_keypoints=17,
-                img_shape=(128, 128),
-                input_size=(192, 256),
-                heatmap_size=(24, 32),
-                with_heatmap=True,
-                with_reg_label=False)
-        ]
+        batch_data_samples = get_packed_inputs(
+            batch_size=batch_size,
+            num_instances=1,
+            num_keypoints=17,
+            img_shape=(128, 128),
+            input_size=(192, 256),
+            heatmap_size=(24, 32),
+            with_heatmap=True,
+            with_reg_label=False)['data_samples']
         return batch_data_samples
 
     def test_init(self):
@@ -223,7 +221,7 @@ class TestCPMHead(TestCase):
 
     def test_errors(self):
         # Invalid arguments
-        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+        with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = CPMHead(
                 num_stages=1,
                 in_channels=17,

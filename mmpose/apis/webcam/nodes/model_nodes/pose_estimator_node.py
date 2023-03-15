@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 import numpy as np
 
 from mmpose.apis import inference_topdown, init_model
-from mmpose.utils import register_all_modules
 from ...utils import get_config_path
 from ..node import Node
 from ..registry import NODES
@@ -91,7 +90,6 @@ class TopdownPoseEstimatorNode(Node):
         self.bbox_thr = bbox_thr
 
         # Init model
-        register_all_modules()
         self.model = init_model(
             self.model_config, self.model_checkpoint, device=self.device)
 
@@ -119,7 +117,6 @@ class TopdownPoseEstimatorNode(Node):
         if len(objects) > 0:
             # Inference pose
             bboxes = np.stack([object['bbox'] for object in objects])
-            register_all_modules()
             pose_results = inference_topdown(self.model, img, bboxes)
 
             # Update objects
@@ -128,8 +125,8 @@ class TopdownPoseEstimatorNode(Node):
                 object['keypoints'] = pred_instances.keypoints[0]
                 object['keypoint_scores'] = pred_instances.keypoint_scores[0]
 
-                dataset_meta = object.get('dataset_meta', dict())
-                dataset_meta.update(self.model.dataset_meta)
+                dataset_meta = self.model.dataset_meta.copy()
+                dataset_meta.update(object.get('dataset_meta', dict()))
                 object['dataset_meta'] = dataset_meta
                 object['pose_model_cfg'] = self.model.cfg
 

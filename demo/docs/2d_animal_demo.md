@@ -9,7 +9,7 @@ python demo/topdown_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --input ${INPUT_PATH} --det-cat-id ${DET_CAT_ID} \
-    [--show] [--output-root ${OUTPUT_DIR}]  \
+    [--show] [--output-root ${OUTPUT_DIR}] [--save-predictions] \
     [--draw-heatmap ${DRAW_HEATMAP}] [--radius ${KPT_RADIUS}] \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}] \
     [--device ${GPU_ID or CPU}]
@@ -51,6 +51,18 @@ python demo/topdown_demo_with_mmdet.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
     --output-root vis_results --draw-heatmap --det-cat-id=15
+```
+
+To save predicted results on disk:
+
+```shell
+python demo/topdown_demo_with_mmdet.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
+    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
+    https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
+    --input tests/data/animalpose/ca110.jpeg \
+    --output-root vis_results --save-predictions --draw-heatmap --det-cat-id=15
 ```
 
 To run demos on CPU:

@@ -38,7 +38,7 @@ def flip_keypoints(keypoints: np.ndarray,
     """
 
     assert keypoints.shape[:-1] == keypoints_visible.shape, (
-        f'Unmatched shapes of keypoints {keypoints.shape} and '
+        f'Mismatched shapes of keypoints {keypoints.shape} and '
         f'keypoints_visible {keypoints_visible.shape}')
 
     direction_options = {'horizontal', 'vertical', 'diagonal'}

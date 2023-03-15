@@ -224,4 +224,48 @@ Make sure you have provided all the paths correctly.
 
 The following dataset wrappers are supported in [MMEngine](https://github.com/open-mmlab/mmengine), you can refer to [MMEngine tutorial](https://mmengine.readthedocs.io/en/latest) to learn how to use it.
 
+- [ConcatDataset](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html#concatdataset)
 - [RepeatDataset](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html#repeatdataset)
+
+### CombinedDataset
+
+MMPose provides `CombinedDataset` to combine multiple datasets with different annotations. A combined dataset can be defined in config files as:
+
+```python
+dataset_1 = dict(
+    type='dataset_type_1',
+    data_root='root/of/your/dataset1',
+    data_prefix=dict(img_path='path/to/your/img'),
+    ann_file='annotations/train.json',
+    pipeline=[
+        # the converter transforms convert data into a unified format
+        converter_transform_1
+    ])
+
+dataset_2 = dict(
+    type='dataset_type_2',
+    data_root='root/of/your/dataset2',
+    data_prefix=dict(img_path='path/to/your/img'),
+    ann_file='annotations/train.json',
+    pipeline=[
+        converter_transform_2
+    ])
+
+shared_pipeline = [
+    LoadImage(),
+    ParseImage(),
+]
+
+combined_dataset = dict(
+    type='CombinedDataset',
+    metainfo=dict(from_file='path/to/your/metainfo'),
+    datasets=[dataset_1, dataset_2],
+    pipeline=shared_pipeline,
+)
+```
+
+- **MetaInfo of combined dataset** determines the annotation format. Either metainfo of a sub-dataset or a customed dataset metainfo is valid here. To custom a dataset metainfo, please refer to [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset).
+
+- **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then `KeypointConverter` can be used to unify the keypoints number and order.
+
+- More details about `CombinedDataset` and `KeypointConverter` can be found in Advanced Guides-[Training with Mixed Datasets](../advanced_guides/mixed_datasets.md).

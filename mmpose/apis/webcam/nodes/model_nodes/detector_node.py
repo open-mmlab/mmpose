@@ -3,13 +3,13 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 
+from mmpose.utils import adapt_mmdet_pipeline
 from ...utils import get_config_path
 from ..node import Node
 from ..registry import NODES
 
 try:
     from mmdet.apis import inference_detector, init_detector
-    from mmdet.utils import register_all_modules
     has_mmdet = True
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
@@ -90,9 +90,9 @@ class DetectorNode(Node):
         self.bbox_thr = bbox_thr
 
         # Init model
-        register_all_modules()
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
+        self.model.cfg = adapt_mmdet_pipeline(self.model.cfg)
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', trigger=True)
@@ -110,7 +110,6 @@ class DetectorNode(Node):
 
         img = input_msg.get_image()
 
-        register_all_modules()
         preds = inference_detector(self.model, img)
         objects = self._post_process(preds)
         input_msg.update_objects(objects)
@@ -124,7 +123,7 @@ class DetectorNode(Node):
         """Post-process the predictions of MMDetection model."""
         instances = preds.pred_instances.cpu().numpy()
 
-        classes = self.model.dataset_meta['CLASSES']
+        classes = self.model.dataset_meta['classes']
         if isinstance(classes, str):
             classes = (classes, )
 

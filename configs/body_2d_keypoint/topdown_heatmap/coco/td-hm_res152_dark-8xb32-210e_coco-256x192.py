@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -75,7 +75,7 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

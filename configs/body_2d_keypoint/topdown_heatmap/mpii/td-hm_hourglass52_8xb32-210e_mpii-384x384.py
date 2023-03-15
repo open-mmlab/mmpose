@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
 # codec settings
 codec = dict(
@@ -71,7 +71,7 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomBBoxTransform', shift_prob=0),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

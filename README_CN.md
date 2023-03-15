@@ -31,7 +31,8 @@
 [👀模型库](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo.html) |
 [📜论文库](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/algorithms.html) |
 [🆕更新日志](https://mmpose.readthedocs.io/zh_CN/1.x/notes/changelog.html) |
-[🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
+[🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose) |
+[🔥RTMPose](/projects/rtmpose/)
 
 </div>
 
@@ -74,24 +75,37 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 2022-10-14: MMPose [v1.0.0rc0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc0) 已经发布. 主要更新包括:
+- 我们发布了 **RTMPose**，一个高性能实时多人姿态检测框架。具体包括：
 
-  - 增加了 4 个轻量化姿态估计算法
-    - SimCC (ECCV'22): [论文链接](https://doi.org/10.48550/arxiv.2107.03332) | [模型](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/simcc/README.md)
-    - Debias-IPR (ICCV'21): [论文链接](https://openaccess.thecvf.com/content/ICCV2021/papers/Gu_Removing_the_Bias_of_Integral_Pose_Regression_ICCV_2021_paper.pdf) | [模型](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-    - IPR (ECCV'18): [论文链接](https://arxiv.org/abs/1711.08229) | [模型](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-    - DSNT (ArXiv'18): [论文链接](https://arxiv.org/abs/1801.07372v2) | [模型](https://github.com/open-mmlab/mmpose/blob/1.x/configs/body_2d_keypoint/integral_regression/README.md)
-  - 增加 MMPose 1.0 [Colab 教程](https://github.com/open-mmlab/mmpose/blob/1.x/demo/MMPose_Tutorial.ipynb)
+  - 一组新的轻量化姿态估计模型，在不同算力条件下达到 SOTA 的精度性能
+  - 支持多语言（Python, C++, C#, Java, etc）的模型推理接口，可以轻松集成到您的应用中以支持实时、稳定的姿态估计
+  - 跨平台，多后端的模型部署支持
+  - 提供极易上手的教程，帮助您训练和部署自己的模型
 
-- 2022-09-01: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0b0) 已经发布. 主要更新包括:
+  更多信息敬请参阅 RTMPose [项目主页](/projects/rtmpose/) 和 [技术报告](https://arxiv.org/abs/2303.07399)
 
-  - 对 MMPose 进行了重大重构，旨在提升算法库性能和可扩展性，并使其更容易上手。
-  - 基于一个全新的，可扩展性强的训练和测试引擎，但目前仍在开发中。欢迎根据[文档](https://mmpose.readthedocs.io/zh_CN/1.x/)进行试用。
-  - 新版本中存在一些与旧版本不兼容的修改。请查看[迁移文档](https://mmpose.readthedocs.io/zh_CN/1.x/migration.html)来详细了解这些变动。
-  - 新版本的公测将持续到 2022 年末，在此期间，我们将基于 `1.x` 分支进行更新，不会合入到 `master` 分支。另外，至少
-    到 2023 年末，我们会保持对 0.x 版本的维护。
+![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-发布历史和更新细节请参考 [更新日志](https://mmpose.readthedocs.io/zh_CN/1.x/notes/changelog.html)
+- 欢迎使用 [*MMPose 项目*](/projects/README.md)。在这里，您可以发现 MMPose 中的最新功能和算法，并且可以通过最快的方式与社区分享自己的创意和代码实现。向 MMPose 中添加新功能从此变得简单丝滑：
+
+  - 提供了一种简单迅捷的方式，将新的算法、功能和应用添加到 MMPose 中
+  - 更灵活的代码结构和风格，更少的限制，更简短的代码审核流程
+  - 通过独立项目的形式，利用 MMPose 的强大功能，同时不被代码框架所束缚
+  - 最新添加的项目包括：
+    - [RTMPose](/projects/rtmpose/)
+    - [YOLOX-Pose (coming soon)](<>)
+    - [MMPose4AIGC (coming soon)](<>)
+  - 从简单的 [示例项目](/projects/example_project/) 开启您的 MMPose 代码贡献者之旅吧，让我们共同打造更好用的 MMPose！
+
+<br/>
+
+- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) 正式发布了，主要更新包括:
+
+  - 发布了 [RTMPose](/projects/rtmpose/)，一个高性能实时多人姿态估计算法框架
+  - 支持了多个新算法： [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/) (CVPR'21)
+  - 增加了 [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer)，一个非常便捷的模型推理接口，通过 1 行代码完成模型选择、权重加载、模型推理和结果可视化。
+
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) 以了解更多 MMPose v1.0.0rc1 带来的更新!
 
 ## 安装
 
@@ -279,10 +293,11 @@ MMPose 是一款由不同学校和公司共同贡献的开源项目。我们感�
 
 ## 欢迎加入 OpenMMLab 社区
 
-扫描下方的二维码可关注 OpenMMLab 团队的 [知乎官方账号](https://www.zhihu.com/people/openmmlab)，联络 OpenMMLab [官方微信小助手](/docs/en/imgs/wechat_assistant_qrcode.png)或加入 OpenMMLab 团队的 [官方交流 QQ 群](https://jq.qq.com/?_wv=1027&k=GJP18SjI)
+扫描下方的二维码可关注 OpenMMLab 团队的 [知乎官方账号](https://www.zhihu.com/people/openmmlab)，联络 OpenMMLab [官方微信小助手](https://user-images.githubusercontent.com/25839884/205872898-e2e6009d-c6bb-4d27-8d07-117e697a3da8.jpg)或加入 OpenMMLab 团队的 [官方交流 QQ 群](https://jq.qq.com/?_wv=1027&k=K0QI8ByU)
 
 <div align="center">
-<img src="https://raw.githubusercontent.com/open-mmlab/mmcv/master/docs/en/_static/zhihu_qrcode.jpg" height="400"><img src="https://raw.githubusercontent.com/open-mmlab/mmcv/master/docs/en/_static/wechat_qrcode.jpg" height="400"><img src="https://raw.githubusercontent.com/open-mmlab/mmcv/master/docs/en/_static/qq_group_qrcode.jpg" height="400">
+<img src="https://user-images.githubusercontent.com/25839884/205870927-39f4946d-8751-4219-a4c0-740117558fd7.jpg" height="400"><img src="https://user-images.githubusercontent.com/25839884/205872898-e2e6009d-c6bb-4d27-8d07-117e697a3da8.jpg" height="400"><img src="https://user-images.githubusercontent.com/25839884/203904835-62392033-02d4-4c73-a68c-c9e4c1e2b07f.jpg
+" height="400">
 </div>
 
 我们会在 OpenMMLab 社区为大家

@@ -50,6 +50,10 @@ loss_cfg = dict(
 loss = MODELS.build(loss_cfg) # equals to `loss = Loss_A(param1=1.0, param2=True)`
 ```
 
+```{note}
+Note that all new modules need to be registered using `Registry` and imported in `__init__.py` in the corresponding directory before we can create their instances from configs.
+```
+
 Here is a list of pre-defined registries in MMPose:
 
 - `DATASETS`: data-related modules
@@ -129,16 +133,14 @@ _base_ = ['../../../_base_/default_runtime.py'] # take the config file as the st
 ```
 
 ```{note}
-**Tips**
-
 CheckpointHook:
 
-- save_best: `'coco/AP'` for `CocoMetric`, `'pck/PCK@0.05'` for `PCKAccuracy`
+- save_best: `'coco/AP'` for `CocoMetric`, `'PCK'` for `PCKAccuracy`
 - max_keep_ckpts: the maximum checkpoints to keep. Defaults to -1, which means unlimited.
 
 Example:
 
-`default_hooks = dict(checkpoint=dict(save_best='pck/PCK@0.05', rule='greater', max_keep_ckpts=1))`
+`default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1))`
 ```
 
 ### Data
@@ -174,7 +176,7 @@ train_pipeline = [ # data aug in training
     dict(type='TopdownAffine', input_size=codec['input_size']), # update inputs via transform matrix
     dict(
         type='GenerateTarget', # generate targets via transformed inputs
-        target_type='heatmap', # typeof targets
+        # typeof targets
         encoder=codec, # get encoder from codec
     dict(type='PackPoseInputs') # pack targets
 ]
@@ -218,9 +220,10 @@ test_dataloader = val_dataloader # use val as test by default
 ```
 
 ```{note}
-**Tips**
-
-You can set the random seed by doing: `randomness=dict(seed=0)`
+Common Usages:
+- [Resume training](../common_usages/resume_training.md)
+- [Automatic mixed precision (AMP) training](../common_usages/amp_training.md)
+- [Set the random seed](../common_usages/set_random_seed.md)
 
 ```
 

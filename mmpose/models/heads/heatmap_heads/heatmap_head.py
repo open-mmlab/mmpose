@@ -64,6 +64,8 @@ class HeatmapHead(BaseHead):
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
+        extra (dict, optional): Extra configurations.
+            Defaults to ``None``
 
     .. _`Simple Baselines`: https://arxiv.org/abs/1804.06208
     """
@@ -84,7 +86,8 @@ class HeatmapHead(BaseHead):
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
-                 init_cfg: OptConfigType = None):
+                 init_cfg: OptConfigType = None,
+                 extra=None):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
@@ -101,6 +104,21 @@ class HeatmapHead(BaseHead):
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
+        self.upsample = 0
+
+        if extra is not None and not isinstance(extra, dict):
+            raise TypeError('extra should be dict or None.')
+
+        kernel_size = 1
+        padding = 0
+        if extra is not None:
+            if 'upsample' in extra:
+                self.upsample = extra['upsample']
+            if 'final_conv_kernel' in extra:
+                assert extra['final_conv_kernel'] in [1, 3]
+                if extra['final_conv_kernel'] == 3:
+                    padding = 1
+                kernel_size = extra['final_conv_kernel']
 
         # Get model input channels according to feature
         in_channels = self._get_in_channels()
@@ -115,7 +133,7 @@ class HeatmapHead(BaseHead):
                 raise ValueError(
                     '"deconv_out_channels" and "deconv_kernel_sizes" should '
                     'be integer sequences with the same length. Got '
-                    f'unmatched values {deconv_out_channels} and '
+                    f'mismatched lengths {deconv_out_channels} and '
                     f'{deconv_kernel_sizes}')
 
             self.deconv_layers = self._make_deconv_layers(
@@ -132,8 +150,9 @@ class HeatmapHead(BaseHead):
                     conv_kernel_sizes):
                 raise ValueError(
                     '"conv_out_channels" and "conv_kernel_sizes" should '
-                    'be integer sequences with the same length. Got unmatched'
-                    f' values {conv_out_channels} and {conv_kernel_sizes}')
+                    'be integer sequences with the same length. Got '
+                    f'mismatched lengths {conv_out_channels} and '
+                    f'{conv_kernel_sizes}')
 
             self.conv_layers = self._make_conv_layers(
                 in_channels=in_channels,
@@ -148,7 +167,8 @@ class HeatmapHead(BaseHead):
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
-                kernel_size=1)
+                padding=padding,
+                kernel_size=kernel_size)
             self.final_layer = build_conv_layer(cfg)
         else:
             self.final_layer = nn.Identity()

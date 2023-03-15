@@ -27,7 +27,7 @@ def _rand_poses(num_boxes, h, w):
 class TestVisualizationHook(TestCase):
 
     def setUp(self) -> None:
-        PoseLocalVisualizer.get_instance('visualizer')
+        PoseLocalVisualizer.get_instance('test_visualization_hook')
 
         data_sample = PoseDataSample()
         data_sample.set_metainfo({
@@ -35,7 +35,7 @@ class TestVisualizationHook(TestCase):
             osp.join(
                 osp.dirname(__file__), '../../data/coco/000000000785.jpg')
         })
-        self.data_batch = [{'data_sample': data_sample}] * 2
+        self.data_batch = {'data_samples': [data_sample] * 2}
 
         pred_instances = InstanceData()
         pred_instances.keypoints = _rand_poses(5, 10, 12)
@@ -48,7 +48,7 @@ class TestVisualizationHook(TestCase):
         runner = MagicMock()
         runner.iter = 1
         runner.val_evaluator.dataset_meta = dict()
-        hook = PoseVisualizationHook(interval=1)
+        hook = PoseVisualizationHook(interval=1, enable=True)
         hook.after_val_iter(runner, 1, self.data_batch, self.outputs)
 
     def test_after_test_iter(self):

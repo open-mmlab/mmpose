@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='auc/@20thrs', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='AUC', rule='greater'))
 
 # codec settings
 codec = dict(type='RegressionLabel', input_size=(256, 256))
@@ -72,7 +72,7 @@ train_pipeline = [
         type='RandomBBoxTransform', rotate_factor=180,
         scale_factor=(0.7, 1.3)),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='nme/@[8, 9]', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='NME', rule='less', interval=1))
 
 # codec settings
 codec = dict(
@@ -110,7 +110,7 @@ train_pipeline = [
         rotate_factor=60,
         scale_factor=(0.75, 1.25)),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

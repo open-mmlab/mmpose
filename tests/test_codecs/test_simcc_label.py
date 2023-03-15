@@ -40,6 +40,25 @@ class TestSimCCLabel(TestCase):
                     sigma=5.0,
                     simcc_split_ratio=3.0),
             ),
+            (
+                'simcc dark',
+                dict(
+                    type='SimCCLabel',
+                    input_size=(192, 256),
+                    smoothing_type='gaussian',
+                    sigma=6.0,
+                    simcc_split_ratio=2.0,
+                    use_dark=True),
+            ),
+            (
+                'simcc separated sigmas',
+                dict(
+                    type='SimCCLabel',
+                    input_size=(192, 256),
+                    smoothing_type='gaussian',
+                    sigma=(4.9, 5.66),
+                    simcc_split_ratio=2.0),
+            ),
         ]
 
         # The bbox is usually padded so the keypoint will not be near the
@@ -57,16 +76,15 @@ class TestSimCCLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            target_x, target_y, keypoint_weights = codec.encode(
-                keypoints, keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
 
-            self.assertEqual(target_x.shape,
+            self.assertEqual(encoded['keypoint_x_labels'].shape,
                              (1, 17, int(192 * codec.simcc_split_ratio)),
                              f'Failed case: "{name}"')
-            self.assertEqual(target_y.shape,
+            self.assertEqual(encoded['keypoint_y_labels'].shape,
                              (1, 17, int(256 * codec.simcc_split_ratio)),
                              f'Failed case: "{name}"')
-            self.assertEqual(keypoint_weights.shape, (1, 17),
+            self.assertEqual(encoded['keypoint_weights'].shape, (1, 17),
                              f'Failed case: "{name}"')
 
     def test_decode(self):
@@ -75,9 +93,8 @@ class TestSimCCLabel(TestCase):
 
             simcc_x = np.random.rand(1, 17, int(192 * codec.simcc_split_ratio))
             simcc_y = np.random.rand(1, 17, int(256 * codec.simcc_split_ratio))
-            encoded = (simcc_x, simcc_y)
 
-            keypoints, scores = codec.decode(encoded)
+            keypoints, scores = codec.decode(simcc_x, simcc_y)
 
             self.assertEqual(keypoints.shape, (1, 17, 2),
                              f'Failed case: "{name}"')
@@ -90,11 +107,11 @@ class TestSimCCLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            target_x, target_y, _ = codec.encode(keypoints, keypoints_visible)
+            encoded = codec.encode(keypoints, keypoints_visible)
+            keypoint_x_labels = encoded['keypoint_x_labels']
+            keypoint_y_labels = encoded['keypoint_y_labels']
 
-            encoded = (target_x, target_y)
-
-            _keypoints, _ = codec.decode(encoded)
+            _keypoints, _ = codec.decode(keypoint_x_labels, keypoint_y_labels)
 
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),

@@ -1,12 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
+from typing import Tuple, Union
 
 import torch
 from mmengine.model import BaseModel
 from torch import Tensor
 
-from mmpose.utils.typing import (ForwardResults, OptConfigType, OptMultiConfig,
-                                 OptSampleList, SampleList)
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
+from mmpose.registry import MODELS
+from mmpose.utils.typing import (ConfigType, ForwardResults, OptConfigType,
+                                 Optional, OptMultiConfig, OptSampleList,
+                                 SampleList)
 
 
 class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
@@ -14,16 +18,44 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
     Args:
         data_preprocessor (dict | ConfigDict, optional): The pre-processing
-            config of :class:`BaseDataPreprocessor`. Defaults to ``None``.
+            config of :class:`BaseDataPreprocessor`. Defaults to ``None``
         init_cfg (dict | ConfigDict): The model initialization config.
             Defaults to ``None``
+        metainfo (dict): Meta information for dataset, such as keypoints
+            definition and properties. If set, the metainfo of the input data
+            batch will be overridden. For more details, please refer to
+            https://mmpose.readthedocs.io/en/1.x/user_guides/
+            prepare_datasets.html#create-a-custom-dataset-info-
+            config-file-for-the-dataset. Defaults to ``None``
     """
+    _version = 2
 
     def __init__(self,
+                 backbone: ConfigType,
+                 neck: OptConfigType = None,
+                 head: OptConfigType = None,
+                 train_cfg: OptConfigType = None,
+                 test_cfg: OptConfigType = None,
                  data_preprocessor: OptConfigType = None,
-                 init_cfg: OptMultiConfig = None):
+                 init_cfg: OptMultiConfig = None,
+                 metainfo: Optional[dict] = None):
         super().__init__(
             data_preprocessor=data_preprocessor, init_cfg=init_cfg)
+        self.metainfo = self._load_metainfo(metainfo)
+
+        self.backbone = MODELS.build(backbone)
+
+        if neck is not None:
+            self.neck = MODELS.build(neck)
+
+        if head is not None:
+            self.head = MODELS.build(head)
+
+        self.train_cfg = train_cfg if train_cfg else {}
+        self.test_cfg = test_cfg if test_cfg else {}
+
+        # Register the hook to automatically convert old version state dicts
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
 
     @property
     def with_neck(self) -> bool:
@@ -34,6 +66,27 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
     def with_head(self) -> bool:
         """bool: whether the pose estimator has a head."""
         return hasattr(self, 'head') and self.head is not None
+
+    @staticmethod
+    def _load_metainfo(metainfo: dict = None) -> dict:
+        """Collect meta information from the dictionary of meta.
+
+        Args:
+            metainfo (dict): Raw data of pose meta information.
+
+        Returns:
+            dict: Parsed meta information.
+        """
+
+        if metainfo is None:
+            return None
+
+        if not isinstance(metainfo, dict):
+            raise TypeError(
+                f'metainfo should be a dict, but got {type(metainfo)}')
+
+        metainfo = parse_pose_metainfo(metainfo)
+        return metainfo
 
     def forward(self,
                 inputs: torch.Tensor,
@@ -73,6 +126,10 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         if mode == 'loss':
             return self.loss(inputs, data_samples)
         elif mode == 'predict':
+            # use customed metainfo to override the default metainfo
+            if self.metainfo is not None:
+                for data_sample in data_samples:
+                    data_sample.set_metainfo(self.metainfo)
             return self.predict(inputs, data_samples)
         elif mode == 'tensor':
             return self._forward(inputs)
@@ -89,14 +146,58 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         """Predict results from a batch of inputs and data samples with post-
         processing."""
 
-    @abstractmethod
-    def _forward(self, inputs: Tensor, data_samples: OptSampleList = None):
-        """Network forward process.
+    def _forward(self,
+                 inputs: Tensor,
+                 data_samples: OptSampleList = None
+                 ) -> Union[Tensor, Tuple[Tensor]]:
+        """Network forward process. Usually includes backbone, neck and head
+        forward without any post-processing.
 
-        Usually includes backbone, neck and head forward without any post-
-        processing.
+        Args:
+            inputs (Tensor): Inputs with shape (N, C, H, W).
+
+        Returns:
+            Union[Tensor | Tuple[Tensor]]: forward output of the network.
         """
 
-    @abstractmethod
-    def extract_feat(self, inputs: Tensor):
-        """Extract features."""
+        x = self.extract_feat(inputs)
+        if self.with_head:
+            x = self.head.forward(x)
+
+        return x
+
+    def extract_feat(self, inputs: Tensor) -> Tuple[Tensor]:
+        """Extract features.
+
+        Args:
+            inputs (Tensor): Image tensor with shape (N, C, H ,W).
+
+        Returns:
+            tuple[Tensor]: Multi-level features that may have various
+            resolutions.
+        """
+        x = self.backbone(inputs)
+        if self.with_neck:
+            x = self.neck(x)
+
+        return x
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to convert old-version state dict of
+        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`HeatmapHead`.
+
+        The hook will be automatically registered during initialization.
+        """
+        version = local_meta.get('version', None)
+        if version and version >= self._version:
+            return
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for k in keys:
+            if 'keypoint_head' in k:
+                v = state_dict.pop(k)
+                k = k.replace('keypoint_head', 'head')
+                state_dict[k] = v
