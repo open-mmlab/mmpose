@@ -184,7 +184,7 @@ workflows:
           torch: 1.7.1
           # Use double quotation mark to explicitly specify its type
           # as string instead of number
-          cuda: "10.1"
+          cuda: "11.1"
           filters:
             branches:
               only:
