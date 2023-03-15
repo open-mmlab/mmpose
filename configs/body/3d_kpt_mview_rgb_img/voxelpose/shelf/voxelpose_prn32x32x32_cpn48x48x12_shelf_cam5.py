@@ -91,6 +91,7 @@ test_data_cfg.update(dict(frame_range=list(range(300, 601))))
 model = dict(
     type='DetectAndRegress',
     backbone=None,
+    keypoint_head=None,
     pretrained=None,
     human_detector=dict(
         type='VoxelCenterDetector',

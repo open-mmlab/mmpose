@@ -15,8 +15,8 @@ Models:
   Results:
   - Dataset: CMU Panoptic
     Metrics:
-      MPJPE: 17.57
-      mAP: 97.31
-      mAR: 97.99
+      MPJPE: 17.09
+      mAP: 97.15
+      mAR: 97.7
     Task: Body 3D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5-545c150e_20211103.pth
+  Weights: https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5-358648cb_20230118.pth
