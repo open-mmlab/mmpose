@@ -1,11 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
+import torch
+import torch.nn.functional as F
 from torch import Tensor
 
 
 def flip_heatmaps(heatmaps: Tensor,
-                  flip_indices: List[int],
+                  flip_indices: Optional[List[int]] = None,
                   flip_mode: str = 'heatmap',
                   shift_heatmap: bool = True):
     """Flip heatmaps for test-time augmentation.
@@ -14,13 +16,16 @@ def flip_heatmaps(heatmaps: Tensor,
         heatmaps (Tensor): The heatmaps to flip. Should be a tensor in shape
             [B, C, H, W]
         flip_indices (List[int]): The indices of each keypoint's symmetric
-            keypoint
+            keypoint. Defaults to ``None``
         flip_mode (str): Specify the flipping mode. Options are:
 
             - ``'heatmap'``: horizontally flip the heatmaps and swap heatmaps
                 of symmetric keypoints according to ``flip_indices``
             - ``'udp_combined'``: similar to ``'heatmap'`` mode but further
                 flip the x_offset values
+            - ``'offset'``: horizontally flip the offset fields and swap
+                heatmaps of symmetric keypoints according to
+                ``flip_indices``. x_offset values are also reversed
         shift_heatmap (bool): Shift the flipped heatmaps to align with the
             original heatmaps and improve accuracy. Defaults to ``True``
 
@@ -29,16 +34,30 @@ def flip_heatmaps(heatmaps: Tensor,
     """
 
     if flip_mode == 'heatmap':
-        assert len(flip_indices) == heatmaps.shape[1]
-        heatmaps = heatmaps[:, flip_indices].flip(-1)
-
+        heatmaps = heatmaps.flip(-1)
+        if flip_indices is not None:
+            assert len(flip_indices) == heatmaps.shape[1]
+            heatmaps = heatmaps[:, flip_indices]
     elif flip_mode == 'udp_combined':
         B, C, H, W = heatmaps.shape
-        assert len(flip_indices) * 3 == C
         heatmaps = heatmaps.view(B, C // 3, 3, H, W)
-        heatmaps = heatmaps[:, flip_indices].flip(-1)
+        heatmaps = heatmaps.flip(-1)
+        if flip_indices is not None:
+            assert len(flip_indices) == C // 3
+            heatmaps = heatmaps[:, flip_indices]
         heatmaps[:, :, 1] = -heatmaps[:, :, 1]
         heatmaps = heatmaps.view(B, C, H, W)
+
+    elif flip_mode == 'offset':
+        B, C, H, W = heatmaps.shape
+        heatmaps = heatmaps.view(B, C // 2, -1, H, W)
+        heatmaps = heatmaps.flip(-1)
+        if flip_indices is not None:
+            assert len(flip_indices) == C // 2
+            heatmaps = heatmaps[:, flip_indices]
+        heatmaps[:, :, 0] = -heatmaps[:, :, 0]
+        heatmaps = heatmaps.view(B, C, H, W)
+
     else:
         raise ValueError(f'Invalid flip_mode value "{flip_mode}"')
 
@@ -93,3 +112,57 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int],
 
     coords = coords[:, flip_indices]
     return coords
+
+
+def aggregate_heatmaps(heatmaps: List[Tensor],
+                       size: Optional[Tuple[int, int]],
+                       align_corners: bool = False,
+                       mode: str = 'average'):
+    """Aggregate multiple heatmaps.
+
+    Args:
+        heatmaps (List[Tensor]): Multiple heatmaps to aggregate. Each should
+            be in shape (B, C, H, W)
+        size (Tuple[int, int], optional): The target size in (w, h). All
+            heatmaps will be resized to the target size. If not given, the
+            first heatmap tensor's width and height will be used as the target
+            size. Defaults to ``None``
+        align_corners (bool): Whether align corners when resizing heatmaps.
+            Defaults to ``False``
+        mode (str): Aggregation mode in one of the following:
+
+            - ``'average'``: Get average of heatmaps. All heatmaps mush have
+                the same channel number
+            - ``'concat'``: Concate the heatmaps at the channel dim
+    """
+
+    if mode not in {'average', 'concat'}:
+        raise ValueError(f'Invalid aggregation mode `{mode}`')
+
+    if size is None:
+        h, w = heatmaps[0].shape[2:4]
+    else:
+        w, h = size
+
+    for i, _heatmaps in enumerate(heatmaps):
+        assert _heatmaps.ndim == 4
+        if mode == 'average':
+            assert _heatmaps.shape[:2] == heatmaps[0].shape[:2]
+        else:
+            assert _heatmaps.shape[0] == heatmaps[0].shape[0]
+
+        if _heatmaps.shape[2:4] != (h, w):
+            heatmaps[i] = F.interpolate(
+                _heatmaps,
+                size=(h, w),
+                mode='bilinear',
+                align_corners=align_corners)
+
+    if mode == 'average':
+        output = sum(heatmaps).div(len(heatmaps))
+    elif mode == 'concat':
+        output = torch.cat(heatmaps, dim=1)
+    else:
+        raise ValueError()
+
+    return output

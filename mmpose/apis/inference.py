@@ -1,18 +1,20 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import torch
 import torch.nn as nn
 from mmengine.config import Config
-from mmengine.dataset import Compose
+from mmengine.dataset import Compose, pseudo_collate
+from mmengine.registry import init_default_scope
 from mmengine.runner import load_checkpoint
 from PIL import Image
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.models.builder import build_pose_estimator
+from mmpose.structures import PoseDataSample
 from mmpose.structures.bbox import bbox_xywh2xyxy
 
 
@@ -92,6 +94,9 @@ def init_model(config: Union[str, Path, Config],
         config.model.backbone.init_cfg = None
     config.model.train_cfg = None
 
+    # register all modules in mmpose into the registries
+    init_default_scope(config.get('default_scope', 'mmpose'))
+
     model = build_pose_estimator(config.model)
     # get dataset_meta in this priority: checkpoint > config > default (COCO)
     dataset_meta = None
@@ -104,7 +109,7 @@ def init_model(config: Union[str, Path, Config],
             dataset_meta = ckpt['meta']['dataset_meta']
 
     if dataset_meta is None:
-        dataset_meta = dataset_meta_from_config(config, dataset_mode='test')
+        dataset_meta = dataset_meta_from_config(config, dataset_mode='train')
 
     if dataset_meta is None:
         warnings.simplefilter('once')
@@ -123,9 +128,9 @@ def init_model(config: Union[str, Path, Config],
 
 def inference_topdown(model: nn.Module,
                       img: Union[np.ndarray, str],
-                      bboxes: Optional[np.ndarray] = None,
-                      bbox_format: str = 'xyxy'):
-    """Inference image with the top-down pose estimator.
+                      bboxes: Optional[Union[List, np.ndarray]] = None,
+                      bbox_format: str = 'xyxy') -> List[PoseDataSample]:
+    """Inference image with a top-down pose estimator.
 
     Args:
         model (nn.Module): The top-down pose estimator
@@ -137,13 +142,13 @@ def inference_topdown(model: nn.Module,
             and ``'xyxy'``. Defaults to ``'xyxy'``
 
     Returns:
-        :obj:`PoseDataSample`: The inference results. Specifically, the
+        List[:obj:`PoseDataSample`]: The inference results. Specifically, the
         predicted keypoints and scores are saved at
-        ``data_samples.pred_instances.keypoints`` and
-        ``data_samples.pred_instances.keypoint_scores``.
+        ``data_sample.pred_instances.keypoints`` and
+        ``data_sample.pred_instances.keypoint_scores``.
     """
-    cfg = model.cfg
-    pipeline = Compose(cfg.test_dataloader.dataset.pipeline)
+    init_default_scope(model.cfg.get('default_scope', 'mmpose'))
+    pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
 
     if bboxes is None:
         # get bbox from the image size
@@ -154,6 +159,9 @@ def inference_topdown(model: nn.Module,
 
         bboxes = np.array([[0, 0, w, h]], dtype=np.float32)
     else:
+        if isinstance(bboxes, list):
+            bboxes = np.array(bboxes)
+
         assert bbox_format in {'xyxy', 'xywh'}, \
             f'Invalid bbox_format "{bbox_format}".'
 
@@ -161,24 +169,55 @@ def inference_topdown(model: nn.Module,
             bboxes = bbox_xywh2xyxy(bboxes)
 
     # construct batch data samples
-    data = []
+    data_list = []
     for bbox in bboxes:
-
         if isinstance(img, str):
-            _data = dict(img_path=img)
+            data_info = dict(img_path=img)
         else:
-            _data = dict(img=img)
+            data_info = dict(img=img)
+        data_info['bbox'] = bbox[None]  # shape (1, 4)
+        data_info['bbox_score'] = np.ones(1, dtype=np.float32)  # shape (1,)
+        data_info.update(model.dataset_meta)
+        data_list.append(pipeline(data_info))
 
-        _data['bbox'] = bbox[None]  # shape (1, 4)
-        _data['bbox_score'] = np.ones(1, dtype=np.float32)  # shape (1,)
-        _data.update(model.dataset_meta)
-        data.append(pipeline(_data))
+    if data_list:
+        # collate data list into a batch, which is a dict with following keys:
+        # batch['inputs']: a list of input images
+        # batch['data_samples']: a list of :obj:`PoseDataSample`
+        batch = pseudo_collate(data_list)
+        with torch.no_grad():
+            results = model.test_step(batch)
+    else:
+        results = []
 
-    data_ = dict()
-    data_['inputs'] = [_data['inputs'] for _data in data]
-    data_['data_samples'] = [_data['data_samples'] for _data in data]
+    return results
+
+
+def inference_bottomup(model: nn.Module, img: Union[np.ndarray, str]):
+    """Inference image with a bottom-up pose estimator.
+
+    Args:
+        model (nn.Module): The bottom-up pose estimator
+        img (np.ndarray | str): The loaded image or image file to inference
+
+    Returns:
+        List[:obj:`PoseDataSample`]: The inference results. Specifically, the
+        predicted keypoints and scores are saved at
+        ``data_sample.pred_instances.keypoints`` and
+        ``data_sample.pred_instances.keypoint_scores``.
+    """
+    pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
+
+    # prepare data batch
+    if isinstance(img, str):
+        data_info = dict(img_path=img)
+    else:
+        data_info = dict(img=img)
+    data_info.update(model.dataset_meta)
+    data = pipeline(data_info)
+    batch = pseudo_collate([data])
 
     with torch.no_grad():
-        results = model.test_step(data_)
+        results = model.test_step(batch)
 
     return results

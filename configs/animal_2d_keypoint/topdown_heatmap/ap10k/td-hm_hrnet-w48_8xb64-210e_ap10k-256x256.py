@@ -100,17 +100,14 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
     dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(
-        type='PackPoseInputs',
-        meta_keys=('id', 'img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'input_size', 'flip_indices', 'category'))
+    dict(type='PackPoseInputs')
 ]
 
 # data loaders
@@ -160,8 +157,8 @@ test_dataloader = dict(
 
 # evaluators
 val_evaluator = dict(
-    type='AP10KCocoMetric',
+    type='CocoMetric',
     ann_file=data_root + 'annotations/ap10k-val-split1.json')
 test_evaluator = dict(
-    type='AP10KCocoMetric',
+    type='CocoMetric',
     ann_file=data_root + 'annotations/ap10k-test-split1.json')

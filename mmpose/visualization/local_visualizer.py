@@ -12,6 +12,7 @@ from mmengine.visualization import Visualizer
 
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
+from .simcc_vis import SimCCVisualizer
 
 
 def _get_adaptive_scales(areas: np.ndarray,
@@ -174,7 +175,7 @@ class PoseLocalVisualizer(Visualizer):
             return self.get_image()
 
         if 'labels' in instances and self.text_color is not None:
-            classes = self.dataset_meta.get('CLASSES', None)
+            classes = self.dataset_meta.get('classes', None)
             labels = instances.labels
 
             positions = bboxes[:, :2]
@@ -210,7 +211,8 @@ class PoseLocalVisualizer(Visualizer):
     def _draw_instances_kpts(self,
                              image: np.ndarray,
                              instances: InstanceData,
-                             kpt_score_thr: float = 0.3):
+                             kpt_score_thr: float = 0.3,
+                             show_kpt_idx: bool = False):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
         Args:
@@ -275,6 +277,14 @@ class PoseLocalVisualizer(Visualizer):
                         edge_colors=color,
                         alpha=transparency,
                         line_widths=self.radius)
+                    if show_kpt_idx:
+                        self.draw_texts(
+                            str(kid),
+                            kpt,
+                            colors=color,
+                            font_sizes=self.radius * 3,
+                            vertical_alignments='bottom',
+                            horizontal_alignments='center')
 
                 # draw links
                 if self.skeleton is not None and self.link_color is not None:
@@ -362,6 +372,34 @@ class PoseLocalVisualizer(Visualizer):
         out_image = self.draw_featmap(heatmaps, overlaid_image)
         return out_image
 
+    def _draw_instance_xy_heatmap(
+        self,
+        fields: PixelData,
+        overlaid_image: Optional[np.ndarray] = None,
+        n: int = 20,
+    ):
+        """Draw heatmaps of GT or prediction.
+
+        Args:
+            fields (:obj:`PixelData`): Data structure for
+            pixel-level annotations or predictions.
+            overlaid_image (np.ndarray): The image to draw.
+            n (int): Number of keypoint, up to 20.
+
+        Returns:
+            np.ndarray: the drawn image which channel is RGB.
+        """
+        if 'heatmaps' not in fields:
+            return None
+        heatmaps = fields.heatmaps
+        _, h, w = heatmaps.shape
+        if isinstance(heatmaps, np.ndarray):
+            heatmaps = torch.from_numpy(heatmaps)
+        out_image = SimCCVisualizer().draw_instance_xy_heatmap(
+            heatmaps, overlaid_image, n)
+        out_image = cv2.resize(out_image[:, :, ::-1], (w, h))
+        return out_image
+
     @master_only
     def add_datasample(self,
                        name: str,
@@ -371,6 +409,7 @@ class PoseLocalVisualizer(Visualizer):
                        draw_pred: bool = True,
                        draw_heatmap: bool = False,
                        draw_bbox: bool = False,
+                       show_kpt_idx: bool = False,
                        show: bool = False,
                        wait_time: float = 0,
                        out_file: Optional[str] = None,
@@ -419,7 +458,8 @@ class PoseLocalVisualizer(Visualizer):
             # draw bboxes & keypoints
             if 'gt_instances' in data_sample:
                 gt_img_data = self._draw_instances_kpts(
-                    gt_img_data, data_sample.gt_instances, kpt_score_thr)
+                    gt_img_data, data_sample.gt_instances, kpt_score_thr,
+                    show_kpt_idx)
                 if draw_bbox:
                     gt_img_data = self._draw_instances_bbox(
                         gt_img_data, data_sample.gt_instances)
@@ -439,15 +479,20 @@ class PoseLocalVisualizer(Visualizer):
             # draw bboxes & keypoints
             if 'pred_instances' in data_sample:
                 pred_img_data = self._draw_instances_kpts(
-                    pred_img_data, data_sample.pred_instances, kpt_score_thr)
+                    pred_img_data, data_sample.pred_instances, kpt_score_thr,
+                    show_kpt_idx)
                 if draw_bbox:
                     pred_img_data = self._draw_instances_bbox(
                         pred_img_data, data_sample.pred_instances)
 
             # draw heatmaps
             if 'pred_fields' in data_sample and draw_heatmap:
-                pred_img_heatmap = self._draw_instance_heatmap(
-                    data_sample.pred_fields, image)
+                if 'keypoint_x_labels' in data_sample.pred_instances:
+                    pred_img_heatmap = self._draw_instance_xy_heatmap(
+                        data_sample.pred_fields, image)
+                else:
+                    pred_img_heatmap = self._draw_instance_heatmap(
+                        data_sample.pred_fields, image)
                 if pred_img_heatmap is not None:
                     pred_img_data = np.concatenate(
                         (pred_img_data, pred_img_heatmap), axis=0)
@@ -479,3 +524,5 @@ class PoseLocalVisualizer(Visualizer):
         else:
             # save drawn_img to backends
             self.add_image(name, drawn_img, step)
+
+        return self.get_image()

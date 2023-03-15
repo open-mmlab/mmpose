@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
 import os.path as osp
-from typing import Callable, List, Optional, Sequence, Union
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from mmengine.utils import check_file_exist
@@ -134,7 +134,7 @@ class MpiiDataset(BaseCocoStyleDataset):
             lazy_init=lazy_init,
             max_refetch=max_refetch)
 
-    def _load_annotations(self) -> List[dict]:
+    def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in MPII format."""
 
         check_file_exist(self.ann_file)
@@ -148,7 +148,9 @@ class MpiiDataset(BaseCocoStyleDataset):
                                          [2, 0, 1])
             SC_BIAS = 0.6
 
-        data_list = []
+        instance_list = []
+        image_list = []
+        used_img_ids = set()
         ann_id = 0
 
         # mpii bbox scales are normalized with factor 200.
@@ -176,7 +178,7 @@ class MpiiDataset(BaseCocoStyleDataset):
             keypoints = np.array(ann['joints']).reshape(1, -1, 2)
             keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
 
-            data_info = {
+            instance_info = {
                 'id': ann_id,
                 'img_id': int(ann['image'].split('.')[0]),
                 'img_path': osp.join(self.data_prefix['img'], ann['image']),
@@ -193,9 +195,16 @@ class MpiiDataset(BaseCocoStyleDataset):
                 headbox = headboxes_src[idx]
                 head_size = np.linalg.norm(headbox[1] - headbox[0], axis=0)
                 head_size *= SC_BIAS
-                data_info['head_size'] = head_size.reshape(1, -1)
+                instance_info['head_size'] = head_size.reshape(1, -1)
 
-            data_list.append(data_info)
+            if instance_info['img_id'] not in used_img_ids:
+                used_img_ids.add(instance_info['img_id'])
+                image_list.append({
+                    'img_id': instance_info['img_id'],
+                    'img_path': instance_info['img_path'],
+                })
+
+            instance_list.append(instance_info)
             ann_id = ann_id + 1
 
-        return data_list
+        return instance_list, image_list

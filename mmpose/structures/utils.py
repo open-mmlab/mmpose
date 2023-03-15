@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
 from typing import List
 
 import cv2
@@ -31,7 +32,9 @@ def merge_data_samples(data_samples: List[PoseDataSample]) -> PoseDataSample:
         raise ValueError('Invalid input type, should be a list of '
                          ':obj:`PoseDataSample`')
 
-    assert len(data_samples) > 0
+    if len(data_samples) == 0:
+        warnings.warn('Try to merge an empty list of data samples.')
+        return PoseDataSample()
 
     merged = PoseDataSample(metainfo=data_samples[0].metainfo)
 
@@ -110,3 +113,26 @@ def revert_heatmap(heatmap, bbox_center, bbox_scale, img_shape):
         heatmap = heatmap.transpose(2, 0, 1)
 
     return heatmap
+
+
+def split_instances(instances: InstanceData) -> List[InstanceData]:
+    """Convert instances into a list where each element is a dict that contains
+    information about one instance."""
+    results = []
+
+    # return an empty list if there is no instance detected by the model
+    if instances is None:
+        return results
+
+    for i in range(len(instances.keypoints)):
+        result = dict(
+            keypoints=instances.keypoints[i].tolist(),
+            keypoint_scores=instances.keypoint_scores[i].tolist(),
+        )
+        if 'bboxes' in instances:
+            result['bbox'] = instances.bboxes[i].tolist(),
+            if 'bbox_scores' in instances:
+                result['bbox_score'] = instances.bbox_scores[i]
+        results.append(result)
+
+    return results

@@ -3,7 +3,7 @@ from itertools import product
 
 import numpy as np
 
-from .post_processing import gaussian_blur
+from .post_processing import gaussian_blur, gaussian_blur1d
 
 
 def refine_keypoints(keypoints: np.ndarray,
@@ -161,5 +161,55 @@ def refine_keypoints_dark_udp(keypoints: np.ndarray, heatmaps: np.ndarray,
         hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
         keypoints[n] -= np.einsum('imn,ink->imk', hessian,
                                   derivative).squeeze()
+
+    return keypoints
+
+
+def refine_simcc_dark(keypoints: np.ndarray, simcc: np.ndarray,
+                      blur_kernel_size: int) -> np.ndarray:
+    """SimCC version. Refine keypoint predictions using distribution aware
+    coordinate decoding for UDP. See `UDP`_ for details. The operation is in-
+    place.
+
+    Note:
+
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: D
+
+    Args:
+        keypoints (np.ndarray): The keypoint coordinates in shape (N, K, D)
+        simcc (np.ndarray): The heatmaps in shape (N, K, Wx)
+        blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
+            modulation
+
+    Returns:
+        np.ndarray: Refine keypoint coordinates in shape (N, K, D)
+
+    .. _`UDP`: https://arxiv.org/abs/1911.07524
+    """
+    N = simcc.shape[0]
+
+    # modulate simcc
+    simcc = gaussian_blur1d(simcc, blur_kernel_size)
+    np.clip(simcc, 1e-3, 50., simcc)
+    np.log(simcc, simcc)
+
+    simcc = np.pad(simcc, ((0, 0), (0, 0), (2, 2)), 'edge')
+
+    for n in range(N):
+        px = (keypoints[n] + 2.5).astype(np.int64).reshape(-1, 1)  # K, 1
+
+        dx0 = np.take_along_axis(simcc[n], px, axis=1)  # K, 1
+        dx1 = np.take_along_axis(simcc[n], px + 1, axis=1)
+        dx_1 = np.take_along_axis(simcc[n], px - 1, axis=1)
+        dx2 = np.take_along_axis(simcc[n], px + 2, axis=1)
+        dx_2 = np.take_along_axis(simcc[n], px - 2, axis=1)
+
+        dx = 0.5 * (dx1 - dx_1)
+        dxx = 1e-9 + 0.25 * (dx2 - 2 * dx0 + dx_2)
+
+        offset = dx / dxx
+        keypoints[n] -= offset.reshape(-1)
 
     return keypoints

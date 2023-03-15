@@ -1,5 +1,61 @@
 # Changelog
 
+## **v1.0.0rc1 (14/10/2022)**
+
+**Highlights**
+
+- Release RTMPose, a high-performance real-time pose estimation algorithm with cross-platform deployment and inference support. See details at the [project page](/projects/rtmpose/)
+- Support several new algorithms: ViTPose (arXiv'2022), CID (CVPR'2022), DEKR (CVPR'2021)
+- Add Inferencer, a convenient inference interface that perform pose estimation and visualization on images, videos and webcam streams with only one line of code
+- Introduce *Project*, a new form for rapid and easy implementation of new algorithms and features in MMPose, which is more handy for community contributors
+
+**New Features**
+
+- Support RTMPose ([#1971](https://github.com/open-mmlab/mmpose/pull/1971), [#2024](https://github.com/open-mmlab/mmpose/pull/2024), [#2028](https://github.com/open-mmlab/mmpose/pull/2028), [#2030](https://github.com/open-mmlab/mmpose/pull/2030), [#2040](https://github.com/open-mmlab/mmpose/pull/2040), [#2057](https://github.com/open-mmlab/mmpose/pull/2057))
+- Support Inferencer ([#1969](https://github.com/open-mmlab/mmpose/pull/1969))
+- Support ViTPose ([#1876](https://github.com/open-mmlab/mmpose/pull/1876), [#2056](https://github.com/open-mmlab/mmpose/pull/2056), [#2058](https://github.com/open-mmlab/mmpose/pull/2058)， [#2065](https://github.com/open-mmlab/mmpose/pull/2065))
+- Support CID ([#1907](https://github.com/open-mmlab/mmpose/pull/1907))
+- Support DEKR ([#1834](https://github.com/open-mmlab/mmpose/pull/1834), [#1901](https://github.com/open-mmlab/mmpose/pull/1901))
+- Support training with multiple datasets ([#1767](https://github.com/open-mmlab/mmpose/pull/1767), [#1930](https://github.com/open-mmlab/mmpose/pull/1930), [#1938](https://github.com/open-mmlab/mmpose/pull/1938), [#2025](https://github.com/open-mmlab/mmpose/pull/2025))
+- Add *project* to allow rapid and easy implementation of new models and features ([#1914](https://github.com/open-mmlab/mmpose/pull/1914))
+
+**Improvements**
+
+- Improve documentation quality ([#1846](https://github.com/open-mmlab/mmpose/pull/1846), [#1858](https://github.com/open-mmlab/mmpose/pull/1858), [#1872](https://github.com/open-mmlab/mmpose/pull/1872), [#1899](https://github.com/open-mmlab/mmpose/pull/1899), [#1925](https://github.com/open-mmlab/mmpose/pull/1925), [#1945](https://github.com/open-mmlab/mmpose/pull/1945), [#1952](https://github.com/open-mmlab/mmpose/pull/1952), [#1990](https://github.com/open-mmlab/mmpose/pull/1990), [#2023](https://github.com/open-mmlab/mmpose/pull/2023), [#2042](https://github.com/open-mmlab/mmpose/pull/2042))
+- Support visualizing keypoint indices ([#2051](https://github.com/open-mmlab/mmpose/pull/2051))
+- Support OpenPose style visualization ([#2055](https://github.com/open-mmlab/mmpose/pull/2055))
+- Accelerate image transpose in data pipelines with tensor operation ([#1976](https://github.com/open-mmlab/mmpose/pull/1976))
+- Support auto-import modules from registry ([#1961](https://github.com/open-mmlab/mmpose/pull/1961))
+- Support keypoint partition metric ([#1944](https://github.com/open-mmlab/mmpose/pull/1944))
+- Support SimCC 1D-heatmap visualization ([#1912](https://github.com/open-mmlab/mmpose/pull/1912))
+- Support saving predictions and data metainfo in demos ([#1814](https://github.com/open-mmlab/mmpose/pull/1814), [#1879](https://github.com/open-mmlab/mmpose/pull/1879))
+- Support SimCC with DARK ([#1870](https://github.com/open-mmlab/mmpose/pull/1870))
+- Remove Gaussian blur for offset maps in UDP-regress ([#1815](https://github.com/open-mmlab/mmpose/pull/1815))
+- Refactor encoding interface of Codec for better extendibility and easier configuration ([#1781](https://github.com/open-mmlab/mmpose/pull/1781))
+- Support evaluating CocoMetric without annotation file ([#1722](https://github.com/open-mmlab/mmpose/pull/1722))
+- Improve unit tests ([#1765](https://github.com/open-mmlab/mmpose/pull/1765))
+
+**Bug Fixes**
+
+- Fix repeated warnings from different ranks ([#2053](https://github.com/open-mmlab/mmpose/pull/2053))
+- Avoid frequent scope switching when using mmdet inference api ([#2039](https://github.com/open-mmlab/mmpose/pull/2039))
+- Remove EMA parameters and message hub data when publishing model checkpoints ([#2036](https://github.com/open-mmlab/mmpose/pull/2036))
+- Fix metainfo copying in dataset class ([#2017](https://github.com/open-mmlab/mmpose/pull/2017))
+- Fix top-down demo bug when there is no object detected ([#2007](https://github.com/open-mmlab/mmpose/pull/2007))
+- Fix config errors ([#1882](https://github.com/open-mmlab/mmpose/pull/1882), [#1906](https://github.com/open-mmlab/mmpose/pull/1906), [#1995](https://github.com/open-mmlab/mmpose/pull/1995))
+- Fix image demo failure when GUI is unavailable ([#1968](https://github.com/open-mmlab/mmpose/pull/1968))
+- Fix bug in AdaptiveWingLoss ([#1953](https://github.com/open-mmlab/mmpose/pull/1953))
+- Fix incorrect importing of RepeatDataset which is deprecated ([#1943](https://github.com/open-mmlab/mmpose/pull/1943))
+- Fix bug in bottom-up datasets that ignores images without instances ([#1752](https://github.com/open-mmlab/mmpose/pull/1752), [#1936](https://github.com/open-mmlab/mmpose/pull/1936))
+- Fix upstream dependency issues ([#1867](https://github.com/open-mmlab/mmpose/pull/1867), [#1921](https://github.com/open-mmlab/mmpose/pull/1921))
+- Fix evaluation issues and update results ([#1763](https://github.com/open-mmlab/mmpose/pull/1763), [#1773](https://github.com/open-mmlab/mmpose/pull/1773), [#1780](https://github.com/open-mmlab/mmpose/pull/1780), [#1850](https://github.com/open-mmlab/mmpose/pull/1850), [#1868](https://github.com/open-mmlab/mmpose/pull/1868))
+- Fix local registry missing warnings ([#1849](https://github.com/open-mmlab/mmpose/pull/1849))
+- Remove deprecated scripts for model deployment ([#1845](https://github.com/open-mmlab/mmpose/pull/1845))
+- Fix a bug in input transformation in BaseHead ([#1843](https://github.com/open-mmlab/mmpose/pull/1843))
+- Fix an interface mismatch with MMDetection in webcam demo ([#1813](https://github.com/open-mmlab/mmpose/pull/1813))
+- Fix a bug in heatmap visualization that causes incorrect scale ([#1800](https://github.com/open-mmlab/mmpose/pull/1800))
+- Add model metafiles ([#1768](https://github.com/open-mmlab/mmpose/pull/1768))
+
 ## **v1.0.0rc0 (14/10/2022)**
 
 **New Features**

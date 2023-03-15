@@ -27,7 +27,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='auc/@20thrs', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='AUC', rule='greater'))
 # codec settings
 codec = dict(
     type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
@@ -87,7 +87,7 @@ train_pipeline = [
         scale_factor=(0.7, 1.3)),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

@@ -28,7 +28,9 @@ class PoseTrack18Metric(CocoMetric):
     for more details.
 
     Args:
-        ann_file (str): Path to the annotation file.
+        ann_file (str, optional): Path to the coco format annotation file.
+            If not specified, ground truth annotations from the dataset will
+            be converted to coco format. Defaults to None
         score_mode (str): The mode to score the prediction results which
             should be one of the following options:
 
@@ -37,7 +39,7 @@ class PoseTrack18Metric(CocoMetric):
                 - ``'bbox_keypoint'``: Use keypoint score to rescore the
                     prediction results.
 
-            Defaults to ``'bbox'`
+            Defaults to ``'bbox_keypoint'`
         keypoint_score_thr (float): The threshold of keypoint score. The
             keypoints with score lower than it will not be included to
             rescore the prediction results. Valid only when ``score_mode`` is
@@ -61,22 +63,16 @@ class PoseTrack18Metric(CocoMetric):
             doing quantitative evaluation. This is designed for the need of
             test submission when the ground truth annotations are absent. If
             set to ``True``, ``outfile_prefix`` should specify the path to
-            store the output results. Default: ``False``.
+            store the output results. Defaults to ``False``
         outfile_prefix (str | None): The prefix of json files. It includes
             the file path and the prefix of filename, e.g., ``'a/b/prefix'``.
-            If not specified, a temp file will be created. Default: ``None``.
-        collect_device (str): Device name used for collecting results from
-            different ranks during distributed training. Must be ``'cpu'`` or
-            ``'gpu'``. Default: ``'cpu'``.
-        prefix (str, optional): The prefix that will be added in the metric
-            names to disambiguate homonymous metrics of different evaluators.
-            If prefix is not provided in the argument, ``self.default_prefix``
-            will be used instead. Default: ``None``.
+            If not specified, a temp file will be created. Defaults to ``None``
+        **kwargs: Keyword parameters passed to :class:`mmeval.BaseMetric`
     """
     default_prefix: Optional[str] = 'posetrack18'
 
     def __init__(self,
-                 ann_file: str,
+                 ann_file: Optional[str] = None,
                  score_mode: str = 'bbox_keypoint',
                  keypoint_score_thr: float = 0.2,
                  nms_mode: str = 'oks_nms',
@@ -90,39 +86,16 @@ class PoseTrack18Metric(CocoMetric):
             raise ImportError('Please install ``poseval`` package for '
                               'evaluation on PoseTrack dataset '
                               '(see `requirements/optional.txt`)')
-        super(CocoMetric, self).__init__(
-            collect_device=collect_device, prefix=prefix)
-        self.ann_file = ann_file
-
-        allowed_score_modes = ['bbox', 'bbox_keypoint']
-        if score_mode not in allowed_score_modes:
-            raise ValueError(
-                "`score_mode` should be one of 'bbox', 'bbox_keypoint', "
-                f"'bbox_rle', but got {score_mode}")
-        self.score_mode = score_mode
-        self.keypoint_score_thr = keypoint_score_thr
-
-        allowed_nms_modes = ['oks_nms', 'soft_oks_nms', 'none']
-        if nms_mode not in allowed_nms_modes:
-            raise ValueError(
-                "`nms_mode` should be one of 'oks_nms', 'soft_oks_nms', "
-                f"'none', but got {nms_mode}")
-        self.nms_mode = nms_mode
-        self.nms_thr = nms_thr
-
-        if format_only:
-            assert outfile_prefix is not None, '`outfile_prefix` can not be '\
-                'None when `format_only` is True, otherwise the result file '\
-                'will be saved to a temp directory which will be cleaned up '\
-                'in the end.'
-        else:
-            # do evaluation only if the ground truth annotations exist
-            assert 'annotations' in load(ann_file), \
-                'Ground truth annotations are required for evaluation '\
-                'when `format_only` is False.'
-        self.format_only = format_only
-
-        self.outfile_prefix = outfile_prefix
+        super().__init__(
+            ann_file=ann_file,
+            score_mode=score_mode,
+            keypoint_score_thr=keypoint_score_thr,
+            nms_mode=nms_mode,
+            nms_thr=nms_thr,
+            format_only=format_only,
+            outfile_prefix=outfile_prefix,
+            collect_device=collect_device,
+            prefix=prefix)
 
     def results2json(self, keypoints: Dict[int, list],
                      outfile_prefix: str) -> str:
@@ -239,7 +212,7 @@ class PoseTrack18Metric(CocoMetric):
 
         stats_names = [
             'Head AP', 'Shou AP', 'Elb AP', 'Wri AP', 'Hip AP', 'Knee AP',
-            'Ankl AP', 'Total AP'
+            'Ankl AP', 'AP'
         ]
 
         info_str = list(zip(stats_names, stats))

@@ -115,7 +115,7 @@ train_pipeline = [
                 min_width=10,
                 p=0.5),
         ]),
-    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [

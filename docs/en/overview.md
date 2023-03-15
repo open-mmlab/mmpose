@@ -42,7 +42,7 @@ We have prepared detailed guidelines for all types of users:
    - [Codecs](./user_guides/codecs.md)
    - [Train & Test](./user_guides/train_and_test.md)
    - [Visualization](./user_guides/visualization.md)
-   - [Useful Tools](./user_guides/useful_tools.md)
+   - [How to](./user_guides/how_to.md)
 4. For developers who wish to develop based on MMPose:
    - [Migration Guide](./migration.md)
 5. For researchers and developers who are willing to contribute to MMPose:

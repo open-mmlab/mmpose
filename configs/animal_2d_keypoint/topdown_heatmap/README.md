@@ -25,12 +25,13 @@ Results on AnimalPose validation set (1117 instances)
 
 Results on AP-10K validation set
 
-|   Model    | Input Size |  AP   |            Details and Download            |
-| :--------: | :--------: | :---: | :----------------------------------------: |
-| HRNet-w48  |  256x256   | 0.728 |  [hrnet_ap10k.md](./ap10k/hrnet_ap10k.md)  |
-| HRNet-w32  |  256x256   | 0.722 |  [hrnet_ap10k.md](./ap10k/hrnet_ap10k.md)  |
-| ResNet-101 |  256x256   | 0.681 | [resnet_ap10k.md](./ap10k/resnet_ap10k.md) |
-| ResNet-50  |  256x256   | 0.680 | [resnet_ap10k.md](./ap10k/resnet_ap10k.md) |
+|   Model    | Input Size |  AP   |                 Details and Download                 |
+| :--------: | :--------: | :---: | :--------------------------------------------------: |
+| HRNet-w48  |  256x256   | 0.728 |       [hrnet_ap10k.md](./ap10k/hrnet_ap10k.md)       |
+| HRNet-w32  |  256x256   | 0.722 |       [hrnet_ap10k.md](./ap10k/hrnet_ap10k.md)       |
+| ResNet-101 |  256x256   | 0.681 |      [resnet_ap10k.md](./ap10k/resnet_ap10k.md)      |
+| ResNet-50  |  256x256   | 0.680 |      [resnet_ap10k.md](./ap10k/resnet_ap10k.md)      |
+| CSPNeXt-m  |  256x256   | 0.703 | [cspnext_udp_ap10k.md](./ap10k/cspnext_udp_ap10k.md) |
 
 ### Desert Locust Dataset
 

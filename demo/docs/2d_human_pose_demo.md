@@ -57,9 +57,9 @@ python demo/topdown_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --input ${INPUT_PATH} \
-    --output-root ${OUTPUT_DIR} \
-    [--show --draw-heatmap --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--output-root ${OUTPUT_DIR}] [--save-predictions] \
+    [--show] [--draw-heatmap] [--device ${GPU_ID or CPU}] \
+    [--bbox-thr ${BBOX_SCORE_THR}] [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Example:
@@ -78,6 +78,8 @@ Visualization result:
 
 <img src="https://user-images.githubusercontent.com/87690686/187824368-1f1631c3-52bf-4b45-bf9a-a70cd6551e1a.jpg" height="500px" alt><br>
 
+To save the predicted results on disk, please specify `--save-predictions`.
+
 ### 2D Human Pose Top-Down Video Demo
 
 The above demo script can also take video as input, and run mmdet for human detection, and mmpose for pose estimation. The difference is, the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
@@ -95,6 +97,33 @@ python demo/topdown_demo_with_mmdet.py \
     --input tests/data/posetrack18/videos/000001_mpiinew_test/000001_mpiinew_test.mp4 \
     --output-root=vis_results/demo --show --draw-heatmap
 ```
+
+### 2D Human Pose Bottom-up Image/Video Demo
+
+We also provide a demo script using bottom-up models to estimate the human pose in an image or a video, which does not rely on human detectors.
+
+```shell
+python demo/bottomup_demo.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --input ${INPUT_PATH} \
+    [--output-root ${OUTPUT_DIR}] [--save-predictions] \
+    [--show] [--device ${GPU_ID or CPU}] \
+    [--kpt-thr ${KPT_SCORE_THR}]
+```
+
+Example:
+
+```shell
+python demo/bottomup_demo.py \
+    configs/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512.py \
+    https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-2a3056de_20220928.pth \
+    --input tests/data/coco/000000197388.jpg --output-root=vis_results \
+    --show --save-predictions
+```
+
+Visualization result:
+
+<img src="https://user-images.githubusercontent.com/26127467/207224032-a8dab45d-39e4-4b4e-80e0-3c71a64f5f39.jpg" height="300px" alt><br>
 
 ### Speed Up Inference
 

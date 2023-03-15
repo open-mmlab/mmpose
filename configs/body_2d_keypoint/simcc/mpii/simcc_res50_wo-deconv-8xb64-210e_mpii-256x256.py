@@ -72,8 +72,7 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomBBoxTransform', shift_prob=0),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(
-        type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
@@ -116,8 +115,8 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
 # evaluators
-val_evaluator = dict(type='MpiiPCKAccuracy', norm_item='head')
+val_evaluator = dict(type='MpiiPCKAccuracy')
 test_evaluator = val_evaluator

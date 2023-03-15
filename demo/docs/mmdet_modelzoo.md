@@ -15,6 +15,16 @@ For hand bounding box detection, we simply train our hand box models on onehand1
 | :---------------------------------------------------------------- | :----: | :---------------------------------------------------------------: | :--------------------------------------------------------------: |
 | [Cascade_R-CNN X-101-64x4d-FPN-1class](/demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py) | 0.817  | [ckpt](https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth) | [log](https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k_20201030.log.json) |
 
+### Face Bounding Box Detection Models
+
+For face bounding box detection, we train a YOLOX detector on COCO-face data using MMDetection.
+
+#### Hand detection results on OneHand10K test set
+
+| Arch                                                            | Box AP |                                                  ckpt                                                  |
+| :-------------------------------------------------------------- | :----: | :----------------------------------------------------------------------------------------------------: |
+| [YOLOX-s](/demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py) | 0.408  | [ckpt](https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth) |
+
 ### Animal Bounding Box Detection Models
 
 #### COCO animals

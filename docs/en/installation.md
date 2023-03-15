@@ -20,7 +20,7 @@
 
 In this section we demonstrate how to prepare an environment with PyTorch.
 
-MMPose works on Linux, Windows and macOS. It requires Python 3.6+, CUDA 9.2+ and PyTorch 1.6+.
+MMPose works on Linux, Windows and macOS. It requires Python 3.7+, CUDA 9.2+ and PyTorch 1.6+.
 
 If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose Installation](#install-mmpose). Otherwise, you can follow these steps for the preparation.
 
@@ -62,13 +62,13 @@ We recommend that users follow our best practices to install MMPose. However, th
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install "mmcv>=2.0.0rc1"
+mim install "mmcv>=2.0.0rc4"
 ```
 
 Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can easily install mmdet as a dependency by running:
 
 ```shell
-mim install "mmdet>=3.0.0rc0"
+mim install "mmdet>=3.0.0rc6"
 ```
 
 **Step 1.** Install MMPose.
@@ -89,7 +89,7 @@ pip install -v -e .
 Case B: To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
-mim install "mmpose>=1.0.0b0"
+mim install "mmpose>=1.0.0rc1"
 ```
 
 ### Verify the installation
@@ -117,11 +117,9 @@ python demo/image_demo.py \
     --draw-heatmap
 ```
 
-If everything goes fine, you will get this visualization result:
+If everything goes fine, you will be able to get the following visualization result from `vis_results.jpg` in your current folder, which displays the predicted keypoints and heatmaps overlaid on the person in the image.
 
 ![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
-
-And the visualization result will be saved as `vis_results.jpg` on your current folder, where the predicted keypoints and heatmaps are plotted on the person in the image.
 
 Option (B). If you install mmpose with pip, open you python interpreter and copy & paste the following codes.
 
@@ -210,7 +208,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 1.0.0b0
+# Example output: 1.0.0rc0
 ```
 
 ```{note}

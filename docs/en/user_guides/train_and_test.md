@@ -47,6 +47,10 @@ CUDA_VISIBLE_DEVICES=-1 python tools/train.py ${CONFIG_FILE} [ARGS]
 | `--no-validate`                       | **Not suggested**. Disable checkpoint evaluation during training.                                                                                                   |
 | `--auto-scale-lr`                     | Automatically rescale the learning rate according to the actual batch size and the original batch size.                                                             |
 | `--cfg-options CFG_OPTIONS`           | Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into the config file. If the value to be overwritten is a list, it should be of the form of either `key="[a,b]"` or `key=a,b`. The argument also allows nested list/tuple values, e.g. `key="[(a,b),(c,d)]"`. Note that quotation marks are necessary and that **no white space is allowed**. |
+| `--show-dir SHOW_DIR`                 | The directory to save the result visualization images generated during validation.                                                                                  |
+| `--show`                              | Visualize the prediction result in a window.                                                                                                                        |
+| `--interval INTERVAL`                 | The interval of samples to visualize.                                                                                                                               |
+| `--wait-time WAIT_TIME`               | The display time of every window (in seconds). Defaults to 1.                                                                                                       |
 | `--launcher {none,pytorch,slurm,mpi}` | Options for job launcher.                                                                                                                                           |
 
 ### Train with multiple GPUs

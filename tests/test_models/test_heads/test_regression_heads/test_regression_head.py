@@ -25,17 +25,6 @@ class TestRegressionHead(TestCase):
 
         return feats
 
-    def _get_data_samples(self,
-                          batch_size: int = 2,
-                          with_heatmap: bool = False):
-
-        batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(
-                batch_size, with_heatmap=with_heatmap)
-        ]
-
-        return batch_data_samples
-
     def test_init(self):
 
         head = RegressionHead(in_channels=1024, num_joints=17)
@@ -64,8 +53,8 @@ class TestRegressionHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=False)
+        batch_data_samples = get_packed_inputs(
+            batch_size=2, with_heatmap=False)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -83,7 +72,7 @@ class TestRegressionHead(TestCase):
         )
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -105,8 +94,8 @@ class TestRegressionHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=False)
+        batch_data_samples = get_packed_inputs(
+            batch_size=2, with_heatmap=False)['data_samples']
         preds = head.predict([feats, feats],
                              batch_data_samples,
                              test_cfg=dict(flip_test=True, shift_coords=True))
@@ -126,8 +115,8 @@ class TestRegressionHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=False)
+        batch_data_samples = get_packed_inputs(
+            batch_size=2, with_heatmap=False)['data_samples']
         losses = head.loss(feats, batch_data_samples)
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)

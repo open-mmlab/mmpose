@@ -68,6 +68,10 @@ MMPose 预定义的 Registry 在 `$MMPOSE/mmpose/registry.py` 中，目前支持
 
 - `HOOKS`：钩子类
 
+```{note}
+需要注意的是，所有新增的模块都需要使用注册器（Registry）进行注册，并在对应目录的 `__init__.py` 中进行 `import`，以便能够使用配置文件构建其实例。
+```
+
 ## 配置系统
 
 具体而言，一个配置文件主要包含如下五个部分：
@@ -134,16 +138,14 @@ _base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位
 ```
 
 ```{note}
-**Tips**
-
 CheckpointHook:
 
-- save_best: `'coco/AP'` 用于 `CocoMetric`, `'pck/PCK@0.05'` 用于 `PCKAccuracy`
+- save_best: `'coco/AP'` 用于 `CocoMetric`, `'PCK'` 用于 `PCKAccuracy`
 - max_keep_ckpts: 最大保留ckpt数量，默认为-1，代表不限制
 
 样例:
 
-`default_hooks = dict(checkpoint=dict(save_best='pck/PCK@0.05', rule='greater', max_keep_ckpts=1))`
+`default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1))`
 ```
 
 ### 数据配置
@@ -179,7 +181,7 @@ train_pipeline = [ # 训练时数据增强
     dict(type='TopdownAffine', input_size=codec['input_size']), # 根据变换矩阵更新目标数据
     dict(
         type='GenerateTarget', # 根据目标数据生成监督信息
-        target_type='heatmap', # 监督信息类型
+        # 监督信息类型
         encoder=codec, # 传入编解码器，用于数据编码，生成特定格式的监督信息
     dict(type='PackPoseInputs') # 对target进行打包用于训练
 ]
@@ -223,9 +225,11 @@ test_dataloader = val_dataloader # 默认情况下不区分验证集和测试集
 ```
 
 ```{note}
-**Tips**
 
-设置随机种子： `randomness=dict(seed=0)`
+常用功能可以参考以下教程:
+- [恢复训练](../common_usages/resume_training.md)
+- [自动混合精度训练](../common_usages/amp_training.md)
+- [设置随机种子](../common_usages/set_random_seed.md)
 
 ```
 

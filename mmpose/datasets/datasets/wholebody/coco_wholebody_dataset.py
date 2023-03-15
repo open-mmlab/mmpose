@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import os.path as osp
 from typing import Optional
 
@@ -117,6 +118,10 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
             'iscrowd': ann['iscrowd'],
             'segmentation': ann['segmentation'],
             'id': ann['id'],
+            'category_id': ann['category_id'],
+            # store the raw annotation of the instance
+            # it is useful for evaluation without providing ann_file
+            'raw_ann_info': copy.deepcopy(ann),
         }
 
         return data_info

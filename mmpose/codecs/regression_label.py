@@ -14,7 +14,16 @@ class RegressionLabel(BaseKeypointCodec):
 
     Note:
 
-        - input image size: [w, h]
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: D
+        - image size: [w, h]
+
+    Encoded:
+
+        - keypoint_labels (np.ndarray): The normalized regression labels in
+            shape (N, K, D) where D is 2 for 2d coordinates
+        - keypoint_weights (np.ndarray): The target weights in shape (N, K)
 
     Args:
         input_size (tuple): Input image size in [w, h]
@@ -26,11 +35,9 @@ class RegressionLabel(BaseKeypointCodec):
 
         self.input_size = input_size
 
-    def encode(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None) -> dict:
         """Encoding keypoints from input image space to normalized space.
 
         Args:
@@ -39,8 +46,8 @@ class RegressionLabel(BaseKeypointCodec):
                 (N, K)
 
         Returns:
-            tuple:
-            - reg_labels (np.ndarray): The normalized regression labels in
+            dict:
+            - keypoint_labels (np.ndarray): The normalized regression labels in
                 shape (N, K, D) where D is 2 for 2d coordinates
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
@@ -53,10 +60,13 @@ class RegressionLabel(BaseKeypointCodec):
                  (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
                      keypoints_visible > 0.5)
 
-        reg_labels = (keypoints / np.array([w, h])).astype(np.float32)
+        keypoint_labels = (keypoints / np.array([w, h])).astype(np.float32)
         keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
 
-        return reg_labels, keypoint_weights
+        encoded = dict(
+            keypoint_labels=keypoint_labels, keypoint_weights=keypoint_weights)
+
+        return encoded
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
