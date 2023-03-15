@@ -4,7 +4,17 @@
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+<div align="center">
+
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
+
+</div>
+
+<div align="center">
+
 [English](README.md) | 简体中文
+
+</div>
 
 ## Abstract
 

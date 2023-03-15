@@ -1,10 +1,20 @@
 <div align="center">
-  <img width="100%" src="https://user-images.githubusercontent.com/15977946/225229420-b10c42c7-f036-41ac-a26f-cfc714a9fbe0.png"/>
+  <img width="100%" src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png"/>
 </div>
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+<div align="center">
+
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
+
+</div>
+
+<div align="center">
+
 English | [简体中文](README_CN.md)
+
+</div>
 
 ## Abstract
 
