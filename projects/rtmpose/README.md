@@ -16,6 +16,8 @@ English | [简体中文](README_CN.md)
 
 </div>
 
+______________________________________________________________________
+
 ## Abstract
 
 Recent studies on 2D pose estimation have achieved excellent performance on public benchmarks, yet its application in the industrial community still suffers from heavy model parameters and high latency.
@@ -26,9 +28,7 @@ With the help of MMDeploy, our project supports various platforms like CPU, GPU,
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-## 🖊️ Citation
-
-Coming soon
+______________________________________________________________________
 
 ## 📄 Table of Contents
 
