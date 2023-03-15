@@ -5,5 +5,5 @@ regex
 scipy
 titlecase
 torch
-torchvision
-xtcocotools>=1.8
+torchvision>1.6
+xtcocotools>=1.13
