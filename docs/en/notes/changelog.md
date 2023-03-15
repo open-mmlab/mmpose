@@ -13,7 +13,7 @@
 
 - Support RTMPose ([#1971](https://github.com/open-mmlab/mmpose/pull/1971), [#2024](https://github.com/open-mmlab/mmpose/pull/2024), [#2028](https://github.com/open-mmlab/mmpose/pull/2028), [#2030](https://github.com/open-mmlab/mmpose/pull/2030), [#2040](https://github.com/open-mmlab/mmpose/pull/2040), [#2057](https://github.com/open-mmlab/mmpose/pull/2057))
 - Support Inferencer ([#1969](https://github.com/open-mmlab/mmpose/pull/1969))
-- Support ViTPose ([#1876](https://github.com/open-mmlab/mmpose/pull/1876), [#2056](https://github.com/open-mmlab/mmpose/pull/2056), [#2058](https://github.com/open-mmlab/mmpose/pull/2058))
+- Support ViTPose ([#1876](https://github.com/open-mmlab/mmpose/pull/1876), [#2056](https://github.com/open-mmlab/mmpose/pull/2056), [#2058](https://github.com/open-mmlab/mmpose/pull/2058)， [#2065](https://github.com/open-mmlab/mmpose/pull/2065))
 - Support CID ([#1907](https://github.com/open-mmlab/mmpose/pull/1907))
 - Support DEKR ([#1834](https://github.com/open-mmlab/mmpose/pull/1834), [#1901](https://github.com/open-mmlab/mmpose/pull/1901))
 - Support training with multiple datasets ([#1767](https://github.com/open-mmlab/mmpose/pull/1767), [#1930](https://github.com/open-mmlab/mmpose/pull/1930), [#1938](https://github.com/open-mmlab/mmpose/pull/1938), [#2025](https://github.com/open-mmlab/mmpose/pull/2025))
