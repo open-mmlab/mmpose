@@ -1,8 +1,6 @@
-# Dive into the framework
+# A 20 Minute Guide to MMPose Framework
 
-MMPose 1.0 has made significant BC-breaking changes, with modules redesigned and reorganized to reduce code redundancy and improve efficiency. For developers who have some deep-learning knowledge, this tutorial provides a migration guide.
-
-Whether you are **a user of the previous version of MMPose**, or **a new user wishing to migrate your Pytorch project to MMPose**, you can learn how to build a project based on MMPose 1.0 with this tutorial.
+MMPose 1.0 is built upon a brand-new framework. For developers with basic knowledge of deep learning, this tutorial provides a overview of MMPose 1.0 framework design. Whether you are **a user of the previous version of MMPose**, or **a beginner of MMPose wishing to start with v1.0**, this tutorial will show you how to build a project based on MMPose 1.0.
 
 ```{note}
 This  tutorial covers what developers will concern when using MMPose 1.0:
@@ -18,7 +16,7 @@ This  tutorial covers what developers will concern when using MMPose 1.0:
 
 The content of this tutorial is organized as follows:
 
-- [Overall Code Architecture](#overall-code-architecture)
+- [A 20 Minute Guide to MMPose Framework](#a-20-minute-guide-to-mmpose-framework)
   - [Overview](#overview)
   - [Step1: Configs](#step1-configs)
   - [Step2: Data](#step2-data)

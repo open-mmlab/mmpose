@@ -1,6 +1,22 @@
+<div align="center">
+  <img width="100%" src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png"/>
+</div>
+
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+<div align="center">
+
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
+
+</div>
+
+<div align="center">
+
 [English](README.md) | 简体中文
+
+</div>
+
+______________________________________________________________________
 
 ## Abstract
 
@@ -8,9 +24,7 @@
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
-## 🖊️ 引用我们
-
-Coming soon
+______________________________________________________________________
 
 ## 📄 Table of Contents
 
@@ -26,6 +40,7 @@ Coming soon
 - [📚 常用功能](#️-常用功能-)
   - [🚀 模型测速](#-模型测速-)
   - [📊 精度验证](#-精度验证-)
+- [📜 引用](#-引用-)
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
@@ -201,8 +216,8 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 ## 👀 可视化 [🔝](#-table-of-contents)
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png" width=900 />
 <img src='https://user-images.githubusercontent.com/13503330/221795678-2c4ae2ec-ac23-4368-8083-0ebeb29f0d3c.gif' width=900/>
+<img src="https://user-images.githubusercontent.com/13503330/219270443-421d9b02-fcec-46de-90f2-ce769c67575a.png" width=900 />
 </div>
 
 ## 😎 快速尝试 [🔝](#-table-of-contents)
@@ -758,3 +773,27 @@ python tools/test.py \
 ```
 
 详细内容请参考 [MMDeploys Docs](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/docs/zh_cn/02-how-to-run/profile_model.md)
+
+## 📜 引用 [🔝](#-table-of-contents)
+
+如果您觉得 RTMPose 对您的研究工作有所帮助，请考虑引用它：
+
+```bibtex
+@misc{https://doi.org/10.48550/arxiv.2303.07399,
+  doi = {10.48550/ARXIV.2303.07399},
+  url = {https://arxiv.org/abs/2303.07399},
+  author = {Jiang, Tao and Lu, Peng and Zhang, Li and Ma, Ningsheng and Han, Rui and Lyu, Chengqi and Li, Yining and Chen, Kai},
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose},
+  publisher = {arXiv},
+  year = {2023},
+  copyright = {Creative Commons Attribution 4.0 International}
+}
+
+@misc{mmpose2020,
+    title={OpenMMLab Pose Estimation Toolbox and Benchmark},
+    author={MMPose Contributors},
+    howpublished = {\url{https://github.com/open-mmlab/mmpose}},
+    year={2020}
+}
+```
