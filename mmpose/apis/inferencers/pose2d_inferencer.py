@@ -18,9 +18,9 @@ from .utils import default_det_models
 
 try:
     from mmdet.apis.det_inferencer import DetInferencer
-    mmdet_available = True
+    has_mmdet = True
 except (ImportError, ModuleNotFoundError):
-    mmdet_available = False
+    has_mmdet = False
 
 InstanceList = List[InstanceData]
 InputType = Union[str, np.ndarray]
@@ -99,7 +99,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                 det_model, det_weights, det_cat_ids = det_info[
                     'model'], det_info['weights'], det_info['cat_ids']
 
-            if mmdet_available:
+            if has_mmdet:
                 self.detector = DetInferencer(
                     det_model, det_weights, device=device)
             else:

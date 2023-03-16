@@ -22,7 +22,7 @@ necks
 
 detectors
 ^^^^^^^^^^^
-.. automodule:: mmpose.models.detectors
+.. automodule:: mmpose.models.pose_estimators
     :members:
 
 heads
