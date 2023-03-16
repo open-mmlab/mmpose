@@ -37,7 +37,7 @@ losses
 
 misc
 ^^^^^^^^^^^
-.. automodule:: mmpose.models.misc
+.. automodule:: mmpose.models.utils
     :members:
 
 mmpose.datasets
