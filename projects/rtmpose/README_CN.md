@@ -233,12 +233,14 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推理，其中推理所用的模型为 SDK 版本。导出 SDK 版模型的教程见 [SDK 推理](#%EF%B8%8F-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
 
+#### Linux\\
+
 说明：
 
 - GCC 版本需大于 7.5
 - cmake 版本需大于 3.20
 
-#### ONNX
+##### ONNX
 
 ```shell
 # 下载预编译包
@@ -266,7 +268,7 @@ bash build.sh
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
-#### TensorRT
+##### TensorRT
 
 ```shell
 # 下载预编译包
@@ -295,6 +297,67 @@ bash build.sh
 ```
 
 详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
+
+#### Windows
+
+##### Python 推理
+
+1. 下载 [预编译包](https://github.com/open-mmlab/mmdeploy/releases)。
+2. 解压文件，进入 `sdk/python` 目录。
+3. 用 `whl` 安装 `mmdeploy_python`。
+
+```shell
+pip install {file_name}.whl
+```
+
+4. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
+5. 使用 `pose_tracker.py` 进行推理：
+
+```shell
+# 进入 ./sdk/example/python
+python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
+```
+
+##### 可执行文件推理
+
+1. 安装 [cmake](https://cmake.org/download/)。
+2. 前往 [mmdeploy](https://github.com/open-mmlab/mmdeploy/releases) 下载 win 预编译包。
+3. 解压文件，进入 sdk 目录。
+4. 使用管理员权限打开 PowerShell，执行以下命令：
+
+```shell
+set-ExecutionPolicy RemoteSigned
+```
+
+5. 安装 OpenCV：
+
+```shell
+# in sdk folder:
+.\opencv.ps1
+```
+
+6. 配置环境变量：
+
+```shell
+# in sdk folder:
+.\set_env.ps1
+```
+
+7. 编译 sdk：
+
+```shell
+# in sdk folder:
+# 如果你通过 .\install_opencv.ps1 安装 opencv，直接运行如下指令：
+.\build_sdk.ps1
+# 如果你自行安装了 opencv，需要指定 OpenCVConfig.cmake 的路径：
+.\build_sdk.ps1 "path/to/folder/of/OpenCVConfig.cmake"
+```
+
+8. 可执行文件会在如下路径生成：
+
+```shell
+example\cpp\build\Release
+```
 
 ### MMPose demo 脚本
 
