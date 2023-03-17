@@ -160,7 +160,7 @@ Data configuration refers to the data processing related settings, mainly includ
 Here is the description of Data configuration:
 
 ```Python
-file_client_args = dict(backend='disk') # data storage backend
+backend_args = dict(backend='local') # data storage backend
 dataset_type = 'CocoDataset' # name of dataset
 data_mode = 'topdown' # type of the model
 data_root = 'data/coco/' # root of the dataset
@@ -168,7 +168,7 @@ data_root = 'data/coco/' # root of the dataset
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
 train_pipeline = [ # data aug in training
-    dict(type='LoadImage', file_client_args=file_client_args, # image loading
+    dict(type='LoadImage', backend_args=backend_args, # image loading
     dict(type='GetBBoxCenterScale'), # calculate center and scale of bbox
     dict(type='RandomBBoxTransform'), # config of scaling, rotation and shifing
     dict(type='RandomFlip', direction='horizontal'), # config of random flipping
@@ -181,7 +181,7 @@ train_pipeline = [ # data aug in training
     dict(type='PackPoseInputs') # pack targets
 ]
 test_pipeline = [ # data aug in testing
-    dict(type='LoadImage', file_client_args=file_client_args), # image loading
+    dict(type='LoadImage', backend_args=backend_args), # image loading
     dict(type='GetBBoxCenterScale'), # calculate center and scale of bbox
     dict(type='TopdownAffine', input_size=codec['input_size']), # update inputs via transform matrix
     dict(type='PackPoseInputs') # pack targets

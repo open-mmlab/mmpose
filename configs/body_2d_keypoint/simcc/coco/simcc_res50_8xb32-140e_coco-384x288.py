@@ -59,11 +59,9 @@ dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = 'data/coco/'
 
-file_client_args = dict(backend='disk')
-
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', file_client_args=file_client_args),
+    dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -73,7 +71,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
-    dict(type='LoadImage', file_client_args=file_client_args),
+    dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
