@@ -4,6 +4,8 @@
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+> [RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose](https://arxiv.org/abs/2303.07399)
+
 <div align="center">
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
@@ -234,7 +236,7 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推
 说明：
 
 - GCC 版本需大于 7.5
-- cmake 版本需大于 3.14
+- cmake 版本需大于 3.20
 
 #### ONNX
 
