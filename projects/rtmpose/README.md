@@ -4,6 +4,8 @@
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+> [RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose](https://arxiv.org/abs/2303.07399)
+
 <div align="center">
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
@@ -239,7 +241,7 @@ MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, 
 Env Requirements:
 
 - GCC >= 7.5
-- cmake >= 3.14
+- cmake >= 3.20
 
 #### ONNX
 
@@ -300,6 +302,47 @@ bash build.sh
 ```
 
 For details, see [Pipeline Inference](#-step4-pipeline-inference).
+
+### Windows
+
+1. Install [CMake](https://cmake.org/download/).
+2. Download the [pre-compiled SDK](https://github.com/open-mmlab/mmdeploy/releases).
+3. Unzip the SDK and go to the `sdk` folder.
+4. open windows powerShell with administrator privileges
+
+```shell
+set-ExecutionPolicy RemoteSigned
+```
+
+5. Install OpenCV:
+
+```shell
+# in sdk folder:
+.\opencv.ps1
+```
+
+6. Set environment variables:
+
+```shell
+# in sdk folder:
+.\env.ps1
+```
+
+7. Compile the SDK:
+
+```shell
+# in sdk folder:
+# (if you installed opencv by .\install_opencv.ps1)
+.\build.ps1
+# (if you installed opencv yourself)
+.\build_sdk.ps1 "path/to/folder/of/OpenCVConfig.cmake"
+```
+
+8. the executable will be generated in:
+
+```shell
+example\cpp\build\Release
+```
 
 ### MMPose demo scripts
 
