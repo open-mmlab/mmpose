@@ -296,6 +296,47 @@ bash build.sh
 
 详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
 
+#### Windows
+
+1. 安装 [cmake](https://cmake.org/download/)。
+2. 前往 [mmdeploy](https://github.com/open-mmlab/mmdeploy/releases) 下载 win 预编译包。
+3. 解压文件，进入 sdk 目录。
+4. 使用管理员权限打开 PowerShell，执行以下命令：
+
+```shell
+set-ExecutionPolicy RemoteSigned
+```
+
+5. 安装 OpenCV：
+
+```shell
+# in sdk folder:
+.\opencv.ps1
+```
+
+6. 配置环境变量：
+
+```shell
+# in sdk folder:
+.\set_env.ps1
+```
+
+7. 编译 sdk：
+
+```shell
+# in sdk folder:
+# 如果你通过 .\install_opencv.ps1 安装 opencv，直接运行如下指令：
+.\build_sdk.ps1
+# 如果你自行安装了 opencv，需要指定 OpenCVConfig.cmake 的路径：
+.\build_sdk.ps1 "path/to/folder/of/OpenCVConfig.cmake"
+```
+
+8. 可执行文件会在如下路径生成：
+
+```shell
+example\cpp\build\Release
+```
+
 ### MMPose demo 脚本
 
 通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)和效果验证。
