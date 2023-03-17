@@ -76,24 +76,22 @@ BATCH_AUGMENTS = Registry('batch augment', locations=['mmpose.models'])
 # Registries For Optimizer and the related
 # manage all kinds of optimizers like `SGD` and `Adam`
 OPTIMIZERS = Registry(
-    'optimizer',
-    parent=MMENGINE_OPTIMIZERS,
-    locations=['mmpose.engine.optimizers'])
+    'optimizer', parent=MMENGINE_OPTIMIZERS, locations=['mmpose.engine'])
 # manage optimizer wrapper
 OPTIM_WRAPPERS = Registry(
     'optimizer_wrapper',
     parent=MMENGINE_OPTIM_WRAPPERS,
-    locations=['mmpose.engine.optimizers'])
+    locations=['mmpose.engine'])
 # manage constructors that customize the optimization hyperparameters.
 OPTIM_WRAPPER_CONSTRUCTORS = Registry(
     'optimizer wrapper constructor',
     parent=MMENGINE_OPTIM_WRAPPER_CONSTRUCTORS,
-    locations=['mmpose.engine.optimizers'])
+    locations=['mmpose.engine.optim_wrappers'])
 # manage all kinds of parameter schedulers like `MultiStepLR`
 PARAM_SCHEDULERS = Registry(
     'parameter scheduler',
     parent=MMENGINE_PARAM_SCHEDULERS,
-    locations=['mmpose.engine.schedulers'])
+    locations=['mmpose.engine'])
 
 # manage all kinds of metrics
 METRICS = Registry(
