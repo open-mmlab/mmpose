@@ -20,6 +20,13 @@ class TestDetectorNode(unittest.TestCase):
         input_buffer='_input_',
         output_buffer='det_result')
 
+    def setUp(self) -> None:
+        self._has_mmdet = True
+        try:
+            from mmdet.apis import init_detector  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            self._has_mmdet = False
+
     def _get_input_msg(self):
 
         msg = FrameMessage(None)
@@ -31,6 +38,10 @@ class TestDetectorNode(unittest.TestCase):
         return msg
 
     def test_init(self):
+
+        if not self._has_mmdet:
+            return unittest.skip('mmdet is not installed')
+
         node = DetectorNode(**self.model_config)
 
         self.assertEqual(len(node._input_buffers), 1)
@@ -40,6 +51,10 @@ class TestDetectorNode(unittest.TestCase):
         self.assertEqual(node.device, 'cpu')
 
     def test_process(self):
+
+        if not self._has_mmdet:
+            return unittest.skip('mmdet is not installed')
+
         node = DetectorNode(**self.model_config)
 
         input_msg = self._get_input_msg()
@@ -53,6 +68,10 @@ class TestDetectorNode(unittest.TestCase):
         self.assertEqual(objects[0]['bbox'].shape, (4, ))
 
     def test_bypass(self):
+
+        if not self._has_mmdet:
+            return unittest.skip('mmdet is not installed')
+
         node = DetectorNode(**self.model_config)
 
         input_msg = self._get_input_msg()

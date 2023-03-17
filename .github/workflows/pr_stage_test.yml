@@ -35,16 +35,13 @@ jobs:
         run: pip install -U numpy
       - name: Install PyTorch
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
-      - name: Install MMEngine
-        run: pip install git+https://github.com/open-mmlab/mmengine.git@main
-      - name: Install MMCV
+      - name: Install mmpose dependencies
         run: |
+          pip install -U numpy
+          pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
           mim install 'mmcv >= 2.0.0rc1'
-      - name: Install MMDet
-        run: pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
-      - name: Install other dependencies
-        run: |
+          pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
           pip install -r requirements/albu.txt
           pip install -r requirements/poseval.txt

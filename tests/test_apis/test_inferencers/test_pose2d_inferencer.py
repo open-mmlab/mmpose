@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+import unittest
 from collections import defaultdict
 from tempfile import TemporaryDirectory
 from unittest import TestCase
@@ -15,7 +16,12 @@ from mmpose.structures import PoseDataSample
 
 class TestPose2DInferencer(TestCase):
 
-    def _test_init(self):
+    def test_init(self):
+
+        try:
+            from mmdet.apis.det_inferencer import DetInferencer  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            return unittest.skip('mmdet is not installed')
 
         # 1. init with config path and checkpoint
         inferencer = Pose2DInferencer(
@@ -58,6 +64,11 @@ class TestPose2DInferencer(TestCase):
         self.assertFalse(hasattr(inferencer, 'detector'))
 
     def test_call(self):
+
+        try:
+            from mmdet.apis.det_inferencer import DetInferencer  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            return unittest.skip('mmdet is not installed')
 
         # top-down model
         inferencer = Pose2DInferencer('human')
