@@ -16,7 +16,7 @@ class TestMMPoseInferencer(TestCase):
     def test_call(self):
 
         # top-down model
-        inferencer = MMPoseInferencer('human')
+        inferencer = MMPoseInferencer('human', device='cpu')
 
         img_path = 'tests/data/coco/000000197388.jpg'
         img = mmcv.imread(img_path)
