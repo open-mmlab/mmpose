@@ -4,6 +4,8 @@
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+> [RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose](https://arxiv.org/abs/2303.07399)
+
 <div align="center">
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
@@ -239,7 +241,7 @@ MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, 
 Env Requirements:
 
 - GCC >= 7.5
-- cmake >= 3.14
+- cmake >= 3.20
 
 #### ONNX
 
