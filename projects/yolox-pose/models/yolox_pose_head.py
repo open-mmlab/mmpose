@@ -89,15 +89,19 @@ class YOLOXPoseHead(YOLOXHead):
 
         # set up buffers to save variables generated in methods of
         # the class's base class.
-        self.log = defaultdict(list)
+        self._log = defaultdict(list)
         self.sampler = OutputSaveObjectWrapper(self.sampler)
 
-        self.assigner.oks_calculator = self.loss_pose
+        # ensure that the `sigmas` in self.assigner.oks_calculator
+        # is on the same device as the model
+        if hasattr(self.assigner, 'oks_calculator'):
+            self.add_module('assigner_oks_calculator',
+                            self.assigner.oks_calculator)
 
     def _clear(self):
         """Clear variable buffers."""
         self.sampler.clear()
-        self.log.clear()
+        self._log.clear()
 
     def loss_by_feat(self,
                      cls_scores: Sequence[Tensor],
@@ -143,9 +147,9 @@ class YOLOXPoseHead(YOLOXHead):
         ],
                               dim=1)
 
-        self.log['pred_keypoints'] = list(flatten_kpts.detach().split(
+        self._log['pred_keypoints'] = list(flatten_kpts.detach().split(
             1, dim=0))
-        self.log['pred_keypoints_vis'] = list(vis_preds.detach().split(
+        self._log['pred_keypoints_vis'] = list(vis_preds.detach().split(
             1, dim=0))
 
         losses = super().loss_by_feat(cls_scores, bbox_preds, objectnesses,
@@ -174,8 +178,8 @@ class YOLOXPoseHead(YOLOXHead):
         # compute keypoint losses
         if len(kpt_targets) > 0:
             vis_targets = (vis_targets > 0).float()
-            pos_masks = torch.cat(self.log['foreground_mask'], 0)
-            bbox_targets = torch.cat(self.log['bbox_target'], 0)
+            pos_masks = torch.cat(self._log['foreground_mask'], 0)
+            bbox_targets = torch.cat(self._log['bbox_target'], 0)
             loss_kpt = self.loss_pose(
                 flatten_kpts.view(-1, self.num_keypoints, 2)[pos_masks],
                 kpt_targets, vis_targets, bbox_targets)
@@ -208,8 +212,8 @@ class YOLOXPoseHead(YOLOXHead):
         the log.
         """
 
-        kpt = self.log['pred_keypoints'].pop(0).squeeze(0)
-        kpt_vis = self.log['pred_keypoints_vis'].pop(0).squeeze(0)
+        kpt = self._log['pred_keypoints'].pop(0).squeeze(0)
+        kpt_vis = self._log['pred_keypoints_vis'].pop(0).squeeze(0)
         kpt = torch.cat((kpt, kpt_vis.unsqueeze(-1)), dim=-1)
         decoded_bboxes = torch.cat((decoded_bboxes, kpt.flatten(1)), dim=1)
 
@@ -217,8 +221,8 @@ class YOLOXPoseHead(YOLOXHead):
                                               decoded_bboxes, objectness,
                                               gt_instances, img_meta,
                                               gt_instances_ignore)
-        self.log['foreground_mask'].append(targets[0])
-        self.log['bbox_target'].append(targets[3])
+        self._log['foreground_mask'].append(targets[0])
+        self._log['bbox_target'].append(targets[3])
         return targets
 
     def predict_by_feat(self,
