@@ -238,12 +238,14 @@ We provide two appoaches to try RTMPose:
 
 MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, where the model used for reasoning is the SDK version. For the tutorial of exporting the SDK version model, see [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk), and for detailed parameter settings of inference, see [Pipeline Reasoning](#-step4-pipeline-inference).
 
+#### Linux
+
 Env Requirements:
 
 - GCC >= 7.5
 - cmake >= 3.20
 
-#### ONNX
+##### ONNX
 
 ```shell
 # Download pre-compiled files
@@ -272,7 +274,7 @@ bash build.sh
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
-#### TensorRT
+##### TensorRT
 
 ```shell
 # Download pre-compiled files
@@ -303,7 +305,22 @@ bash build.sh
 
 For details, see [Pipeline Inference](#-step4-pipeline-inference).
 
-### Windows
+#### Windows
+
+##### Python Inference
+
+1. Download the [pre-compiled SDK](https://github.com/open-mmlab/mmdeploy/releases).
+2. Unzip the SDK and go to the `sdk/python` folder.
+3. Install `mmdeploy_python` via `.whl` file.
+4. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
+5. Inference with `pose_tracker.py`:
+
+```shell
+# go to ./sdk/example/python
+python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
+```
+
+##### Executable Inference
 
 1. Install [CMake](https://cmake.org/download/).
 2. Download the [pre-compiled SDK](https://github.com/open-mmlab/mmdeploy/releases).
