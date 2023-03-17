@@ -7,7 +7,7 @@ import mmcv
 import mmengine
 import numpy as np
 from mmengine import Config, DictAction
-from mmengine.fileio import get_file_client
+from mmengine.fileio import get_file_backend
 from mmengine.registry import build_from_cfg, init_default_scope
 from mmengine.structures import InstanceData
 
@@ -81,7 +81,7 @@ def main():
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
     backend_args = cfg.get('backend_args', dict(backend='local'))
-    file_backend = get_file_client(backend_args=backend_args)
+    file_backend = get_file_backend(backend_args=backend_args)
 
     # register all modules in mmpose into the registries
     init_default_scope(cfg.get('default_scope', 'mmpose'))

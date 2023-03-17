@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 
 import mmcv
 import mmengine
-from mmengine.fileio import get_file_client
+from mmengine.fileio import get_file_backend
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
@@ -79,7 +79,7 @@ class PoseVisualizationHook(Hook):
             self.file_backend = None
         else:
             self.backend_args = backend_args.copy()
-            self.file_backend = get_file_client(backend_args=backend_args)
+            self.file_backend = get_file_backend(backend_args=backend_args)
 
     def after_val_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
                        outputs: Sequence[PoseDataSample]) -> None:
@@ -95,7 +95,8 @@ class PoseVisualizationHook(Hook):
             return
 
         if self.file_backend is None:
-            self.file_backend = get_file_client(backend_args=self.backend_args)
+            self.file_backend = get_file_backend(
+                backend_args=self.backend_args)
 
         self._visualizer.set_dataset_meta(runner.val_evaluator.dataset_meta)
 
@@ -144,7 +145,8 @@ class PoseVisualizationHook(Hook):
             mmengine.mkdir_or_exist(self.out_dir)
 
         if self.file_backend is None:
-            self.file_backend = get_file_client(backend_args=self.backend_args)
+            self.file_backend = get_file_backend(
+                backend_args=self.backend_args)
 
         self._visualizer.set_dataset_meta(runner.test_evaluator.dataset_meta)
 
