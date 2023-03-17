@@ -2,6 +2,7 @@
 
 import logging
 from argparse import ArgumentParser
+import warnings
 
 from mmengine import Config, DictAction
 
@@ -51,6 +52,10 @@ def set_device(cfg: Config, device: str):
 
 
 def run():
+
+    warnings.warn(
+        'The Webcam API will be deprecated in future. ', DeprecationWarning)
+
     args = parse_args()
     cfg = Config.fromfile(args.config)
     cfg.merge_from_dict(args.cfg_options)
