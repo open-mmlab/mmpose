@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 
 import mmcv
 import mmengine
-from mmengine.fileio import get_file_backend
+import mmengine.fileio as fileio
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
@@ -72,14 +72,7 @@ class PoseVisualizationHook(Hook):
         self.enable = enable
         self.out_dir = out_dir
         self._test_index = 0
-
-        if backend_args is None:
-            # lazy init at loading
-            self.backend_args = None
-            self.file_backend = None
-        else:
-            self.backend_args = backend_args.copy()
-            self.file_backend = get_file_backend(backend_args=backend_args)
+        self.backend_args = backend_args
 
     def after_val_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
                        outputs: Sequence[PoseDataSample]) -> None:
@@ -94,10 +87,6 @@ class PoseVisualizationHook(Hook):
         if self.enable is False:
             return
 
-        if self.file_backend is None:
-            self.file_backend = get_file_backend(
-                backend_args=self.backend_args)
-
         self._visualizer.set_dataset_meta(runner.val_evaluator.dataset_meta)
 
         # There is no guarantee that the same batch of images
@@ -106,7 +95,7 @@ class PoseVisualizationHook(Hook):
 
         # Visualize only the first data
         img_path = data_batch['data_samples'][0].get('img_path')
-        img_bytes = self.file_client.get(img_path)
+        img_bytes = fileio.get(img_path, backend_args=self.backend_args)
         img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
         data_sample = outputs[0]
 
@@ -144,17 +133,13 @@ class PoseVisualizationHook(Hook):
                                         self.out_dir)
             mmengine.mkdir_or_exist(self.out_dir)
 
-        if self.file_backend is None:
-            self.file_backend = get_file_backend(
-                backend_args=self.backend_args)
-
         self._visualizer.set_dataset_meta(runner.test_evaluator.dataset_meta)
 
         for data_sample in outputs:
             self._test_index += 1
 
             img_path = data_sample.get('img_path')
-            img_bytes = self.file_client.get(img_path)
+            img_bytes = fileio.get(img_path, backend_args=self.backend_args)
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
             data_sample = merge_data_samples([data_sample])
 

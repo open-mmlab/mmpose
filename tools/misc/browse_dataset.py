@@ -5,9 +5,9 @@ import os.path as osp
 
 import mmcv
 import mmengine
+import mmengine.fileio as fileio
 import numpy as np
 from mmengine import Config, DictAction
-from mmengine.fileio import get_file_backend
 from mmengine.registry import build_from_cfg, init_default_scope
 from mmengine.structures import InstanceData
 
@@ -81,7 +81,6 @@ def main():
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
     backend_args = cfg.get('backend_args', dict(backend='local'))
-    file_backend = get_file_backend(backend_args=backend_args)
 
     # register all modules in mmpose into the registries
     init_default_scope(cfg.get('default_scope', 'mmpose'))
@@ -122,7 +121,7 @@ def main():
                 continue
             else:
                 img_path = item['img_path']
-                img_bytes = file_backend.get(img_path)
+                img_bytes = fileio.get(img_path, backend_args=backend_args)
                 img = mmcv.imfrombytes(img_bytes, channel_order='bgr')
 
                 # forge pseudo data_sample
