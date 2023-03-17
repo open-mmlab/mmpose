@@ -134,6 +134,10 @@ pip install openmim
 git clone -b 1.x https://github.com/open-mmlab/mmpose.git
 cd mmpose
 mim install -e .
+
+# If you have an older version of mmdet installed in your current environment,
+# please upgrade to version 3.x
+mim install "mmdet>=3.0.0rc6"
 ```
 
 Please refer to [installation.md](https://mmpose.readthedocs.io/en/1.x/installation.html) for more detailed installation and dataset preparation.
