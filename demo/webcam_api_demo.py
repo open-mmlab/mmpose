@@ -1,8 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
 import logging
-from argparse import ArgumentParser
 import warnings
+from argparse import ArgumentParser
 
 from mmengine import Config, DictAction
 
@@ -53,8 +53,8 @@ def set_device(cfg: Config, device: str):
 
 def run():
 
-    warnings.warn(
-        'The Webcam API will be deprecated in future. ', DeprecationWarning)
+    warnings.warn('The Webcam API will be deprecated in future. ',
+                  DeprecationWarning)
 
     args = parse_args()
     cfg = Config.fromfile(args.config)

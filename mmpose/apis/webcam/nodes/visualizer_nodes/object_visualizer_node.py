@@ -1,10 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Dict, List, Optional, Tuple, Union
+import math
 from itertools import groupby
+from typing import Dict, List, Optional, Tuple, Union
 
-import numpy as np
 import cv2
 import mmcv
+import numpy as np
 
 from ...utils import FrameMessage
 from ..base_visualizer_node import BaseVisualizerNode
@@ -184,7 +185,6 @@ def imshow_keypoints(img,
     return img
 
 
-
 @NODES.register_module()
 class ObjectVisualizerNode(BaseVisualizerNode):
     """Visualize the bounding box and keypoints of objects.
@@ -267,7 +267,6 @@ class ObjectVisualizerNode(BaseVisualizerNode):
         self.radius = radius
         self.thickness = thickness
 
-
     def _draw_bbox(self, canvas: np.ndarray, input_msg: FrameMessage):
         """Draw object bboxes."""
 
@@ -313,7 +312,11 @@ class ObjectVisualizerNode(BaseVisualizerNode):
         for model_cfg, group in groupby(objects,
                                         lambda x: x['pose_model_cfg']):
             dataset_info = objects[0]['dataset_meta']
-            keypoints = [np.concatenate((obj['keypoints'], obj['keypoint_scores'][:, None]), axis=1) for obj in group]
+            keypoints = [
+                np.concatenate(
+                    (obj['keypoints'], obj['keypoint_scores'][:, None]),
+                    axis=1) for obj in group
+            ]
             imshow_keypoints(
                 canvas,
                 keypoints,
@@ -336,4 +339,3 @@ class ObjectVisualizerNode(BaseVisualizerNode):
             canvas = self._draw_keypoint(canvas, input_msg)
 
         return canvas
-
