@@ -4,6 +4,12 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import mmcv
 import numpy as np
+# try:
+#     from mmdet.apis.det_inferencer import DetInferencer
+#     has_mmdet = True
+# except (ImportError, ModuleNotFoundError):
+#     has_mmdet = False
+from mmdet.apis.det_inferencer import DetInferencer
 from mmengine.config import Config, ConfigDict
 from mmengine.infer.infer import ModelType
 from mmengine.registry import init_default_scope
@@ -15,12 +21,6 @@ from mmpose.registry import DATASETS, INFERENCERS
 from mmpose.structures import merge_data_samples
 from .base_mmpose_inferencer import BaseMMPoseInferencer
 from .utils import default_det_models
-
-try:
-    from mmdet.apis.det_inferencer import DetInferencer
-    has_mmdet = True
-except (ImportError, ModuleNotFoundError):
-    has_mmdet = False
 
 InstanceList = List[InstanceData]
 InputType = Union[str, np.ndarray]
@@ -99,13 +99,15 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                 det_model, det_weights, det_cat_ids = det_info[
                     'model'], det_info['weights'], det_info['cat_ids']
 
-            if has_mmdet:
-                self.detector = DetInferencer(
-                    det_model, det_weights, device=device)
-            else:
-                raise RuntimeError(
-                    'MMDetection (v3.0.0rc6 or above) is required to '
-                    'build inferencers for top-down pose estimation models.')
+            # if has_mmdet:
+            #     self.detector = DetInferencer(
+            #         det_model, det_weights, device=device)
+            # else:
+            #     raise RuntimeError(
+            #         'MMDetection (v3.0.0rc6 or above) is required to '
+            #         'build inferencers for top-down pose estimation models.')
+            self.detector = DetInferencer(
+                det_model, det_weights, device=device)
 
             if isinstance(det_cat_ids, (tuple, list)):
                 self.det_cat_ids = det_cat_ids

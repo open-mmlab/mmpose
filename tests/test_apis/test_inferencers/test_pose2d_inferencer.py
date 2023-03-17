@@ -24,14 +24,14 @@ class TestPose2DInferencer(TestCase):
             weights='https://download.openmmlab.com/mmpose/'
             'v1/body_2d_keypoint/simcc/coco/'
             'simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth',
-            device='cpu')
+        )
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
 
         # 2. init with config name
         inferencer = Pose2DInferencer(
-            model='td-hm_res50_8xb32-210e_onehand10k-256x256', device='cpu')
+            model='td-hm_res50_8xb32-210e_onehand10k-256x256')
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
@@ -40,7 +40,7 @@ class TestPose2DInferencer(TestCase):
         with self.assertWarnsRegex(
                 Warning, 'dataset_meta are not saved in '
                 'the checkpoint\'s meta data, load via config.'):
-            inferencer = Pose2DInferencer(model='animal', device='cpu')
+            inferencer = Pose2DInferencer(model='animal')
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids,
@@ -53,14 +53,14 @@ class TestPose2DInferencer(TestCase):
             weights='https://download.openmmlab.com/mmpose/v1/'
             'body_2d_keypoint/dekr/coco/'
             'dekr_hrnet-w32_8xb10-140e_coco-512x512_ac7c17bf-20221228.pth',
-            device='cpu')
+        )
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertFalse(hasattr(inferencer, 'detector'))
 
     def test_call(self):
 
         # top-down model
-        inferencer = Pose2DInferencer('human', device='cpu')
+        inferencer = Pose2DInferencer('human')
 
         img_path = 'tests/data/coco/000000197388.jpg'
         img = mmcv.imread(img_path)
