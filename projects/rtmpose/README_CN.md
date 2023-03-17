@@ -4,6 +4,8 @@
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
+> [RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose](https://arxiv.org/abs/2303.07399)
+
 <div align="center">
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
@@ -234,7 +236,7 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推
 说明：
 
 - GCC 版本需大于 7.5
-- cmake 版本需大于 3.14
+- cmake 版本需大于 3.20
 
 #### ONNX
 
@@ -293,6 +295,47 @@ bash build.sh
 ```
 
 详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
+
+#### Windows
+
+1. 安装 [cmake](https://cmake.org/download/)。
+2. 前往 [mmdeploy](https://github.com/open-mmlab/mmdeploy/releases) 下载 win 预编译包。
+3. 解压文件，进入 sdk 目录。
+4. 使用管理员权限打开 PowerShell，执行以下命令：
+
+```shell
+set-ExecutionPolicy RemoteSigned
+```
+
+5. 安装 OpenCV：
+
+```shell
+# in sdk folder:
+.\opencv.ps1
+```
+
+6. 配置环境变量：
+
+```shell
+# in sdk folder:
+.\set_env.ps1
+```
+
+7. 编译 sdk：
+
+```shell
+# in sdk folder:
+# 如果你通过 .\install_opencv.ps1 安装 opencv，直接运行如下指令：
+.\build_sdk.ps1
+# 如果你自行安装了 opencv，需要指定 OpenCVConfig.cmake 的路径：
+.\build_sdk.ps1 "path/to/folder/of/OpenCVConfig.cmake"
+```
+
+8. 可执行文件会在如下路径生成：
+
+```shell
+example\cpp\build\Release
+```
 
 ### MMPose demo 脚本
 
