@@ -36,7 +36,7 @@ class SimCCVisualizer:
             x, y = self.draw_1d_heatmaps(i['x']), self.draw_1d_heatmaps(i['y'])
             maps['x'].append(x)
             maps['y'].append(y)
-        white = self.creat_blank(blank_size)
+        white = self.creat_blank(blank_size, K)
         map2d = self.draw_2d_heatmaps(heatmap2d)
         if mix:
             map2d = cv.addWeighted(overlaid_image, 1 - weight, map2d, weight,
@@ -78,9 +78,16 @@ class SimCCVisualizer:
         single_map = cv.applyColorMap(cv_img, cv.COLORMAP_JET)
         return single_map
 
-    def creat_blank(self, size: Union[list, tuple]):
+    def creat_blank(self,
+                    size: Union[list, tuple],
+                    K: int = 20,
+                    interval: int = 10):
         """Create the background."""
-        blank = np.zeros((size[0] * 2, size[1] * 2, 3), np.uint8)
+        blank_height = int(
+            max(size[0] * 2, size[0] * 1.1 + (K + 1) * (15 + interval)))
+        blank_width = int(
+            max(size[0] * 2, size[1] * 1.1 + (K + 1) * (15 + interval)))
+        blank = np.zeros((blank_height, blank_width, 3), np.uint8)
         blank.fill(255)
         return blank
 
