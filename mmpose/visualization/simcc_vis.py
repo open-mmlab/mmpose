@@ -86,7 +86,7 @@ class SimCCVisualizer:
         blank_height = int(
             max(size[0] * 2, size[0] * 1.1 + (K + 1) * (15 + interval)))
         blank_width = int(
-            max(size[0] * 2, size[1] * 1.1 + (K + 1) * (15 + interval)))
+            max(size[1] * 2, size[1] * 1.1 + (K + 1) * (15 + interval)))
         blank = np.zeros((blank_height, blank_width, 3), np.uint8)
         blank.fill(255)
         return blank
