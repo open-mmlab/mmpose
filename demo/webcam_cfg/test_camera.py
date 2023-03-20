@@ -16,7 +16,7 @@ executor_cfg = dict(
         dict(
             type='RecorderNode',
             name='recorder',
-            out_video_file='webcam_output.mp4',
+            out_video_file='webcam_api_output.mp4',
             input_buffer='display',
             output_buffer='_display_')
     ])
