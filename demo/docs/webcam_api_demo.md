@@ -12,17 +12,17 @@ Launch the demo from the mmpose root directory:
 
 ```shell
 # Run webcam demo with GPU
-python demo/webcam_demo.py
+python demo/webcam_api_demo.py
 
 # Run webcam demo with CPU
-python demo/webcam_demo.py --cpu
+python demo/webcam_api_demo.py --cpu
 ```
 
 The command above will use the default config file `demo/webcam_cfg/pose_estimation.py`. You can also specify the config file in the command:
 
 ```shell
 # Use the config "pose_tracking.py" for higher infererence speed
-python demo/webcam_demo.py --config demo/webcam_cfg/pose_estimation.py
+python demo/webcam_api_demo.py --config demo/webcam_cfg/pose_estimation.py
 ```
 
 ### Hotkeys
@@ -36,7 +36,7 @@ python demo/webcam_demo.py --config demo/webcam_cfg/pose_estimation.py
 | m      | Show the monitoring information.      |
 | q      | Exit.                                 |
 
-Note that the demo will automatically save the output video into a file `webcam_demo.mp4`.
+Note that the demo will automatically save the output video into a file `webcam_api_demo.mp4`.
 
 ### Usage and configuarations
 
@@ -103,5 +103,5 @@ Detailed configurations can be found in the config file.
   Run follow command for a quick test of video capturing and displaying.
 
   ```shell
-  python demo/webcam_demo.py --config demo/webcam_cfg/test_camera.py
+  python demo/webcam_api_demo.py --config demo/webcam_cfg/test_camera.py
   ```
