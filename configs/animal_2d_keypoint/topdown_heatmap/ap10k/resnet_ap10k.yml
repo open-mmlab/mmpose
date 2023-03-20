@@ -12,7 +12,7 @@ Models:
     Architecture: &id001
     - SimpleBaseline2D
     Training Data: AP-10K
-  Name: topdown_heatmap_res50_ap10k_256x256
+  Name: td-hm_res50_8xb64-210e_ap10k-256x256
   Results:
   - Dataset: AP-10K
     Metrics:
@@ -28,7 +28,7 @@ Models:
   Metadata:
     Architecture: *id001
     Training Data: AP-10K
-  Name: topdown_heatmap_res101_ap10k_256x256
+  Name: td-hm_res101_8xb64-210e_ap10k-256x256
   Results:
   - Dataset: AP-10K
     Metrics:

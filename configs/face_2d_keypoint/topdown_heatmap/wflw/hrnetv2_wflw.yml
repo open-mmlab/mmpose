@@ -12,7 +12,7 @@ Models:
     Architecture:
     - HRNetv2
     Training Data: WFLW
-  Name: topdown_heatmap_hrnetv2_w18_wflw_256x256
+  Name: td-hm_hrnetv2-w18_8xb64-60e_wflw-256x256
   Results:
   - Dataset: WFLW
     Metrics:
