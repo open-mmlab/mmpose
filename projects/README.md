@@ -48,4 +48,4 @@ We also provide some documentation listed below to help you get started:
   <img src="https://user-images.githubusercontent.com/26127467/226550744-3dd948f4-cc5a-4a2f-a737-c595fc6dfe4d.jpg" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
   </div><br/>
 
-- **What's next? Show your talent by contributing to <span style="color:blue"> *MMPose projects*** </span>!
+- **What's next? Join the rank of <span style="color:blue"> *MMPose contributors* </span> by creating a new  project**!
