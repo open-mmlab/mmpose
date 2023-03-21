@@ -58,31 +58,31 @@ Prepare the COCO dataset according to the [instruction](https://mmpose.readthedo
 **To train with multiple GPUs:**
 
 ```shell
-bash tools/dist_train.sh configs/yolox-pose_s_8xb32-300e_coco.py 8 --amp
+bash tools/dist_train.sh $CONFIG 8 --amp
 ```
 
 **To train with slurm:**
 
 ```shell
-bash tools/slurm_train.sh $PARTITION $JOBNAME configs/yolox-pose_s_8xb32-300e_coco.py $WORKDIR --amp
+bash tools/slurm_train.sh $PARTITION $JOBNAME $CONFIG $WORKDIR --amp
 ```
 
 **To test with single GPU:**
 
 ```shell
-python tools/test.py configs/yolox-pose_s_8xb32-300e_coco.py $CHECKPOINT
+python tools/test.py $CONFIG $CHECKPOINT
 ```
 
 **To test with multiple GPUs:**
 
 ```shell
-bash tools/dist_test.sh configs/yolox-pose_s_8xb32-300e_coco.py $CHECKPOINT 8
+bash tools/dist_test.sh $CONFIG $CHECKPOINT 8
 ```
 
 **To test with multiple GPUs by slurm:**
 
 ```shell
-bash tools/slurm_test.sh $PARTITION $JOBNAME configs/yolox-pose_s_8xb32-300e_coco.py $CHECKPOINT
+bash tools/slurm_test.sh $PARTITION $JOBNAME $CONFIG $CHECKPOINT
 ```
 
 ### Results
