@@ -129,13 +129,14 @@ mim install "mmdet>=3.0.0rc6"
 
 我们提供了一系列简明的教程，帮助 MMPose 的新用户轻松上手使用：
 
+- [20 分钟了解 MMPose 架构设计](https://mmpose.readthedocs.io/zh_CN/1.x/guide_to_framework.html)
 - [学习配置文件](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/configs.html)
 - [准备数据集](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/prepare_datasets.html)
 - [关键点编码、解码机制](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/codecs.html)
 - [使用现有模型推理](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/inference.html)
 - [模型训练和测试](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/train_and_test.html)
 - [可视化工具](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/visualization.html)
-- [其他实用工具](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/useful_tools.html)
+- [其他实用工具](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/how_to.html)
 
 ## 模型库
 

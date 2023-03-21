@@ -109,7 +109,7 @@ model = dict(
     test_cfg=dict(score_thr=0.01, nms=dict(type='nms', iou_threshold=0.65)))
 data_root = 'data/coco/'
 dataset_type = 'CocoDataset'
-file_client_args = dict(backend='disk')
+backend_args = dict(backend='local')
 train_pipeline = [
     dict(type='Mosaic', img_scale=(640, 640), pad_val=114.0),
     dict(
@@ -138,9 +138,7 @@ train_dataset = dict(
         ann_file='annotations/instances_train2017.json',
         data_prefix=dict(img='train2017/'),
         pipeline=[
-            dict(
-                type='LoadImageFromFile',
-                file_client_args=dict(backend='disk')),
+            dict(type='LoadImageFromFile', backend_args=dict(backend='local')),
             dict(type='LoadAnnotations', with_bbox=True)
         ],
         filter_cfg=dict(filter_empty_gt=False, min_size=32)),
@@ -167,7 +165,7 @@ train_dataset = dict(
         dict(type='PackDetInputs')
     ])
 test_pipeline = [
-    dict(type='LoadImageFromFile', file_client_args=dict(backend='disk')),
+    dict(type='LoadImageFromFile', backend_args=dict(backend='local')),
     dict(type='Resize', scale=(640, 640), keep_ratio=True),
     dict(
         type='Pad',
@@ -194,7 +192,7 @@ train_dataloader = dict(
             pipeline=[
                 dict(
                     type='LoadImageFromFile',
-                    file_client_args=dict(backend='disk')),
+                    backend_args=dict(backend='local')),
                 dict(type='LoadAnnotations', with_bbox=True)
             ],
             filter_cfg=dict(filter_empty_gt=False, min_size=32),
@@ -236,9 +234,7 @@ val_dataloader = dict(
         data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=[
-            dict(
-                type='LoadImageFromFile',
-                file_client_args=dict(backend='disk')),
+            dict(type='LoadImageFromFile', backend_args=dict(backend='local')),
             dict(type='Resize', scale=(640, 640), keep_ratio=True),
             dict(
                 type='Pad',
@@ -264,9 +260,7 @@ test_dataloader = dict(
         data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=[
-            dict(
-                type='LoadImageFromFile',
-                file_client_args=dict(backend='disk')),
+            dict(type='LoadImageFromFile', backend_args=dict(backend='local')),
             dict(type='Resize', scale=(640, 640), keep_ratio=True),
             dict(
                 type='Pad',

@@ -109,7 +109,7 @@ data_root = 'data/coco/'
 # pipelines
 train_pipeline = []
 val_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage'),
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],

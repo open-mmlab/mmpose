@@ -453,7 +453,7 @@ cd ${PATH_TO_MMDEPLOY}
 
 # 转换 RTMDet
 python tools/deploy.py \
-    configs/mmdet/detection/detection_onnxrumtime_static.py \
+    configs/mmdet/detection/detection_onnxruntime_static.py \
     {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
     ../rtmdet_nano/rtmdet_nano.pth \
     demo/resources/human-pose.jpg \
@@ -531,7 +531,7 @@ backend_config = dict(
 ```shell
 # RTMDet
 python tools/deploy.py \
-    configs/mmdet/detection/detection_onnxrumtime_dynamic.py \
+    configs/mmdet/detection/detection_onnxruntime_dynamic.py \
     {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
     ../rtmdet_nano/rtmdet_nano.pth \
     demo/resources/human-pose.jpg \

@@ -165,7 +165,7 @@ CheckpointHook:
 下面是数据配置的样例说明：
 
 ```Python
-file_client_args = dict(backend='disk') # 数据加载后端设置，默认从本地硬盘加载
+backend_args = dict(backend='local') # 数据加载后端设置，默认从本地硬盘加载
 dataset_type = 'CocoDataset' # 数据集类名
 data_mode = 'topdown' # 算法结构类型，用于指定标注信息加载策略
 data_root = 'data/coco/' # 数据存放路径
@@ -173,7 +173,7 @@ data_root = 'data/coco/' # 数据存放路径
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
 train_pipeline = [ # 训练时数据增强
-    dict(type='LoadImage', file_client_args=file_client_args, # 加载图片
+    dict(type='LoadImage', backend_args=backend_args, # 加载图片
     dict(type='GetBBoxCenterScale'), # 根据bbox获取center和scale
     dict(type='RandomBBoxTransform'), # 生成随机位移、缩放、旋转变换矩阵
     dict(type='RandomFlip', direction='horizontal'), # 生成随机翻转变换矩阵
@@ -186,7 +186,7 @@ train_pipeline = [ # 训练时数据增强
     dict(type='PackPoseInputs') # 对target进行打包用于训练
 ]
 test_pipeline = [ # 测试时数据增强
-    dict(type='LoadImage', file_client_args=file_client_args), # 加载图片
+    dict(type='LoadImage', backend_args=backend_args), # 加载图片
     dict(type='GetBBoxCenterScale'), # 根据bbox获取center和scale
     dict(type='TopdownAffine', input_size=codec['input_size']), # 根据变换矩阵更新目标数据
     dict(type='PackPoseInputs') # 对target进行打包用于训练
