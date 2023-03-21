@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from typing import Any
 
 from mmengine.dataset import force_full_init

@@ -1,93 +1,118 @@
 # YOLOX-Pose
 
-> A README.md template for releasing a project.
->
-> All the fields in this README are **mandatory** for others to understand what you have achieved in this implementation.
-> Please read our [Projects FAQ](../faq.md) if you still feel unclear about the requirements, or raise an [issue](https://github.com/open-mmlab/mmpose/issues) to us!
+This project implements a YOLOX-based human pose estimator, utilizing the approach outlined in **YOLO-Pose: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss** (CVPRW 2022). This pose estimator is lightweight and quick, making it well-suited for crowded scenes.
 
-## Description
-
-This project implements a top-down pose estimator with custom head and loss functions that have been seamlessly inherited from existing modules within MMPose.
+<img src="https://user-images.githubusercontent.com/26127467/226550744-3dd948f4-cc5a-4a2f-a737-c595fc6dfe4d.jpg" alt><br>
 
 ## Usage
 
-> For a typical model, this section should contain the commands for training and testing.
-> You are also suggested to dump your environment specification to env.yml by `conda env export > env.yml`.
-
 ### Prerequisites
 
-- Python 3.7
+- Python 3.7 or higher
 - PyTorch 1.6 or higher
-- [MIM](https://github.com/open-mmlab/mim) v0.33 or higher
-- [MMDetection](https://github.com/open-mmlab/mmdetection) v3.0.0rc5 or higher
+- [MMEngine](https://github.com/open-mmlab/mmengine) v0.6.0 or higher
+- [MMCV](https://github.com/open-mmlab/mmcv) v2.0.0rc4 or higher
+- [MMDetection](https://github.com/open-mmlab/mmdetection) v3.0.0rc6 or higher
 - [MMYOLO](https://github.com/open-mmlab/mmdetection) v3.0.0rc5 or higher
-- [MMPose](https://github.com/open-mmlab/mmpose) v1.0.0rc0 or higher
+- [MMPose](https://github.com/open-mmlab/mmpose) v1.0.0rc1 or higher
 
-All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. In `example_project/` root directory, run the following line to add the current directory to `PYTHONPATH`:
+All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. In `yolox-pose/` root directory, run the following line to add the current directory to `PYTHONPATH`:
 
 ```shell
 export PYTHONPATH=`pwd`:$PYTHONPATH
 ```
 
-### Data Preparation
+### Inference
+
+Users can apply YOLOX-Pose models to estimate human poses using the inferencer found in the MMPose core package. Use the command below:
+
+```shell
+python demo/inferencer_demo.py $INPUTS \
+    --pose2d $CONFIG --pose2d-weights $CHECKPOINT --scope mmyolo \
+    [--show] [--vis-out-dir $VIS_OUT_DIR] [--pred-out-dir $PRED_OUT_DIR]
+```
+
+For more information on using the inferencer, please see [this document](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html#out-of-the-box-inferencer).
+
+Here's an example code:
+
+```shell
+python demo/inferencer_demo.py ../../tests/data/coco/000000000785.jpg \
+    --pose2d configs/yolox-pose_s_8xb32-300e_coco.py \
+    --pose2d-weights https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth \
+    --scope mmyolo --vis-out-dir vis_results
+```
+
+This will create an output image `vis_results/000000000785.jpg`, which appears like:
+
+<img src="https://user-images.githubusercontent.com/26127467/226552585-19b91294-9751-4599-98e7-5dae071a1761.jpg" height="360px" alt><br>
+
+### Training & Testing
+
+#### Data Preparation
 
 Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/1.x/dataset_zoo/2d_body_keypoint.html#coco).
 
-### Training commands
-
-**To train with single GPU:**
-
-```shell
-mim train mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py
-```
+#### Commands
 
 **To train with multiple GPUs:**
 
 ```shell
-mim train mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py --launcher pytorch --gpus 8
+bash tools/dist_train.sh configs/yolox-pose_s_8xb32-300e_coco.py 8 --amp
 ```
 
-**To train with multiple GPUs by slurm:**
+**To train with slurm:**
 
 ```shell
-mim train mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py --launcher slurm \
-    --gpus 16 --gpus-per-node 8 --partition $PARTITION
+bash tools/slurm_train.sh $PARTITION $JOBNAME configs/yolox-pose_s_8xb32-300e_coco.py $WORKDIR --amp
 ```
-
-### Testing commands
 
 **To test with single GPU:**
 
 ```shell
-mim test mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py $CHECKPOINT
+python tools/test.py configs/yolox-pose_s_8xb32-300e_coco.py $CHECKPOINT
 ```
 
 **To test with multiple GPUs:**
 
 ```shell
-mim test mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py $CHECKPOINT --launcher pytorch --gpus 8
+bash tools/dist_test.sh configs/yolox-pose_s_8xb32-300e_coco.py $CHECKPOINT 8
 ```
 
 **To test with multiple GPUs by slurm:**
 
 ```shell
-mim test mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py $CHECKPOINT --launcher slurm \
-    --gpus 16 --gpus-per-node 8 --partition $PARTITION
+bash tools/slurm_test.sh $PARTITION $JOBNAME configs/yolox-pose_s_8xb32-300e_coco.py $CHECKPOINT
 ```
 
-## Results
+### Results
 
-> List the results as usually done in other model's README. Here is an [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/hrnet_coco.md).
+Results on COCO val2017
 
-> You should claim whether this is based on the pre-trained weights, which are converted from the official release; or it's a reproduced result obtained from retraining the model in this project
+|                              Model                              | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                                 Download                                 |
+| :-------------------------------------------------------------: | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :----------------------------------------------------------------------: |
+| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    640     | 0.477 |      0.756      |      0.506      | 0.547 |      0.802      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
+|    [YOLOX-s-Pose](./configs/yolox-pose_s_8xb32-300e_coco.py)    |    640     | 0.595 |      0.836      |      0.653      | 0.658 |      0.878      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_s_8xb32-300e_coco_20230321.json) |
+|    [YOLOX-m-Pose](./configs/yolox-pose_m_4xb64-300e_coco.py)    |    640     | 0.659 |      0.870      |      0.729      | 0.713 |      0.903      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_m_4xb64-300e_coco-cbd11d30_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_m_4xb64-300e_coco_20230321.json) |
+|    [YOLOX-l-Pose](./configs/yolox-pose_l_4xb64-300e_coco.py)    |    640     | 0.679 |      0.882      |      0.749      | 0.733 |      0.911      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_l_4xb64-300e_coco-122e4cf8_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_l_4xb64-300e_coco_20230321.json) |
 
-|                             Model                             | Backbone  | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                             Download                              |
-| :-----------------------------------------------------------: | :-------: | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :---------------------------------------------------------------: |
-| [ExampleHead + ExampleLoss](./configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py) | HRNet-w32 |  256x912   | 0.749 |      0.906      |      0.821      | 0.804 |      0.945      | [model](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) \| [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
+We have only trained models with an input size of 640, as we couldn't replicate the performance enhancement mentioned in the paper when increasing the input size from 640 to 960. We warmly welcome any contributions if you can successfully reproduce the results from the paper!
 
 ## Citation
 
-> You may remove this section if not applicable.
+If this project benefits your work, please kindly consider citing the original paper:
+
+```bibtex
+@inproceedings{maji2022yolo,
+  title={YOLO-Pose: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss},
+  author={Maji, Debapriya and Nagori, Soyeb and Mathew, Manu and Poddar, Deepak},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={2637--2646},
+  year={2022}
+}
+```
+
+Additionally, please cite our work as well:
 
 ```bibtex
 @misc{mmpose2020,
@@ -97,64 +122,3 @@ mim test mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py $
     year={2020}
 }
 ```
-
-## Checklist
-
-Here is a checklist of this project's progress. And you can ignore this part if you don't plan to contribute
-to MMPose projects.
-
-> The PIC (person in charge) or contributors of this project should check all the items that they believe have been finished, which will further be verified by codebase maintainers via a PR.
-
-> OpenMMLab's maintainer will review the code to ensure the project's quality. Reaching the first milestone means that this project suffices the minimum requirement of being merged into 'projects/'. But this project is only eligible to become a part of the core package upon attaining the last milestone.
-
-> Note that keeping this section up-to-date is crucial not only for this project's developers but the entire community, since there might be some other contributors joining this project and deciding their starting point from this list. It also helps maintainers accurately estimate time and effort on further code polishing, if needed.
-
-> A project does not necessarily have to be finished in a single PR, but it's essential for the project to at least reach the first milestone in its very first PR.
-
-- [ ] Milestone 1: PR-ready, and acceptable to be one of the `projects/`.
-
-  - [ ] Finish the code
-
-    > The code's design shall follow existing interfaces and convention. For example, each model component should be registered into `mmpose.registry.MODELS` and configurable via a config file.
-
-  - [ ] Basic docstrings & proper citation
-
-    > Each major class should contains a docstring, describing its functionality and arguments. If your code is copied or modified from other open-source projects, don't forget to cite the source project in docstring and make sure your behavior is not against its license. Typically, we do not accept any code snippet under GPL license. [A Short Guide to Open Source Licenses](https://medium.com/nationwide-technology/a-short-guide-to-open-source-licenses-cf5b1c329edd)
-
-  - [ ] Test-time correctness
-
-    > If you are reproducing the result from a paper, make sure your model's inference-time performance matches that in the original paper. The weights usually could be obtained by simply renaming the keys in the official pre-trained weights. This test could be skipped though, if you are able to prove the training-time correctness and check the second milestone.
-
-  - [ ] A full README
-
-    > As this template does.
-
-- [ ] Milestone 2: Indicates a successful model implementation.
-
-  - [ ] Training-time correctness
-
-    > If you are reproducing the result from a paper, checking this item means that you should have trained your model from scratch based on the original paper's specification and verified that the final result matches the report within a minor error range.
-
-- [ ] Milestone 3: Good to be a part of our core package!
-
-  - [ ] Type hints and docstrings
-
-    > Ideally *all* the methods should have [type hints](https://www.pythontutorial.net/python-basics/python-type-hints/) and [docstrings](https://google.github.io/styleguide/pyguide.html#381-docstrings). [Example](https://github.com/open-mmlab/mmpose/blob/0fb7f22000197181dc0629f767dd99d881d23d76/mmpose/utils/tensor_utils.py#L53)
-
-  - [ ] Unit tests
-
-    > Unit tests for the major module are required. [Example](https://github.com/open-mmlab/mmpose/blob/1.x/tests/test_models/test_heads/test_heatmap_heads/test_heatmap_head.py)
-
-  - [ ] Code polishing
-
-    > Refactor your code according to reviewer's comment.
-
-  - [ ] Metafile.yml
-
-    > It will be parsed by MIM and Inferencer. [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/hrnet_coco.yml)
-
-  - [ ] Move your modules into the core package following the codebase's file hierarchy structure.
-
-    > In particular, you may have to refactor this README into a standard one. [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/README.md)
-
-  - [ ] Refactor your modules into the core package following the codebase's file hierarchy structure.

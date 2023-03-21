@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from collections import defaultdict
 from copy import deepcopy
 from typing import Any, Callable, Dict, Optional, Tuple

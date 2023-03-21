@@ -55,13 +55,13 @@ test_pipeline = [
         type='mmdet.Pad',
         pad_to_square=True,
         pad_val=dict(img=(114.0, 114.0, 114.0))),
-    dict(type='LoadAnnotations', with_bbox=True, _scope_='mmdet'),
     dict(
         type='PackDetPoseInputs',
         meta_keys=('id', 'img_id', 'img_path', 'ori_shape', 'img_shape',
                    'scale_factor', 'flip_indices'))
 ]
 
-train_dataloader = dict(dataset=dict(pipeline=train_pipeline_stage1))
+train_dataloader = dict(
+    batch_size=64, dataset=dict(pipeline=train_pipeline_stage1))
 val_dataloader = dict(dataset=dict(pipeline=test_pipeline))
 test_dataloader = val_dataloader

@@ -63,9 +63,17 @@ class PackDetPoseInputs(PackDetInputs):
         self.meta_keys = meta_keys
 
     def transform(self, results: dict) -> dict:
+        # Add keypoints and their visibility to the results dictionary
         results['gt_keypoints'] = results['gt_bboxes'].keypoints
         results['gt_keypoints_visible'] = results[
             'gt_bboxes'].keypoints_visible
+
+        # Ensure all keys in `self.meta_keys` are in the `results` dictionary,
+        # which is necessary for `PackDetInputs` but not guaranteed during
+        # inference with an inferencer
+        for key in self.meta_keys:
+            if key not in results:
+                results[key] = None
         return super().transform(results)
 
 
