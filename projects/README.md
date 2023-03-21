@@ -48,4 +48,4 @@ We also provide some documentation listed below to help you get started:
   <img src="https://user-images.githubusercontent.com/26127467/226550744-3dd948f4-cc5a-4a2f-a737-c595fc6dfe4d.jpg" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
   </div><br/>
 
-- **And we can't wait to see what you contribute next!**
+- **And What's the next? We can't wait to see your brilliance in *MMPose projects***
