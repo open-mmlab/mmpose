@@ -13,7 +13,6 @@ from mmengine.registry import init_default_scope
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
-from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
 
 try:
@@ -143,21 +142,6 @@ def main():
         help='IoU threshold for bounding box NMS')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
-    parser.add_argument(
-        '--draw-heatmap',
-        action='store_true',
-        default=False,
-        help='Draw heatmap predicted by the model')
-    parser.add_argument(
-        '--radius',
-        type=int,
-        default=3,
-        help='Keypoint radius for visualization')
-    parser.add_argument(
-        '--thickness',
-        type=int,
-        default=1,
-        help='Link thickness for visualization')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -176,16 +160,7 @@ def main():
         args.pose_config,
         args.pose_checkpoint,
         device=args.device,
-        cfg_options=dict(
-            model=dict(test_cfg=dict(output_heatmaps=args.draw_heatmap))))
-
-    # init visualizer
-    pose_estimator.cfg.visualizer.radius = args.radius
-    pose_estimator.cfg.visualizer.line_width = args.thickness
-    visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
-    # the dataset_meta is loaded from the checkpoint and
-    # then pass to the model in init_pose_estimator
-    visualizer.set_dataset_meta(pose_estimator.dataset_meta)
+        cfg_options=dict(model=dict(test_cfg=dict(output_heatmaps=False))))
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':
