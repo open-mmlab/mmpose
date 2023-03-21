@@ -12,7 +12,7 @@ And the **best part**?
 
 - We want to make it **as painless as possible** for you to contribute and make MMPose even greater.
 
-If you're not sure where to start, check out our [example project](./example_project) to see how to add your algorithms easily. And if you have any questions, take a look at our [FAQ](https://github.com/open-mmlab/mmpose/blob/dev-1.x/projects/faq.md).
+If you're not sure where to start, check out our [example project](./example_project) to see how to add your algorithms easily. And if you have any questions, take a look at our [FAQ](./faq.md).
 
 We also provide some documentation listed below to help you get started:
 
