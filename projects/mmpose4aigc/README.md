@@ -61,7 +61,7 @@ The input image and its skeleton are as follows:
 Run the following commands to install the project:
 
 ```shell
-bash install_linux.sh
+bash install_posetracker_linux.sh
 ```
 
 After installation, files are organized as follows:
@@ -82,7 +82,7 @@ Run the following command to generate a skeleton image:
 
 ```shell
 # generate a skeleton image
-bash mmpose_t2i-adapter.sh \
+bash mmpose_style_skeleton.sh \
     mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/rtmpose-ort/000000147979.jpg
 ```
 
