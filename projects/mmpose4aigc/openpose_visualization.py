@@ -112,27 +112,12 @@ def main():
     Using mmdet to detect the human.
     """
     parser = ArgumentParser()
+    parser.add_argument('--det_config', help='Config file for detection')
     parser.add_argument(
-        '--det_config',
-        help='Config file for detection',
-        default='../rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py'
-    )
-    parser.add_argument(
-        '--det_checkpoint',
-        help='Checkpoint file for detection',
-        default='models/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth'
-    )
-    parser.add_argument(
-        '--pose_config',
-        help='Config file for pose',
-        default='../rtmpose/rtmpose/body_2d_keypoint/ \
-        rtmpose-m_8xb256-420e_coco-256x192.py')
-    parser.add_argument(
-        '--pose_checkpoint',
-        help='Checkpoint file for pose',
-        default='models/rtmpose-m_simcc-aic-coco_pt-aic- \
-        coco_420e-256x192-63eb25f7_20230126.pth')
-    parser.add_argument('input', type=str, help='input Image file')
+        '--det_checkpoint', help='Checkpoint file for detection')
+    parser.add_argument('--pose_config', help='Config file for pose')
+    parser.add_argument('--pose_checkpoint', help='Checkpoint file for pose')
+    parser.add_argument('--input', type=str, help='input Image file')
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
