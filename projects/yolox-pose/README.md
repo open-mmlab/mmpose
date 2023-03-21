@@ -39,7 +39,7 @@ Here's an example code:
 ```shell
 python demo/inferencer_demo.py ../../tests/data/coco/000000000785.jpg \
     --pose2d configs/yolox-pose_s_8xb32-300e_coco.py \
-    --pose2d-weights https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth \
+    --pose2d-weights https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth \
     --scope mmyolo --vis-out-dir vis_results
 ```
 
@@ -91,10 +91,10 @@ Results on COCO val2017
 
 |                              Model                              | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                                 Download                                 |
 | :-------------------------------------------------------------: | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :----------------------------------------------------------------------: |
-| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    640     | 0.477 |      0.756      |      0.506      | 0.547 |      0.802      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
-|    [YOLOX-s-Pose](./configs/yolox-pose_s_8xb32-300e_coco.py)    |    640     | 0.595 |      0.836      |      0.653      | 0.658 |      0.878      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_s_8xb32-300e_coco_20230321.json) |
-|    [YOLOX-m-Pose](./configs/yolox-pose_m_4xb64-300e_coco.py)    |    640     | 0.659 |      0.870      |      0.729      | 0.713 |      0.903      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_m_4xb64-300e_coco-cbd11d30_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_m_4xb64-300e_coco_20230321.json) |
-|    [YOLOX-l-Pose](./configs/yolox-pose_l_4xb64-300e_coco.py)    |    640     | 0.679 |      0.882      |      0.749      | 0.733 |      0.911      | [model](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_l_4xb64-300e_coco-122e4cf8_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/yolox-pose/yolox-pose_l_4xb64-300e_coco_20230321.json) |
+| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    640     | 0.477 |      0.756      |      0.506      | 0.547 |      0.802      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
+|    [YOLOX-s-Pose](./configs/yolox-pose_s_8xb32-300e_coco.py)    |    640     | 0.595 |      0.836      |      0.653      | 0.658 |      0.878      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco_20230321.json) |
+|    [YOLOX-m-Pose](./configs/yolox-pose_m_4xb64-300e_coco.py)    |    640     | 0.659 |      0.870      |      0.729      | 0.713 |      0.903      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco-cbd11d30_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco_20230321.json) |
+|    [YOLOX-l-Pose](./configs/yolox-pose_l_4xb64-300e_coco.py)    |    640     | 0.679 |      0.882      |      0.749      | 0.733 |      0.911      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco-122e4cf8_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco_20230321.json) |
 
 We have only trained models with an input size of 640, as we couldn't replicate the performance enhancement mentioned in the paper when increasing the input size from 640 to 960. We warmly welcome any contributions if you can successfully reproduce the results from the paper!
 
