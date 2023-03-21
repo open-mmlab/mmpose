@@ -121,7 +121,7 @@ data_root = 'data/coco/'
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage'),
     dict(type='BottomupRandomAffine', input_size=codec['input_size']),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='GenerateTarget', encoder=codec),
@@ -129,7 +129,7 @@ train_pipeline = [
     dict(type='PackPoseInputs'),
 ]
 val_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage'),
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],

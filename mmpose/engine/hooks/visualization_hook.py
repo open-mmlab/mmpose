@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 
 import mmcv
 import mmengine
+import mmengine.fileio as fileio
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
@@ -41,19 +42,20 @@ class PoseVisualizationHook(Hook):
         wait_time (float): The interval of show (s). Defaults to 0.
         out_dir (str, optional): directory where painted images
             will be saved in testing process.
-        file_client_args (dict): Arguments to instantiate a FileClient.
-            See :class:`mmengine.fileio.FileClient` for details.
-            Defaults to ``dict(backend='disk')``.
+        backend_args (dict, optional): Arguments to instantiate the preifx of
+            uri corresponding backend. Defaults to None.
     """
 
-    def __init__(self,
-                 enable: bool = False,
-                 interval: int = 50,
-                 score_thr: float = 0.3,
-                 show: bool = False,
-                 wait_time: float = 0.,
-                 out_dir: Optional[str] = None,
-                 file_client_args: dict = dict(backend='disk')):
+    def __init__(
+        self,
+        enable: bool = False,
+        interval: int = 50,
+        score_thr: float = 0.3,
+        show: bool = False,
+        wait_time: float = 0.,
+        out_dir: Optional[str] = None,
+        backend_args: Optional[dict] = None,
+    ):
         self._visualizer: Visualizer = Visualizer.get_current_instance()
         self.interval = interval
         self.score_thr = score_thr
@@ -67,11 +69,10 @@ class PoseVisualizationHook(Hook):
                           'needs to be excluded.')
 
         self.wait_time = wait_time
-        self.file_client_args = file_client_args.copy()
-        self.file_client = None
         self.enable = enable
         self.out_dir = out_dir
         self._test_index = 0
+        self.backend_args = backend_args
 
     def after_val_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
                        outputs: Sequence[PoseDataSample]) -> None:
@@ -86,9 +87,6 @@ class PoseVisualizationHook(Hook):
         if self.enable is False:
             return
 
-        if self.file_client is None:
-            self.file_client = mmengine.FileClient(**self.file_client_args)
-
         self._visualizer.set_dataset_meta(runner.val_evaluator.dataset_meta)
 
         # There is no guarantee that the same batch of images
@@ -97,7 +95,7 @@ class PoseVisualizationHook(Hook):
 
         # Visualize only the first data
         img_path = data_batch['data_samples'][0].get('img_path')
-        img_bytes = self.file_client.get(img_path)
+        img_bytes = fileio.get(img_path, backend_args=self.backend_args)
         img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
         data_sample = outputs[0]
 
@@ -135,16 +133,13 @@ class PoseVisualizationHook(Hook):
                                         self.out_dir)
             mmengine.mkdir_or_exist(self.out_dir)
 
-        if self.file_client is None:
-            self.file_client = mmengine.FileClient(**self.file_client_args)
-
         self._visualizer.set_dataset_meta(runner.test_evaluator.dataset_meta)
 
         for data_sample in outputs:
             self._test_index += 1
 
             img_path = data_sample.get('img_path')
-            img_bytes = self.file_client.get(img_path)
+            img_bytes = fileio.get(img_path, backend_args=self.backend_args)
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
             data_sample = merge_data_samples([data_sample])
 
