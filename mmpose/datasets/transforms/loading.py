@@ -33,9 +33,8 @@ class LoadImage(LoadImageFromFile):
             argument for :func:``mmcv.imfrombytes``.
             See :func:``mmcv.imfrombytes`` for details.
             Defaults to 'cv2'.
-        file_client_args (dict): Arguments to instantiate a FileClient.
-            See :class:`mmengine.fileio.FileClient` for details.
-            Defaults to ``dict(backend='disk')``.
+        backend_args (dict, optional): Arguments to instantiate the preifx of
+            uri corresponding backend. Defaults to None.
         ignore_empty (bool): Whether to allow loading empty image or file path
             not existent. Defaults to False.
     """

@@ -98,7 +98,7 @@ data_mode = 'topdown'
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -108,7 +108,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type='LoadImage', file_client_args={{_base_.file_client_args}}),
+    dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size'], use_udp=True),
     dict(type='PackPoseInputs')

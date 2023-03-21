@@ -146,13 +146,14 @@ Please refer to [installation.md](https://mmpose.readthedocs.io/en/1.x/installat
 
 We provided a series of tutorials about the basic usage of MMPose for new users:
 
+- [A 20 Minute Guide to MMPose](https://mmpose.readthedocs.io/en/1.x/guide_to_framework.html)
 - [About Configs](https://mmpose.readthedocs.io/en/1.x/user_guides/configs.html)
 - [Add New Dataset](https://mmpose.readthedocs.io/en/1.x/user_guides/prepare_datasets.html)
 - [Keypoint Encoding & Decoding](https://mmpose.readthedocs.io/en/1.x/user_guides/codecs.html)
 - [Inference with Existing Models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)
 - [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html)
 - [Visualization Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/visualization.html)
-- [Other Useful Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/useful_tools.html)
+- [Other Useful Tools](https://mmpose.readthedocs.io/en/1.x/user_guides/how_to.html)
 
 ## Model Zoo
 
