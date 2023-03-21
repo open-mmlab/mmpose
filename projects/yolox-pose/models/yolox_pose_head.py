@@ -19,10 +19,10 @@ from .utils import OutputSaveFunctionWrapper, OutputSaveObjectWrapper
 
 @MODELS.register_module()
 class YOLOXPoseHeadModule(YOLOXHeadModule):
-    """YOLOXPoseHeadModule is a head module used in `YOLOX-Pose`.
+    """YOLOXPoseHeadModule serves as a head module for `YOLOX-Pose`.
 
-    Compared to `YOLOXHeadModule`, this module adds branches for keypoints
-    prediction.
+    In comparison to `YOLOXHeadModule`, this module introduces branches for
+    keypoint prediction.
     """
 
     def __init__(self, num_keypoints: int, *args, **kwargs):
@@ -32,6 +32,8 @@ class YOLOXPoseHeadModule(YOLOXHeadModule):
     def _init_layers(self):
         """Initializes the layers in the head module."""
         super()._init_layers()
+
+        # The pose branch requires additional layers for precise regression
         self.stacked_convs *= 2
 
         # Create separate layers for each level of feature maps
@@ -129,7 +131,6 @@ class YOLOXPoseHead(YOLOXHead):
         ],
                               dim=1)
 
-        # grid_priors = torch.cat(self.prior_generator.log['grid_priors'][-1])
         featmap_sizes = [cls_score.shape[2:] for cls_score in cls_scores]
         mlvl_priors = self.prior_generator.grid_priors(
             featmap_sizes,
@@ -147,6 +148,8 @@ class YOLOXPoseHead(YOLOXHead):
         ],
                               dim=1)
 
+        # compute detection losses and collect targets for keypoints
+        # predictions simultaneously
         self._log['pred_keypoints'] = list(flatten_kpts.detach().split(
             1, dim=0))
         self._log['pred_keypoints_vis'] = list(vis_preds.detach().split(
@@ -156,7 +159,6 @@ class YOLOXPoseHead(YOLOXHead):
                                       batch_gt_instances, batch_img_metas,
                                       batch_gt_instances_ignore)
 
-        # collect targets for keypoints predictions
         kpt_targets, vis_targets = [], []
         sampling_results = self.sampler.log['sample']
         sampling_result_idx = 0
@@ -212,6 +214,9 @@ class YOLOXPoseHead(YOLOXHead):
         the log.
         """
 
+        # Construct a combined representation of bboxes and keypoints to
+        # ensure keypoints are also involved in the positive sample
+        # assignment process
         kpt = self._log['pred_keypoints'].pop(0).squeeze(0)
         kpt_vis = self._log['pred_keypoints_vis'].pop(0).squeeze(0)
         kpt = torch.cat((kpt, kpt_vis.unsqueeze(-1)), dim=-1)
@@ -242,6 +247,7 @@ class YOLOXPoseHead(YOLOXHead):
         calculated in this method.
         """
 
+        # calculate predicted bboxes and get the kept instances indices
         with OutputSaveFunctionWrapper(
                 filter_scores_and_topk,
                 super().predict_by_feat.__globals__) as outputs_1:
