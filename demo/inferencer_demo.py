@@ -38,6 +38,11 @@ def parse_args():
         default=None,
         help='Category id for detection model.')
     parser.add_argument(
+        '--scope',
+        type=str,
+        default='mmpose',
+        help='Scope where modules are defined.')
+    parser.add_argument(
         '--device',
         type=str,
         default=None,
@@ -83,8 +88,8 @@ def parse_args():
     call_args = vars(parser.parse_args())
 
     init_kws = [
-        'pose2d', 'pose2d_weights', 'device', 'det_model', 'det_weights',
-        'det_cat_ids'
+        'pose2d', 'pose2d_weights', 'scope', 'device', 'det_model',
+        'det_weights', 'det_cat_ids'
     ]
     init_args = {}
     for init_kw in init_kws:
