@@ -53,22 +53,6 @@ class SimCCHead(BaseHead):
             Defaults to ``None``
         conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KLDiscretLoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -95,9 +79,6 @@ class SimCCHead(BaseHead):
         conv_out_channels: OptIntSeq = None,
         conv_kernel_sizes: OptIntSeq = None,
         has_final_layer: bool = True,
-        input_transform: str = 'select',
-        input_index: Union[int, Sequence[int]] = -1,
-        align_corners: bool = False,
         loss: ConfigType = dict(type='KLDiscretLoss', use_target_weight=True),
         decoder: OptConfigType = None,
         init_cfg: OptConfigType = None,
@@ -119,9 +100,6 @@ class SimCCHead(BaseHead):
         self.input_size = input_size
         self.in_featuremap_size = in_featuremap_size
         self.simcc_split_ratio = simcc_split_ratio
-        self.align_corners = align_corners
-        self.input_transform = input_transform
-        self.input_index = input_index
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
@@ -143,10 +121,7 @@ class SimCCHead(BaseHead):
                 deconv_num_groups=deconv_num_groups,
                 conv_out_channels=conv_out_channels,
                 conv_kernel_sizes=conv_kernel_sizes,
-                has_final_layer=has_final_layer,
-                input_transform=input_transform,
-                input_index=input_index,
-                align_corners=align_corners)
+                has_final_layer=has_final_layer)
 
             if has_final_layer:
                 in_channels = out_channels
@@ -154,7 +129,6 @@ class SimCCHead(BaseHead):
                 in_channels = deconv_out_channels[-1]
 
         else:
-            in_channels = self._get_in_channels()
             self.deconv_head = None
 
             if has_final_layer:
@@ -167,21 +141,7 @@ class SimCCHead(BaseHead):
             else:
                 self.final_layer = None
 
-            if self.input_transform == 'resize_concat':
-                if isinstance(in_featuremap_size, tuple):
-                    self.heatmap_size = in_featuremap_size
-                elif isinstance(in_featuremap_size, list):
-                    self.heatmap_size = in_featuremap_size[0]
-            elif self.input_transform == 'select':
-                if isinstance(in_featuremap_size, tuple):
-                    self.heatmap_size = in_featuremap_size
-                elif isinstance(in_featuremap_size, list):
-                    self.heatmap_size = in_featuremap_size[input_index]
-
-        if isinstance(in_channels, list):
-            raise ValueError(
-                f'{self.__class__.__name__} does not support selecting '
-                'multiple input features.')
+            self.heatmap_size = in_featuremap_size
 
         # Define SimCC layers
         flatten_dims = self.heatmap_size[0] * self.heatmap_size[1]
@@ -201,10 +161,7 @@ class SimCCHead(BaseHead):
                           deconv_num_groups: OptIntSeq = (16, 16, 16),
                           conv_out_channels: OptIntSeq = None,
                           conv_kernel_sizes: OptIntSeq = None,
-                          has_final_layer: bool = True,
-                          input_transform: str = 'select',
-                          input_index: Union[int, Sequence[int]] = -1,
-                          align_corners: bool = False) -> nn.Module:
+                          has_final_layer: bool = True) -> nn.Module:
         """Create deconvolutional layers by given parameters."""
 
         if deconv_type == 'heatmap':
@@ -217,10 +174,7 @@ class SimCCHead(BaseHead):
                     deconv_kernel_sizes=deconv_kernel_sizes,
                     conv_out_channels=conv_out_channels,
                     conv_kernel_sizes=conv_kernel_sizes,
-                    has_final_layer=has_final_layer,
-                    input_transform=input_transform,
-                    input_index=input_index,
-                    align_corners=align_corners))
+                    has_final_layer=has_final_layer))
         else:
             deconv_head = MODELS.build(
                 dict(
@@ -231,10 +185,7 @@ class SimCCHead(BaseHead):
                     deconv_num_groups=deconv_num_groups,
                     conv_out_channels=conv_out_channels,
                     conv_kernel_sizes=conv_kernel_sizes,
-                    has_final_layer=has_final_layer,
-                    input_transform=input_transform,
-                    input_index=input_index,
-                    align_corners=align_corners))
+                    has_final_layer=has_final_layer))
 
         return deconv_head
 
@@ -250,7 +201,7 @@ class SimCCHead(BaseHead):
             pred_y (Tensor): 1d representation of y.
         """
         if self.deconv_head is None:
-            feats = self._transform_inputs(feats)
+            feats = feats[-1]
             if self.final_layer is not None:
                 feats = self.final_layer(feats)
         else:
