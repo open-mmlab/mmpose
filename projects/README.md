@@ -30,20 +30,22 @@ We also provide some documentation listed below to help you get started:
 
 ## Project List
 
-- [MMPose4AIGC](./mmpose4aigc)
-
-  This project will demonstrate how to use MMPose to generate skeleton images for pose guided AI image generation.
-
-  <div align=center>
-  <img src="https://user-images.githubusercontent.com/13503330/222403836-c65ba905-4bdd-4a44-834c-ff8d5959649d.png" width=1000 height=200/>
-  </div>
-
-- [RTMPose](./rtmpose)
-
-  Real-Time Multi-Person Pose Estimation toolkit based on MMPose
+- **[:zap:RTMPose](./rtmpose)**: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
   <div align="center">
-  <img width=1000 height=200 src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png"/>
-  </div>
+  <img src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png" width=800 height=200 />
+  </div><br/>
 
-- **And we can't wait to see what you contribute next!**
+- **[:art:MMPose4AIGC](./mmpose4aigc)**: Guide AI image generation with MMPose
+
+  <div align=center>
+  <img src="https://user-images.githubusercontent.com/13503330/222403836-c65ba905-4bdd-4a44-834c-ff8d5959649d.png" width="800"/>
+  </div><br/>
+
+- **[:bulb:YOLOX-Pose](./yolox-pose)**: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss
+
+  <div align=center>
+  <img src="https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
+  </div><br/>
+
+- **What's next? Join the rank of <span style="color:blue"> *MMPose contributors* </span> by creating a new  project**!
