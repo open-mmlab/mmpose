@@ -74,11 +74,13 @@ model = dict(
         init_cfg=dict(
             type='Pretrained', checkpoint='open-mmlab://msra/hrnetv2_w18'),
     ),
+    neck=dict(
+        type='FeatureMapProcessor',
+        concat=True,
+    ),
     head=dict(
         type='HeatmapHead',
-        in_channels=(18, 36, 72, 144),
-        input_index=(0, 1, 2, 3),
-        input_transform='resize_concat',
+        in_channels=270,
         out_channels=98,
         deconv_out_channels=None,
         conv_out_channels=(270, ),
