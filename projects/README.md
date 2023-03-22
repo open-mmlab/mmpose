@@ -45,7 +45,7 @@ We also provide some documentation listed below to help you get started:
 - **[:bulb:YOLOX-Pose](./yolox-pose)**: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss
 
   <div align=center>
-  <img src="https://user-images.githubusercontent.com/26127467/226550744-3dd948f4-cc5a-4a2f-a737-c595fc6dfe4d.jpg" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
+  <img src="https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
   </div><br/>
 
 - **What's next? Join the rank of <span style="color:blue"> *MMPose contributors* </span> by creating a new  project**!

@@ -2,7 +2,7 @@
 
 This project implements a YOLOX-based human pose estimator, utilizing the approach outlined in **YOLO-Pose: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss** (CVPRW 2022). This pose estimator is lightweight and quick, making it well-suited for crowded scenes.
 
-<img src="https://user-images.githubusercontent.com/26127467/226550744-3dd948f4-cc5a-4a2f-a737-c595fc6dfe4d.jpg" alt><br>
+<img src="https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg" alt><br>
 
 ## Usage
 
