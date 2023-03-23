@@ -35,7 +35,7 @@ def parse_args():
         '--det-cat-ids',
         type=int,
         nargs='+',
-        default=None,
+        default=0,
         help='Category id for detection model.')
     parser.add_argument(
         '--scope',
