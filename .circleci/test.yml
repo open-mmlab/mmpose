@@ -83,7 +83,7 @@ jobs:
         type: string
       cuda:
         type: enum
-        enum: ["11.1"]
+        enum: ["11.0"]
       cudnn:
         type: integer
         default: 8
@@ -171,7 +171,7 @@ workflows:
           torch: 1.7.1
           # Use double quotation mark to explicitly specify its type
           # as string instead of number
-          cuda: "11.1"
+          cuda: "11.0"
           requires:
             - hold
   merge_stage_test:
@@ -184,7 +184,7 @@ workflows:
           torch: 1.7.1
           # Use double quotation mark to explicitly specify its type
           # as string instead of number
-          cuda: "11.1"
+          cuda: "11.0"
           filters:
             branches:
               only:
