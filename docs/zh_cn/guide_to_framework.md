@@ -541,6 +541,36 @@ class YourBackbone(BaseBackbone):
 
 - Feature Pyramid Networks (FPN)
 
+- Feature Map Processor (FMP)
+
+  `FeatureMapProcessor` 是一个通用的 PyTorch 模块，旨在通过选择、拼接和缩放等非参数变换将主干网络输出的特征图转换成适合预测头的格式。以下是一些操作的配置方式及效果示意图:
+
+  - 选择操作
+
+    ```python
+    neck=dict(type='FeatureMapProcessor', select_index=0)
+    ```
+
+    <img src="https://user-images.githubusercontent.com/26127467/227108468-b44c9c13-9e51-403c-a035-b17b5268acc3.png" height="100px" alt><br>
+
+  - 拼接操作
+
+    ```python
+    neck=dict(type='FeatureMapProcessor', concat=True)
+    ```
+
+    <img src="https://user-images.githubusercontent.com/26127467/227108705-4d197c71-4019-42cb-abdb-ba159111abb4.png" height="85px" alt><br>
+
+    拼接之前，其它特征图会被缩放到和序号为 0 的特征图相同的尺寸。
+
+  - 缩放操作
+
+    ```python
+    neck=dict(type='FeatureMapProcessor', scale_factor=2.0)
+    ```
+
+    <img src="https://user-images.githubusercontent.com/26127467/227109402-94106e4b-b941-4ce9-8201-c64920d82ed1.png" height="120px" alt><br>
+
 ### 预测头（Head）
 
 通常来说，预测头是模型算法实现的核心，用于控制模型的输出，并进行损失函数计算。

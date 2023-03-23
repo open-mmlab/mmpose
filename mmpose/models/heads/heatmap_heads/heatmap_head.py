@@ -42,22 +42,6 @@ class HeatmapHead(BaseHead):
             of each intermediate conv layer. Defaults to ``None``
         has_final_layer (bool): Whether have the final 1x1 Conv2d layer.
             Defaults to ``True``
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | Sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KeypointMSELoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -80,9 +64,6 @@ class HeatmapHead(BaseHead):
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
-                 input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = -1,
-                 align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -96,15 +77,11 @@ class HeatmapHead(BaseHead):
 
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.align_corners = align_corners
-        self.input_transform = input_transform
-        self.input_index = input_index
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
-        self.upsample = 0
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -112,20 +89,11 @@ class HeatmapHead(BaseHead):
         kernel_size = 1
         padding = 0
         if extra is not None:
-            if 'upsample' in extra:
-                self.upsample = extra['upsample']
             if 'final_conv_kernel' in extra:
                 assert extra['final_conv_kernel'] in [1, 3]
                 if extra['final_conv_kernel'] == 3:
                     padding = 1
                 kernel_size = extra['final_conv_kernel']
-
-        # Get model input channels according to feature
-        in_channels = self._get_in_channels()
-        if isinstance(in_channels, list):
-            raise ValueError(
-                f'{self.__class__.__name__} does not support selecting '
-                'multiple input features.')
 
         if deconv_out_channels:
             if deconv_kernel_sizes is None or len(deconv_out_channels) != len(
@@ -255,7 +223,7 @@ class HeatmapHead(BaseHead):
         Returns:
             Tensor: output heatmap.
         """
-        x = self._transform_inputs(feats)
+        x = feats[-1]
 
         x = self.deconv_layers(x)
         x = self.conv_layers(x)

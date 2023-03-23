@@ -44,22 +44,6 @@ class RTMCCHead(BaseHead):
                 act_fn='ReLU',
                 use_rel_bias=False,
                 pos_enc=False).
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KLDiscretLoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -85,9 +69,6 @@ class RTMCCHead(BaseHead):
             act_fn='ReLU',
             use_rel_bias=False,
             pos_enc=False),
-        input_transform: str = 'select',
-        input_index: Union[int, Sequence[int]] = -1,
-        align_corners: bool = False,
         loss: ConfigType = dict(type='KLDiscretLoss', use_target_weight=True),
         decoder: OptConfigType = None,
         init_cfg: OptConfigType = None,
@@ -103,9 +84,6 @@ class RTMCCHead(BaseHead):
         self.input_size = input_size
         self.in_featuremap_size = in_featuremap_size
         self.simcc_split_ratio = simcc_split_ratio
-        self.align_corners = align_corners
-        self.input_transform = input_transform
-        self.input_index = input_index
 
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
@@ -117,8 +95,6 @@ class RTMCCHead(BaseHead):
             raise ValueError(
                 f'{self.__class__.__name__} does not support selecting '
                 'multiple input features.')
-
-        in_channels = self._get_in_channels()
 
         # Define SimCC layers
         flatten_dims = self.in_featuremap_size[0] * self.in_featuremap_size[1]
@@ -165,7 +141,7 @@ class RTMCCHead(BaseHead):
             pred_x (Tensor): 1d representation of x.
             pred_y (Tensor): 1d representation of y.
         """
-        feats = self._transform_inputs(feats)
+        feats = feats[-1]
 
         feats = self.final_layer(feats)  # -> B, K, H, W
 

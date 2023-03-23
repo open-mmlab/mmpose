@@ -72,6 +72,7 @@ model = dict(
             type='Pretrained',
             checkpoint='pretrained/mae_pretrain_vit_base.pth'),
     ),
+    neck=dict(type='FeatureMapProcessor', scale_factor=4.0, apply_relu=True),
     head=dict(
         type='HeatmapHead',
         in_channels=768,
@@ -80,7 +81,7 @@ model = dict(
         deconv_kernel_sizes=[],
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
-        extra=dict(upsample=4, final_conv_kernel=3),
+        extra=dict(final_conv_kernel=3),
     ),
     test_cfg=dict(
         flip_test=True,
