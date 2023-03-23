@@ -50,11 +50,11 @@ model = dict(
             checkpoint='https://github.com/whai362/PVT/'
             'releases/download/v2/pvt_small.pth'),
     ),
+    neck=dict(type='FeatureMapProcessor', select_index=3),
     head=dict(
         type='HeatmapHead',
-        in_channels=(64, 128, 320, 512),
+        in_channels=512,
         out_channels=17,
-        input_index=3,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(

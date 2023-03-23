@@ -25,22 +25,6 @@ class RegressionHead(BaseHead):
     Args:
         in_channels (int | sequence[int]): Number of input channels
         num_joints (int): Number of joints
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         loss (Config): Config for keypoint loss. Defaults to use
             :class:`SmoothL1Loss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -56,9 +40,6 @@ class RegressionHead(BaseHead):
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
                  num_joints: int,
-                 input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = -1,
-                 align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='SmoothL1Loss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -71,21 +52,11 @@ class RegressionHead(BaseHead):
 
         self.in_channels = in_channels
         self.num_joints = num_joints
-        self.align_corners = align_corners
-        self.input_transform = input_transform
-        self.input_index = input_index
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
-
-        # Get model input channels according to feature
-        in_channels = self._get_in_channels()
-        if isinstance(in_channels, list):
-            raise ValueError(
-                f'{self.__class__.__name__} does not support selecting '
-                'multiple input features.')
 
         # Define fully-connected layers
         self.fc = nn.Linear(in_channels, self.num_joints * 2)
@@ -100,7 +71,7 @@ class RegressionHead(BaseHead):
         Returns:
             Tensor: output coordinates(and sigmas[optional]).
         """
-        x = self._transform_inputs(feats)
+        x = feats[-1]
 
         x = torch.flatten(x, 1)
         x = self.fc(x)

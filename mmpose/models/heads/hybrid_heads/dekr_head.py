@@ -179,22 +179,6 @@ class DEKRHead(BaseHead):
             Defaults to 32
         num_offset_filters_per_joint (int): Number of filters for each joint
             in displacement branch. Defaults to 15
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | Sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         heatmap_loss (Config): Config of the heatmap loss. Defaults to use
             :class:`KeypointMSELoss`
         displacement_loss (Config): Config of the displacement regression loss.
@@ -218,9 +202,6 @@ class DEKRHead(BaseHead):
                  num_keypoints: int,
                  num_heatmap_filters: int = 32,
                  num_displacement_filters_per_keypoint: int = 15,
-                 input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = -1,
-                 align_corners: bool = False,
                  heatmap_loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  displacement_loss: ConfigType = dict(
@@ -238,11 +219,6 @@ class DEKRHead(BaseHead):
 
         self.in_channels = in_channels
         self.num_keypoints = num_keypoints
-        self.input_transform = input_transform
-        self.input_index = input_index
-        self.align_corners = align_corners
-
-        in_channels = self._get_in_channels()
 
         # build heatmap branch
         self.heatmap_conv_layers = self._make_heatmap_conv_layers(
@@ -342,7 +318,7 @@ class DEKRHead(BaseHead):
         Returns:
             Tuple[Tensor]: output heatmap and displacement.
         """
-        x = self._transform_inputs(feats)
+        x = feats[-1]
 
         heatmaps = self.heatmap_conv_layers(x)
         displacements = self.displacement_conv_layers(x)
