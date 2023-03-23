@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 from mmcv.image import imread
 
 from mmpose.apis import inference_topdown, init_model
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
 
@@ -25,6 +26,24 @@ def parse_args():
         action='store_true',
         default=False,
         help='Whether to show the index of keypoints')
+    parser.add_argument(
+        '--skeleton-style',
+        default='mmpose',
+        type=str,
+        choices=['mmpose', 'openpose'],
+        help='Skeleton style selection')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=3,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
+    parser.add_argument(
+        '--alpha', type=float, default=0.8, help='The transparency of bboxes')
     parser.add_argument(
         '--show',
         action='store_true',
@@ -50,8 +69,16 @@ def main():
         cfg_options=cfg_options)
 
     # init visualizer
+    model.cfg.visualizer.radius = args.radius
+    model.cfg.visualizer.alpha = args.alpha
+    model.cfg.visualizer.line_width = args.thickness
+    dataset_meta = model.dataset_meta
+    if dataset_meta.get(
+            'dataset_name') == 'coco' and args.skeleton_style == 'openpose':
+        dataset_meta = parse_pose_metainfo(
+            dict(from_file='configs/_base_/datasets/coco_openpose.py'))
     visualizer = VISUALIZERS.build(model.cfg.visualizer)
-    visualizer.set_dataset_meta(model.dataset_meta)
+    visualizer.set_dataset_meta(dataset_meta)
 
     # inference a single image
     batch_results = inference_topdown(model, args.img)
@@ -67,6 +94,7 @@ def main():
         draw_bbox=True,
         draw_heatmap=args.draw_heatmap,
         show_kpt_idx=args.show_kpt_idx,
+        skeleton_style=args.skeleton_style,
         show=args.show,
         out_file=args.out_file)
 

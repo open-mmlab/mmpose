@@ -11,6 +11,7 @@ import numpy as np
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
@@ -55,6 +56,7 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         draw_heatmap=args.draw_heatmap,
         draw_bbox=args.draw_bbox,
         show_kpt_idx=args.show_kpt_idx,
+        skeleton_style=args.skeleton_style,
         show=args.show,
         wait_time=show_interval,
         out_file=out_file,
@@ -122,6 +124,12 @@ def main():
         default=False,
         help='Whether to show the index of keypoints')
     parser.add_argument(
+        '--skeleton-style',
+        default='mmpose',
+        type=str,
+        choices=['mmpose', 'openpose'],
+        help='Skeleton style selection')
+    parser.add_argument(
         '--radius',
         type=int,
         default=3,
@@ -131,6 +139,8 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--alpha', type=float, default=0.8, help='The transparency of bboxes')
     parser.add_argument(
         '--draw-bbox', action='store_true', help='Draw bboxes of instances')
 
@@ -165,10 +175,16 @@ def main():
     # init visualizer
     pose_estimator.cfg.visualizer.radius = args.radius
     pose_estimator.cfg.visualizer.line_width = args.thickness
+    pose_estimator.cfg.visualizer.alpha = args.alpha
+    dataset_meta = pose_estimator.dataset_meta
+    if dataset_meta.get(
+            'dataset_name') == 'coco' and args.skeleton_style == 'openpose':
+        dataset_meta = parse_pose_metainfo(
+            dict(from_file='configs/_base_/datasets/coco_openpose.py'))
     visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
     # the dataset_meta is loaded from the checkpoint and
     # then pass to the model in init_pose_estimator
-    visualizer.set_dataset_meta(pose_estimator.dataset_meta)
+    visualizer.set_dataset_meta(dataset_meta)
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':

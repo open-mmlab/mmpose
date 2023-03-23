@@ -212,7 +212,8 @@ class PoseLocalVisualizer(Visualizer):
                              image: np.ndarray,
                              instances: InstanceData,
                              kpt_score_thr: float = 0.3,
-                             show_kpt_idx: bool = False):
+                             show_kpt_idx: bool = False,
+                             skeleton_style: str = 'mmpose'):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
         Args:
@@ -221,6 +222,10 @@ class PoseLocalVisualizer(Visualizer):
                 instance-level annotations or predictions.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
+            show_kpt_idx (bool): Whether to show the index of keypoints.
+                Defaults to ``False``
+            skeleton_style (str): Skeleton style selection. Defaults to
+                ``'mmpose'``
 
         Returns:
             np.ndarray: the drawn image which channel is RGB.
@@ -241,6 +246,20 @@ class PoseLocalVisualizer(Visualizer):
             if 'keypoints_visible' in instances:
                 keypoints_visible = instances.keypoints_visible
             else:
+                keypoints_visible = [np.ones(len(kpts)) for kpts in keypoints]
+
+            if skeleton_style == 'openpose':
+                neck = (keypoints[:, 5] + keypoints[:, 6]) / 2
+                neck_score = (scores[:, 5] + scores[:, 6]) / 2
+                keypoints = np.insert(keypoints, 17, neck, axis=1)
+                scores = np.insert(scores, 17, neck_score, axis=1)
+
+                original_cols = [
+                    17, 6, 8, 10, 7, 9, 12, 14, 16, 13, 15, 2, 1, 4, 3
+                ]
+                new_cols = [1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17]
+                keypoints[:, new_cols] = keypoints[:, original_cols]
+                scores[:, new_cols] = scores[:, original_cols]
                 keypoints_visible = [np.ones(len(kpts)) for kpts in keypoints]
 
             for kpts, score, visible in zip(keypoints, scores,
@@ -319,8 +338,12 @@ class PoseLocalVisualizer(Visualizer):
                         color = link_color[sk_id]
                         if not isinstance(color, str):
                             color = tuple(int(c) for c in color)
+                        transparency = self.alpha
                         if self.show_keypoint_weight:
+                            transparency *= max(
+                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
 
+                        if skeleton_style == 'openpose':
                             mX = np.mean(X)
                             mY = np.mean(Y)
                             length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
@@ -331,9 +354,7 @@ class PoseLocalVisualizer(Visualizer):
                                 (int(mX), int(mY)),
                                 (int(length / 2), int(stickwidth)), int(angle),
                                 0, 360, 1)
-                            transparency = self.alpha
-                            transparency *= max(
-                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
+
                             self.draw_polygons(
                                 polygons,
                                 edge_colors=color,
@@ -410,6 +431,7 @@ class PoseLocalVisualizer(Visualizer):
                        draw_heatmap: bool = False,
                        draw_bbox: bool = False,
                        show_kpt_idx: bool = False,
+                       skeleton_style: str = 'mmpose',
                        show: bool = False,
                        wait_time: float = 0,
                        out_file: Optional[str] = None,
@@ -439,6 +461,10 @@ class PoseLocalVisualizer(Visualizer):
                 ``False``
             draw_heatmap (bool): Whether to draw heatmaps. Defaults to
                 ``False``
+            show_kpt_idx (bool): Whether to show the index of keypoints.
+                Defaults to ``False``
+            skeleton_style (str): Skeleton style selection. Defaults to
+                ``'mmpose'``
             show (bool): Whether to display the drawn image. Default to
                 ``False``
             wait_time (float): The interval of show (s). Defaults to 0
@@ -459,7 +485,7 @@ class PoseLocalVisualizer(Visualizer):
             if 'gt_instances' in data_sample:
                 gt_img_data = self._draw_instances_kpts(
                     gt_img_data, data_sample.gt_instances, kpt_score_thr,
-                    show_kpt_idx)
+                    show_kpt_idx, skeleton_style)
                 if draw_bbox:
                     gt_img_data = self._draw_instances_bbox(
                         gt_img_data, data_sample.gt_instances)
@@ -480,7 +506,7 @@ class PoseLocalVisualizer(Visualizer):
             if 'pred_instances' in data_sample:
                 pred_img_data = self._draw_instances_kpts(
                     pred_img_data, data_sample.pred_instances, kpt_score_thr,
-                    show_kpt_idx)
+                    show_kpt_idx, skeleton_style)
                 if draw_bbox:
                     pred_img_data = self._draw_instances_bbox(
                         pred_img_data, data_sample.pred_instances)
