@@ -1,15 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import warnings
 from abc import ABCMeta, abstractmethod
-from typing import List, Sequence, Tuple, Union
+from typing import Tuple, Union
 
-import torch
-import torch.nn.functional as F
 from mmengine.model import BaseModule
 from mmengine.structures import InstanceData
 from torch import Tensor
 
-from mmpose.models.utils.ops import resize
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (Features, InstanceList, OptConfigType,
                                  OptSampleList, Predictions)
@@ -40,68 +36,6 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
              batch_data_samples: OptSampleList,
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
-
-    def _get_in_channels(self) -> Union[int, List[int]]:
-        """Get the input channel number of the network according to the feature
-        channel numbers and the input transform type."""
-
-        feat_channels = self.in_channels
-        if isinstance(feat_channels, int):
-            feat_channels = [feat_channels]
-
-        if self.input_transform == 'resize_concat':
-            if isinstance(self.input_index, int):
-                in_channels = feat_channels[self.input_index]
-            else:
-                in_channels = sum(feat_channels[i] for i in self.input_index)
-        elif self.input_transform == 'select':
-            if isinstance(self.input_index, int):
-                in_channels = feat_channels[self.input_index]
-            else:
-                in_channels = [feat_channels[i] for i in self.input_index]
-        else:
-            raise ValueError(
-                f'Invalid input transform mode "{self.input_transform}"')
-
-        return in_channels
-
-    def _transform_inputs(
-        self,
-        feats: Union[Tensor, Sequence[Tensor]],
-    ) -> Union[Tensor, Tuple[Tensor]]:
-        """Transform multi scale features into the network input."""
-        if not isinstance(feats, Sequence):
-            warnings.warn(f'the input of {self._get_name()} is a tensor '
-                          f'instead of a tuple or list. The argument '
-                          f'`input_transform` will be ignored.')
-            return feats
-
-        if self.input_transform == 'resize_concat':
-            inputs = [feats[i] for i in self.input_index]
-            resized_inputs = [
-                F.interpolate(
-                    x,
-                    size=inputs[0].shape[2:],
-                    mode='bilinear',
-                    align_corners=self.align_corners) for x in inputs
-            ]
-            inputs = torch.cat(resized_inputs, dim=1)
-        elif self.input_transform == 'select':
-            if isinstance(self.input_index, int):
-                inputs = feats[self.input_index]
-                if hasattr(self, 'upsample') and self.upsample > 0:
-                    inputs = resize(
-                        input=F.relu(inputs),
-                        scale_factor=self.upsample,
-                        mode='bilinear',
-                        align_corners=self.align_corners)
-            else:
-                inputs = tuple(feats[i] for i in self.input_index)
-        else:
-            raise (ValueError,
-                   f'Invalid input transform mode "{self.input_transform}"')
-
-        return inputs
 
     def decode(self, batch_outputs: Union[Tensor,
                                           Tuple[Tensor]]) -> InstanceList:

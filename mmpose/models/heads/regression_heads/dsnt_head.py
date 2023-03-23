@@ -48,22 +48,6 @@ class DSNTHead(IntegralRegressionHead):
             Defaults to ``None``
         conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         loss (Config): Config for keypoint loss. Defaults to use
             :class:`DSNTLoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -88,9 +72,6 @@ class DSNTHead(IntegralRegressionHead):
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
-                 input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = -1,
-                 align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='MultipleLossWrapper',
                      losses=[
@@ -111,9 +92,6 @@ class DSNTHead(IntegralRegressionHead):
             conv_out_channels=conv_out_channels,
             conv_kernel_sizes=conv_kernel_sizes,
             has_final_layer=has_final_layer,
-            input_transform=input_transform,
-            input_index=input_index,
-            align_corners=align_corners,
             loss=loss,
             decoder=decoder,
             init_cfg=init_cfg)

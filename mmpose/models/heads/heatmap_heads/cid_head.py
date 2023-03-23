@@ -391,22 +391,6 @@ class CIDHead(BaseHead):
         gfd_channels (int): Number of filters in GFD module
         max_train_instances (int): Maximum number of instances in a batch
             during training. Defaults to 200
-        input_transform (str): Transformation of input features which should
-            be one of the following options:
-
-                - ``'resize_concat'``: Resize multiple feature maps specified
-                    by ``input_index`` to the same size as the first one and
-                    concat these feature maps
-                - ``'select'``: Select feature map(s) specified by
-                    ``input_index``. Multiple selected features will be
-                    bundled into a tuple
-
-            Defaults to ``'select'``
-        input_index (int | Sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to -1
-        align_corners (bool): `align_corners` argument of
-            :func:`torch.nn.functional.interpolate` used in the input
-            transformation. Defaults to ``False``
         heatmap_loss (Config): Config of the heatmap loss. Defaults to use
             :class:`KeypointMSELoss`
         coupled_heatmap_loss (Config): Config of the loss for coupled heatmaps.
@@ -432,9 +416,6 @@ class CIDHead(BaseHead):
                  gfd_channels: int,
                  num_keypoints: int,
                  prior_prob: float = 0.01,
-                 input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = -1,
-                 align_corners: bool = False,
                  coupled_heatmap_loss: OptConfigType = dict(
                      type='FocalHeatmapLoss'),
                  decoupled_heatmap_loss: OptConfigType = dict(
@@ -450,20 +431,10 @@ class CIDHead(BaseHead):
 
         self.in_channels = in_channels
         self.num_keypoints = num_keypoints
-        self.align_corners = align_corners
-        self.input_transform = input_transform
-        self.input_index = input_index
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
-
-        # Get model input channels according to feature
-        in_channels = self._get_in_channels()
-        if isinstance(in_channels, list):
-            raise ValueError(
-                f'{self.__class__.__name__} does not support selecting '
-                'multiple input features.')
 
         # build sub-modules
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -526,7 +497,7 @@ class CIDHead(BaseHead):
         Returns:
             Tensor: output heatmap.
         """
-        feats = self._transform_inputs(feats)
+        feats = feats[-1]
         instance_info = self.iia_module.forward_test(feats, {})
         instance_feats, instance_coords, instance_scores = instance_info
         instance_imgids = torch.zeros(
@@ -574,12 +545,10 @@ class CIDHead(BaseHead):
         if test_cfg.get('flip_test', False):
             assert isinstance(feats, list) and len(feats) == 2
 
-            feats_flipped = flip_heatmaps(
-                self._transform_inputs(feats[1]), shift_heatmap=False)
-            feats = torch.cat(
-                (self._transform_inputs(feats[0]), feats_flipped))
+            feats_flipped = flip_heatmaps(feats[1][-1], shift_heatmap=False)
+            feats = torch.cat((feats[0][-1], feats_flipped))
         else:
-            feats = self._transform_inputs(feats)
+            feats = feats[-1]
 
         instance_info = self.iia_module.forward_test(feats, test_cfg)
         instance_feats, instance_coords, instance_scores = instance_info
@@ -678,7 +647,7 @@ class CIDHead(BaseHead):
         instance_imgids = torch.cat(instance_imgids).to(gt_heatmaps.device)
 
         # feed-forward
-        feats = self._transform_inputs(feats)
+        feats = feats[-1]
         pred_instance_feats, pred_heatmaps = self.iia_module.forward_train(
             feats, gt_instance_coords, instance_imgids)
 

@@ -81,12 +81,14 @@ model = dict(
             checkpoint='https://download.openmmlab.com/mmpose/'
             'pretrain_models/hrnet_w48-8ef0771d.pth'),
     ),
+    neck=dict(
+        type='FeatureMapProcessor',
+        concat=True,
+    ),
     head=dict(
         type='DEKRHead',
-        in_channels=(48, 96, 192, 384),
+        in_channels=720,
         num_keypoints=14,
-        input_transform='resize_concat',
-        input_index=(0, 1, 2, 3),
         num_heatmap_filters=48,
         heatmap_loss=dict(type='KeypointMSELoss', use_target_weight=True),
         displacement_loss=dict(

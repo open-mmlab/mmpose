@@ -72,13 +72,15 @@ model = dict(
             checkpoint='https://download.openmmlab.com/mmpose/'
             'pretrain_models/hrnet_w32-36af842e.pth'),
     ),
+    neck=dict(
+        type='FeatureMapProcessor',
+        concat=True,
+    ),
     head=dict(
         type='CIDHead',
-        in_channels=(32, 64, 128, 256),
+        in_channels=480,
         num_keypoints=17,
         gfd_channels=32,
-        input_transform='resize_concat',
-        input_index=(0, 1, 2, 3),
         coupled_heatmap_loss=dict(type='FocalHeatmapLoss', loss_weight=1.0),
         decoupled_heatmap_loss=dict(type='FocalHeatmapLoss', loss_weight=4.0),
         contrastive_loss=dict(
