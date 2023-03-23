@@ -679,44 +679,6 @@ class TestRTMCCHead(TestCase):
             self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
             self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
-    def test_errors(self):
-        if digit_version(TORCH_VERSION) < digit_version('1.7.0'):
-            return unittest.skip('RTMCCHead requires PyTorch >= 1.7')
-
-        # Invalid arguments
-        with self.assertRaisesRegex(ValueError, 'multiple input features'):
-            _ = RTMCCHead(
-                in_channels=(16, 32),
-                out_channels=17,
-                input_size=(192, 256),
-                in_featuremap_size=(6, 8),
-                simcc_split_ratio=2.0,
-                final_layer_kernel_size=7,
-                gau_cfg=dict(
-                    hidden_dims=256,
-                    s=128,
-                    expansion_factor=2,
-                    dropout_rate=0.,
-                    drop_path=0.,
-                    act_fn='SiLU',
-                    use_rel_bias=False,
-                    pos_enc=False),
-                input_transform='select',
-                input_index=[0, 1],
-                loss=dict(
-                    type='KLDiscretLoss',
-                    use_target_weight=True,
-                    beta=10.,
-                    label_softmax=True,
-                ),
-                decoder=dict(
-                    type='SimCCLabel',
-                    input_size=(192, 256),
-                    smoothing_type='gaussian',
-                    sigma=(4.9, 5.66),
-                    simcc_split_ratio=2.0,
-                    normalize=False))
-
 
 if __name__ == '__main__':
     unittest.main()

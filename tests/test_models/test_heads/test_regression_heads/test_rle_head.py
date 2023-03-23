@@ -43,37 +43,15 @@ class TestRLEHead(TestCase):
     def test_predict(self):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
-        # inputs transform: select
         head = RLEHead(
-            in_channels=[16, 32],
+            in_channels=32,
             num_joints=17,
-            input_transform='select',
-            input_index=-1,
             decoder=decoder_cfg,
         )
 
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 1, 1)])
         batch_data_samples = get_packed_inputs(
             batch_size=2, with_heatmap=False)['data_samples']
-        preds = head.predict(feats, batch_data_samples)
-
-        self.assertTrue(len(preds), 2)
-        self.assertIsInstance(preds[0], InstanceData)
-        self.assertEqual(preds[0].keypoints.shape,
-                         batch_data_samples[0].gt_instances.keypoints.shape)
-
-        # inputs transform: resize and concat
-        head = RLEHead(
-            in_channels=[16, 32],
-            num_joints=17,
-            input_transform='resize_concat',
-            input_index=[0, 1],
-            decoder=decoder_cfg,
-        )
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
-        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -84,17 +62,13 @@ class TestRLEHead(TestCase):
     def test_tta(self):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
-        # inputs transform: select
         head = RLEHead(
-            in_channels=[16, 32],
+            in_channels=32,
             num_joints=17,
-            input_transform='select',
-            input_index=-1,
             decoder=decoder_cfg,
         )
 
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 1, 1)])
         batch_data_samples = get_packed_inputs(
             batch_size=2, with_heatmap=False)['data_samples']
         preds = head.predict([feats, feats],
@@ -108,14 +82,11 @@ class TestRLEHead(TestCase):
 
     def test_loss(self):
         head = RLEHead(
-            in_channels=[16, 32],
+            in_channels=32,
             num_joints=17,
-            input_transform='select',
-            input_index=-1,
         )
 
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 1, 1)])
         batch_data_samples = get_packed_inputs(
             batch_size=2, with_heatmap=False)['data_samples']
         losses = head.loss(feats, batch_data_samples)
@@ -123,18 +94,6 @@ class TestRLEHead(TestCase):
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size())
         self.assertIsInstance(losses['acc_pose'], torch.Tensor)
-
-    def test_errors(self):
-
-        with self.assertRaisesRegex(ValueError,
-                                    'selecting multiple input features'):
-
-            _ = RLEHead(
-                in_channels=[16, 32],
-                num_joints=17,
-                input_transform='select',
-                input_index=[0, 1],
-            )
 
     def test_state_dict_compatible(self):
 

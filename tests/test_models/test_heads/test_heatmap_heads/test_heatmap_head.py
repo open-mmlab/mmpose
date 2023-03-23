@@ -72,62 +72,17 @@ class TestHeatmapHead(TestCase):
             heatmap_size=(48, 64),
             sigma=2.)
 
-        # input transform: select
         head = HeatmapHead(
-            in_channels=[16, 32],
+            in_channels=32,
             out_channels=17,
-            input_transform='select',
-            input_index=-1,
-            decoder=decoder_cfg)
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
-        preds = head.predict(feats, batch_data_samples)
-
-        self.assertTrue(len(preds), 2)
-        self.assertIsInstance(preds[0], InstanceData)
-        self.assertEqual(preds[0].keypoints.shape,
-                         batch_data_samples[0].gt_instances.keypoints.shape)
-
-        # input transform: resize and concat
-        head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17,
-            input_transform='resize_concat',
-            input_index=[0, 1],
             deconv_out_channels=(256, 256),
             deconv_kernel_sizes=(4, 4),
             conv_out_channels=(256, ),
             conv_kernel_sizes=(1, ),
             decoder=decoder_cfg)
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
         batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict(feats, batch_data_samples)
-
-        self.assertTrue(len(preds), 2)
-        self.assertIsInstance(preds[0], InstanceData)
-        self.assertEqual(preds[0].keypoints.shape,
-                         batch_data_samples[0].gt_instances.keypoints.shape)
-
-        # input transform: none
-        head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17,
-            input_transform='resize_concat',
-            input_index=[0, 1],
-            deconv_out_channels=(256, 256),
-            deconv_kernel_sizes=(4, 4),
-            conv_out_channels=(256, ),
-            conv_kernel_sizes=(1, ),
-            decoder=decoder_cfg)
-        feats = self._get_feats(batch_size=2, feat_shapes=[(48, 16, 12)])[0]
-        batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
-        with self.assertWarnsRegex(
-                Warning,
-                'the input of HeatmapHead is a tensor instead of a tuple '
-                'or list. The argument `input_transform` will be ignored.'):
-            preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
         self.assertIsInstance(preds[0], InstanceData)
@@ -136,13 +91,8 @@ class TestHeatmapHead(TestCase):
 
         # output heatmap
         head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17,
-            input_transform='select',
-            input_index=-1,
-            decoder=decoder_cfg)
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            in_channels=32, out_channels=17, decoder=decoder_cfg)
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
         batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         _, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
@@ -160,13 +110,8 @@ class TestHeatmapHead(TestCase):
             sigma=2.)
 
         head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17,
-            input_transform='select',
-            input_index=-1,
-            decoder=decoder_cfg)
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            in_channels=32, out_channels=17, decoder=decoder_cfg)
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
         batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict([feats, feats],
                              batch_data_samples,
@@ -188,13 +133,8 @@ class TestHeatmapHead(TestCase):
             heatmap_size=(48, 64),
             heatmap_type='combined')
         head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17 * 3,
-            input_transform='select',
-            input_index=-1,
-            decoder=decoder_cfg)
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            in_channels=32, out_channels=17 * 3, decoder=decoder_cfg)
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
         batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         preds = head.predict([feats, feats],
                              batch_data_samples,
@@ -210,14 +150,9 @@ class TestHeatmapHead(TestCase):
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
-        head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17,
-            input_transform='select',
-            input_index=-1)
+        head = HeatmapHead(in_channels=32, out_channels=17)
 
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
         batch_data_samples = get_packed_inputs(batch_size=2)['data_samples']
         losses = head.loss(feats, batch_data_samples)
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
@@ -228,16 +163,14 @@ class TestHeatmapHead(TestCase):
         # Invalid arguments
         with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = HeatmapHead(
-                in_channels=[16, 32],
+                in_channels=32,
                 out_channels=17,
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(4, 4))
 
         with self.assertRaisesRegex(ValueError, 'Got mismatched lengths'):
             _ = HeatmapHead(
-                in_channels=[16, 32],
-                out_channels=17,
-                conv_out_channels=(256, ))
+                in_channels=32, out_channels=17, conv_out_channels=(256, ))
 
         with self.assertRaisesRegex(ValueError, 'Unsupported kernel size'):
             _ = HeatmapHead(
@@ -245,16 +178,6 @@ class TestHeatmapHead(TestCase):
                 out_channels=17,
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(1, ))
-
-        with self.assertRaisesRegex(ValueError,
-                                    'selecting multiple input features'):
-            _ = HeatmapHead(
-                in_channels=[16, 32],
-                out_channels=17,
-                input_transform='select',
-                input_index=[0, 1],
-                deconv_out_channels=(256, ),
-                deconv_kernel_sizes=(4, ))
 
     def test_state_dict_compatible(self):
         # Typical setting for HRNet
