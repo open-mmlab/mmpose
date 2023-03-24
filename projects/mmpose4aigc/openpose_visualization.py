@@ -86,9 +86,7 @@ def mmpose_to_openpose_visualization(args, img_path, detector, pose_estimator):
     cur_black_img = black_img.copy()
     for i, j in product(range(num_instance), range(num_openpose_kpt)):
         x, y, conf = new_keypoints[i][j]
-        if conf <= 1e-5:
-            continue
-        elif conf > args.kpt_thr:
+        if conf > args.kpt_thr:
             cv2.circle(black_img, (int(x), int(y)), 4, colors[j], thickness=-1)
 
     # draw links
