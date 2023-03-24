@@ -83,7 +83,6 @@ def mmpose_to_openpose_visualization(args, img_path, detector, pose_estimator):
     num_instance = new_keypoints.shape[0]
 
     # draw keypoints
-    cur_black_img = black_img.copy()
     for i, j in product(range(num_instance), range(num_openpose_kpt)):
         x, y, conf = new_keypoints[i][j]
         if conf > args.kpt_thr:
