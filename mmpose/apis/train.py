@@ -9,13 +9,12 @@ import torch.distributed as dist
 from mmcv.runner import (DistSamplerSeedHook, EpochBasedRunner, OptimizerHook,
                          get_dist_info)
 from mmcv.utils import digit_version
-from mmcv.utils.device import get_device
 
 from mmpose.core import DistEvalHook, EvalHook, build_optimizers
 from mmpose.core.distributed_wrapper import DistributedDataParallelWrapper
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.utils import get_root_logger
-from mmpose.utils.util_distribution import build_ddp, build_dp
+from mmpose.utils.util_distribution import build_ddp, build_dp, get_device
 
 try:
     from mmcv.runner import Fp16OptimizerHook

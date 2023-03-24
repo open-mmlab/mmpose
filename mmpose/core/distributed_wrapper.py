@@ -2,13 +2,11 @@
 import torch
 import torch.nn as nn
 from mmcv.parallel import MODULE_WRAPPERS as MMCV_MODULE_WRAPPERS
-from mmcv.parallel import MMDistributedDataParallel
 from mmcv.parallel.scatter_gather import scatter_kwargs
 from mmcv.utils import Registry
-from mmcv.utils.device import get_device
 from torch.cuda._utils import _get_device_index
 
-from mmpose.utils.util_distribution import build_ddp
+from mmpose.utils.util_distribution import build_ddp, get_device
 
 MODULE_WRAPPERS = Registry('module wrapper', parent=MMCV_MODULE_WRAPPERS)
 
