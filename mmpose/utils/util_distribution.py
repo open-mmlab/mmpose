@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
-from mmcv.utils import (IS_CUDA_AVAILABLE, IS_NPU_AVAILABLE)
+from mmcv.utils import IS_CUDA_AVAILABLE, IS_NPU_AVAILABLE
 
 dp_factory = {'cuda': MMDataParallel, 'cpu': MMDataParallel}
 
@@ -62,6 +62,7 @@ def build_ddp(model, device='cuda', *args, **kwargs):
         model = model.cuda()
 
     return ddp_factory[device](model, *args, **kwargs)
+
 
 def get_device() -> str:
     """Returns the currently existing device type.
