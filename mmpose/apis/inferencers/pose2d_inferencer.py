@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
 import warnings
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
@@ -91,6 +92,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         # initialize detector for top-down models
         if self.cfg.data_mode == 'topdown':
+            det_scope = 'mmdet'
             if det_model is None:
                 det_model = DATASETS.get(
                     self.cfg.dataset_type).__module__.split(
@@ -98,10 +100,13 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                 det_info = default_det_models[det_model]
                 det_model, det_weights, det_cat_ids = det_info[
                     'model'], det_info['weights'], det_info['cat_ids']
+            elif os.path.exists(det_model):
+                det_cfg = Config.fromfile(det_model)
+                det_scope = det_cfg.default_scope
 
             if has_mmdet:
                 self.detector = DetInferencer(
-                    det_model, det_weights, device=device)
+                    det_model, det_weights, device=device, scope=det_scope)
             else:
                 raise RuntimeError(
                     'MMDetection (v3.0.0rc6 or above) is required to '
