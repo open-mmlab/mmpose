@@ -50,7 +50,7 @@ class PoseVisualizationHook(Hook):
         self,
         enable: bool = False,
         interval: int = 50,
-        score_thr: float = 0.3,
+        kpt_thr: float = 0.3,
         show: bool = False,
         wait_time: float = 0.,
         out_dir: Optional[str] = None,
@@ -58,7 +58,7 @@ class PoseVisualizationHook(Hook):
     ):
         self._visualizer: Visualizer = Visualizer.get_current_instance()
         self.interval = interval
-        self.score_thr = score_thr
+        self.kpt_thr = kpt_thr
         self.show = show
         if self.show:
             # No need to think about vis backends.
@@ -112,7 +112,7 @@ class PoseVisualizationHook(Hook):
                 draw_heatmap=True,
                 show=self.show,
                 wait_time=self.wait_time,
-                kpt_score_thr=self.score_thr,
+                kpt_thr=self.kpt_thr,
                 step=total_curr_iter)
 
     def after_test_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
@@ -163,6 +163,6 @@ class PoseVisualizationHook(Hook):
                 draw_bbox=True,
                 draw_heatmap=True,
                 wait_time=self.wait_time,
-                kpt_score_thr=self.score_thr,
+                kpt_thr=self.kpt_thr,
                 out_file=out_file,
                 step=self._test_index)

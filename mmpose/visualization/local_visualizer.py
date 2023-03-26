@@ -257,10 +257,10 @@ class PoseLocalVisualizer(Visualizer):
                 keypoints_visible = [np.ones(len(kpts)) for kpts in keypoints]
                 keypoints_visible = np.array(keypoints_visible)
 
-            kpt_info = np.concatenate(
-                (keypoints, scores.reshape(-1, len(scores[0]), 1),
-                 keypoints_visible.reshape(-1, len(keypoints_visible[0]), 1)),
-                axis=-1)
+            kpt_info = np.concatenate((keypoints, np.array(scores).reshape(
+                -1, len(scores[0]), 1), np.array(keypoints_visible).reshape(
+                    -1, len(keypoints_visible[0]), 1)),
+                                      axis=-1)
 
             if skeleton_style == 'openpose':
                 # compute neck joint
