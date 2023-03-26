@@ -64,7 +64,8 @@ def mmpose_to_openpose_visualization(args, img_path, detector, pose_estimator):
 
     # compute neck joint
     neck = (keypoints[:, 5] + keypoints[:, 6]) / 2
-    neck[:, 2] = keypoints[:, 5, 2] * keypoints[:, 6, 2]
+    if keypoints[:, 5, 2] < args.kpt_thr or keypoints[:, 6, 2] < args.kpt_thr:
+        neck[:, 2] = 0
 
     # 17 keypoints to 18 keypoints
     new_keypoints = np.insert(keypoints[:, ], 17, neck, axis=1)

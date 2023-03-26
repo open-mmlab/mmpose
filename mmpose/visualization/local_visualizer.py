@@ -10,6 +10,7 @@ from mmengine.dist import master_only
 from mmengine.structures import InstanceData, PixelData
 from mmengine.visualization import Visualizer
 
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
 from .simcc_vis import SimCCVisualizer
@@ -130,13 +131,20 @@ class PoseLocalVisualizer(Visualizer):
         # it will override the default value.
         self.dataset_meta = {}
 
-    def set_dataset_meta(self, dataset_meta: Dict):
+    def set_dataset_meta(self,
+                         dataset_meta: Dict,
+                         skeleton_style: str = 'mmpose'):
         """Assign dataset_meta to the visualizer. The default visualization
         settings will be overridden.
 
         Args:
             dataset_meta (dict): meta information of dataset.
         """
+        if dataset_meta.get(
+                'dataset_name') == 'coco' and skeleton_style == 'openpose':
+            dataset_meta = parse_pose_metainfo(
+                dict(from_file='configs/_base_/datasets/coco_openpose.py'))
+
         if isinstance(dataset_meta, dict):
             self.dataset_meta = dataset_meta.copy()
             self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
@@ -211,16 +219,21 @@ class PoseLocalVisualizer(Visualizer):
     def _draw_instances_kpts(self,
                              image: np.ndarray,
                              instances: InstanceData,
-                             kpt_score_thr: float = 0.3,
-                             show_kpt_idx: bool = False):
+                             kpt_thr: float = 0.3,
+                             show_kpt_idx: bool = False,
+                             skeleton_style: str = 'mmpose'):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
         Args:
             image (np.ndarray): The image to draw.
             instances (:obj:`InstanceData`): Data structure for
                 instance-level annotations or predictions.
-            kpt_score_thr (float, optional): Minimum score of keypoints
+            kpt_thr (float, optional): Minimum threshold of keypoints
                 to be shown. Default: 0.3.
+            show_kpt_idx (bool): Whether to show the index of keypoints.
+                Defaults to ``False``
+            skeleton_style (str): Skeleton style selection. Defaults to
+                ``'mmpose'``
 
         Returns:
             np.ndarray: the drawn image which channel is RGB.
@@ -242,107 +255,130 @@ class PoseLocalVisualizer(Visualizer):
                 keypoints_visible = instances.keypoints_visible
             else:
                 keypoints_visible = [np.ones(len(kpts)) for kpts in keypoints]
+                keypoints_visible = np.array(keypoints_visible)
 
-            for kpts, score, visible in zip(keypoints, scores,
-                                            keypoints_visible):
-                kpts = np.array(kpts, copy=False)
+            kpt_info = np.concatenate((keypoints, np.array(scores).reshape(
+                -1, len(scores[0]), 1), np.array(keypoints_visible).reshape(
+                    -1, len(keypoints_visible[0]), 1)),
+                                      axis=-1)
 
-                if self.kpt_color is None or isinstance(self.kpt_color, str):
-                    kpt_color = [self.kpt_color] * len(kpts)
-                elif len(self.kpt_color) == len(kpts):
-                    kpt_color = self.kpt_color
+            if skeleton_style == 'openpose':
+                # compute neck joint
+                neck = np.mean(kpt_info[:, [5, 6]], axis=1)
+                # neck score when visualizing pred
+                if kpt_info[:, 5, 2] < kpt_thr or kpt_info[:, 6, 2] < kpt_thr:
+                    neck[:, 2] = 0
+                # neck visible when visualizing gt
+                if kpt_info[:, 5, 3] < kpt_thr or kpt_info[:, 6, 3] < kpt_thr:
+                    neck[:, 3] = 0
+                new_kpt_info = np.insert(kpt_info, 17, neck, axis=1)
+
+                mmpose_idx = [
+                    17, 6, 8, 10, 7, 9, 12, 14, 16, 13, 15, 2, 1, 4, 3
+                ]
+                openpose_idx = [
+                    1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17
+                ]
+                new_kpt_info[:, openpose_idx] = new_kpt_info[:, mmpose_idx]
+                kpt_info = new_kpt_info
+
+            kpts, score, visible = kpt_info[0, :, :2], kpt_info[
+                0, :, 2], kpt_info[0, :, 3]
+            if self.kpt_color is None or isinstance(self.kpt_color, str):
+                kpt_color = [self.kpt_color] * len(kpts)
+            elif len(self.kpt_color) == len(kpts):
+                kpt_color = self.kpt_color
+            else:
+                raise ValueError(f'the length of kpt_color '
+                                 f'({len(self.kpt_color)}) does not matches '
+                                 f'that of keypoints ({len(kpts)})')
+
+            # draw each point on image
+            for kid, kpt in enumerate(kpts):
+                if score[kid] < kpt_thr or not visible[
+                        kid] or kpt_color[kid] is None:
+                    # skip the point that should not be drawn
+                    continue
+
+                color = kpt_color[kid]
+                if not isinstance(color, str):
+                    color = tuple(int(c) for c in color)
+                transparency = self.alpha
+                if self.show_keypoint_weight:
+                    transparency *= max(0, min(1, score[kid]))
+                self.draw_circles(
+                    kpt,
+                    radius=np.array([self.radius]),
+                    face_colors=color,
+                    edge_colors=color,
+                    alpha=transparency,
+                    line_widths=self.radius)
+                if show_kpt_idx:
+                    self.draw_texts(
+                        str(kid),
+                        kpt,
+                        colors=color,
+                        font_sizes=self.radius * 3,
+                        vertical_alignments='bottom',
+                        horizontal_alignments='center')
+
+            # draw links
+            if self.skeleton is not None and self.link_color is not None:
+                if self.link_color is None or isinstance(self.link_color, str):
+                    link_color = [self.link_color] * len(self.skeleton)
+                elif len(self.link_color) == len(self.skeleton):
+                    link_color = self.link_color
                 else:
                     raise ValueError(
-                        f'the length of kpt_color '
-                        f'({len(self.kpt_color)}) does not matches '
-                        f'that of keypoints ({len(kpts)})')
+                        f'the length of link_color '
+                        f'({len(self.link_color)}) does not matches '
+                        f'that of skeleton ({len(self.skeleton)})')
 
-                # draw each point on image
-                for kid, kpt in enumerate(kpts):
-                    if score[kid] < kpt_score_thr or not visible[
-                            kid] or kpt_color[kid] is None:
-                        # skip the point that should not be drawn
+                for sk_id, sk in enumerate(self.skeleton):
+                    pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
+                    pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
+                    if not (visible[sk[0]] and visible[sk[1]]):
                         continue
 
-                    color = kpt_color[kid]
+                    if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
+                            or pos1[1] >= img_h or pos2[0] <= 0
+                            or pos2[0] >= img_w or pos2[1] <= 0
+                            or pos2[1] >= img_h or score[sk[0]] < kpt_thr
+                            or score[sk[1]] < kpt_thr
+                            or link_color[sk_id] is None):
+                        # skip the link that should not be drawn
+                        continue
+                    X = np.array((pos1[0], pos2[0]))
+                    Y = np.array((pos1[1], pos2[1]))
+                    color = link_color[sk_id]
                     if not isinstance(color, str):
                         color = tuple(int(c) for c in color)
                     transparency = self.alpha
                     if self.show_keypoint_weight:
-                        transparency *= max(0, min(1, score[kid]))
-                    self.draw_circles(
-                        kpt,
-                        radius=np.array([self.radius]),
-                        face_colors=color,
-                        edge_colors=color,
-                        alpha=transparency,
-                        line_widths=self.radius)
-                    if show_kpt_idx:
-                        self.draw_texts(
-                            str(kid),
-                            kpt,
-                            colors=color,
-                            font_sizes=self.radius * 3,
-                            vertical_alignments='bottom',
-                            horizontal_alignments='center')
+                        transparency *= max(
+                            0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
 
-                # draw links
-                if self.skeleton is not None and self.link_color is not None:
-                    if self.link_color is None or isinstance(
-                            self.link_color, str):
-                        link_color = [self.link_color] * len(self.skeleton)
-                    elif len(self.link_color) == len(self.skeleton):
-                        link_color = self.link_color
+                    if skeleton_style == 'openpose':
+                        mX = np.mean(X)
+                        mY = np.mean(Y)
+                        length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
+                        angle = math.degrees(
+                            math.atan2(Y[0] - Y[1], X[0] - X[1]))
+                        stickwidth = 2
+                        polygons = cv2.ellipse2Poly(
+                            (int(mX), int(mY)),
+                            (int(length / 2), int(stickwidth)), int(angle), 0,
+                            360, 1)
+
+                        self.draw_polygons(
+                            polygons,
+                            edge_colors=color,
+                            face_colors=color,
+                            alpha=transparency)
+
                     else:
-                        raise ValueError(
-                            f'the length of link_color '
-                            f'({len(self.link_color)}) does not matches '
-                            f'that of skeleton ({len(self.skeleton)})')
-
-                    for sk_id, sk in enumerate(self.skeleton):
-                        pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
-                        pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
-                        if not (visible[sk[0]] and visible[sk[1]]):
-                            continue
-
-                        if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
-                                or pos1[1] >= img_h or pos2[0] <= 0
-                                or pos2[0] >= img_w or pos2[1] <= 0
-                                or pos2[1] >= img_h
-                                or score[sk[0]] < kpt_score_thr
-                                or score[sk[1]] < kpt_score_thr
-                                or link_color[sk_id] is None):
-                            # skip the link that should not be drawn
-                            continue
-                        X = np.array((pos1[0], pos2[0]))
-                        Y = np.array((pos1[1], pos2[1]))
-                        color = link_color[sk_id]
-                        if not isinstance(color, str):
-                            color = tuple(int(c) for c in color)
-                        if self.show_keypoint_weight:
-
-                            mX = np.mean(X)
-                            mY = np.mean(Y)
-                            length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
-                            angle = math.degrees(
-                                math.atan2(Y[0] - Y[1], X[0] - X[1]))
-                            stickwidth = 2
-                            polygons = cv2.ellipse2Poly(
-                                (int(mX), int(mY)),
-                                (int(length / 2), int(stickwidth)), int(angle),
-                                0, 360, 1)
-                            transparency = self.alpha
-                            transparency *= max(
-                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
-                            self.draw_polygons(
-                                polygons,
-                                edge_colors=color,
-                                face_colors=color,
-                                alpha=transparency)
-
-                        else:
-                            self.draw_lines(
-                                X, Y, color, line_widths=self.line_width)
+                        self.draw_lines(
+                            X, Y, color, line_widths=self.line_width)
 
         return self.get_image()
 
@@ -410,10 +446,11 @@ class PoseLocalVisualizer(Visualizer):
                        draw_heatmap: bool = False,
                        draw_bbox: bool = False,
                        show_kpt_idx: bool = False,
+                       skeleton_style: str = 'mmpose',
                        show: bool = False,
                        wait_time: float = 0,
                        out_file: Optional[str] = None,
-                       kpt_score_thr: float = 0.3,
+                       kpt_thr: float = 0.3,
                        step: int = 0) -> None:
         """Draw datasample and save to all backends.
 
@@ -439,12 +476,16 @@ class PoseLocalVisualizer(Visualizer):
                 ``False``
             draw_heatmap (bool): Whether to draw heatmaps. Defaults to
                 ``False``
+            show_kpt_idx (bool): Whether to show the index of keypoints.
+                Defaults to ``False``
+            skeleton_style (str): Skeleton style selection. Defaults to
+                ``'mmpose'``
             show (bool): Whether to display the drawn image. Default to
                 ``False``
             wait_time (float): The interval of show (s). Defaults to 0
             out_file (str): Path to output file. Defaults to ``None``
-            pred_score_thr (float): The threshold to visualize the bboxes
-                and masks. Defaults to 0.3
+            kpt_thr (float, optional): Minimum threshold of keypoints
+                to be shown. Default: 0.3.
             step (int): Global step value to record. Defaults to 0
         """
 
@@ -458,8 +499,8 @@ class PoseLocalVisualizer(Visualizer):
             # draw bboxes & keypoints
             if 'gt_instances' in data_sample:
                 gt_img_data = self._draw_instances_kpts(
-                    gt_img_data, data_sample.gt_instances, kpt_score_thr,
-                    show_kpt_idx)
+                    gt_img_data, data_sample.gt_instances, kpt_thr,
+                    show_kpt_idx, skeleton_style)
                 if draw_bbox:
                     gt_img_data = self._draw_instances_bbox(
                         gt_img_data, data_sample.gt_instances)
@@ -479,8 +520,8 @@ class PoseLocalVisualizer(Visualizer):
             # draw bboxes & keypoints
             if 'pred_instances' in data_sample:
                 pred_img_data = self._draw_instances_kpts(
-                    pred_img_data, data_sample.pred_instances, kpt_score_thr,
-                    show_kpt_idx)
+                    pred_img_data, data_sample.pred_instances, kpt_thr,
+                    show_kpt_idx, skeleton_style)
                 if draw_bbox:
                     pred_img_data = self._draw_instances_bbox(
                         pred_img_data, data_sample.pred_instances)
