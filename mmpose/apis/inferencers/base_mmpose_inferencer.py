@@ -314,7 +314,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                 show=show,
                 wait_time=wait_time,
                 out_file=out_file,
-                kpt_score_thr=kpt_thr)
+                kpt_thr=kpt_thr)
             results.append(visualization)
 
             if show and not hasattr(self, '_window_close_cid'):

@@ -26,6 +26,29 @@ def parse_args():
         default=False,
         help='Whether to show the index of keypoints')
     parser.add_argument(
+        '--skeleton-style',
+        default='mmpose',
+        type=str,
+        choices=['mmpose', 'openpose'],
+        help='Skeleton style selection')
+    parser.add_argument(
+        '--kpt-thr',
+        type=float,
+        default=0.3,
+        help='Visualizing keypoint thresholds')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=3,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
+    parser.add_argument(
+        '--alpha', type=float, default=0.8, help='The transparency of bboxes')
+    parser.add_argument(
         '--show',
         action='store_true',
         default=False,
@@ -50,8 +73,13 @@ def main():
         cfg_options=cfg_options)
 
     # init visualizer
+    model.cfg.visualizer.radius = args.radius
+    model.cfg.visualizer.alpha = args.alpha
+    model.cfg.visualizer.line_width = args.thickness
+
     visualizer = VISUALIZERS.build(model.cfg.visualizer)
-    visualizer.set_dataset_meta(model.dataset_meta)
+    visualizer.set_dataset_meta(
+        model.dataset_meta, skeleton_style=args.skeleton_style)
 
     # inference a single image
     batch_results = inference_topdown(model, args.img)
@@ -65,8 +93,10 @@ def main():
         data_sample=results,
         draw_gt=False,
         draw_bbox=True,
+        kpt_thr=args.kpt_thr,
         draw_heatmap=args.draw_heatmap,
         show_kpt_idx=args.show_kpt_idx,
+        skeleton_style=args.skeleton_style,
         show=args.show,
         out_file=args.out_file)
 
