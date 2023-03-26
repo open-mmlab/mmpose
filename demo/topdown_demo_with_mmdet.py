@@ -55,10 +55,11 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         draw_heatmap=args.draw_heatmap,
         draw_bbox=args.draw_bbox,
         show_kpt_idx=args.show_kpt_idx,
+        skeleton_style=args.skeleton_style,
         show=args.show,
         wait_time=show_interval,
         out_file=out_file,
-        kpt_score_thr=args.kpt_thr)
+        kpt_thr=args.kpt_thr)
 
     # if there is no instance detected, return None
     return data_samples.get('pred_instances', None)
@@ -110,7 +111,10 @@ def main():
         default=0.3,
         help='IoU threshold for bounding box NMS')
     parser.add_argument(
-        '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+        '--kpt-thr',
+        type=float,
+        default=0.3,
+        help='Visualizing keypoint thresholds')
     parser.add_argument(
         '--draw-heatmap',
         action='store_true',
@@ -122,6 +126,12 @@ def main():
         default=False,
         help='Whether to show the index of keypoints')
     parser.add_argument(
+        '--skeleton-style',
+        default='mmpose',
+        type=str,
+        choices=['mmpose', 'openpose'],
+        help='Skeleton style selection')
+    parser.add_argument(
         '--radius',
         type=int,
         default=3,
@@ -131,6 +141,8 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--alpha', type=float, default=0.8, help='The transparency of bboxes')
     parser.add_argument(
         '--draw-bbox', action='store_true', help='Draw bboxes of instances')
 
@@ -164,11 +176,14 @@ def main():
 
     # init visualizer
     pose_estimator.cfg.visualizer.radius = args.radius
+    pose_estimator.cfg.visualizer.alpha = args.alpha
     pose_estimator.cfg.visualizer.line_width = args.thickness
+
     visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
     # the dataset_meta is loaded from the checkpoint and
     # then pass to the model in init_pose_estimator
-    visualizer.set_dataset_meta(pose_estimator.dataset_meta)
+    visualizer.set_dataset_meta(
+        pose_estimator.dataset_meta, skeleton_style=args.skeleton_style)
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':
