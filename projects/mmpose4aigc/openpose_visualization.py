@@ -64,7 +64,8 @@ def mmpose_to_openpose_visualization(args, img_path, detector, pose_estimator):
 
     # compute neck joint
     neck = (keypoints[:, 5] + keypoints[:, 6]) / 2
-    neck[:, 2] = keypoints[:, 5, 2] * keypoints[:, 6, 2]
+    if keypoints[:, 5, 2] < args.kpt_thr or keypoints[:, 6, 2] < args.kpt_thr:
+        neck[:, 2] = 0
 
     # 17 keypoints to 18 keypoints
     new_keypoints = np.insert(keypoints[:, ], 17, neck, axis=1)
@@ -83,27 +84,26 @@ def mmpose_to_openpose_visualization(args, img_path, detector, pose_estimator):
     num_instance = new_keypoints.shape[0]
 
     # draw keypoints
-    cur_black_img = black_img.copy()
     for i, j in product(range(num_instance), range(num_openpose_kpt)):
         x, y, conf = new_keypoints[i][j]
-        if conf <= 1e-5:
-            continue
-        cv2.circle(cur_black_img, (int(x), int(y)), 4, colors[j], thickness=-1)
-    black_img = cv2.addWeighted(black_img, 0.3, cur_black_img, 0.7, 0)
+        if conf > args.kpt_thr:
+            cv2.circle(black_img, (int(x), int(y)), 4, colors[j], thickness=-1)
 
     # draw links
     cur_black_img = black_img.copy()
     for i, link_idx in product(range(num_instance), range(num_link)):
-        Y = new_keypoints[i][np.array(limb_seq[link_idx]) - 1, 0]
-        X = new_keypoints[i][np.array(limb_seq[link_idx]) - 1, 1]
-        mX = np.mean(X)
-        mY = np.mean(Y)
-        length = ((X[0] - X[1])**2 + (Y[0] - Y[1])**2)**0.5
-        angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
-        polygon = cv2.ellipse2Poly(
-            (int(mY), int(mX)), (int(length / 2), stickwidth), int(angle), 0,
-            360, 1)
-        cv2.fillConvexPoly(cur_black_img, polygon, colors[link_idx])
+        conf = new_keypoints[i][np.array(limb_seq[link_idx]) - 1, 2]
+        if np.sum(conf > args.kpt_thr) == 2:
+            Y = new_keypoints[i][np.array(limb_seq[link_idx]) - 1, 0]
+            X = new_keypoints[i][np.array(limb_seq[link_idx]) - 1, 1]
+            mX = np.mean(X)
+            mY = np.mean(Y)
+            length = ((X[0] - X[1])**2 + (Y[0] - Y[1])**2)**0.5
+            angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
+            polygon = cv2.ellipse2Poly(
+                (int(mY), int(mX)), (int(length / 2), stickwidth), int(angle),
+                0, 360, 1)
+            cv2.fillConvexPoly(cur_black_img, polygon, colors[link_idx])
     black_img = cv2.addWeighted(black_img, 0.4, cur_black_img, 0.6, 0)
 
     # save image
@@ -133,7 +133,7 @@ def main():
     parser.add_argument(
         '--bbox-thr',
         type=float,
-        default=0.3,
+        default=0.4,
         help='Bounding box score threshold')
     parser.add_argument(
         '--nms-thr',
@@ -141,7 +141,7 @@ def main():
         default=0.3,
         help='IoU threshold for bounding box NMS')
     parser.add_argument(
-        '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+        '--kpt-thr', type=float, default=0.4, help='Keypoint score threshold')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 

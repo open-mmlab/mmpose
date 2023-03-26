@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 from mmcv.image import imread
 
 from mmpose.apis import inference_topdown, init_model
-from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples
 
@@ -32,6 +31,11 @@ def parse_args():
         type=str,
         choices=['mmpose', 'openpose'],
         help='Skeleton style selection')
+    parser.add_argument(
+        '--kpt-thr',
+        type=float,
+        default=0.3,
+        help='Visualizing keypoint thresholds')
     parser.add_argument(
         '--radius',
         type=int,
@@ -72,13 +76,10 @@ def main():
     model.cfg.visualizer.radius = args.radius
     model.cfg.visualizer.alpha = args.alpha
     model.cfg.visualizer.line_width = args.thickness
-    dataset_meta = model.dataset_meta
-    if dataset_meta.get(
-            'dataset_name') == 'coco' and args.skeleton_style == 'openpose':
-        dataset_meta = parse_pose_metainfo(
-            dict(from_file='configs/_base_/datasets/coco_openpose.py'))
+
     visualizer = VISUALIZERS.build(model.cfg.visualizer)
-    visualizer.set_dataset_meta(dataset_meta)
+    visualizer.set_dataset_meta(
+        model.dataset_meta, skeleton_style=args.skeleton_style)
 
     # inference a single image
     batch_results = inference_topdown(model, args.img)
@@ -92,6 +93,7 @@ def main():
         data_sample=results,
         draw_gt=False,
         draw_bbox=True,
+        kpt_thr=args.kpt_thr,
         draw_heatmap=args.draw_heatmap,
         show_kpt_idx=args.show_kpt_idx,
         skeleton_style=args.skeleton_style,

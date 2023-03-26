@@ -11,7 +11,6 @@ import numpy as np
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
-from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
@@ -60,7 +59,7 @@ def process_one_image(args, img_path, detector, pose_estimator, visualizer,
         show=args.show,
         wait_time=show_interval,
         out_file=out_file,
-        kpt_score_thr=args.kpt_thr)
+        kpt_thr=args.kpt_thr)
 
     # if there is no instance detected, return None
     return data_samples.get('pred_instances', None)
@@ -112,7 +111,10 @@ def main():
         default=0.3,
         help='IoU threshold for bounding box NMS')
     parser.add_argument(
-        '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+        '--kpt-thr',
+        type=float,
+        default=0.3,
+        help='Visualizing keypoint thresholds')
     parser.add_argument(
         '--draw-heatmap',
         action='store_true',
@@ -174,17 +176,14 @@ def main():
 
     # init visualizer
     pose_estimator.cfg.visualizer.radius = args.radius
-    pose_estimator.cfg.visualizer.line_width = args.thickness
     pose_estimator.cfg.visualizer.alpha = args.alpha
-    dataset_meta = pose_estimator.dataset_meta
-    if dataset_meta.get(
-            'dataset_name') == 'coco' and args.skeleton_style == 'openpose':
-        dataset_meta = parse_pose_metainfo(
-            dict(from_file='configs/_base_/datasets/coco_openpose.py'))
+    pose_estimator.cfg.visualizer.line_width = args.thickness
+
     visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
     # the dataset_meta is loaded from the checkpoint and
     # then pass to the model in init_pose_estimator
-    visualizer.set_dataset_meta(dataset_meta)
+    visualizer.set_dataset_meta(
+        pose_estimator.dataset_meta, skeleton_style=args.skeleton_style)
 
     input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
     if input_type == 'image':
