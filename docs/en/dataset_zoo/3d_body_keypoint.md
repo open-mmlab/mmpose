@@ -32,6 +32,10 @@ MMPose supported datasets:
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227866174-0355e7dd-6965-4d1a-8bb6-32e8dce4cefc.png" height="300px">
+</div>
+
 For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), please download from the official website and run the [preprocessing script](/tools/dataset_converters/preprocess_h36m.py), which will extract camera parameters and pose annotations at full framerate (50 FPS) and downsampled framerate (10 FPS). The processed data should have the following structure:
 
 ```text
@@ -90,6 +94,10 @@ year = {2015}
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227866246-1af9441b-4f6c-4340-ae98-e40d6b4e8e55.png" height="300px">
+</div>
+
 Please follow [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch) to prepare this dataset.
 
 1. Download the dataset by following the instructions in [panoptic-toolbox](https://github.com/CMU-Perceptual-Computing-Lab/panoptic-toolbox) and extract them under `$MMPOSE/data/panoptic`.
@@ -136,6 +144,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227866373-ed8e6d1a-581b-4b88-93f5-2bc2caddbf6c.png" height="300px">
+</div>
 
 Please follow [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch) to prepare these two datasets.
 
