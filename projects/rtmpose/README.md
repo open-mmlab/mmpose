@@ -194,11 +194,15 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 
 ### Face 2d
 
-Coming soon
+|                        Config                        | Input Size | NME<sup><br>(COCO-WholeBody-Face) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
+| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
+| [RTMPose-m](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-60e_coco-wholebody-face-256x256.py) |  256x256   |               4.57                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
 
 ### Hand 2d
 
-Coming soon
+|                        Config                        | Input Size | PCK<sup><br>(COCO-WholeBody-Hand) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
+| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
+| [RTMPose-m](./rtmpose/hand_2d_keypoint/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |               81.5                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
 
 ### Pretrained Models
 
