@@ -27,7 +27,7 @@ class AssociativeEmbeddingHead(HeatmapHead):
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
+                 final_layer: dict = dict(kernel_size=1),
                  keypoint_loss: ConfigType = dict(type='KeypointMSELoss'),
                  tag_loss: ConfigType = dict(type='AssociativeEmbeddingLoss'),
                  decoder: OptConfigType = None,
@@ -49,7 +49,7 @@ class AssociativeEmbeddingHead(HeatmapHead):
             deconv_kernel_sizes=deconv_kernel_sizes,
             conv_out_channels=conv_out_channels,
             conv_kernel_sizes=conv_kernel_sizes,
-            has_final_layer=has_final_layer,
+            final_layer=final_layer,
             loss=loss,
             decoder=decoder,
             init_cfg=init_cfg)

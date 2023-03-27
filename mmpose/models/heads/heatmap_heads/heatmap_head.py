@@ -40,8 +40,8 @@ class HeatmapHead(BaseHead):
             Defaults to ``None``
         conv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
-        has_final_layer (bool): Whether have the final 1x1 Conv2d layer.
-            Defaults to ``True``
+        final_layer (dict): Arguments of the final Conv2d layer.
+            Defaults to ``dict(kernel_size=1)``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KeypointMSELoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -63,12 +63,11 @@ class HeatmapHead(BaseHead):
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
+                 final_layer: dict = dict(kernel_size=1),
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
-                 init_cfg: OptConfigType = None,
-                 extra=None):
+                 init_cfg: OptConfigType = None):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
@@ -82,18 +81,6 @@ class HeatmapHead(BaseHead):
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
             self.decoder = None
-
-        if extra is not None and not isinstance(extra, dict):
-            raise TypeError('extra should be dict or None.')
-
-        kernel_size = 1
-        padding = 0
-        if extra is not None:
-            if 'final_conv_kernel' in extra:
-                assert extra['final_conv_kernel'] in [1, 3]
-                if extra['final_conv_kernel'] == 3:
-                    padding = 1
-                kernel_size = extra['final_conv_kernel']
 
         if deconv_out_channels:
             if deconv_kernel_sizes is None or len(deconv_out_channels) != len(
@@ -130,13 +117,13 @@ class HeatmapHead(BaseHead):
         else:
             self.conv_layers = nn.Identity()
 
-        if has_final_layer:
+        if final_layer is not None:
             cfg = dict(
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
-                padding=padding,
-                kernel_size=kernel_size)
+                kernel_size=1)
+            cfg.update(final_layer)
             self.final_layer = build_conv_layer(cfg)
         else:
             self.final_layer = nn.Identity()

@@ -36,8 +36,8 @@ class CPMHead(BaseHead):
             both height and width dimensions, or a tuple of two integers for
             the height and the width dimension respectively.
             Defaults to ``(4, 4, 4)``
-        has_final_layer (bool): Whether have the final 1x1 Conv2d layer.
-            Defaults to ``True``
+        final_layer (dict): Arguments of the final Conv2d layer.
+            Defaults to ``dict(kernel_size=1)``
         loss (Config | List[Config]): Config of the keypoint loss of different
             stages. Defaults to use :class:`KeypointMSELoss`.
         decoder (Config, optional): The decoder config that controls decoding
@@ -57,7 +57,7 @@ class CPMHead(BaseHead):
                  num_stages: int,
                  deconv_out_channels: OptIntSeq = None,
                  deconv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
+                 final_layer: dict = dict(kernel_size=1),
                  loss: MultiConfig = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -111,12 +111,13 @@ class CPMHead(BaseHead):
 
         # build multi-stage final layers
         self.multi_final_layers = nn.ModuleList([])
-        if has_final_layer:
+        if final_layer is not None:
             cfg = dict(
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=1)
+            cfg.update(final_layer)
             for _ in range(self.num_stages):
                 self.multi_final_layers.append(build_conv_layer(cfg))
         else:
