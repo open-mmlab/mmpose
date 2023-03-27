@@ -25,6 +25,10 @@ year = {2020}
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227867693-e36c2cbd-4089-4734-a310-37cb5db6cafa.png" height="200px">
+</div>
+
 For [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/), please download from [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/).
 Please download the annotation files from [annotations](https://drive.google.com/drive/folders/1pWXhdfaka-J0fSAze0MsajN0VpZ8e8tO).
 Extract them under {MMPose}/data, and make them look like this:
