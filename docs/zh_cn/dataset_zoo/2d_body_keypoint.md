@@ -37,6 +37,10 @@ MMPose supported datasets:
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864552-489d03de-e1b8-4ca2-8ac1-80dd99826cb7.png" height="300px">
+</div>
+
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results.
 Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
@@ -90,6 +94,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864660-e5f51e7d-deca-41d8-9725-8b5432bcc0e6.png" height="300px">
+</div>
 
 For [MPII](http://human-pose.mpi-inf.mpg.de/) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 We have converted the original annotation files into json format, please download them from [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar).
@@ -147,6 +155,10 @@ python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/an
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864382-ab722299-6806-4ae4-babb-7bcc5fb09662.png" height="300px">
+</div>
+
 For [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 Please download the annotation files from [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -186,6 +198,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864755-dd19644e-fccb-458b-a8c0-de55920261f5.png" height="300px">
+</div>
 
 For [AIC](https://github.com/AIChallenger/AI_Challenger_2017) data, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
 Please download the annotation files from [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
@@ -232,6 +248,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864868-54a98493-df3a-44d8-acbc-6ec22043dfb9.png" height="300px">
+</div>
 
 For [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
 Please download the annotation files and human detection results from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
@@ -280,6 +300,10 @@ mmpose
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864552-489d03de-e1b8-4ca2-8ac1-80dd99826cb7.png" height="300px">
+</div>
+
 For [OCHuman](https://github.com/liruilong940607/OCHumanApi) data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
 Move them under $MMPOSE/data, and make them look like this:
 
@@ -321,6 +345,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227865030-2fd33ade-2cc2-4b67-aca0-6dea2124b63c.png" height="300px">
+</div>
 
 For [MHP](https://lv-mhp.github.io/dataset) data, please download from [MHP](https://lv-mhp.github.io/dataset).
 Please download the annotation files from [mhp_annotations](https://download.openmmlab.com/mmpose/datasets/mhp_annotations.tar.gz).
@@ -376,6 +404,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227865114-3f98c673-f6d0-4518-ae99-653f475f9fc8.png" height="300px">
+</div>
 
 For [PoseTrack18](https://posetrack.net/users/download.php) data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
 Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).
@@ -468,6 +500,10 @@ pip install git+https://github.com/svenkreiss/poseval.git
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227865619-d65f64ae-991d-4693-99c2-caecd1beb1fc.png" height="300px">
+</div>
 
 For [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) data, please download the [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
