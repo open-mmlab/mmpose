@@ -43,6 +43,10 @@ MMPose supported datasets:
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227774588-443fc5cc-7842-472a-abd5-827f0e3fd27f.png" height="150px">
+</div>
+
 For [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) dataset, images can be downloaded from [download](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html).
 Please download the annotation files from [fld_annotations](https://download.openmmlab.com/mmpose/datasets/fld_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:

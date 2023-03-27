@@ -32,6 +32,10 @@ MMPose supported datasets:
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227780043-e557acc3-5966-48ba-ac9e-b6c5916f1e55.jpg" height="200px">
+</div>
+
 For 300W data, please download images from [300W Dataset](https://ibug.doc.ic.ac.uk/resources/300-W/).
 Please download the annotation files from [300w_annotations](https://download.openmmlab.com/mmpose/datasets/300w_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -107,6 +111,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227785100-4b3d1e39-0d64-47c0-9e55-c947ce70866e.png" height="200px">
+</div>
 
 For WFLW data, please download images from [WFLW Dataset](https://wywu.github.io/projects/LAB/WFLW.html).
 Please download the annotation files from [wflw_annotations](https://download.openmmlab.com/mmpose/datasets/wflw_annotations.tar).
@@ -215,6 +223,10 @@ mmpose
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227786792-06604943-c062-4bcd-bb2d-a2f78d80115b.png" height="200px">
+</div>
+
 For COFW data, please download from [COFW Dataset (Color Images)](http://www.vision.caltech.edu/xpburgos/ICCV13/Data/COFW_color.zip).
 Move `COFW_train_color.mat` and `COFW_test_color.mat` to `data/cofw/` and make them look like:
 
@@ -273,6 +285,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227787217-2f226dc0-e5d7-4d0b-9ab8-68b53a5467c2.png" height="200px">
+</div>
 
 For [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/) dataset, images can be downloaded from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](https://drive.google.com/file/d/1thErEToRbmM9uLNi1JXXfOsaS5VK2FXf/view?usp=sharing) / [Validation](https://drive.google.com/file/d/1N6VgwKnj8DeyGXCvp1eYgNbRmw6jdfrb/view?usp=sharing) (Google Drive).
