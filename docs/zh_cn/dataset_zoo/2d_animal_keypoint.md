@@ -33,6 +33,10 @@ MMPose supported datasets:
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227796953-95ae1e30-5323-43f8-9a19-c4c2326e9835.png" height="200px">
+</div>
+
 For [Animal-Pose](https://sites.google.com/view/animal-pose/) dataset, we prepare the dataset as follows:
 
 1. Download the images of [PASCAL VOC2012](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#data), especially the five categories (dog, cat, sheep, cow, horse), which we use as trainval dataset.
@@ -118,6 +122,10 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227797151-091dc21a-d944-49c9-8b62-cc47fa89e69f.png" height="200px">
+</div>
+
 For [AP-10K](https://github.com/AlexTheBad/AP-10K/) dataset, images and annotations can be downloaded from [download](https://drive.google.com/file/d/1-FNNGcdtAQRehYYkGY1y4wzFNg4iWNad/view?usp=sharing).
 Note, this data and annotation data is for non-commercial use only.
 
@@ -170,6 +178,10 @@ The annotation files in 'annotation' folder contains 50 labeled animal species. 
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227797934-32bc1b2c-7957-4a29-94df-8e431842ab3b.png" height="200px">
+</div>
+
 For [Horse-10](http://www.mackenziemathislab.org/horse10) dataset, images can be downloaded from [download](http://www.mackenziemathislab.org/horse10).
 Please download the annotation files from [horse10_annotations](https://download.openmmlab.com/mmpose/datasets/horse10_annotations.tar). Note, this data and annotation data is for non-commercial use only, per the authors (see http://horse10.deeplabcut.org for more information).
 Extract them under {MMPose}/data, and make them look like this:
@@ -215,6 +227,10 @@ mmpose
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227799576-f10f8469-9432-4139-beb4-195037dee72c.png" height="200px">
+</div>
 
 For [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images can be downloaded from [download](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html).
 Please download the annotation files from [macaque_annotations](https://download.openmmlab.com/mmpose/datasets/macaque_annotations.tar).
@@ -266,6 +282,10 @@ Since the official dataset does not provide the test set, we randomly select 125
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227802774-bb4e4ef2-2ade-42ad-80f1-97f2a7faa9e2.png" height="200px">
+</div>
+
 For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) dataset, images can be downloaded from [vinegar_fly_images](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_images.tar).
 Please download the annotation files from [vinegar_fly_annotations](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -313,6 +333,10 @@ Since the official dataset does not provide the test set, we randomly select 90%
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227802779-09d0ec8c-8971-4c67-a315-e2d1355f7f72.png" height="200px">
+</div>
 
 For [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) dataset, images can be downloaded from [locust_images](https://download.openmmlab.com/mmpose/datasets/locust_images.tar).
 Please download the annotation files from [locust_annotations](https://download.openmmlab.com/mmpose/datasets/locust_annotations.tar).
@@ -362,6 +386,10 @@ Since the official dataset does not provide the test set, we randomly select 90%
 
 </details>
 
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227802783-ace952bb-1ff9-4720-80a8-c63cc9e714b6.png" height="200px">
+</div>
+
 For [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) dataset, images can be downloaded from [zebra_images](https://download.openmmlab.com/mmpose/datasets/zebra_images.tar).
 Please download the annotation files from [zebra_annotations](https://download.openmmlab.com/mmpose/datasets/zebra_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -407,6 +435,10 @@ Since the official dataset does not provide the test set, we randomly select 90%
 ```
 
 </details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227797386-fce99241-8a0e-4a40-a179-dad013e6c5a4.png" height="200px">
+</div>
 
 ATRW captures images of the Amur tiger (also known as Siberian tiger, Northeast-China tiger) in the wild.
 For [ATRW](https://cvwc2019.github.io/challenge.html) dataset, please download images from
