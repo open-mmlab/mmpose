@@ -12,6 +12,7 @@ from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
                                  OptSampleList)
+from mmpose.visualization.simcc_vis import get_simcc_normalized
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -264,6 +265,11 @@ class SimCCHead(BaseHead):
             batch_pred_y = (_batch_pred_y + _batch_pred_y_flip) * 0.5
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
+
+        # normalize the predicted simcc for visualization
+        sigma = self.decoder.sigma
+        batch_pred_x = get_simcc_normalized(batch_pred_x, sigma)
+        batch_pred_y = get_simcc_normalized(batch_pred_y, sigma)
 
         preds = self.decode((batch_pred_x, batch_pred_y))
 
