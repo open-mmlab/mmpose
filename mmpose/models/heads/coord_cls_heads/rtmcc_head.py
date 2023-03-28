@@ -207,6 +207,7 @@ class RTMCCHead(BaseHead):
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
 
+        # normalize the predicted 1d distribution
         batch_pred_x = get_simcc_normalized(batch_pred_x)
         batch_pred_y = get_simcc_normalized(batch_pred_y)
 

@@ -13,7 +13,7 @@ def get_simcc_normalized(batch_pred_simcc, sigma=None):
     """Normalize the predicted SimCC.
 
     Args:
-        batch_pred_simcc (np.ndarray): The predicted SimCC.
+        batch_pred_simcc (torch.Tensor): The predicted SimCC.
         sigma (float): The sigma of the Gaussian distribution.
 
     Returns:

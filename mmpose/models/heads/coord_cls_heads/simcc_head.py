@@ -266,6 +266,7 @@ class SimCCHead(BaseHead):
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
 
+        # normalize the predicted 1d distribution
         sigma = self.decoder.sigma
         batch_pred_x = get_simcc_normalized(batch_pred_x, sigma[0])
         batch_pred_y = get_simcc_normalized(batch_pred_y, sigma[1])
