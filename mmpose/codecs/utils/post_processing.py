@@ -13,7 +13,7 @@ def get_simcc_normalized(batch_pred_simcc, sigma=None):
     """Normalize the predicted SimCC.
 
     Args:
-        batch_pred_simcc (torch.Tensor): The predicted SimCC.
+        batch_pred_simcc (np.ndarray): The predicted SimCC.
         sigma (float): The sigma of the Gaussian distribution.
 
     Returns:
@@ -24,16 +24,16 @@ def get_simcc_normalized(batch_pred_simcc, sigma=None):
     # Scale and clamp the tensor
     if sigma is not None:
         batch_pred_simcc = batch_pred_simcc / (sigma * np.sqrt(np.pi * 2))
-    batch_pred_simcc = batch_pred_simcc.clamp(min=0)
+    batch_pred_simcc = np.clip(batch_pred_simcc, a_min=0, a_max=None)
 
     # Compute the binary mask
-    mask = (batch_pred_simcc.amax(dim=-1) > 1).reshape(B, K, 1)
+    mask = (batch_pred_simcc.max(axis=-1) > 1).reshape(B, K, 1)
 
     # Normalize the tensor using the maximum value
-    norm = (batch_pred_simcc / batch_pred_simcc.amax(dim=-1).reshape(B, K, 1))
+    norm = (batch_pred_simcc / batch_pred_simcc.max(axis=-1).reshape(B, K, 1))
 
     # Apply normalization
-    batch_pred_simcc = torch.where(mask, norm, batch_pred_simcc)
+    batch_pred_simcc = np.where(mask, norm, batch_pred_simcc)
 
     return batch_pred_simcc
 
