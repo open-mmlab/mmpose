@@ -266,14 +266,14 @@ class SimCCHead(BaseHead):
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
 
-        # normalize the predicted 1d distribution
-        sigma = self.decoder.sigma
-        batch_pred_x = get_simcc_normalized(batch_pred_x, sigma[0])
-        batch_pred_y = get_simcc_normalized(batch_pred_y, sigma[1])
-
         preds = self.decode((batch_pred_x, batch_pred_y))
 
         if test_cfg.get('output_heatmaps', False):
+            # normalize the predicted 1d distribution
+            sigma = self.decoder.sigma
+            batch_pred_x = get_simcc_normalized(batch_pred_x, sigma[0])
+            batch_pred_y = get_simcc_normalized(batch_pred_y, sigma[1])
+
             B, K, _ = batch_pred_x.shape
             # B, K, Wx -> B, K, Wx, 1
             x = batch_pred_x.reshape(B, K, 1, -1)
