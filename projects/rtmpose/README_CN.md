@@ -185,15 +185,15 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ### 脸部 2d 关键点
 
-|                        Config                        | Input Size | NME<sup><br>(COCO-WholeBody-Face) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
-| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
-| [RTMPose-m](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-60e_coco-wholebody-face-256x256.py) |  256x256   |               4.57                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
+|   Config    | Input Size | NME<sup><br>(COCO-WholeBody-Face) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | Logs | Download |
+| :---------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :--: | :------: |
+| Coming soon |     -      |                 -                 |    -     |                 -                  |                     -                     |  -   |    -     |
 
 ### 手部 2d 关键点
 
-|                        Config                        | Input Size | PCK<sup><br>(COCO-WholeBody-Hand) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |    Logs     |  Download   |
-| :--------------------------------------------------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: | :---------: |
-| [RTMPose-m](./rtmpose/hand_2d_keypoint/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |               81.5                |    -     |                 -                  |                     -                     | Coming soon | Coming soon |
+|   Config    | Input Size | PCK<sup><br>(COCO-WholeBody-Hand) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | Logs | Download |
+| :---------: | :--------: | :-------------------------------: | :------: | :--------------------------------: | :---------------------------------------: | :--: | :------: |
+| Coming soon |     -      |                 -                 |    -     |                 -                  |                     -                     |  -   |    -     |
 
 ### 预训练模型
 
