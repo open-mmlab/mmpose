@@ -12,14 +12,14 @@ def get_simcc_normalized(batch_pred_simcc, sigma=None):
 
     Args:
         batch_pred_simcc (torch.Tensor): The predicted SimCC.
-        sigma (float): The sigma value of the Gaussian kernel.
+        sigma (list[float]): The sigma of the Gaussian distribution.
 
     Returns:
         torch.Tensor: The normalized SimCC.
     """
     B, K, _ = batch_pred_simcc.shape
 
-    # Scale and clamp the x tensor
+    # Scale and clamp the tensor
     if sigma is not None:
         batch_pred_simcc = batch_pred_simcc / (sigma[0] * np.sqrt(np.pi * 2))
     batch_pred_simcc = batch_pred_simcc.clamp(min=0)
@@ -27,7 +27,7 @@ def get_simcc_normalized(batch_pred_simcc, sigma=None):
     # Compute the binary mask
     mask = (batch_pred_simcc.amax(dim=-1) > 1).reshape(B, K, 1)
 
-    # Normalize the x tensor using the maximum value in the H, W dimensions
+    # Normalize the tensor using the maximum value
     norm = (batch_pred_simcc / batch_pred_simcc.amax(dim=-1).reshape(B, K, 1))
 
     # Apply normalization
