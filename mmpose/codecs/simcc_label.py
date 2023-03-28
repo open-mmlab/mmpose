@@ -4,7 +4,7 @@ from typing import Optional, Tuple, Union
 
 import numpy as np
 
-from mmpose.codecs.utils import get_simcc_maximum, get_simcc_normalized
+from mmpose.codecs.utils import get_simcc_maximum
 from mmpose.codecs.utils.refinement import refine_simcc_dark
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
@@ -152,11 +152,6 @@ class SimCCLabel(BaseKeypointCodec):
             - socres (np.ndarray): The keypoint scores in shape (N, K).
                 It usually represents the confidence of the keypoint prediction
         """
-
-        simcc_x = get_simcc_normalized(
-            simcc_x, self.sigma[0] if self.normalize else None)
-        simcc_y = get_simcc_normalized(
-            simcc_y, self.sigma[1] if self.normalize else None)
 
         keypoints, scores = get_simcc_maximum(simcc_x, simcc_y)
 

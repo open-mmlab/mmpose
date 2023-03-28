@@ -6,6 +6,7 @@ from mmcv.cnn import build_conv_layer
 from mmengine.structures import PixelData
 from torch import Tensor, nn
 
+from mmpose.codecs.utils import get_simcc_normalized
 from mmpose.evaluation.functional import simcc_pck_accuracy
 from mmpose.models.utils.tta import flip_vectors
 from mmpose.registry import KEYPOINT_CODECS, MODELS
@@ -264,6 +265,10 @@ class SimCCHead(BaseHead):
             batch_pred_y = (_batch_pred_y + _batch_pred_y_flip) * 0.5
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
+
+        sigma = self.decoder.sigma
+        batch_pred_x = get_simcc_normalized(batch_pred_x, sigma[0])
+        batch_pred_y = get_simcc_normalized(batch_pred_y, sigma[1])
 
         preds = self.decode((batch_pred_x, batch_pred_y))
 

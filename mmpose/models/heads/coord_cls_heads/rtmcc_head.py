@@ -5,6 +5,7 @@ import torch
 from mmengine.structures import PixelData
 from torch import Tensor, nn
 
+from mmpose.codecs.utils import get_simcc_normalized
 from mmpose.evaluation.functional import simcc_pck_accuracy
 from mmpose.models.utils.rtmcc_block import RTMCCBlock, ScaleNorm
 from mmpose.models.utils.tta import flip_vectors
@@ -205,6 +206,9 @@ class RTMCCHead(BaseHead):
             batch_pred_y = (_batch_pred_y + _batch_pred_y_flip) * 0.5
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
+
+        batch_pred_x = get_simcc_normalized(batch_pred_x)
+        batch_pred_y = get_simcc_normalized(batch_pred_y)
 
         preds = self.decode((batch_pred_x, batch_pred_y))
 
