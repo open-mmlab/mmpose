@@ -7,35 +7,6 @@ import torch
 from torchvision.transforms import ToPILImage
 
 
-def get_simcc_normalized(batch_pred_simcc, sigma=None):
-    """Normalize the predicted SimCC.
-
-    Args:
-        batch_pred_simcc (torch.Tensor): The predicted SimCC.
-        sigma (list[float]): The sigma of the Gaussian distribution.
-
-    Returns:
-        torch.Tensor: The normalized SimCC.
-    """
-    B, K, _ = batch_pred_simcc.shape
-
-    # Scale and clamp the tensor
-    if sigma is not None:
-        batch_pred_simcc = batch_pred_simcc / (sigma[0] * np.sqrt(np.pi * 2))
-    batch_pred_simcc = batch_pred_simcc.clamp(min=0)
-
-    # Compute the binary mask
-    mask = (batch_pred_simcc.amax(dim=-1) > 1).reshape(B, K, 1)
-
-    # Normalize the tensor using the maximum value
-    norm = (batch_pred_simcc / batch_pred_simcc.amax(dim=-1).reshape(B, K, 1))
-
-    # Apply normalization
-    batch_pred_simcc = torch.where(mask, norm, batch_pred_simcc)
-
-    return batch_pred_simcc
-
-
 class SimCCVisualizer:
 
     def draw_instance_xy_heatmap(self,
