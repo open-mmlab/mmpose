@@ -1,4 +1,4 @@
-# Training with Mixed Datasets
+# Use Mixed Datasets for Training
 
 MMPose offers a convenient and versatile solution for training with mixed datasets through its `CombinedDataset` tool. Acting as a wrapper, it allows for the inclusion of multiple datasets and seamlessly reads and converts data from varying sources into a unified format for model training. The data processing pipeline utilizing `CombinedDataset` is illustrated in the following figure.
 

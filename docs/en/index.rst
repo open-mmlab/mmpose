@@ -6,32 +6,38 @@ You can change the documentation language at the lower-left corner of the page.
 您可以在页面左下角切换文档语言。
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Get Started
+   :maxdepth: 1
+   :caption: Get Started
 
-    overview.md
-    installation.md
-    quick_run.md
-    guide_to_framework.md
+   overview.md
+   installation.md
+   guide_to_framework.md
+   demos.md
+   contribution_guide.md
+   faq.md
 
 .. toctree::
-    :maxdepth: 1
-    :caption: User Guides
+   :maxdepth: 1
+   :caption: User Guides
 
-    user_guides/configs.md
-    user_guides/prepare_datasets.md
-    user_guides/codecs.md
-    user_guides/inference.md
-    user_guides/train_and_test.md
-    user_guides/visualization.md
-    user_guides/how_to.md
+   user_guides/inference.md
+   user_guides/configs.md
+   user_guides/train_and_test.md
+   user_guides/prepare_datasets.md
 
 .. toctree::
    :maxdepth: 1
    :caption: Advanced Guides
 
-   advanced_guides/advanced_training.md
-   advanced_guides/mixed_datasets.md
+   advanced_guides/codecs.md
+   advanced_guides/dataflow.md
+   advanced_guides/implement_new_models.md
+   advanced_guides/customize_datasets.md
+   advanced_guides/customize_transforms.md
+   advanced_guides/customize_optimizer.md
+   advanced_guides/customize_logging.md
+   advanced_guides/how_to_deploy.md
+   advanced_guides/model_analysis.md
 
 .. toctree::
    :maxdepth: 1
@@ -78,10 +84,10 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 1
    :caption: Notes
 
-   notes/contribution_guide.md
-   notes/projects.md
+   notes/ecosystem.md
    notes/changelog.md
-   notes/faq.md
+   notes/benchmark.md
+   notes/pytorch_2.md
 
 .. toctree::
    :caption: API Reference
