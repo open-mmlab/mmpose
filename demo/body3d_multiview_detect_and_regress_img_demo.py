@@ -113,6 +113,7 @@ def get_input_data(img_path, cam_file):
 
 
 def inference(args):
+    # TODO: support shelf and campus
     config_dict = Config.fromfile(args.config_file)
     assert args.dataset == 'Body3DMviewDirectPanopticDataset'
     cfg = Config.fromfile('configs/_base_/datasets/panoptic_body3d.py')
