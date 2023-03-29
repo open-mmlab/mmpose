@@ -1,4 +1,4 @@
-# Compatibility of MMPose 0.X
+# How to Migrate MMPose 0.x Projects to MMPose 1.0
 
 MMPose 1.0 has been refactored extensively and addressed many legacy issues. Most of the code in MMPose 1.0 will not be compatible with 0.x version.
 
