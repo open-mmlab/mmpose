@@ -1,10 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
 from typing import Optional, Sequence, Tuple, Union
 
 import torch
+from mmengine.dist import get_dist_info
 from mmengine.structures import PixelData
 from torch import Tensor, nn
 
+from mmpose.codecs.utils import get_simcc_normalized
 from mmpose.evaluation.functional import simcc_pck_accuracy
 from mmpose.models.utils.rtmcc_block import RTMCCBlock, ScaleNorm
 from mmpose.models.utils.tta import flip_vectors
@@ -209,6 +212,17 @@ class RTMCCHead(BaseHead):
         preds = self.decode((batch_pred_x, batch_pred_y))
 
         if test_cfg.get('output_heatmaps', False):
+            rank, _ = get_dist_info()
+            if rank == 0:
+                warnings.warn('The predicted simcc values are normalized for '
+                              'visualization. This may cause discrepancy '
+                              'between the keypoint scores and the 1D heatmaps'
+                              '.')
+
+            # normalize the predicted 1d distribution
+            batch_pred_x = get_simcc_normalized(batch_pred_x)
+            batch_pred_y = get_simcc_normalized(batch_pred_y)
+
             B, K, _ = batch_pred_x.shape
             # B, K, Wx -> B, K, Wx, 1
             x = batch_pred_x.reshape(B, K, 1, -1)
