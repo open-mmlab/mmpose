@@ -54,7 +54,7 @@ model = dict(
         out_channels=15,
         num_stages=6,
         deconv_out_channels=None,
-        has_final_layer=False,
+        final_layer=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(

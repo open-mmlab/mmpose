@@ -56,6 +56,8 @@ class SimCCHead(BaseHead):
             Defaults to ``None``
         conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
+        final_layer (dict): Arguments of the final Conv2d layer.
+            Defaults to ``dict(kernel_size=1)``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KLDiscretLoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -81,7 +83,7 @@ class SimCCHead(BaseHead):
         deconv_num_groups: OptIntSeq = (16, 16, 16),
         conv_out_channels: OptIntSeq = None,
         conv_kernel_sizes: OptIntSeq = None,
-        has_final_layer: bool = True,
+        final_layer: dict = dict(kernel_size=1),
         loss: ConfigType = dict(type='KLDiscretLoss', use_target_weight=True),
         decoder: OptConfigType = None,
         init_cfg: OptConfigType = None,
@@ -124,9 +126,9 @@ class SimCCHead(BaseHead):
                 deconv_num_groups=deconv_num_groups,
                 conv_out_channels=conv_out_channels,
                 conv_kernel_sizes=conv_kernel_sizes,
-                has_final_layer=has_final_layer)
+                final_layer=final_layer)
 
-            if has_final_layer:
+            if final_layer is not None:
                 in_channels = out_channels
             else:
                 in_channels = deconv_out_channels[-1]
@@ -134,12 +136,13 @@ class SimCCHead(BaseHead):
         else:
             self.deconv_head = None
 
-            if has_final_layer:
+            if final_layer is not None:
                 cfg = dict(
                     type='Conv2d',
                     in_channels=in_channels,
                     out_channels=out_channels,
                     kernel_size=1)
+                cfg.update(final_layer)
                 self.final_layer = build_conv_layer(cfg)
             else:
                 self.final_layer = None
@@ -155,16 +158,18 @@ class SimCCHead(BaseHead):
         self.mlp_head_x = nn.Linear(flatten_dims, W)
         self.mlp_head_y = nn.Linear(flatten_dims, H)
 
-    def _make_deconv_head(self,
-                          in_channels: Union[int, Sequence[int]],
-                          out_channels: int,
-                          deconv_type: str = 'heatmap',
-                          deconv_out_channels: OptIntSeq = (256, 256, 256),
-                          deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
-                          deconv_num_groups: OptIntSeq = (16, 16, 16),
-                          conv_out_channels: OptIntSeq = None,
-                          conv_kernel_sizes: OptIntSeq = None,
-                          has_final_layer: bool = True) -> nn.Module:
+    def _make_deconv_head(
+        self,
+        in_channels: Union[int, Sequence[int]],
+        out_channels: int,
+        deconv_type: str = 'heatmap',
+        deconv_out_channels: OptIntSeq = (256, 256, 256),
+        deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+        deconv_num_groups: OptIntSeq = (16, 16, 16),
+        conv_out_channels: OptIntSeq = None,
+        conv_kernel_sizes: OptIntSeq = None,
+        final_layer: dict = dict(kernel_size=1)
+    ) -> nn.Module:
         """Create deconvolutional layers by given parameters."""
 
         if deconv_type == 'heatmap':
@@ -177,7 +182,7 @@ class SimCCHead(BaseHead):
                     deconv_kernel_sizes=deconv_kernel_sizes,
                     conv_out_channels=conv_out_channels,
                     conv_kernel_sizes=conv_kernel_sizes,
-                    has_final_layer=has_final_layer))
+                    final_layer=final_layer))
         else:
             deconv_head = MODELS.build(
                 dict(
@@ -188,7 +193,7 @@ class SimCCHead(BaseHead):
                     deconv_num_groups=deconv_num_groups,
                     conv_out_channels=conv_out_channels,
                     conv_kernel_sizes=conv_kernel_sizes,
-                    has_final_layer=has_final_layer))
+                    final_layer=final_layer))
 
         return deconv_head
 

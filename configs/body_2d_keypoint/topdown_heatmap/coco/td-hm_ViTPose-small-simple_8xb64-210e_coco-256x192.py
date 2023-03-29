@@ -85,9 +85,9 @@ model = dict(
         out_channels=17,
         deconv_out_channels=[],
         deconv_kernel_sizes=[],
+        final_layer=dict(kernel_size=3, padding=1),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
-        extra=dict(final_conv_kernel=3),
     ),
     test_cfg=dict(
         flip_test=True,

@@ -39,8 +39,8 @@ class ViPNASHead(HeatmapHead):
             Defaults to ``None``
         conv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
-        has_final_layer (bool): Whether have the final 1x1 Conv2d layer.
-            Defaults to ``True``
+        final_layer (dict): Arguments of the final Conv2d layer.
+            Defaults to ``dict(kernel_size=1)``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KeypointMSELoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -62,7 +62,7 @@ class ViPNASHead(HeatmapHead):
                  deconv_num_groups: OptIntSeq = (16, 16, 16),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
+                 final_layer: dict = dict(kernel_size=1),
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -124,12 +124,13 @@ class ViPNASHead(HeatmapHead):
         else:
             self.conv_layers = nn.Identity()
 
-        if has_final_layer:
+        if final_layer is not None:
             cfg = dict(
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=1)
+            cfg.update(final_layer)
             self.final_layer = build_conv_layer(cfg)
         else:
             self.final_layer = nn.Identity()
