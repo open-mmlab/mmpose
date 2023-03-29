@@ -50,8 +50,7 @@ class TestHeatmapHead(TestCase):
         self.assertTrue(isinstance(head.conv_layers, nn.Sequential))
 
         # w/o final layer
-        head = HeatmapHead(
-            in_channels=32, out_channels=17, has_final_layer=False)
+        head = HeatmapHead(in_channels=32, out_channels=17, final_layer=None)
         self.assertTrue(isinstance(head.final_layer, nn.Identity))
 
         # w/ decoder

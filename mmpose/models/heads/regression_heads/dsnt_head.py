@@ -48,6 +48,8 @@ class DSNTHead(IntegralRegressionHead):
             Defaults to ``None``
         conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
+        final_layer (dict): Arguments of the final Conv2d layer.
+            Defaults to ``dict(kernel_size=1)``
         loss (Config): Config for keypoint loss. Defaults to use
             :class:`DSNTLoss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -71,7 +73,7 @@ class DSNTHead(IntegralRegressionHead):
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
+                 final_layer: dict = dict(kernel_size=1),
                  loss: ConfigType = dict(
                      type='MultipleLossWrapper',
                      losses=[
@@ -91,7 +93,7 @@ class DSNTHead(IntegralRegressionHead):
             deconv_kernel_sizes=deconv_kernel_sizes,
             conv_out_channels=conv_out_channels,
             conv_kernel_sizes=conv_kernel_sizes,
-            has_final_layer=has_final_layer,
+            final_layer=final_layer,
             loss=loss,
             decoder=decoder,
             init_cfg=init_cfg)

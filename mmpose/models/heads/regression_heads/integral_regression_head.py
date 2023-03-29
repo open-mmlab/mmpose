@@ -51,6 +51,8 @@ class IntegralRegressionHead(BaseHead):
             Defaults to ``None``
         conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
+        final_layer (dict): Arguments of the final Conv2d layer.
+            Defaults to ``dict(kernel_size=1)``
         loss (Config): Config for keypoint loss. Defaults to use
             :class:`SmoothL1Loss`
         decoder (Config, optional): The decoder config that controls decoding
@@ -74,7 +76,7 @@ class IntegralRegressionHead(BaseHead):
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
+                 final_layer: dict = dict(kernel_size=1),
                  loss: ConfigType = dict(
                      type='SmoothL1Loss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -109,9 +111,9 @@ class IntegralRegressionHead(BaseHead):
                 deconv_kernel_sizes=deconv_kernel_sizes,
                 conv_out_channels=conv_out_channels,
                 conv_kernel_sizes=conv_kernel_sizes,
-                has_final_layer=has_final_layer)
+                final_layer=final_layer)
 
-            if has_final_layer:
+            if final_layer is not None:
                 in_channels = num_joints
             else:
                 in_channels = deconv_out_channels[-1]
@@ -119,12 +121,13 @@ class IntegralRegressionHead(BaseHead):
         else:
             self.simplebaseline_head = None
 
-            if has_final_layer:
+            if final_layer is not None:
                 cfg = dict(
                     type='Conv2d',
                     in_channels=in_channels,
                     out_channels=num_joints,
                     kernel_size=1)
+                cfg.update(final_layer)
                 self.final_layer = build_conv_layer(cfg)
             else:
                 self.final_layer = None

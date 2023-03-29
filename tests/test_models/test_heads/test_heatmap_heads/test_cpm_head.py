@@ -56,10 +56,7 @@ class TestCPMHead(TestCase):
 
         # w/o final layer
         head = CPMHead(
-            num_stages=6,
-            in_channels=17,
-            out_channels=17,
-            has_final_layer=False)
+            num_stages=6, in_channels=17, out_channels=17, final_layer=None)
         self.assertTrue(isinstance(head.multi_final_layers, nn.ModuleList))
         self.assertTrue(isinstance(head.multi_final_layers[0], nn.Identity))
 
@@ -80,7 +77,7 @@ class TestCPMHead(TestCase):
             num_stages=6,
             in_channels=17,
             out_channels=17,
-            has_final_layer=False,
+            final_layer=None,
             loss=dict(type='KeypointMSELoss', use_target_weight=True),
         )
         self.assertTrue(isinstance(head.loss_module, nn.Module))
@@ -91,7 +88,7 @@ class TestCPMHead(TestCase):
             num_stages=num_stages,
             in_channels=17,
             out_channels=17,
-            has_final_layer=False,
+            final_layer=None,
             loss=[dict(type='KeypointMSELoss', use_target_weight=True)] * 6,
         )
         self.assertTrue(isinstance(head.loss_module, nn.ModuleList))
@@ -104,12 +101,12 @@ class TestCPMHead(TestCase):
             heatmap_size=(24, 32),
             sigma=2.)
 
-        # num_stages = 6, has_final_layer = False
+        # num_stages = 6, final_layer = None
         head = CPMHead(
             num_stages=6,
             in_channels=17,
             out_channels=17,
-            has_final_layer=False,
+            final_layer=None,
             decoder=decoder_cfg)
 
         with self.assertRaisesRegex(
@@ -128,12 +125,12 @@ class TestCPMHead(TestCase):
         self.assertEqual(preds[0].keypoints.shape,
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
-        # num_stages = 1, has_final_layer = True
+        # num_stages = 1, final_layer = dict(kernel_size=1)
         head = CPMHead(
             num_stages=1,
             in_channels=32,
             out_channels=17,
-            has_final_layer=True,
+            final_layer=dict(kernel_size=1),
             decoder=decoder_cfg)
         feats = self._get_feats(batch_size=2, feat_shapes=[(32, 32, 24)])
         batch_data_samples = self._get_data_samples(batch_size=2)
@@ -160,7 +157,7 @@ class TestCPMHead(TestCase):
             num_stages=1,
             in_channels=32,
             out_channels=17,
-            has_final_layer=True,
+            final_layer=dict(kernel_size=1),
             decoder=decoder_cfg)
 
         feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
@@ -184,7 +181,7 @@ class TestCPMHead(TestCase):
             num_stages=1,
             in_channels=32,
             out_channels=17,
-            has_final_layer=True)
+            final_layer=dict(kernel_size=1))
 
         feats = self._get_feats(batch_size=2, feat_shapes=[(32, 32, 24)])
         batch_data_samples = self._get_data_samples(batch_size=2)
@@ -199,7 +196,7 @@ class TestCPMHead(TestCase):
             num_stages=num_stages,
             in_channels=17,
             out_channels=17,
-            has_final_layer=False,
+            final_layer=None,
             loss=[dict(type='KeypointMSELoss', use_target_weight=True)] *
             num_stages)
 

@@ -63,7 +63,7 @@ class TestDSNTHead(TestCase):
             deconv_kernel_sizes=(4, 4),
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
-            has_final_layer=False,
+            final_layer=None,
         )
         self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 4, 1))
@@ -76,7 +76,7 @@ class TestDSNTHead(TestCase):
             num_joints=17,
             deconv_out_channels=tuple(),
             deconv_kernel_sizes=tuple(),
-            has_final_layer=False,
+            final_layer=None,
         )
         self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6))
         self.assertEqual(head.linspace_y.shape, (1, 1, 8, 1))
@@ -89,7 +89,7 @@ class TestDSNTHead(TestCase):
             num_joints=17,
             deconv_out_channels=None,
             deconv_kernel_sizes=None,
-            has_final_layer=False,
+            final_layer=None,
         )
         self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6))
         self.assertEqual(head.linspace_y.shape, (1, 1, 8, 1))
