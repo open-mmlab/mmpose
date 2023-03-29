@@ -65,8 +65,10 @@ class GetBBoxCenterScale(BaseTransform):
             dict: The result dict.
         """
         if 'bbox_center' in results and 'bbox_scale' in results:
-            warnings.warn('Use the existing "bbox_center" and "bbox_scale". '
-                          'The padding will still be applied.')
+            rank, _ = get_dist_info()
+            if rank == 0:
+                warnings.warn('Use the existing "bbox_center" and "bbox_scale"'
+                              '. The padding will still be applied.')
             results['bbox_scale'] *= self.padding
 
         else:
@@ -909,10 +911,13 @@ class GenerateTarget(BaseTransform):
         super().__init__()
 
         if target_type is not None:
-            warnings.warn(
-                'The argument `target_type` is deprecated in GenerateTarget. '
-                'The target type and encoded keys will be determined by '
-                'encoder(s).', DeprecationWarning)
+            rank, _ = get_dist_info()
+            if rank == 0:
+                warnings.warn(
+                    'The argument `target_type` is deprecated in'
+                    ' GenerateTarget. The target type and encoded '
+                    'keys will be determined by encoder(s).',
+                    DeprecationWarning)
 
         self.encoder_cfg = deepcopy(encoder)
         self.multilevel = multilevel
