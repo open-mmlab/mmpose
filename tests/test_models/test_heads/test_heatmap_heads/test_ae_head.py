@@ -89,7 +89,7 @@ class TestAssociativeEmbeddingHead(TestCase):
             tag_dim=1,
             tag_per_keypoint=True,
             deconv_out_channels=None,
-            has_final_layer=False,
+            final_layer=None,
             decoder=codec_cfg)
 
         preds = head.predict(feats, batch_data_samples)
