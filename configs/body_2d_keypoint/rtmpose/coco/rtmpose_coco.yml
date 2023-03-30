@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: "RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose"
     URL: https://arxiv.org/abs/2303.07399
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/projects/rtmpose/README.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/projects/rtmpose/README.md
 Models:
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-t_8xb256-420e_coco-256x192.py
   In Collection: RTMPose

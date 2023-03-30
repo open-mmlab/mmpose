@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: "Deeppose: Human pose estimation via deep neural networks"
     URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/en/papers/algorithms/deeppose.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/deeppose.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192.py
   In Collection: DeepPose

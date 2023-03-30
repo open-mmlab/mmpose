@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Numerical Coordinate Regression with Convolutional Neural Networks
     URL: https://arxiv.org/abs/1801.07372v2
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/algorithms/dsnt.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/dsnt.md
 Models:
 - Config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256.py
   In Collection: DSNT

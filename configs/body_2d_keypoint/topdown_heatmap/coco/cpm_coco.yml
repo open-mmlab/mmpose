@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Convolutional pose machines
     URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/cpm.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/cpm.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_cpm_8xb64-210e_coco-256x192.py
   In Collection: CPM

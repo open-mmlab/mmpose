@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: 'HRFormer: High-Resolution Vision Transformer for Dense Predict'
     URL: https://proceedings.neurips.cc/paper/2021/hash/3bbfdde8842a5c44a0323518eec97cbe-Abstract.html
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/hrformer.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/hrformer.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrformer-small_8xb32-210e_coco-256x192.py
   In Collection: HRFormer

@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: 'Albumentations: fast and flexible image augmentations'
     URL: https://www.mdpi.com/649002
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/albumentations.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/albumentations.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_coarsedropout-8xb64-210e_coco-256x192.py
   In Collection: Albumentations

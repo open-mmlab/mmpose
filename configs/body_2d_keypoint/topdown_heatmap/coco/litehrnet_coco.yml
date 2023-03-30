@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: 'Lite-HRNet: A Lightweight High-Resolution Network'
     URL: https://arxiv.org/abs/2104.06403
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/backbones/litehrnet.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/litehrnet.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_litehrnet-18_8xb64-210e_coco-256x192.py
   In Collection: LiteHRNet

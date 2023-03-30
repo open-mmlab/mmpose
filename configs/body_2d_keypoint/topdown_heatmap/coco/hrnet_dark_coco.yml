@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/dark.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/dark.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_dark-8xb64-210e_coco-256x192.py
   In Collection: DarkPose

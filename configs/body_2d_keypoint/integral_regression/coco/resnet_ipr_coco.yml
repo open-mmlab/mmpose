@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Integral human pose regression
     URL: https://arxiv.org/abs/1711.08229
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/algorithms/ipr.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/ipr.md
 Models:
 - Config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256.py
   In Collection: IPR
