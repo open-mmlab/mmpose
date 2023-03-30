@@ -1,0 +1,16 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_shufflenetv2_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ShufflenetV2
+    Training Data: MPII
+  Name: td-hm_shufflenetv2_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.828
+      Mean@0.1: 0.205
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256-4fb9df2d_20200925.pth

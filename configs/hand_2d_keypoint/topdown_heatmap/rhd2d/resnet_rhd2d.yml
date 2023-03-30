@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/rhd2d/td-hm_res50_8xb64-210e_rhd2d-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: RHD
+  Name: td-hm_res50_8xb64-210e_rhd2d-256x256
+  Results:
+  - Dataset: RHD
+    Metrics:
+      AUC: 0.898
+      EPE: 2.32
+      PCK@0.2: 0.991
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256-5dc7e4cc_20210330.pth

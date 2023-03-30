@@ -1,0 +1,154 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w32_8xb64-20e_posetrack18-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w32_8xb64-20e_posetrack18-256x192
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 78.7
+      Elb: 84.5
+      Head: 86.2
+      Hip: 82.3
+      Knee: 82.5
+      Shou: 89
+      Total: 83.4
+      Wri: 79.2
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w32_8xb64-20e_posetrack18-384x288.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w32_8xb64-20e_posetrack18-384x288
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 79.6
+      Elb: 84.5
+      Head: 87.1
+      Hip: 80.6
+      Knee: 82.8
+      Shou: 89
+      Total: 83.7
+      Wri: 80.2
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_384x288-806f00a3_20211130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w48_8xb64-20e_posetrack18-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w48_8xb64-20e_posetrack18-256x192
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 79.6
+      Elb: 85.1
+      Head: 88.3
+      Hip: 80.6
+      Knee: 82.8
+      Shou: 90.2
+      Total: 84.6
+      Wri: 81
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_posetrack18_256x192-b5d9b3f1_20211130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w48_8xb64-20e_posetrack18-384x288.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w48_8xb64-20e_posetrack18-384x288
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 80.6
+      Elb: 86.2
+      Head: 87.8
+      Hip: 81
+      Knee: 83.4
+      Shou: 90
+      Total: 84.6
+      Wri: 81.3
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_posetrack18_384x288-5fd6d3ff_20211130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w32_8xb64-20e_posetrack18-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w32_8xb64-20e_posetrack18-256x192
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 70.2
+      Elb: 79.5
+      Head: 78.0
+      Hip: 76.9
+      Knee: 76.6
+      Shou: 82.9
+      Total: 76.9
+      Wri: 73.8
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w32_8xb64-20e_posetrack18-384x288.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w32_8xb64-20e_posetrack18-384x288
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 70.5
+      Elb: 80.4
+      Head: 79.9
+      Hip: 74.8
+      Knee: 76.1
+      Shou: 83.6
+      Total: 77.3
+      Wri: 74.5
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_384x288-806f00a3_20211130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w48_8xb64-20e_posetrack18-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w48_8xb64-20e_posetrack18-256x192
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 70.4
+      Elb: 80.6
+      Head: 80.1
+      Hip: 74.3
+      Knee: 76.8
+      Shou: 83.4
+      Total: 77.4
+      Wri: 74.8
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_posetrack18_256x192-b5d9b3f1_20211130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_hrnet-w48_8xb64-20e_posetrack18-384x288.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: PoseTrack18
+  Name: td-hm_hrnet-w48_8xb64-20e_posetrack18-384x288
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 71.7
+      Elb: 80.9
+      Head: 80.2
+      Hip: 74.7
+      Knee: 76.7
+      Shou: 83.8
+      Total: 77.8
+      Wri: 75.2
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_posetrack18_384x288-5fd6d3ff_20211130.pth

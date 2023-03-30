@@ -1,0 +1,21 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/wflw/td-hm_hrnetv2-w18_awing-8xb64-60e_wflw-256x256.py
+  In Collection: HRNetv2
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - AdaptiveWingloss
+    Training Data: WFLW
+  Name: td-hm_hrnetv2-w18_awing-8xb64-60e_wflw-256x256
+  Results:
+  - Dataset: WFLW
+    Metrics:
+      NME blur: 4.59
+      NME expression: 4.28
+      NME illumination: 3.97
+      NME makeup: 3.87
+      NME occlusion: 4.78
+      NME pose: 6.94
+      NME test: 4.02
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_wflw_256x256_awing-5af5055c_20211212.pth

@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_vgg16-bn_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - VGG
+    Training Data: COCO
+  Name: td-hm_vgg16-bn_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.699
+      AP@0.5: 0.89
+      AP@0.75: 0.769
+      AR: 0.754
+      AR@0.5: 0.927
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/vgg/vgg16_bn_coco_256x192-7e7c58d6_20210517.pth

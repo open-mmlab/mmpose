@@ -1,0 +1,45 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w32_dark-8xb64-210e_coco-wholebody-256x192.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    - DarkPose
+    Training Data: COCO-WholeBody
+  Name: td-hm_hrnet-w32_dark-8xb64-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.693
+      Body AR: 0.764
+      Face AP: 0.737
+      Face AR: 0.809
+      Foot AP: 0.564
+      Foot AR: 0.674
+      Hand AP: 0.503
+      Hand AR: 0.602
+      Whole AP: 0.582
+      Whole AR: 0.671
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192_dark-469327ef_20200922.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.742
+      Body AR: 0.807
+      Face AP: 0.841
+      Face AR: 0.892
+      Foot AP: 0.707
+      Foot AR: 0.806
+      Hand AP: 0.602
+      Hand AR: 0.694
+      Whole AP: 0.661
+      Whole AR: 0.743
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth

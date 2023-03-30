@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_regression/onehand10k/td-reg_res50_8xb64-210e_onehand10k-256x256.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+    Training Data: OneHand10K
+  Name: td-reg_res50_8xb64-210e_onehand10k-256x256
+  Results:
+  - Dataset: OneHand10K
+    Metrics:
+      AUC: 0.485
+      EPE: 34.21
+      PCK@0.2: 0.99
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/deeppose/deeppose_res50_onehand10k_256x256-cbddf43a_20210330.pth

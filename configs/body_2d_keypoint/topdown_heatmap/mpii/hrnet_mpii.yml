@@ -1,0 +1,28 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_hrnet-w32_8xb64-210e_mpii-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: MPII
+  Name: td-hm_hrnet-w32_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.9
+      Mean@0.1: 0.334
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256-6c4f923f_20200812.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_hrnet-w48_8xb64-210e_mpii-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_hrnet-w48_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.901
+      Mean@0.1: 0.337
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256-92cab7bd_20200812.pth

@@ -1,0 +1,42 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_resnetv1d50_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNetV1D
+    Training Data: MPII
+  Name: td-hm_resnetv1d50_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.881
+      Mean@0.1: 0.29
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_mpii_256x256-2337a92e_20200812.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_resnetv1d101_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_resnetv1d101_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.883
+      Mean@0.1: 0.295
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_mpii_256x256-2851d710_20200812.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_resnetv1d152_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_resnetv1d152_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.888
+      Mean@0.1: 0.3
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_mpii_256x256-8b10a87c_20200812.pth

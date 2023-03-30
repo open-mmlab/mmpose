@@ -1,0 +1,16 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_dark-8xb64-60e_aflw-256x256.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - DarkPose
+    Training Data: AFLW
+  Name: td-hm_hrnetv2-w18_dark-8xb64-60e_aflw-256x256
+  Results:
+  - Dataset: AFLW
+    Metrics:
+      NME frontal: 1.19
+      NME full: 1.34
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth

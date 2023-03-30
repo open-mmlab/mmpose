@@ -1,0 +1,35 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_mobilenetv2_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - MobilenetV2
+    Training Data: COCO
+  Name: td-hm_mobilenetv2_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.648
+      AP@0.5: 0.874
+      AP@0.75: 0.725
+      AR: 0.709
+      AR@0.5: 0.918
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_mobilenetv2_8xb64-210e_coco-256x192-55a04c35_20221016.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_mobilenetv2_8xb64-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_mobilenetv2_8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.677
+      AP@0.5: 0.882
+      AP@0.75: 0.746
+      AR: 0.734
+      AR@0.5: 0.920
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_mobilenetv2_8xb64-210e_coco-384x288-d3ab1457_20221013.pth

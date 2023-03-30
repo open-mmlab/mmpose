@@ -1,0 +1,29 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_scnet50_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - SCNet
+    Training Data: MPII
+  Name: td-hm_scnet50_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.888
+      Mean@0.1: 0.29
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256-a54b6af5_20200812.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_scnet101_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_scnet101_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.887
+      Mean@0.1: 0.293
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_mpii_256x256-b4c2d184_20200812.pth
