@@ -92,12 +92,17 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
       warmup_ratio=0.001,  # 预热开始时使用的学习率，等于预热比 (warmup_ratio) * 初始学习率
       step=[170, 200])  # 降低学习率的步数　
   total_epochs = 210  # 训练模型的总轮数
-  log_config = dict(  # 注册日志记录器钩子的配置
-      interval=50,  # 打印日志的间隔
-      hooks=[
-          dict(type='TextLoggerHook'),  # 用来记录训练过程的日志记录器
-          # dict(type='TensorboardLoggerHook')  # 也支持 Tensorboard 日志记录器
-      ])
+  log_config = dict(  # 注册日志钩子的设置
+      interval=20,  # 打印日志间隔
+      hooks=[ # 训练期间执行的钩子
+        dict(type='TextLoggerHook', by_epoch=False),
+        dict(type='TensorboardLoggerHook', by_epoch=False),
+        dict(type='WandbLoggerHook', by_epoch=False, # 还支持 Wandb 记录器，它需要安装 `wandb`。
+             init_kwargs={'entity': "entity", # 用于登录wandb的实体
+                          'project': "project", # WandB中的项目名称
+                          'config': cfg_dict}), # 检查 https://docs.wandb.ai/ref/python/init 以获取更多初始化参数
+    ])
+
 
   channel_cfg = dict(
       num_output_channels=17,  # 关键点头部的输出通道数

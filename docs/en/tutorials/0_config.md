@@ -94,136 +94,144 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
       step=[170, 200])  # Steps to decay the learning rate
   total_epochs = 210  # Total epochs to train the model
   log_config = dict(  # Config to register logger hook
-      interval=50,  # Interval to print the log
-      hooks=[
-          dict(type='TextLoggerHook'),  # The logger used to record the training process
-          # dict(type='TensorboardLoggerHook')  # The Tensorboard logger is also supported
-      ])
-
-  channel_cfg = dict(
-      num_output_channels=17,  # The output channels of keypoint head
-      dataset_joints=17,  # Number of joints in the dataset
-      dataset_channel=[ # Dataset supported channels
-          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-      ],
-      inference_channel=[ # Channels to output
-          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-      ])
-
-  # model settings
-  model = dict(  # Config of the model
-      type='TopDown',  # Type of the model
-      pretrained='torchvision://resnet50',  # The url/site of the pretrained model
-      backbone=dict(  # Dict for backbone
-          type='ResNet',  # Name of the backbone
-          depth=50),  # Depth of ResNet model
-      keypoint_head=dict(  # Dict for keypoint head
-          type='TopdownHeatmapSimpleHead',  # Name of keypoint head
-          in_channels=2048,  # The input channels of keypoint head
-          out_channels=channel_cfg['num_output_channels'],  # The output channels of keypoint head
-          loss_keypoint=dict(  # Dict for keypoint loss
-            type='JointsMSELoss',  # Name of keypoint loss
-            use_target_weight=True)),  # Whether to consider target_weight during loss calculation
-      train_cfg=dict(),  # Config of training hyper-parameters
-      test_cfg=dict(  # Config of testing hyper-parameters
-          flip_test=True,  # Whether to use flip-test during inference
-          post_process='default',  # Use 'default' post-processing approach.
-          shift_heatmap=True,  # Shift and align the flipped heatmap to achieve higher performance
-          modulate_kernel=11))  # Gaussian kernel size for modulation. Only used for "post_process='unbiased'"
-
-  data_cfg = dict(
-      image_size=[192, 256],  # Size of model input resolution
-      heatmap_size=[48, 64],  # Size of the output heatmap
-      num_output_channels=channel_cfg['num_output_channels'],  # Number of output channels
-      num_joints=channel_cfg['dataset_joints'],  # Number of joints
-      dataset_channel=channel_cfg['dataset_channel'], # Dataset supported channels
-      inference_channel=channel_cfg['inference_channel'], # Channels to output
-      soft_nms=False,  # Whether to perform soft-nms during inference
-      nms_thr=1.0,  # Threshold for non maximum suppression.
-      oks_thr=0.9,  # Threshold of oks (object keypoint similarity) score during nms
-      vis_thr=0.2,  # Threshold of keypoint visibility
-      use_gt_bbox=False,  # Whether to use ground-truth bounding box during testing
-      det_bbox_thr=0.0,  # Threshold of detected bounding box score. Used when 'use_gt_bbox=True'
-      bbox_file='data/coco/person_detection_results/'  # Path to the bounding box detection file
-      'COCO_val2017_detections_AP_H_56_person.json',
-  )
-
-  train_pipeline = [
-      dict(type='LoadImageFromFile'),  # Loading image from file
-      dict(type='TopDownRandomFlip',  # Perform random flip augmentation
-           flip_prob=0.5),  # Probability of implementing flip
-      dict(
-          type='TopDownHalfBodyTransform',  # Config of TopDownHalfBodyTransform data-augmentation
-          num_joints_half_body=8,  # Threshold of performing half-body transform.
-          prob_half_body=0.3),  # Probability of implementing half-body transform
-      dict(
-          type='TopDownGetRandomScaleRotation',   # Config of TopDownGetRandomScaleRotation
-          rot_factor=40,  # Rotating to ``[-2*rot_factor, 2*rot_factor]``.
-          scale_factor=0.5), # Scaling to ``[1-scale_factor, 1+scale_factor]``.
-      dict(type='TopDownAffine',  # Affine transform the image to make input.
-          use_udp=False),  # Do not use unbiased data processing.
-      dict(type='ToTensor'),  # Convert other types to tensor type pipeline
-      dict(
-          type='NormalizeTensor',  # Normalize input tensors
-          mean=[0.485, 0.456, 0.406],  # Mean values of different channels to normalize
-          std=[0.229, 0.224, 0.225]),  # Std values of different channels to normalize
-      dict(type='TopDownGenerateTarget',  # Generate heatmap target. Different encoding types supported.
-           sigma=2),  # Sigma of heatmap gaussian
-      dict(
-          type='Collect',  # Collect pipeline that decides which keys in the data should be passed to the detector
-          keys=['img', 'target', 'target_weight'],  # Keys of input
-          meta_keys=[  # Meta keys of input
-              'image_file', 'joints_3d', 'joints_3d_visible', 'center', 'scale',
-              'rotation', 'bbox_score', 'flip_pairs'
-          ]),
-  ]
-
-  val_pipeline = [
-      dict(type='LoadImageFromFile'),  # Loading image from file
-      dict(type='TopDownAffine'),  # Affine transform the image to make input.
-      dict(type='ToTensor'),  # Config of ToTensor
-      dict(
-          type='NormalizeTensor',
-          mean=[0.485, 0.456, 0.406],  # Mean values of different channels to normalize
-          std=[0.229, 0.224, 0.225]),  # Std values of different channels to normalize
-      dict(
-          type='Collect',  # Collect pipeline that decides which keys in the data should be passed to the detector
-          keys=['img'],  # Keys of input
-          meta_keys=[  # Meta keys of input
-              'image_file', 'center', 'scale', 'rotation', 'bbox_score',
-              'flip_pairs'
-          ]),
-  ]
-
-  test_pipeline = val_pipeline
-
-  data_root = 'data/coco' # Root of the dataset
-  data = dict( # Config of data
-      samples_per_gpu=64,  # Batch size of each single GPU during training
-      workers_per_gpu=2,  # Workers to pre-fetch data for each single GPU
-      val_dataloader=dict(samples_per_gpu=32),  # Batch size of each single GPU during validation
-      test_dataloader=dict(samples_per_gpu=32),  # Batch size of each single GPU during testing
-      train=dict(  # Training dataset config
-          type='TopDownCocoDataset',  # Name of dataset
-          ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',  # Path to annotation file
-          img_prefix=f'{data_root}/train2017/',
-          data_cfg=data_cfg,
-          pipeline=train_pipeline),
-      val=dict(  # Validation dataset config
-          type='TopDownCocoDataset',  # Name of dataset
-          ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',  # Path to annotation file
-          img_prefix=f'{data_root}/val2017/',
-          data_cfg=data_cfg,
-          pipeline=val_pipeline),
-      test=dict(  # Testing dataset config
-          type='TopDownCocoDataset',  # Name of dataset
-          ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',  # Path to annotation file
-          img_prefix=f'{data_root}/val2017/',
-          data_cfg=data_cfg,
-          pipeline=val_pipeline),
-  )
-
+      intervlog_config = dict(  # Config to register logger hook
+    interval=50,  # Interval to print the log
+    hooks=[
+      dict(type='TextLoggerHook', by_epoch=False),  # The logger used to record the training process
+      dict(type='TensorboardLoggerHook', by_epoch=False),  # The Tensorboard logger to record log offline
+      dict(type='WandbLoggerHook', by_epoch=False,  # The Wandb logger is also supported, It requires `wandb` to be installed.
+           init_kwargs={'entity': "OpenMMLab",  # The entity used to log on Wandb
+                        'project': "MMPose",  # Project name in WandB
+                        'config': cfg_dict}),  # Check https://docs.wandb.ai/ref/python/init for more init arguments.
+  ]))  # ClearMLLoggerHook, DvcliveLoggerHook, MlflowLoggerHook, NeptuneLoggerHook, PaviLoggerHook, SegmindLoggerHook are also supported based on MMCV implementation.
   ```
+
+
+channel_cfg = dict(
+num_output_channels=17,  # The output channels of keypoint head
+dataset_joints=17,  # Number of joints in the dataset
+dataset_channel=\[ # Dataset supported channels
+\[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\],
+\],
+inference_channel=\[ # Channels to output
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+\])
+
+# model settings
+
+model = dict(  # Config of the model
+type='TopDown',  # Type of the model
+pretrained='torchvision://resnet50',  # The url/site of the pretrained model
+backbone=dict(  # Dict for backbone
+type='ResNet',  # Name of the backbone
+depth=50),  # Depth of ResNet model
+keypoint_head=dict(  # Dict for keypoint head
+type='TopdownHeatmapSimpleHead',  # Name of keypoint head
+in_channels=2048,  # The input channels of keypoint head
+out_channels=channel_cfg\['num_output_channels'\],  # The output channels of keypoint head
+loss_keypoint=dict(  # Dict for keypoint loss
+type='JointsMSELoss',  # Name of keypoint loss
+use_target_weight=True)),  # Whether to consider target_weight during loss calculation
+train_cfg=dict(),  # Config of training hyper-parameters
+test_cfg=dict(  # Config of testing hyper-parameters
+flip_test=True,  # Whether to use flip-test during inference
+post_process='default',  # Use 'default' post-processing approach.
+shift_heatmap=True,  # Shift and align the flipped heatmap to achieve higher performance
+modulate_kernel=11))  # Gaussian kernel size for modulation. Only used for "post_process='unbiased'"
+
+data_cfg = dict(
+image_size=\[192, 256\],  # Size of model input resolution
+heatmap_size=\[48, 64\],  # Size of the output heatmap
+num_output_channels=channel_cfg\['num_output_channels'\],  # Number of output channels
+num_joints=channel_cfg\['dataset_joints'\],  # Number of joints
+dataset_channel=channel_cfg\['dataset_channel'\], # Dataset supported channels
+inference_channel=channel_cfg\['inference_channel'\], # Channels to output
+soft_nms=False,  # Whether to perform soft-nms during inference
+nms_thr=1.0,  # Threshold for non maximum suppression.
+oks_thr=0.9,  # Threshold of oks (object keypoint similarity) score during nms
+vis_thr=0.2,  # Threshold of keypoint visibility
+use_gt_bbox=False,  # Whether to use ground-truth bounding box during testing
+det_bbox_thr=0.0,  # Threshold of detected bounding box score. Used when 'use_gt_bbox=True'
+bbox_file='data/coco/person_detection_results/'  # Path to the bounding box detection file
+'COCO_val2017_detections_AP_H_56_person.json',
+)
+
+train_pipeline = \[
+dict(type='LoadImageFromFile'),  # Loading image from file
+dict(type='TopDownRandomFlip',  # Perform random flip augmentation
+flip_prob=0.5),  # Probability of implementing flip
+dict(
+type='TopDownHalfBodyTransform',  # Config of TopDownHalfBodyTransform data-augmentation
+num_joints_half_body=8,  # Threshold of performing half-body transform.
+prob_half_body=0.3),  # Probability of implementing half-body transform
+dict(
+type='TopDownGetRandomScaleRotation',   # Config of TopDownGetRandomScaleRotation
+rot_factor=40,  # Rotating to `[-2*rot_factor, 2*rot_factor]`.
+scale_factor=0.5), # Scaling to `[1-scale_factor, 1+scale_factor]`.
+dict(type='TopDownAffine',  # Affine transform the image to make input.
+use_udp=False),  # Do not use unbiased data processing.
+dict(type='ToTensor'),  # Convert other types to tensor type pipeline
+dict(
+type='NormalizeTensor',  # Normalize input tensors
+mean=\[0.485, 0.456, 0.406\],  # Mean values of different channels to normalize
+std=\[0.229, 0.224, 0.225\]),  # Std values of different channels to normalize
+dict(type='TopDownGenerateTarget',  # Generate heatmap target. Different encoding types supported.
+sigma=2),  # Sigma of heatmap gaussian
+dict(
+type='Collect',  # Collect pipeline that decides which keys in the data should be passed to the detector
+keys=\['img', 'target', 'target_weight'\],  # Keys of input
+meta_keys=\[  # Meta keys of input
+'image_file', 'joints_3d', 'joints_3d_visible', 'center', 'scale',
+'rotation', 'bbox_score', 'flip_pairs'
+\]),
+\]
+
+val_pipeline = \[
+dict(type='LoadImageFromFile'),  # Loading image from file
+dict(type='TopDownAffine'),  # Affine transform the image to make input.
+dict(type='ToTensor'),  # Config of ToTensor
+dict(
+type='NormalizeTensor',
+mean=\[0.485, 0.456, 0.406\],  # Mean values of different channels to normalize
+std=\[0.229, 0.224, 0.225\]),  # Std values of different channels to normalize
+dict(
+type='Collect',  # Collect pipeline that decides which keys in the data should be passed to the detector
+keys=\['img'\],  # Keys of input
+meta_keys=\[  # Meta keys of input
+'image_file', 'center', 'scale', 'rotation', 'bbox_score',
+'flip_pairs'
+\]),
+\]
+
+test_pipeline = val_pipeline
+
+data_root = 'data/coco' # Root of the dataset
+data = dict( # Config of data
+samples_per_gpu=64,  # Batch size of each single GPU during training
+workers_per_gpu=2,  # Workers to pre-fetch data for each single GPU
+val_dataloader=dict(samples_per_gpu=32),  # Batch size of each single GPU during validation
+test_dataloader=dict(samples_per_gpu=32),  # Batch size of each single GPU during testing
+train=dict(  # Training dataset config
+type='TopDownCocoDataset',  # Name of dataset
+ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',  # Path to annotation file
+img_prefix=f'{data_root}/train2017/',
+data_cfg=data_cfg,
+pipeline=train_pipeline),
+val=dict(  # Validation dataset config
+type='TopDownCocoDataset',  # Name of dataset
+ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',  # Path to annotation file
+img_prefix=f'{data_root}/val2017/',
+data_cfg=data_cfg,
+pipeline=val_pipeline),
+test=dict(  # Testing dataset config
+type='TopDownCocoDataset',  # Name of dataset
+ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',  # Path to annotation file
+img_prefix=f'{data_root}/val2017/',
+data_cfg=data_cfg,
+pipeline=val_pipeline),
+)
+
+```
 
 ## FAQ
 
@@ -233,3 +241,4 @@ Some intermediate variables are used in the config files, like `train_pipeline`/
 
 For Example, we would like to first define `train_pipeline`/`val_pipeline`/`test_pipeline` and pass them into `data`.
 Thus, `train_pipeline`/`val_pipeline`/`test_pipeline` are intermediate variable.
+```
