@@ -16,11 +16,11 @@ If you're not sure where to start, check out our [example project](./example_pro
 
 We also provide some documentation listed below to help you get started:
 
-- [New Model Guide](https://mmpose.readthedocs.io/en/1.x/migration.html#step3-model)
+- [New Model Guide](https://mmpose.readthedocs.io/en/1.x/guide_to_framework.html#step3-model)
 
   A guide to help you add new models to MMPose.
 
-- [Contribution Guide](https://mmpose.readthedocs.io/en/1.x/notes/contribution_guide.html)
+- [Contribution Guide](https://mmpose.readthedocs.io/en/1.x/contribution_guide.html)
 
   A guide for new contributors on how to add their projects to MMPose.
 

@@ -82,6 +82,12 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 1
+   :caption: 相关项目
+
+   projects/community_projects.md
+
+.. toctree::
+   :maxdepth: 1
    :caption: 其他说明
 
    notes/ecosystem.md
