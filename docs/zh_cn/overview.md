@@ -65,8 +65,8 @@ MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs�
 
 5. 对于希望加入开源社区，向 MMPose 贡献代码的研究者和开发者：
 
-   - [参与贡献代码](./notes/contribution_guide.md)
+   - [参与贡献代码](./contribution_guide.md)
 
 6. 对于使用过程中的常见问题：
 
-   - [FAQ](./notes/faq.md)
+   - [FAQ](./faq.md)
