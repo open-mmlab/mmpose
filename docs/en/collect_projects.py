@@ -57,10 +57,8 @@ def _get_project_intro_doc():
                 continue
             if './faq.md' in line:
                 line = line.replace('./faq.md', '#faq')
-            if 'example_project' in line:
-                line = line.replace(
-                    './', 'https://github.com/open-mmlab/mmpose/'
-                    'tree/dev-1.x/projects/')
+            if './' in line:
+                line = line.replace('./', '/projects/')
             project_intro_doc.append(line)
             if line.startswith('## Project List'):
                 break
@@ -68,13 +66,13 @@ def _get_project_intro_doc():
 
 
 def _get_faq_doc():
-    faq_doc = []
+    faq_doc = ['\n']
     with open(
             osp.join('..', '..', 'projects', 'faq.md'), 'r',
             encoding='utf-8') as f:
         for line in f.readlines():
             if '#' in line:
-                line = re.sub(r'^(\#+)', r'\g<1>#', line)
+                line = re.sub(r'^\#', '##', line)
             faq_doc.append(line)
     return faq_doc
 
@@ -92,8 +90,7 @@ def main():
         name, banner = _parse_project_doc_path(path)
         _path = path.split(osp.sep)
         _rel_path = _path[_path.index('projects'):-1]
-        url = 'https://github.com/open-mmlab/mmpose/blob/dev-1.x/' + '/'.join(
-            _rel_path)
+        url = '/' + '/'.join(_rel_path)
         _name = name.split(':', 1)
         name, description = _name[0], '' if len(
             _name) < 2 else f': {_name[-1]}'
@@ -108,7 +105,7 @@ def main():
     with open(
             osp.join('projects', 'community_projects.md'), 'w',
             encoding='utf-8') as f:
-        f.write('# Projects of MMPose from Community Contributors\n')
+        f.write('# Projects from Community Contributors\n')
         f.write(''.join(project_intro_doc))
         f.write('\n'.join(project_lines))
         f.write(''.join(faq_doc))
