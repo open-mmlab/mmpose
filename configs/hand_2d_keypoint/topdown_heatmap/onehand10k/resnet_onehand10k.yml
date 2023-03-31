@@ -1,9 +1,3 @@
-Collections:
-- Name: SimpleBaseline2D
-  Paper:
-    Title: Simple baselines for human pose estimation and tracking
-    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_res50_8xb32-210e_onehand10k-256x256.py
   In Collection: SimpleBaseline2D

@@ -1,0 +1,34 @@
+Models:
+- Config: configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: Animal-Pose
+  Name: td-hm_hrnet-w32_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.740
+      AP@0.5: 0.959
+      AP@0.75: 0.833
+      AR: 0.780
+      AR@0.5: 0.965
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w48_8xb64-210e_animalpose-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: Animal-Pose
+  Name: td-hm_hrnet-w48_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.738
+      AP@0.5: 0.958
+      AP@0.75: 0.831
+      AR: 0.778
+      AR@0.5: 0.962
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_animalpose_256x256-34644726_20210426.pth

@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Rethinking on Multi-Stage Networks for Human Pose Estimation
     URL: https://arxiv.org/abs/1901.00148
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/backbones/mspn.md
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/mspn.md
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_mspn50_8xb32-210e_coco-256x192.py
   In Collection: MSPN

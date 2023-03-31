@@ -1,0 +1,65 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: COCO-WholeBody
+  Name: rtmpose-m_8xb64-270e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.697
+      Body AR: 0.743
+      Face AP: 0.822
+      Face AR: 0.858
+      Foot AP: 0.66
+      Foot AR: 0.749
+      Hand AP: 0.483
+      Hand AR: 0.564
+      Whole AP: 0.604
+      Whole AR: 0.667
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth
+- Config: configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: rtmpose-l_8xb64-270e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.721
+      Body AR: 0.764
+      Face AP: 0.844
+      Face AR: 0.876
+      Foot AP: 0.693
+      Foot AR: 0.78
+      Hand AP: 0.523
+      Hand AR: 0.6
+      Whole AP: 0.632
+      Whole AR: 0.694
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth
+- Config: configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: rtmpose-l_8xb32-270e_coco-wholebody-384x288.py
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.736
+      Body AR: 0.776
+      Face AP: 0.895
+      Face AR: 0.918
+      Foot AP: 0.738
+      Foot AR: 0.81
+      Hand AP: 0.591
+      Hand AR: 0.659
+      Whole AP: 0.67
+      Whole AR: 0.723
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth

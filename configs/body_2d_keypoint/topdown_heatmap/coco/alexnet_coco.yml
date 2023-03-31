@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_alexnet_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - AlexNet
+    Training Data: COCO
+  Name: td-hm_alexnet_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.448
+      AP@0.5: 0.767
+      AP@0.75: 0.461
+      AR: 0.521
+      AR@0.5: 0.829
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/alexnet/alexnet_coco_256x192-a7b1fd15_20200727.pth

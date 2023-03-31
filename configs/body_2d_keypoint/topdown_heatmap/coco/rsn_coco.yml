@@ -1,0 +1,72 @@
+Collections:
+- Name: RSN
+  Paper:
+    Title: Learning Delicate Local Representations for Multi-Person Pose Estimation
+    URL: https://link.springer.com/chapter/10.1007/978-3-030-58580-8_27
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/rsn.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_rsn18_8xb32-210e_coco-256x192.py
+  In Collection: RSN
+  Metadata:
+    Architecture: &id001
+    - RSN
+    Training Data: COCO
+  Name: td-hm_rsn18_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.704
+      AP@0.5: 0.887
+      AP@0.75: 0.781
+      AR: 0.773
+      AR@0.5: 0.927
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_rsn18_8xb32-210e_coco-256x192-9049ed09_20221013.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_rsn50_8xb32-210e_coco-256x192.py
+  In Collection: RSN
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_rsn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.724
+      AP@0.5: 0.894
+      AP@0.75: 0.799
+      AR: 0.79
+      AR@0.5: 0.935
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_rsn50_8xb32-210e_coco-256x192-c35901d5_20221013.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_2xrsn50_8xb32-210e_coco-256x192.py
+  In Collection: RSN
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_2xrsn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.748
+      AP@0.5: 0.9
+      AP@0.75: 0.821
+      AR: 0.81
+      AR@0.5: 0.939
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_2xrsn50_8xb32-210e_coco-256x192-9ede341e_20221013.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_3xrsn50_8xb32-210e_coco-256x192.py
+  In Collection: RSN
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_3xrsn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.75
+      AP@0.5: 0.9
+      AP@0.75: 0.824
+      AR: 0.814
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_3xrsn50_8xb32-210e_coco-256x192-c3e3c4fe_20221013.pth

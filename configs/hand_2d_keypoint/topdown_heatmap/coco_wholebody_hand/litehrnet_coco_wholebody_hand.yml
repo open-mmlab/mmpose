@@ -1,0 +1,16 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/coco_wholebody_hand/td-hm_litehrnet-w18_8xb32-210e_coco-wholebody-hand-256x256.py
+  In Collection: LiteHRNet
+  Metadata:
+    Architecture:
+    - LiteHRNet
+    Training Data: COCO-WholeBody-Hand
+  Name: td-hm_litehrnet-w18_8xb32-210e_coco-wholebody-hand-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Hand
+    Metrics:
+      AUC: 0.83
+      EPE: 4.77
+      PCK@0.2: 0.795
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/litehrnet/litehrnet_w18_coco_wholebody_hand_256x256-d6945e6a_20210908.pth

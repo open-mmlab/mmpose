@@ -1,0 +1,35 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_shufflenetv1_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ShufflenetV1
+    Training Data: COCO
+  Name: td-hm_shufflenetv1_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.587
+      AP@0.5: 0.849
+      AP@0.75: 0.654
+      AR: 0.654
+      AR@0.5: 0.896
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_shufflenetv1_8xb64-210e_coco-256x192-7a7ea4f4_20221013.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_shufflenetv1_8xb64-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_shufflenetv1_8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.626
+      AP@0.5: 0.862
+      AP@0.75: 0.696
+      AR: 0.687
+      AR@0.5: 0.903
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_shufflenetv1_8xb64-210e_coco-384x288-8342f8ba_20221013.pth

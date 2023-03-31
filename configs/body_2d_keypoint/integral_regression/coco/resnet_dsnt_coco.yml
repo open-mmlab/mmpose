@@ -1,0 +1,25 @@
+Collections:
+- Name: DSNT
+  Paper:
+    Title: Numerical Coordinate Regression with Convolutional Neural Networks
+    URL: https://arxiv.org/abs/1801.07372v2
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/dsnt.md
+Models:
+- Config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256.py
+  In Collection: DSNT
+  Metadata:
+    Architecture: &id001
+    - DSNT
+    - ResNet
+    Training Data: COCO
+  Name: ipr_res50_dsnt-8xb64-210e_coco-256x256
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.674
+      AP@0.5: 0.87
+      AP@0.75: 0.744
+      AR: 0.764
+      AR@0.5: 0.928
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256-441eedc0_20220913.pth

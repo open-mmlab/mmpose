@@ -1,0 +1,15 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/coco_wholebody_face/td-hm_hrnetv2-w18_dark-8xb32-60e_coco-wholebody-face-256x256.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - DarkPose
+    Training Data: COCO-WholeBody-Face
+  Name: td-hm_hrnetv2-w18_dark-8xb32-60e_coco-wholebody-face-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Face
+    Metrics:
+      NME: 0.0513
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark-3d9a334e_20210909.pth

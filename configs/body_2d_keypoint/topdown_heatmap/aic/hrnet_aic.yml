@@ -1,0 +1,18 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/aic/td-hm_hrnet-w32_8xb64-210e_aic-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture:
+    - HRNet
+    Training Data: AI Challenger
+  Name: td-hm_hrnet-w32_8xb64-210e_aic-256x192
+  Results:
+  - Dataset: AI Challenger
+    Metrics:
+      AP: 0.323
+      AP@0.5: 0.761
+      AP@0.75: 0.218
+      AR: 0.366
+      AR@0.5: 0.789
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth

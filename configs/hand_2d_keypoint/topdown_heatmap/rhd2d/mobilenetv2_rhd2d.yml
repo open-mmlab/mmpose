@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/rhd2d/td-hm_mobilenetv2_8xb64-210e_rhd2d-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - MobilenetV2
+    Training Data: RHD
+  Name: td-hm_mobilenetv2_8xb64-210e_rhd2d-256x256
+  Results:
+  - Dataset: RHD
+    Metrics:
+      AUC: 0.883
+      EPE: 2.79
+      PCK@0.2: 0.985
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/mobilenetv2/mobilenetv2_rhd2d_256x256-85fa02db_20210330.pth

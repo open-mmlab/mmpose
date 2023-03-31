@@ -1,0 +1,57 @@
+Collections:
+- Name: DeepPose
+  Paper:
+    Title: "Deeppose: Human pose estimation via deep neural networks"
+    URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/deeppose.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture: &id001
+    - DeepPose
+    - ResNet
+    Training Data: COCO
+  Name: td-reg_res50_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.541
+      AP@0.5: 0.824
+      AP@0.75: 0.601
+      AR: 0.649
+      AR@0.5: 0.893
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192-72ef04f3_20220913.pth
+- Config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res101_8xb64-210e_coco-256x192.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-reg_res101_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.562
+      AP@0.5: 0.831
+      AP@0.75: 0.629
+      AR: 0.67
+      AR@0.5: 0.9
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192-2f247111_20210205.pth
+- Config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res152_8xb64-210e_coco-256x192.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-reg_res152_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.584
+      AP@0.5: 0.842
+      AP@0.75: 0.659
+      AR: 0.688
+      AR@0.5: 0.907
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192-7df89a88_20210205.pth

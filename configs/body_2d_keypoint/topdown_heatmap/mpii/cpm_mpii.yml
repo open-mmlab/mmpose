@@ -1,0 +1,15 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_cpm_8xb64-210e_mpii-368x368.py
+  In Collection: CPM
+  Metadata:
+    Architecture:
+    - CPM
+    Training Data: MPII
+  Name: td-hm_cpm_8xb64-210e_mpii-368x368
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.876
+      Mean@0.1: 0.285
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth

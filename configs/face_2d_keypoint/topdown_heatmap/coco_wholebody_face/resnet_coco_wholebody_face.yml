@@ -1,0 +1,15 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/coco_wholebody_face/td-hm_res50_8xb32-60e_coco-wholebody-face-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: COCO-WholeBody-Face
+  Name: td-hm_res50_8xb32-60e_coco-wholebody-face-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Face
+    Metrics:
+      NME: 0.0582
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/resnet/res50_coco_wholebody_face_256x256-5128edf5_20210909.pth
