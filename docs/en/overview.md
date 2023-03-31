@@ -46,6 +46,6 @@ We have prepared detailed guidelines for all types of users:
 4. For developers who wish to develop based on MMPose:
    - [Migration Guide](./migration.md)
 5. For researchers and developers who are willing to contribute to MMPose:
-   - [Contribution Guide](./notes/contribution_guide.md)
+   - [Contribution Guide](./contribution_guide.md)
 6. For some common issues, we provide a FAQ list:
-   - [FAQ](./notes/faq.md)
+   - [FAQ](./faq.md)

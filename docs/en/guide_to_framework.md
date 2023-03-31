@@ -1,4 +1,4 @@
-# A 20 Minute Guide to MMPose Framework
+# A 20-minute Tour to MMPose
 
 MMPose 1.0 is built upon a brand-new framework. For developers with basic knowledge of deep learning, this tutorial provides a overview of MMPose 1.0 framework design. Whether you are **a user of the previous version of MMPose**, or **a beginner of MMPose wishing to start with v1.0**, this tutorial will show you how to build a project based on MMPose 1.0.
 

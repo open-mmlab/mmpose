@@ -1,18 +1,21 @@
 # Installation
 
+We recommend that users follow our best practices to install MMPose. However, the whole process is highly customizable. See [Customize Installation](#customize-installation) section for more information.
+
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
-  - [Install MMPose](#install-mmpose)
-    - [Best Practices](#best-practices)
-    - [Verify the installation](#verify-the-installation)
-    - [Customize Installation](#customize-installation)
-      - [CUDA versions](#cuda-versions)
-      - [Install MMEngine without MIM](#install-mmengine-without-mim)
-      - [Install MMCV without MIM](#install-mmcv-without-mim)
-      - [Install on CPU-only platforms](#install-on-cpu-only-platforms)
-      - [Install on Google Colab](#install-on-google-colab)
-      - [Using MMPose with Docker](#using-mmpose-with-docker)
-    - [Trouble shooting](#trouble-shooting)
+  - [Best Practices](#best-practices)
+    - [Build MMPose from source](#build-mmpose-from-source)
+    - [Install as a Python package](#install-as-a-python-package)
+  - [Customize Installation](#customize-installation)
+    - [CUDA versions](#cuda-versions)
+    - [Install MMEngine without MIM](#install-mmengine-without-mim)
+    - [Install MMCV without MIM](#install-mmcv-without-mim)
+    - [Install on CPU-only platforms](#install-on-cpu-only-platforms)
+    - [Install on Google Colab](#install-on-google-colab)
+    - [Using MMPose with Docker](#using-mmpose-with-docker)
+  - [Verify the installation](#verify-the-installation)
+  - [Trouble shooting](#trouble-shooting)
 
 <!-- TOC -->
 
@@ -51,13 +54,7 @@ On CPU platforms:
 conda install pytorch torchvision cpuonly -c pytorch
 ```
 
-## Install MMPose
-
-We recommend that users follow our best practices to install MMPose. However, the whole process is highly customizable. See [Customize Installation](#customize-installation) section for more information.
-
-### Best Practices
-
-**Step 0.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv/tree/2.x) using [MIM](https://github.com/open-mmlab/mim).
+**Step 3.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv/tree/2.x) using [MIM](https://github.com/open-mmlab/mim).
 
 ```shell
 pip install -U openmim
@@ -71,9 +68,11 @@ Note that some of the demo scripts in MMPose require [MMDetection](https://githu
 mim install "mmdet>=3.0.0rc6"
 ```
 
-**Step 1.** Install MMPose.
+## Best Practices
 
-Case A: To develop and run mmpose directly, install it from source:
+### Build MMPose from source
+
+To develop and run mmpose directly, install it from source:
 
 ```shell
 git clone https://github.com/open-mmlab/mmpose.git -b 1.x
@@ -86,13 +85,15 @@ pip install -v -e .
 # thus any local modifications made to the code will take effect without reinstallation.
 ```
 
-Case B: To use mmpose as a dependency or third-party package, install it with pip:
+### Install as a Python package
+
+To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
 mim install "mmpose>=1.0.0rc1"
 ```
 
-### Verify the installation
+## Verify the installation
 
 To verify that MMPose is installed correctly, you can run an inference demo with the following steps.
 
@@ -141,9 +142,9 @@ The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com
 
 The inference results will be a list of `PoseDataSample`, and the predictions are in the `pred_instances`, indicating the detected keypoint locations and scores.
 
-### Customize Installation
+## Customize Installation
 
-#### CUDA versions
+### CUDA versions
 
 When installing PyTorch, you need to specify the version of CUDA. If you are not clear on which to choose, follow our recommendations:
 
@@ -154,7 +155,7 @@ Please make sure the GPU driver satisfies the minimum version requirements. See 
 
 Installing CUDA runtime libraries is enough if you follow our best practices, because no CUDA code will be compiled locally. However if you hope to compile MMCV from source or develop other CUDA operators, you need to install the complete CUDA toolkit from NVIDIA's [website](https://developer.nvidia.com/cuda-downloads), and its version should match the CUDA version of PyTorch. i.e., the specified version of cudatoolkit in `conda install` command.
 
-#### Install MMEngine without MIM
+### Install MMEngine without MIM
 
 To install MMEngine with pip instead of MIM, please follow [MMEngine installation guides](https://mmengine.readthedocs.io/zh_CN/latest/get_started/installation.html).
 
@@ -164,7 +165,7 @@ For example, you can install MMEngine by the following command.
 pip install mmengine
 ```
 
-#### Install MMCV without MIM
+### Install MMCV without MIM
 
 MMCV contains C++ and CUDA extensions, thus depending on PyTorch in a complex way. MIM solves such dependencies automatically and makes the installation easier. However, it is not a must.
 
@@ -176,13 +177,13 @@ For example, the following command install mmcv built for PyTorch 1.10.x and CUD
 pip install 'mmcv>=2.0.0rc1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
-#### Install on CPU-only platforms
+### Install on CPU-only platforms
 
 MMPose can be built for CPU only environment. In CPU mode you can train, test or inference a model.
 
 However, some functionalities are missing in this mode, usually GPU-compiled ops like `Deformable Convolution`. Most models in MMPose don't depend on these ops, but if you try to train/test/infer a model containing these ops, an error will be raised.
 
-#### Install on Google Colab
+### Install on Google Colab
 
 [Google Colab](https://colab.research.google.com/) usually has PyTorch installed,
 thus we only need to install MMEngine, MMCV and MMPose with the following commands.
@@ -215,7 +216,7 @@ print(mmpose.__version__)
 Note that within Jupyter, the exclamation mark `!` is used to call external executables and `%cd` is a [magic command](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-cd) to change the current working directory of Python.
 ```
 
-#### Using MMPose with Docker
+### Using MMPose with Docker
 
 We provide a [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/docker/Dockerfile) to build an image. Ensure that your [docker version](https://docs.docker.com/engine/install/) >=19.03.
 
@@ -239,7 +240,7 @@ docker run --gpus all --shm-size=8g -it -v {DATA_DIR}:/mmpose/data mmpose
 If you encounter the error message like `permission denied`, please add `sudo` at the start of the command and try it again.
 ```
 
-### Trouble shooting
+## Trouble shooting
 
-If you have some issues during the installation, please first view the [FAQ](./notes/faq.md) page.
+If you have some issues during the installation, please first view the [FAQ](./faq.md) page.
 You may [open an issue](https://github.com/open-mmlab/mmpose/issues/new/choose) on GitHub if no solution is found.

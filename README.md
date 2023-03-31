@@ -271,7 +271,7 @@ We will keep up with the latest progress of the community, and support more popu
 
 ## Contributing
 
-We appreciate all contributions to improve MMPose. Please refer to [CONTRIBUTING.md](https://mmpose.readthedocs.io/en/1.x/notes/contribution_guide.html) for the contributing guideline.
+We appreciate all contributions to improve MMPose. Please refer to [CONTRIBUTING.md](https://mmpose.readthedocs.io/en/1.x/contribution_guide.html) for the contributing guideline.
 
 ## Acknowledgement
 
