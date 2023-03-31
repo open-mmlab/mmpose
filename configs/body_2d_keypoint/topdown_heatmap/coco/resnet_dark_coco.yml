@@ -1,0 +1,100 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_dark-8xb64-210e_coco-256x192.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    - DarkPose
+    Training Data: COCO
+  Name: td-hm_res50_dark-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.724
+      AP@0.5: 0.897
+      AP@0.75: 0.797
+      AR: 0.777
+      AR@0.5: 0.934
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_dark-8xb64-210e_coco-256x192-c129dcb6_20220926.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_dark-8xb64-210e_coco-384x288.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_res50_dark-8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.735
+      AP@0.5: 0.902
+      AP@0.75: 0.801
+      AR: 0.786
+      AR@0.5: 0.938
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_dark-8xb64-210e_coco-384x288-8b90b538_20220926.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res101_dark-8xb64-210e_coco-256x192.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_res101_dark-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.733
+      AP@0.5: 0.9
+      AP@0.75: 0.81
+      AR: 0.786
+      AR@0.5: 0.938
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_res101_dark-8xb64-210e_coco-256x192-528ec248_20220926.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res101_dark-8xb64-210e_coco-384x288.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_res101_dark-8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.749
+      AP@0.5: 0.905
+      AP@0.75: 0.818
+      AR: 0.799
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_res101_dark-8xb64-210e_coco-384x288-487d40a4_20220926.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res152_dark-8xb32-210e_coco-256x192.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_res152_dark-8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.743
+      AP@0.5: 0.906
+      AP@0.75: 0.819
+      AR: 0.796
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_res152_dark-8xb32-210e_coco-256x192-f754df5f_20221031.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res152_dark-8xb32-210e_coco-384x288.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_res152_dark-8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.757
+      AP@0.5: 0.907
+      AP@0.75: 0.825
+      AR: 0.805
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_res152_dark-8xb32-210e_coco-384x288-329f8454_20221031.pth

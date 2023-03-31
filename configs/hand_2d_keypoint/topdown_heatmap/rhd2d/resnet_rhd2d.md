@@ -54,4 +54,4 @@ Results on RHD test set
 
 | Arch                                                       | Input Size | PCK@0.2 |  AUC  | EPE  |                            ckpt                            |                            log                             |
 | :--------------------------------------------------------- | :--------: | :-----: | :---: | :--: | :--------------------------------------------------------: | :--------------------------------------------------------: |
-| [pose_resnet50](dev2.0/mmpose/configs/hand_2d_keypoint/topdown_heatmap/rhd2d/td-hm_res50_8xb64-210e_rhd2d-256x256.py) |  256x256   |  0.991  | 0.898 | 2.32 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256-5dc7e4cc_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256_20210330.log.json) |
+| [pose_resnet50](/configs/hand_2d_keypoint/topdown_heatmap/rhd2d/td-hm_res50_8xb64-210e_rhd2d-256x256.py) |  256x256   |  0.991  | 0.898 | 2.32 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256-5dc7e4cc_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256_20210330.log.json) |

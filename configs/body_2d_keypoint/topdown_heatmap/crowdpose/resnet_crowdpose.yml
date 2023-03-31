@@ -1,0 +1,71 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/td-hm_res50_8xb64-210e_crowdpose-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: CrowdPose
+  Name: td-hm_res50_8xb64-210e_crowdpose-256x192
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.637
+      AP (E): 0.738
+      AP (H): 0.506
+      AP (M): 0.65
+      AP@0.5: 0.808
+      AP@0.75: 0.692
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_crowdpose_256x192-c6a526b6_20201227.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/td-hm_res101_8xb64-210e_crowdpose-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: td-hm_res101_8xb64-210e_crowdpose-256x192
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.647
+      AP (E): 0.745
+      AP (H): 0.521
+      AP (M): 0.658
+      AP@0.5: 0.81
+      AP@0.75: 0.703
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_256x192-8f5870f4_20201227.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/td-hm_res101_8xb64-210e_crowdpose-320x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: td-hm_res101_8xb64-210e_crowdpose-320x256
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.661
+      AP (E): 0.759
+      AP (H): 0.534
+      AP (M): 0.672
+      AP@0.5: 0.821
+      AP@0.75: 0.714
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256-c88c512a_20201227.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/td-hm_res152_8xb64-210e_crowdpose-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: td-hm_res152_8xb64-210e_crowdpose-256x192
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.656
+      AP (E): 0.754
+      AP (H): 0.533
+      AP (M): 0.666
+      AP@0.5: 0.818
+      AP@0.75: 0.712
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192-dbd49aba_20201227.pth

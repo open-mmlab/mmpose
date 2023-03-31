@@ -1,0 +1,28 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_hourglass52_8xb64-210e_mpii-256x256.py
+  In Collection: Hourglass
+  Metadata:
+    Architecture: &id001
+    - Hourglass
+    Training Data: MPII
+  Name: td-hm_hourglass52_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.889
+      Mean@0.1: 0.317
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_mpii_256x256-ae358435_20200812.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_hourglass52_8xb32-210e_mpii-384x384.py
+  In Collection: Hourglass
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_hourglass52_8xb32-210e_mpii-384x384
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.894
+      Mean@0.1: 0.367
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_mpii_384x384-04090bc3_20200812.pth

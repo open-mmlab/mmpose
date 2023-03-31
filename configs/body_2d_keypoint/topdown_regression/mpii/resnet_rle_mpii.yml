@@ -1,0 +1,17 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_regression/mpii/td-reg_res50_rle-8xb64-210e_mpii-256x256.py
+  In Collection: RLE
+  Metadata:
+    Architecture:
+    - DeepPose
+    - RLE
+    - ResNet
+    Training Data: MPII
+  Name: td-reg_res50_rle-8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.861
+      Mean@0.1: 0.277
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_rle-5f92a619_20220504.pth

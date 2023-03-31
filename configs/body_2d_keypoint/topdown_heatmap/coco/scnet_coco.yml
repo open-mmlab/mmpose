@@ -1,0 +1,66 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_scnet50_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SCNet
+    Training Data: COCO
+  Name: td-hm_scnet50_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.728
+      AP@0.5: 0.899
+      AP@0.75: 0.807
+      AR: 0.784
+      AR@0.5: 0.938
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_scnet50_8xb32-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_scnet50_coco_384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.751
+      AP@0.5: 0.906
+      AP@0.75: 0.818
+      AR: 0.802
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_scnet101_8xb32-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_scnet101_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.733
+      AP@0.5: 0.902
+      AP@0.75: 0.811
+      AR: 0.789
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_scnet101_8xb48-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_scnet101_8xb48-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.752
+      AP@0.5: 0.906
+      AP@0.75: 0.823
+      AR: 0.804
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_384x288-0b6e631b_20200709.pth

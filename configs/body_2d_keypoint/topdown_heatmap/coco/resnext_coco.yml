@@ -1,0 +1,99 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_resnext50_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNext
+    Training Data: COCO
+  Name: td-hm_resnext50_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.715
+      AP@0.5: 0.897
+      AP@0.75: 0.791
+      AR: 0.771
+      AR@0.5: 0.935
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext50_coco_256x192-dcff15f6_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_resnext50_8xb64-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_resnext50_8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.724
+      AP@0.5: 0.899
+      AP@0.75: 0.794
+      AR: 0.777
+      AR@0.5: 0.936
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext50_coco_384x288-412c848f_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_resnext101_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_resnext101_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.726
+      AP@0.5: 0.9
+      AP@0.75: 0.801
+      AR: 0.781
+      AR@0.5: 0.939
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_256x192-c7eba365_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_resnext101_8xb32-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_resnext101_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.744
+      AP@0.5: 0.903
+      AP@0.75: 0.815
+      AR: 0.794
+      AR@0.5: 0.939
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_384x288-f5eabcd6_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_resnext152_8xb32-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_resnext152_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.73
+      AP@0.5: 0.903
+      AP@0.75: 0.808
+      AR: 0.785
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_256x192-102449aa_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_resnext152_8xb48-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_resnext152_8xb48-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.742
+      AP@0.5: 0.904
+      AP@0.75: 0.81
+      AR: 0.794
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_384x288-806176df_20200727.pth

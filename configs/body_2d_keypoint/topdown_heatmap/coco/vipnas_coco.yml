@@ -1,0 +1,40 @@
+Collections:
+- Name: ViPNAS
+  Paper:
+    Title: 'ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search'
+    URL: https://arxiv.org/abs/2105.10154
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/vipnas.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_vipnas-mbv3_8xb64-210e_coco-256x192.py
+  In Collection: ViPNAS
+  Metadata:
+    Architecture: &id001
+    - ViPNAS
+    Training Data: COCO
+  Name: td-hm_vipnas-mbv3_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.7
+      AP@0.5: 0.887
+      AP@0.75: 0.783
+      AR: 0.758
+      AR@0.5: 0.929
+    Task: Body 2D Keypoint
+  Weights: (https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_vipnas-mbv3_8xb64-210e_coco-256x192-e0987441_20221010.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_vipnas-res50_8xb64-210e_coco-256x192.py
+  In Collection: ViPNAS
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_vipnas-res50_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.711
+      AP@0.5: 0.894
+      AP@0.75: 0.787
+      AR: 0.769
+      AR@0.5: 0.934
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_vipnas-res50_8xb64-210e_coco-256x192-35d4bff9_20220917.pth

@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/aic/td-hm_res101_8xb64-210e_aic-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: AI Challenger
+  Name: td-hm_res101_8xb64-210e_aic-256x192
+  Results:
+  - Dataset: AI Challenger
+    Metrics:
+      AP: 0.294
+      AP@0.5: 0.736
+      AP@0.75: 0.172
+      AR: 0.337
+      AR@0.5: 0.762
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth

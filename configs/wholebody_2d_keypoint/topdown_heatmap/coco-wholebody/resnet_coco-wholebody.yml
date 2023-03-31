@@ -1,0 +1,128 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_res50_8xb64-210e_coco-wholebody-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    Training Data: COCO-WholeBody
+  Name: td-hm_res50_8xb64-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.652
+      Body AR: 0.738
+      Face AP: 0.606
+      Face AR: 0.715
+      Foot AP: 0.615
+      Foot AR: 0.749
+      Hand AP: 0.46
+      Hand AR: 0.584
+      Whole AP: 0.521
+      Whole AR: 0.633
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_256x192-9e37ed88_20201004.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_res50_8xb64-210e_coco-wholebody-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_res50_8xb64-210e_coco-wholebody-384x288
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.666
+      Body AR: 0.747
+      Face AP: 0.731
+      Face AR: 0.811
+      Foot AP: 0.634
+      Foot AR: 0.763
+      Hand AP: 0.536
+      Hand AR: 0.646
+      Whole AP: 0.574
+      Whole AR: 0.67
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_384x288-ce11e294_20201004.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_res101_8xb32-210e_coco-wholebody-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_res101_8xb32-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.669
+      Body AR: 0.753
+      Face AP: 0.611
+      Face AR: 0.722
+      Foot AP: 0.637
+      Foot AR: 0.766
+      Hand AP: 0.463
+      Hand AR: 0.589
+      Whole AP: 0.531
+      Whole AR: 0.645
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_256x192-7325f982_20201004.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_res101_8xb32-210e_coco-wholebody-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_res101_8xb32-210e_coco-wholebody-384x288
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.692
+      Body AR: 0.77
+      Face AP: 0.746
+      Face AR: 0.82
+      Foot AP: 0.68
+      Foot AR: 0.799
+      Hand AP: 0.548
+      Hand AR: 0.657
+      Whole AP: 0.598
+      Whole AR: 0.691
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_384x288-6c137b9a_20201004.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_res152_8xb32-210e_coco-wholebody-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_res152_8xb32-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.682
+      Body AR: 0.764
+      Face AP: 0.623
+      Face AR: 0.728
+      Foot AP: 0.661
+      Foot AR: 0.787
+      Hand AP: 0.481
+      Hand AR: 0.607
+      Whole AP: 0.548
+      Whole AR: 0.661
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_wholebody_256x192-5de8ae23_20201004.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_res152_8xb32-210e_coco-wholebody-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_res152_8xb32-210e_coco-wholebody-384x288
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.704
+      Body AR: 0.78
+      Face AP: 0.751
+      Face AR: 0.824
+      Foot AP: 0.693
+      Foot AR: 0.813
+      Hand AP: 0.559
+      Hand AR: 0.666
+      Whole AP: 0.61
+      Whole AR: 0.705
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_wholebody_384x288-eab8caa8_20201004.pth

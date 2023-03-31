@@ -1,0 +1,99 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_swin-t-p4-w7_8xb32-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - Swin
+    Training Data: COCO
+  Name: td-hm_swin-t-p4-w7_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.724
+      AP@0.5: 0.901
+      AP@0.75: 0.806
+      AR: 0.782
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_t_p4_w7_coco_256x192-eaefe010_20220503.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_swin-b-p4-w7_8xb32-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_swin-b-p4-w7_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.737
+      AP@0.5: 0.904
+      AP@0.75: 0.82
+      AR: 0.794
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_b_p4_w7_coco_256x192-7432be9e_20220705.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_swin-b-p4-w7_8xb32-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_swin-b-p4-w7_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.759
+      AP@0.5: 0.91
+      AP@0.75: 0.832
+      AR: 0.811
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_b_p4_w7_coco_384x288-3abf54f9_20220705.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_swin-l-p4-w7_8xb32-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_swin-l-p4-w7_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.743
+      AP@0.5: 0.906
+      AP@0.75: 0.821
+      AR: 0.798
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_l_p4_w7_coco_256x192-642a89db_20220705.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_swin-l-p4-w7_8xb32-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_swin-l-p4-w7_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.763
+      AP@0.5: 0.912
+      AP@0.75: 0.83
+      AR: 0.814
+      AR@0.5: 0.949
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_l_p4_w7_coco_384x288-c36b7845_20220705.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_b_p4_w7_fpn_coco_256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_swin_b_p4_w7_fpn_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.741
+      AP@0.5: 0.907
+      AP@0.75: 0.821
+      AR: 0.798
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_b_p4_w7_fpn_coco_256x192-a3b91c45_20220705.pth

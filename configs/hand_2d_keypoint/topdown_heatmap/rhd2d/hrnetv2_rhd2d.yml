@@ -1,0 +1,16 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/rhd2d/td-hm_hrnetv2-w18_8xb64-210e_rhd2d-256x256.py
+  In Collection: HRNetv2
+  Metadata:
+    Architecture:
+    - HRNetv2
+    Training Data: RHD
+  Name: td-hm_hrnetv2-w18_8xb64-210e_rhd2d-256x256
+  Results:
+  - Dataset: RHD
+    Metrics:
+      AUC: 0.902
+      EPE: 2.21
+      PCK@0.2: 0.992
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_rhd2d_256x256-95b20dd8_20210330.pth

@@ -1,0 +1,41 @@
+Collections:
+- Name: DEKR
+  Paper:
+    Title: Bottom-up human pose estimation via disentangled keypoint regression
+    URL: https://arxiv.org/abs/2104.02300
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/dekr.md
+Models:
+- Config: configs/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512.py
+  In Collection: DEKR
+  Metadata:
+    Architecture: &id001
+    - DEKR
+    - HRNet
+    Training Data: COCO
+  Name: dekr_hrnet-w32_8xb10-140e_coco-512x512
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.686
+      AP@0.5: 0.868
+      AP@0.75: 0.750
+      AR: 0.735
+      AR@0.5: 0.898
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512_ac7c17bf-20221228.pth
+- Config: configs/body_2d_keypoint/dekr/coco/dekr_hrnet-w48_8xb10-140e_coco-640x640.py
+  In Collection: DEKR
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: dekr_hrnet-w48_8xb10-140e_coco-640x640
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.714
+      AP@0.5: 0.883
+      AP@0.75: 0.777
+      AR: 0.762
+      AR@0.5: 0.915
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/coco/dekr_hrnet-w48_8xb10-140e_coco-640x640_74796c32-20230124.pth

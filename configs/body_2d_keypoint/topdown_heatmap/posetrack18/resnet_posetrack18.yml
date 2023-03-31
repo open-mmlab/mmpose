@@ -1,0 +1,22 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/posetrack18/td-hm_res50_8xb64-20e_posetrack18-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: PoseTrack18
+  Name: td-hm_res50_8xb64-20e_posetrack18-256x192
+  Results:
+  - Dataset: PoseTrack18
+    Metrics:
+      Ankl: 74.2
+      Elb: 82.5
+      Head: 86.5
+      Hip: 80.1
+      Knee: 78.8
+      Shou: 87.7
+      Total: 81.2
+      Wri: 75.8
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth

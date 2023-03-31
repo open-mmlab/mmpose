@@ -1,0 +1,51 @@
+Models:
+- Config: configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_res50_8xb64-210e_animalpose-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: Animal-Pose
+  Name: td-hm_res50_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.691
+      AP@0.5: 0.947
+      AP@0.75: 0.770
+      AR: 0.736
+      AR@0.5: 0.955
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_animalpose_256x256-e1f30bff_20210426.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_res101_8xb64-210e_animalpose-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: Animal-Pose
+  Name: td-hm_res101_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.696
+      AP@0.5: 0.948
+      AP@0.75: 0.774
+      AR: 0.736
+      AR@0.5: 0.951
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_animalpose_256x256-85563f4a_20210426.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_res152_8xb32-210e_animalpose-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: Animal-Pose
+  Name: td-hm_res152_8xb32-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.704
+      AP@0.5: 0.938
+      AP@0.75: 0.786
+      AR: 0.748
+      AR@0.5: 0.946
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_animalpose_256x256-a0a7506c_20210426.pth

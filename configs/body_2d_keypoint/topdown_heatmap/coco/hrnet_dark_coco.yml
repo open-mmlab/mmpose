@@ -1,0 +1,73 @@
+Collections:
+- Name: DarkPose
+  Paper:
+    Title: Distribution-aware coordinate representation for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/dark.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_dark-8xb64-210e_coco-256x192.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    - DarkPose
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_dark-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.757
+      AP@0.5: 0.907
+      AP@0.75: 0.825
+      AR: 0.807
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_dark-8xb64-210e_coco-256x192-0e00bf12_20220914.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_dark-8xb64-210e_coco-384x288.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_dark-8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.766
+      AP@0.5: 0.907
+      AP@0.75: 0.829
+      AR: 0.815
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_dark-8xb64-210e_coco-384x288-9bab4c9b_20220917.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_dark-8xb32-210e_coco-256x192.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w48_dark-8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.764
+      AP@0.5: 0.907
+      AP@0.75: 0.831
+      AR: 0.814
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_dark-8xb32-210e_coco-256x192-e1ebdd6f_20220913.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_dark-8xb32-210e_coco-384x288.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w48_dark-8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.772
+      AP@0.5: 0.911
+      AP@0.75: 0.833
+      AR: 0.821
+      AR@0.5: 0.948
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_dark-8xb32-210e_coco-384x288-39c3c381_20220916.pth
