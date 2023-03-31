@@ -1,58 +1,64 @@
 # Inference with existing models
 
-MMPose provides hundreds of pre-trained models for pose estimation in [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html).
-This note will show **how to perform inference**, which means running pose estimation on given images or videos with trained models.
+MMPose provides a wide variety of pre-trained models for pose estimation, which can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html).
+This guide will demonstrate **how to perform inference**, or running pose estimation on provided images or videos using trained models.
 
-As for how to test existing models on standard datasets, please see this [guide](./train_and_test.md#test).
+For instructions on testing existing models on standard datasets, refer to this [guide](./train_and_test.md#test).
 
-In MMPose, a model is defined by a configuration file and existing model parameters are saved in a checkpoint file.
+In MMPose, a model is defined by a configuration file, while its pre-existing parameters are stored in a checkpoint file. You can find the model configuration files and corresponding checkpoint URLs in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html). We recommend starting with the HRNet model, using [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth).
 
-To start with, we recommend HRNet model with [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth). It is recommended to download the checkpoint file to `checkpoints` directory.
-
-## Out-of-the-box inferencer
+## Inferencer: a Unified Inference Interface
 
 MMPose offers a comprehensive API for inference, known as `MMPoseInferencer`. This API enables users to perform inference on both images and videos using all the models supported by MMPose. Furthermore, the API provides automatic visualization of inference results and allows for the convenient saving of predictions.
 
-Here is an example of inference on a given image using the pre-trained human pose estimator.
+### Basic Usage
+
+The `MMPoseInferencer` can be used in any Python program to perform pose estimation. Below is an example of inference on a given image using the pre-trained human pose estimator within the Python shell.
 
 ```python
 from mmpose.apis import MMPoseInferencer
 
-img_path = 'tests/data/coco/000000000785.jpg'   # you can specify your own picture path
+img_path = 'tests/data/coco/000000000785.jpg'   # replace this with your own image path
 
-# build the inferencer with model alias
+# create the inferencer using the model alias
 inferencer = MMPoseInferencer('human')
 
-# The MMPoseInferencer API utilizes a lazy inference strategy,
-# whereby it generates a prediction generator when provided with input
+# The MMPoseInferencer API employs a lazy inference approach,
+# creating a prediction generator when given input
 result_generator = inferencer(img_path, show=True)
 result = next(result_generator)
 ```
 
-If everything works fine, you will see the following image in a new window.
+If everything works fine, you will see the following image in a new window:
 ![inferencer_result_coco](https://user-images.githubusercontent.com/26127467/220008302-4a57fd44-0978-408e-8351-600e5513316a.jpg)
 
-The variable `result` is a dictionary that contains two keys, `'visualization'` and `'predictions'`. The key `'visualization'` is intended to contain the visualization results. However, as the `return_vis` argument was not specified, this list remains blank. On the other hand, the key `'predictions'` is a list that contains the estimated keypoints for each individual instance.
+The variable `result` is a dictionary that contains two keys, `'visualization'` and `'predictions'`. The `'visualization'` key is meant to store visualization results, but since the `return_vis` argument wasn't specified, this list remains empty. The `'predictions'` key, however, holds a list of estimated keypoints for each detected instance.
 
-### CLI tool
-
-A command-line interface (CLI) tool for the inferencer is also available: `demo/inferencer_demo.py`. This tool enables users to perform inference with the same model and inputs using the following command:
+A **command-line interface (CLI)** tool for the inferencer is also available: `demo/inferencer_demo.py`. This tool allows users to perform inference using the same model and inputs with the following command:
 
 ```bash
 python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' \
     --pose2d 'human' --show --pred-out-dir 'predictions'
 ```
 
-The predictions will be save in `predictions/000000000785.json`.
+The predictions will be save in `predictions/000000000785.json`. The argument names correspond with the `MMPoseInferencer`, which serves as an API.
 
-### Custom pose estimation models
+The inferencer is capable of processing a range of input types, which includes the following:
+
+- A path to an image
+- A path to a video
+- A path to a folder (which will cause all images in that folder to be inferred)
+- An image array (NA for CLI tool)
+- A list of image arrays (NA for CLI tool)
+- A webcam (in which case the `input` parameter should be set to either `'webcam'` or `'webcam:{CAMERA_ID}'`)
+
+### Custom Pose Estimation Models
 
 The inferencer provides several methods that can be used to customize the models employed:
 
 ```python
 
 # build the inferencer with model alias
-# the available aliases include 'human', 'hand', 'face' and 'animal'
 inferencer = MMPoseInferencer('human')
 
 # build the inferencer with model config name
@@ -66,6 +72,8 @@ inferencer = MMPoseInferencer(
                    'hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth'
 )
 ```
+
+The complere list of model alias can be found in the [Model Alias](#model-alias) section.
 
 In addition, top-down pose estimators also require an object detection model. The inferencer is capable of inferring the instance type for models trained with datasets supported in MMPose, and subsequently constructing the necessary object detection model. Alternatively, users may also manually specify the detection model using the following methods:
 
@@ -99,20 +107,77 @@ inferencer = MMPoseInferencer(
 )
 ```
 
-### Input format
+### Dump Results
 
-The inferencer is capable of processing a range of input types, which includes the following:
+After performing pose estimation, you might want to save the results for further analysis or processing. This section will guide you through saving the predicted keypoints and visualizations to your local machine.
 
-- A path to an image
-- A path to a video
-- A path to a folder (which will cause all images in that folder to be inferred)
-- An image array
-- A list of image arrays
-- A webcam (in which case the `input` parameter should be set to either `'webcam'` or `'webcam:{CAMERA_ID}'`)
+To save the predictions in a JSON file, use the `pred_out_dir` argument when running the inferencer:
 
-### Output settings
+```python
+result_generator = inferencer(img_path, pred_out_dir='predictions')
+result = next(result_generator)
+```
 
-The inferencer is capable of both visualizing and saving predictions. The relevant arguments are as follows:
+The predictions will be saved in the `predictions/` folder in JSON format, with each file named after the corresponding input image or video.
+
+For more advanced scenarios, you can also access the predictions directly from the `result` dictionary returned by the inferencer. The key `'predictions'` contains a list of predicted keypoints for each individual instance in the input image or video. You can then manipulate or store these results using your preferred method.
+
+Keep in mind that if you want to save both the visualization images and the prediction files in a single folder, you can use the `out_dir` argument:
+
+```python
+result_generator = inferencer(img_path, out_dir='output')
+result = next(result_generator)
+```
+
+In this case, the visualization images will be saved in the `output/visualization/` folder, while the predictions will be stored in the `output/predictions/` folder.
+
+### Visualization
+
+The inferencer can automatically draw predictions on input images or videos. Visualization results can be displayed in a new window and saved locally.
+
+To view the visualization results in a new window, use the following code:
+
+```python
+result_generator = inferencer(img_path, show=True)
+result = next(result_generator)
+```
+
+Notice that:
+
+- If the input video comes from a webcam, displaying the visualization results in a new window will be enabled by default, allowing users to see the inputs.
+- If there is no GUI on the platform, this step may become stuck.
+
+To save the visualization results locally, specify the `vis_out_dir` argument like this:
+
+```python
+result_generator = inferencer(img_path, vis_out_dir='vis_results')
+result = next(result_generator)
+```
+
+The input images or videos with predicted poses will be saved in the `vis_results/` folder.
+
+As seen in the above image, the visualization of estimated poses consists of keypoints (depicted by solid circles) and skeletons (represented by lines). The default size of these visual elements might not produce satisfactory results. Users can adjust the circle size and line thickness using the `radius` and `thickness` arguments, as shown below:
+
+```python
+result_generator = inferencer(img_path, show=True, radius=4, thickness=2)
+result = next(result_generator)
+```
+
+### Arguments of Inferencer
+
+The `MMPoseInferencer` offers a variety of arguments for customizing pose estimation, visualization, and saving predictions. Below is a list of the arguments available when initializing the inferencer and their descriptions:
+
+| Argument         | Description                                                                                                      |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `pose2d`         | Specifies the model alias, configuration file name, or configuration file path for the 2D pose estimation model. |
+| `pose2d_weights` | Specifies the URL or local path to the 2D pose estimation model's checkpoint file.                               |
+| `det_model`      | Specifies the model alias, configuration file name, or configuration file path for the object detection model.   |
+| `det_weights`    | Specifies the URL or local path to the object detection model's checkpoint file.                                 |
+| `det_cat_ids`    | Specifies the list of category IDs corresponding to the object classes to be detected.                           |
+| `device`         | The device to perform the inference. If left `None`, the Inferencer will select the most suitable one.           |
+| `scope`          | The namespace where the model modules are defined.                                                               |
+
+The inferencer is designed to handle both visualization and saving of predictions. Here is a list of arguments available when performing inference with the `MMPoseInferencer`:
 
 | Argument            | Description                                                                                                                                        |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -125,68 +190,24 @@ The inferencer is capable of both visualizing and saving predictions. The releva
 | `pred_out_dir`      | Specifies the folder path for saving the predictions. If not set, the predictions will not be saved.                                               |
 | `out_dir`           | If `vis_out_dir` or `pred_out_dir` is not set, the values will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively. |
 
-## High-level APIs for inference
+### Model Alias
 
-MMPose provides high-level Python APIs for inference on a given image:
+MMPose provides a set of pre-defined aliases for commonly used models. These aliases can be used as shorthand when initializing the `MMPoseInferencer` instead of specifying the full model configuration name. Below is a list of the available model aliases and their corresponding configuration names:
 
-- [init_model](/mmpose/apis/inference.py#L64): Initialize a model with a config and checkpoint
-- [inference_topdown](/mmpose/apis/inference.py#L124): Conduct inference with the top-down pose estimator on a given image
+| Alias     | Configuration Name                                 | Description                               |
+| --------- | -------------------------------------------------- | ----------------------------------------- |
+| animal    | td-hm_res50_8xb64-210e_ap10k-256x256               | Animal pose estimation using ResNet-50    |
+| human     | td-hm_hrnet-w32_8xb64-210e_coco-256x192            | Human pose estimation using HRNet-W32     |
+| vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation using base ViTPose  |
+| vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation using small ViTPose |
+| vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation using base ViTPose  |
+| vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation using large ViTPose |
+| vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation using huge ViTPose  |
+| face      | td-hm_hrnetv2-w18_8xb64-60e_wflw-256x256           | Face keypoint detection using HRNetV2-W18 |
+| hand      | td-hm_res50_8xb32-210e_onehand10k-256x256          | Hand keypoint detection using ResNet-50   |
 
-Here is an example of building the model and inference on a given image using the pre-trained checkpoint of HRNet model on COCO dataset.
+In addition, users can utilize the CLI tool to display all available aliases with the following command:
 
-```python
-from mmpose.apis import inference_topdown, init_model
-from mmpose.utils import register_all_modules
-
-config_path = 'configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py'
-checkpoint_path = 'https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth' # can be a local path
-img_path = 'tests/data/coco/000000000785.jpg'   # you can specify your own picture path
-
-# register all modules and set mmpose as the default scope.
-register_all_modules()
-# build the model from a config file and a checkpoint file
-model = init_model(config_path, checkpoint_path, device="cpu")  # device can be 'cuda:0'
-# test a single image
-result = inference_topdown(model, img_path)[0]
-
+```shell
+python demo/inferencer_demo.py --show-alias
 ```
-
-`result` is a `PoseDataSample` containing `gt_instances` and `pred_instances`. And `pred_instances` contains the prediction results, usually containing `keypoints`, `keypoint_scores`. The content of `result.pred_instances` is as follows:
-
-```python
-<InstanceData(
-
-    META INFORMATION
-
-    DATA FIELDS
-    keypoints: array([[[365.83333333,  83.33333826],
-                [365.83333333,  75.00000525],
-                [365.83333333,  75.00000525],
-                [382.5       ,  83.33333826],
-                [365.83333333,  83.33333826],
-                [399.16666667, 116.66667032],
-                [365.83333333, 125.00000334],
-                [440.83333333, 158.3333354 ],
-                [340.83333333, 158.3333354 ],
-                [449.16666667, 166.66666842],
-                [299.16666667, 175.00000143],
-                [432.5       , 208.33333349],
-                [415.83333333, 216.66666651],
-                [432.5       , 283.33333063],
-                [374.16666667, 274.99999762],
-                [482.5       , 366.66666079],
-                [407.5       , 341.66666174]]])
-    bbox_scores: array([1.], dtype=float32)
-    bboxes: array([[  0.,   0., 640., 425.]], dtype=float32)
-    keypoint_scores: array([[0.9001359 , 0.90607893, 0.8974595 , 0.8780644 , 0.8363602 ,
-                0.86385334, 0.86548805, 0.53965414, 0.8379145 , 0.77825487,
-                0.9050092 , 0.8631748 , 0.8176921 , 0.9184168 , 0.9040103 ,
-                0.7687361 , 0.9573005 ]], dtype=float32)
-) at 0x7f5785582df0>
-```
-
-An image demo can be found in [demo/image_demo.py](/demo/image_demo.py).
-
-## Demos
-
-We also provide demo scripts, implemented with high-level APIs and supporting various tasks. Source codes are available [here](/demo). You can refer to the [docs](/demo/docs) for detail descriptions

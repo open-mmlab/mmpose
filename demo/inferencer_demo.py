@@ -1,13 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from argparse import ArgumentParser
+from typing import Dict
 
-from mmpose.apis.inferencers import MMPoseInferencer
+from mmpose.apis.inferencers import MMPoseInferencer, get_model_aliases
 
 
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument(
-        'inputs', type=str, help='Input image/video path or folder path.')
+        'inputs',
+        type=str,
+        nargs='?',
+        help='Input image/video path or folder path.')
     parser.add_argument(
         '--pose2d',
         type=str,
@@ -84,6 +88,10 @@ def parse_args():
         type=str,
         default='',
         help='Directory for saving inference results.')
+    parser.add_argument(
+        '--show-alias',
+        action='store_true',
+        help='Display all the available model aliases.')
 
     call_args = vars(parser.parse_args())
 
@@ -95,14 +103,30 @@ def parse_args():
     for init_kw in init_kws:
         init_args[init_kw] = call_args.pop(init_kw)
 
-    return init_args, call_args
+    diaplay_alias = call_args.pop('show_alias')
+
+    return init_args, call_args, diaplay_alias
+
+
+def display_model_aliases(model_aliases: Dict[str, str]) -> None:
+    """Display the available model aliases and their corresponding model
+    names."""
+    aliases = list(model_aliases.keys())
+    max_alias_length = max(map(len, aliases))
+    print(f'{"ALIAS".ljust(max_alias_length+2)}MODEL_NAME')
+    for alias in sorted(aliases):
+        print(f'{alias.ljust(max_alias_length+2)}{model_aliases[alias]}')
 
 
 def main():
-    init_args, call_args = parse_args()
-    inferencer = MMPoseInferencer(**init_args)
-    for _ in inferencer(**call_args):
-        pass
+    init_args, call_args, diaplay_alias = parse_args()
+    if diaplay_alias:
+        model_alises = get_model_aliases(init_args['scope'])
+        display_model_aliases(model_alises)
+    else:
+        inferencer = MMPoseInferencer(**init_args)
+        for _ in inferencer(**call_args):
+            pass
 
 
 if __name__ == '__main__':
