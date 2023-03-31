@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_dark-8xb64-210e_onehand10k-256x256.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - DarkPose
+    Training Data: OneHand10K
+  Name: td-hm_hrnetv2-w18_dark-8xb64-210e_onehand10k-256x256
+  Results:
+  - Dataset: OneHand10K
+    Metrics:
+      AUC: 0.572
+      EPE: 23.96
+      PCK@0.2: 0.99
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark-a2f80c64_20210330.pth

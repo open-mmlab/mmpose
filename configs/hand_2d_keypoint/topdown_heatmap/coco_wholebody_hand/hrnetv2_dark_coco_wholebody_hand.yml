@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/coco_wholebody_hand/td-hm_hrnetv2-w18_dark-8xb32-210e_coco-wholebody-hand-256x256.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - DarkPose
+    Training Data: COCO-WholeBody-Hand
+  Name: td-hm_hrnetv2-w18_dark-8xb32-210e_coco-wholebody-hand-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Hand
+    Metrics:
+      AUC: 0.84
+      EPE: 4.37
+      PCK@0.2: 0.814
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_coco_wholebody_hand_256x256_dark-a9228c9c_20210908.pth

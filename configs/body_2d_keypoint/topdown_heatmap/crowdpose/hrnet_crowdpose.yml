@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/td-hm_hrnet-w32_8xb64-210e_crowdpose-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture:
+    - HRNet
+    Training Data: CrowdPose
+  Name: td-hm_hrnet-w32_8xb64-210e_crowdpose-256x192
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.675
+      AP (E): 0.77
+      AP (H): 0.553
+      AP (M): 0.687
+      AP@0.5: 0.825
+      AP@0.75: 0.729
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-960be101_20201227.pth

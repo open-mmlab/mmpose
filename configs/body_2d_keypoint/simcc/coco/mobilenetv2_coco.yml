@@ -1,9 +1,3 @@
-Collections:
-- Name: SimCC
-  Paper:
-    Title: A Simple Coordinate Classification Perspective for Human Pose Estimation
-    URL: https://arxiv.org/abs/2107.03332
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/algorithms/simcc.md
 Models:
 - Config: configs/body_2d_keypoint/simcc/coco/simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192.py
   In Collection: SimCC

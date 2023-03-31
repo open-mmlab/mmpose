@@ -1,9 +1,3 @@
-Collections:
-- Name: HRNetv2
-  Paper:
-    Title: Deep High-Resolution Representation Learning for Visual Recognition
-    URL: https://arxiv.org/abs/1908.07919
-  README: https://github.com/open-mmlab/mmpose/blob/1.x/docs/src/papers/backbones/hrnetv2.md
 Models:
 - Config: configs/face_2d_keypoint/topdown_heatmap/wflw/td-hm_hrnetv2-w18_8xb64-60e_wflw-256x256.py
   In Collection: HRNetv2

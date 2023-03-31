@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_mobilenetv2_8xb64-210e_onehand10k-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - MobilenetV2
+    Training Data: OneHand10K
+  Name: td-hm_mobilenetv2_8xb64-210e_onehand10k-256x256
+  Results:
+  - Dataset: OneHand10K
+    Metrics:
+      AUC: 0.537
+      EPE: 28.56
+      PCK@0.2: 0.986
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/mobilenetv2/mobilenetv2_onehand10k_256x256-f3a3d90e_20210330.pth

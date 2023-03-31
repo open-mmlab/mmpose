@@ -1,0 +1,23 @@
+Collections:
+- Name: HRNetv2
+  Paper:
+    Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/hrnetv2.md
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/300w/td-hm_hrnetv2-w18_8xb64-60e_300w-256x256.py
+  In Collection: HRNetv2
+  Metadata:
+    Architecture:
+    - HRNetv2
+    Training Data: 300W
+  Name: td-hm_hrnetv2-w18_8xb64-60e_300w-256x256
+  Results:
+  - Dataset: 300W
+    Metrics:
+      NME challenge: 5.64
+      NME common: 2.92
+      NME full: 3.45
+      NME test: 4.1
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_300w_256x256-eea53406_20211019.pth

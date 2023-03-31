@@ -1,0 +1,16 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/coco_wholebody_hand/td-hm_scnet50_8xb32-210e_coco-wholebody-hand-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SCNet
+    Training Data: COCO-WholeBody-Hand
+  Name: td-hm_scnet50_8xb32-210e_coco-wholebody-hand-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Hand
+    Metrics:
+      AUC: 0.834
+      EPE: 4.55
+      PCK@0.2: 0.803
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/scnet/scnet50_coco_wholebody_hand_256x256-e73414c7_20210909.pth

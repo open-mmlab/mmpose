@@ -1,0 +1,15 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/coco_wholebody_face/td-hm_mobilenetv2_8xb32-60e_coco-wholebody-face-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - MobilenetV2
+    Training Data: COCO-WholeBody-Face
+  Name: td-hm_mobilenetv2_8xb32-60e_coco-wholebody-face-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Face
+    Metrics:
+      NME: 0.0611
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/mobilenetv2/mobilenetv2_coco_wholebody_face_256x256-4a3f096e_20210909.pth

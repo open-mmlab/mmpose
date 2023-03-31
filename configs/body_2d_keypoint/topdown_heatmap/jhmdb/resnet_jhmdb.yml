@@ -1,0 +1,231 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50_8xb64-20e_jhmdb-sub1-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: JHMDB
+  Name: td-hm_res50_8xb64-20e_jhmdb-sub1-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 92.8
+      Elb: 93.8
+      Head: 99.1
+      Hip: 99.4
+      Knee: 96.5
+      Mean: 96.1
+      Sho: 98.0
+      Wri: 91.3
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50_8xb64-20e_jhmdb-sub2-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50_8xb64-20e_jhmdb-sub2-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 94.1
+      Elb: 90.6
+      Head: 99.3
+      Hip: 98.9
+      Knee: 96.3
+      Mean: 95.0
+      Sho: 97.1
+      Wri: 87.0
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50_8xb64-20e_jhmdb-sub3-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50_8xb64-20e_jhmdb-sub3-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 94.7
+      Elb: 94.0
+      Head: 99.0
+      Hip: 99.7
+      Knee: 98.0
+      Mean: 96.7
+      Sho: 97.9
+      Wri: 91.6
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50-2deconv_8xb64-40e_jhmdb-sub1-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50-2deconv_8xb64-40e_jhmdb-sub1-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 92.5
+      Elb: 94.6
+      Head: 99.1
+      Hip: 99.4
+      Knee: 94.6
+      Mean: 96.1
+      Sho: 98.5
+      Wri: 92.0
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50-2deconv_8xb64-40e_jhmdb-sub2-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50-2deconv_8xb64-40e_jhmdb-sub2-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 93.8
+      Elb: 91.0
+      Head: 99.3
+      Hip: 99.1
+      Knee: 96.5
+      Mean: 95.2
+      Sho: 97.8
+      Wri: 87.0
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50-2deconv_8xb64-40e_jhmdb-sub3-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50-2deconv_8xb64-40e_jhmdb-sub3-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 93.8
+      Elb: 94.3
+      Head: 98.8
+      Hip: 99.8
+      Knee: 97.5
+      Mean: 96.7
+      Sho: 98.4
+      Wri: 92.1
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50_8xb64-20e_jhmdb-sub1-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50_8xb64-20e_jhmdb-sub1-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 78.9
+      Elb: 74.4
+      Head: 93.3
+      Hip: 85.0
+      Knee: 81.2
+      Mean: 81.9
+      Sho: 83.2
+      Wri: 72.7
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50_8xb64-20e_jhmdb-sub2-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50_8xb64-20e_jhmdb-sub2-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 78.6
+      Elb: 64.5
+      Head: 94.1
+      Hip: 77.9
+      Knee: 71.9
+      Mean: 75.5
+      Sho: 74.9
+      Wri: 62.5
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50_8xb64-20e_jhmdb-sub3-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50_8xb64-20e_jhmdb-sub3-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 84.2
+      Elb: 74.9
+      Head: 97.0
+      Hip: 84.7
+      Knee: 83.7
+      Mean: 82.9
+      Sho: 82.2
+      Wri: 70.7
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50-2deconv_8xb64-40e_jhmdb-sub1-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50-2deconv_8xb64-40e_jhmdb-sub1-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 75.0
+      Elb: 73.2
+      Head: 92.4
+      Hip: 82.3
+      Knee: 75.4
+      Mean: 79.2
+      Sho: 80.6
+      Wri: 70.5
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50-2deconv_8xb64-40e_jhmdb-sub2-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50-2deconv_8xb64-40e_jhmdb-sub2-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 75.5
+      Elb: 63.8
+      Head: 93.4
+      Hip: 75.1
+      Knee: 68.4
+      Mean: 73.7
+      Sho: 73.6
+      Wri: 60.5
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/jhmdb/td-hm_res50-2deconv_8xb64-40e_jhmdb-sub3-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: JHMDB
+  Name: td-hm_res50-2deconv_8xb64-40e_jhmdb-sub3-256x256
+  Results:
+  - Dataset: JHMDB
+    Metrics:
+      Ank: 81.5
+      Elb: 72.6
+      Head: 96.1
+      Hip: 83.6
+      Knee: 80.9
+      Mean: 81.2
+      Sho: 81.2
+      Wri: 67.9
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth

@@ -1,0 +1,41 @@
+Collections:
+- Name: CID
+  Paper:
+    Title: Contextual Instance Decoupling for Robust Multi-Person Pose Estimation
+    URL: https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/cid.md
+Models:
+- Config: configs/body_2d_keypoint/cid/coco/cid_hrnet-w32_8xb20-140e_coco-512x512.py
+  In Collection: CID
+  Metadata:
+    Architecture: &id001
+    - CID
+    - HRNet
+    Training Data: COCO
+  Name: cid_hrnet-w32_8xb20-140e_coco-512x512
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.704
+      AP@0.5: 0.894
+      AP@0.75: 0.775
+      AR: 0.753
+      AR@0.5: 0.928
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/cid/coco/cid_hrnet-w32_8xb20-140e_coco-512x512_42b7e6e6-20230207.pth
+- Config: configs/body_2d_keypoint/cid/coco/cid_hrnet-w48_8xb20-140e_coco-512x512.py
+  In Collection: CID
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: cid_hrnet-w48_8xb20-140e_coco-512x512
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.715
+      AP@0.5: 0.9
+      AP@0.75: 0.782
+      AR: 0.765
+      AR@0.5: 0.935
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/cid/coco/cid_hrnet-w48_8xb20-140e_coco-512x512_a36c3ecf-20230207.pth

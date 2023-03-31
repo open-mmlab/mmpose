@@ -1,0 +1,42 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_regression/mpii/td-reg_res50_8xb64-210e_mpii-256x256.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture: &id001
+    - DeepPose
+    - ResNet
+    Training Data: MPII
+  Name: td-reg_res50_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.826
+      Mean@0.1: 0.18
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256-c63cd0b6_20210203.pth
+- Config: configs/body_2d_keypoint/topdown_regression/mpii/td-reg_res101_8xb64-210e_mpii-256x256.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-reg_res101_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.841
+      Mean@0.1: 0.2
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_mpii_256x256-87516a90_20210205.pth
+- Config: configs/body_2d_keypoint/topdown_regression/mpii/td-reg_res152_8xb64-210e_mpii-256x256.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-reg_res152_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.85
+      Mean@0.1: 0.208
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256-15f5e6f9_20210205.pth
