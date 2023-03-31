@@ -268,7 +268,7 @@ mim install "mmdet>=3.0.0rc6"
 
 ## 参与贡献
 
-我们非常欢迎用户对于 MMPose 做出的任何贡献，可以参考 [贡献指南](https://mmpose.readthedocs.io/zh_CN/1.x/notes/contribution_guide.html) 文件了解更多细节。
+我们非常欢迎用户对于 MMPose 做出的任何贡献，可以参考 [贡献指南](https://mmpose.readthedocs.io/zh_CN/1.x/contribution_guide.html) 文件了解更多细节。
 
 ## 致谢
 
