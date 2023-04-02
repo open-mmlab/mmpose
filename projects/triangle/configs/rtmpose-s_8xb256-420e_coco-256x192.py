@@ -14,14 +14,9 @@ dataset_info = dict(
         homepage='http://cocodataset.org/',
     ),
     keypoint_info={
-        0: dict(
-            name='angle_30', id=0, color=[51, 153, 255], type='upper',
-            swap=''),
-        1: dict(
-            name='angle_60', id=1, color=[51, 153, 255], type='upper',
-            swap=''),
-        2: dict(
-            name='angle_90', id=2, color=[51, 153, 255], type='upper', swap='')
+        0: dict(name='angle_30', id=0, color=[51, 153, 255], type='', swap=''),
+        1: dict(name='angle_60', id=1, color=[51, 153, 255], type='', swap=''),
+        2: dict(name='angle_90', id=2, color=[51, 153, 255], type='', swap='')
     },
     skeleton_info={
         0: dict(link=('angle_30', 'angle_60'), id=0, color=[0, 255, 0]),
@@ -40,10 +35,10 @@ dataset_info = dict(
     ])
 
 # runtime
-max_epochs = 420
-stage2_num_epochs = 30
+max_epochs = 210
+stage2_num_epochs = 0
 
-base_lr = 4e-4
+base_lr = 4e-3
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)
@@ -58,11 +53,7 @@ optim_wrapper = dict(
 # learning rate
 param_scheduler = [
     dict(
-        type='LinearLR',
-        start_factor=1.0e-5,
-        by_epoch=False,
-        begin=0,
-        end=1000),
+        type='LinearLR', start_factor=1.0e-5, by_epoch=False, begin=0, end=20),
     dict(
         # use cosine lr from 210 to 420 epoch
         type='CosineAnnealingLR',
@@ -80,8 +71,8 @@ auto_scale_lr = dict(base_batch_size=1024)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(192, 256),
-    sigma=(4.9, 5.66),
+    input_size=(256, 256),
+    sigma=(12, 12),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -116,7 +107,7 @@ model = dict(
         in_channels=768,
         out_channels=3,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=(8, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
         final_layer_kernel_size=7,
         gau_cfg=dict(
@@ -153,30 +144,39 @@ backend_args = dict(backend='local')
 train_pipeline = [
     dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
+    # dict(type='RandomFlip', direction='horizontal'),
+    # dict(type='RandomHalfBody'),
     dict(
-        type='RandomBBoxTransform', scale_factor=[0.6, 1.4], rotate_factor=80),
+        type='RandomBBoxTransform', scale_factor=[0.8, 1.2], rotate_factor=30),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(
         type='Albumentation',
         transforms=[
-            dict(type='Blur', p=0.1),
-            dict(type='MedianBlur', p=0.1),
+            dict(type='ChannelShuffle', p=0.5),
+            dict(type='CLAHE', p=0.5),
+            # dict(type='Downscale', scale_min=0.7, scale_max=0.9, p=0.2),
+            dict(type='ColorJitter', p=0.5),
             dict(
                 type='CoarseDropout',
-                max_holes=1,
-                max_height=0.4,
-                max_width=0.4,
+                max_holes=4,
+                max_height=0.3,
+                max_width=0.3,
                 min_holes=1,
                 min_height=0.2,
                 min_width=0.2,
-                p=1.),
+                p=0.5),
         ]),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
+# train_pipeline = [
+#     dict(type='LoadImage', backend_args=backend_args),
+#     dict(type='GetBBoxCenterScale'),
+#     dict(type='TopdownAffine', input_size=codec['input_size']),
+#     dict(type='GenerateTarget', encoder=codec),
+#     dict(type='PackPoseInputs')
+# ]
 val_pipeline = [
     dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
@@ -217,7 +217,7 @@ train_pipeline_stage2 = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=2,
+    batch_size=128,
     num_workers=1,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -236,23 +236,32 @@ val_dataloader = dict(
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    # dataset=dict(
+    #     type=dataset_type,
+    #     data_root=data_root,
+    #     metainfo=dataset_info,
+    #     data_mode=data_mode,
+    #     ann_file='val_coco.json',
+    #     # bbox_file=f'{data_root}person_detection_results/'
+    #     # 'COCO_val2017_detections_AP_H_56_person.json',
+    #     data_prefix=dict(img='images/'),
+    #     test_mode=True,
+    #     pipeline=val_pipeline,
+    # )
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=dataset_info,
         data_mode=data_mode,
-        ann_file='val_coco.json',
-        # bbox_file=f'{data_root}person_detection_results/'
-        # 'COCO_val2017_detections_AP_H_56_person.json',
+        ann_file='train_coco.json',
         data_prefix=dict(img='images/'),
-        test_mode=True,
         pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='coco/AP', rule='greater', max_keep_ckpts=1),
+    checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1),
     logger=dict(interval=1),
 )
 
@@ -270,5 +279,6 @@ custom_hooks = [
 ]
 
 # evaluators
-val_evaluator = dict(type='CocoMetric', ann_file=data_root + 'val_coco.json')
+# val_evaluator = dict(type='CocoMetric', ann_file=data_root + 'val_coco.json')
+val_evaluator = dict(type='PCKAccuracy')
 test_evaluator = val_evaluator
