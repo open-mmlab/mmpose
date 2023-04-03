@@ -12,5 +12,5 @@ unzip Triangle_140_Keypoint_Dataset.zip
 ## train
 
 ```shell
-python tools/train.py projects/triangle/configs/rtmpose-s_8xb256-420e_coco-256x192.py
+python tools/train.py projects/triangle/configs/rtmpose-s.py
 ```
