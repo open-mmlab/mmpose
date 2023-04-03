@@ -130,7 +130,7 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/Triangle_Mini_Dataset_Coco/'
+data_root = 'data/Triangle_140_Keypoint_Dataset/'
 
 backend_args = dict(backend='local')
 # backend_args = dict(
