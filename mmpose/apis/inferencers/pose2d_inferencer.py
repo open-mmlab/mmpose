@@ -184,10 +184,15 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         return data_infos
 
-    def forward(self, inputs: Union[dict, tuple]):
+    def forward(self, inputs: Union[dict, tuple], bbox_thr=-1):
         data_samples = super().forward(inputs)
         if self.cfg.data_mode == 'topdown':
             data_samples = [merge_data_samples(data_samples)]
+        if bbox_thr > 0:
+            for ds in data_samples:
+                if 'bbox_scores' in ds.pred_instances:
+                    ds.pred_instances = ds.pred_instances[
+                        ds.pred_instances.bbox_scores > bbox_thr]
         return data_samples
 
     def __call__(
@@ -241,6 +246,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         else:
             inputs = self._inputs_to_list(inputs)
 
+        forward_kwargs['bbox_thr'] = preprocess_kwargs.get('bbox_thr', -1)
         inputs = self.preprocess(
             inputs, batch_size=batch_size, **preprocess_kwargs)
 

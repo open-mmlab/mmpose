@@ -83,7 +83,7 @@ model = dict(
     test_cfg=dict(
         yolox_style=True,
         multi_label=False,
-        score_thr=0.2,
+        score_thr=0.001,
         max_per_img=300,
         nms=dict(type='nms', iou_threshold=0.65)))
 
@@ -189,7 +189,7 @@ test_dataloader = val_dataloader
 val_evaluator = dict(
     type='mmpose.CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json',
-)
+    score_mode='bbox')
 test_evaluator = val_evaluator
 
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
