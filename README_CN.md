@@ -66,7 +66,7 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
-<details open>
+<details close>
 <summary><b>主要特性</b></summary>
 
 - **支持多种人体姿态分析相关任务**
@@ -149,7 +149,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 各个模型的结果和设置都可以在对应的 config（配置）目录下的 **README.md** 中查看。
 整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo.html) 页面中查看。
 
-<details open>
+<details close>
 <summary><b>支持的算法</b></summary>
 
 - [x] [DeepPose](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
@@ -176,7 +176,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 </details>
 
-<details open>
+<details close>
 <summary><b>支持的技术</b></summary>
 
 - [ ] [FPN](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
@@ -191,7 +191,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 </details>
 
-<details open>
+<details close>
 <summary><b>支持的<a href="https://mmpose.readthedocs.io/zh_CN/1.x/datasets.html">数据集</a></b></summary>
 
 - [x] [AFLW](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[[主页](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
@@ -228,7 +228,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 </details>
 
-<details>
+<details close>
 <summary><b>支持的骨干网络</b></summary>
 
 - [x] [AlexNet](https://mmpose.readthedocs.io/zh_CN/1.x/model_zoo_papers/backbones.html#alexnet-neurips-2012) (NeurIPS'2012)
