@@ -249,29 +249,29 @@ class PoseLocalVisualizer(Visualizer):
             if 'keypoint_scores' in instances:
                 scores = instances.keypoint_scores
             else:
-                scores = [np.ones(len(kpts)) for kpts in keypoints]
+                scores = np.ones(keypoints.shape[:-1])
 
             if 'keypoints_visible' in instances:
                 keypoints_visible = instances.keypoints_visible
             else:
-                keypoints_visible = [np.ones(len(kpts)) for kpts in keypoints]
-                keypoints_visible = np.array(keypoints_visible)
-
-            kpt_info = np.concatenate((keypoints, np.array(scores).reshape(
-                -1, len(scores[0]), 1), np.array(keypoints_visible).reshape(
-                    -1, len(keypoints_visible[0]), 1)),
-                                      axis=-1)
+                keypoints_visible = np.ones(keypoints.shape[:-1])
 
             if skeleton_style == 'openpose':
+                keypoints_info = np.concatenate(
+                    (keypoints, scores[..., None], keypoints_visible[...,
+                                                                     None]),
+                    axis=-1)
                 # compute neck joint
-                neck = np.mean(kpt_info[:, [5, 6]], axis=1)
+                neck = np.mean(keypoints_info[:, [5, 6]], axis=1)
                 # neck score when visualizing pred
-                if kpt_info[:, 5, 2] < kpt_thr or kpt_info[:, 6, 2] < kpt_thr:
-                    neck[:, 2] = 0
-                # neck visible when visualizing gt
-                if kpt_info[:, 5, 3] < kpt_thr or kpt_info[:, 6, 3] < kpt_thr:
-                    neck[:, 3] = 0
-                new_kpt_info = np.insert(kpt_info, 17, neck, axis=1)
+                neck[:, 2] = 1 - np.logical_or(
+                    keypoints_info[:, 5, 2] < kpt_thr,
+                    keypoints_info[:, 6, 2] < kpt_thr).astype(int)
+                neck[:, 3] = 1 - np.logical_or(
+                    keypoints_info[:, 5, 3] < kpt_thr,
+                    keypoints_info[:, 6, 3] < kpt_thr).astype(int)
+                new_keypoints_info = np.insert(
+                    keypoints_info, 17, neck, axis=1)
 
                 mmpose_idx = [
                     17, 6, 8, 10, 7, 9, 12, 14, 16, 13, 15, 2, 1, 4, 3
@@ -279,106 +279,114 @@ class PoseLocalVisualizer(Visualizer):
                 openpose_idx = [
                     1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17
                 ]
-                new_kpt_info[:, openpose_idx] = new_kpt_info[:, mmpose_idx]
-                kpt_info = new_kpt_info
+                new_keypoints_info[:, openpose_idx] = \
+                    new_keypoints_info[:, mmpose_idx]
+                keypoints_info = new_keypoints_info
 
-            kpts, score, visible = kpt_info[0, :, :2], kpt_info[
-                0, :, 2], kpt_info[0, :, 3]
-            if self.kpt_color is None or isinstance(self.kpt_color, str):
-                kpt_color = [self.kpt_color] * len(kpts)
-            elif len(self.kpt_color) == len(kpts):
-                kpt_color = self.kpt_color
-            else:
-                raise ValueError(f'the length of kpt_color '
-                                 f'({len(self.kpt_color)}) does not matches '
-                                 f'that of keypoints ({len(kpts)})')
+                keypoints, scores, keypoints_visible = keypoints_info[
+                    ..., :2], keypoints_info[..., 2], keypoints_info[..., 3]
 
-            # draw each point on image
-            for kid, kpt in enumerate(kpts):
-                if score[kid] < kpt_thr or not visible[
-                        kid] or kpt_color[kid] is None:
-                    # skip the point that should not be drawn
-                    continue
+            for kpts, score, visible in zip(keypoints, scores,
+                                            keypoints_visible):
+                kpts = np.array(kpts, copy=False)
 
-                color = kpt_color[kid]
-                if not isinstance(color, str):
-                    color = tuple(int(c) for c in color)
-                transparency = self.alpha
-                if self.show_keypoint_weight:
-                    transparency *= max(0, min(1, score[kid]))
-                self.draw_circles(
-                    kpt,
-                    radius=np.array([self.radius]),
-                    face_colors=color,
-                    edge_colors=color,
-                    alpha=transparency,
-                    line_widths=self.radius)
-                if show_kpt_idx:
-                    self.draw_texts(
-                        str(kid),
-                        kpt,
-                        colors=color,
-                        font_sizes=self.radius * 3,
-                        vertical_alignments='bottom',
-                        horizontal_alignments='center')
-
-            # draw links
-            if self.skeleton is not None and self.link_color is not None:
-                if self.link_color is None or isinstance(self.link_color, str):
-                    link_color = [self.link_color] * len(self.skeleton)
-                elif len(self.link_color) == len(self.skeleton):
-                    link_color = self.link_color
+                if self.kpt_color is None or isinstance(self.kpt_color, str):
+                    kpt_color = [self.kpt_color] * len(kpts)
+                elif len(self.kpt_color) == len(kpts):
+                    kpt_color = self.kpt_color
                 else:
                     raise ValueError(
-                        f'the length of link_color '
-                        f'({len(self.link_color)}) does not matches '
-                        f'that of skeleton ({len(self.skeleton)})')
+                        f'the length of kpt_color '
+                        f'({len(self.kpt_color)}) does not matches '
+                        f'that of keypoints ({len(kpts)})')
 
-                for sk_id, sk in enumerate(self.skeleton):
-                    pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
-                    pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
-                    if not (visible[sk[0]] and visible[sk[1]]):
+                # draw each point on image
+                for kid, kpt in enumerate(kpts):
+                    if score[kid] < kpt_thr or not visible[
+                            kid] or kpt_color[kid] is None:
+                        # skip the point that should not be drawn
                         continue
 
-                    if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
-                            or pos1[1] >= img_h or pos2[0] <= 0
-                            or pos2[0] >= img_w or pos2[1] <= 0
-                            or pos2[1] >= img_h or score[sk[0]] < kpt_thr
-                            or score[sk[1]] < kpt_thr
-                            or link_color[sk_id] is None):
-                        # skip the link that should not be drawn
-                        continue
-                    X = np.array((pos1[0], pos2[0]))
-                    Y = np.array((pos1[1], pos2[1]))
-                    color = link_color[sk_id]
+                    color = kpt_color[kid]
                     if not isinstance(color, str):
                         color = tuple(int(c) for c in color)
                     transparency = self.alpha
                     if self.show_keypoint_weight:
-                        transparency *= max(
-                            0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
+                        transparency *= max(0, min(1, score[kid]))
+                    self.draw_circles(
+                        kpt,
+                        radius=np.array([self.radius]),
+                        face_colors=color,
+                        edge_colors=color,
+                        alpha=transparency,
+                        line_widths=self.radius)
+                    if show_kpt_idx:
+                        self.draw_texts(
+                            str(kid),
+                            kpt,
+                            colors=color,
+                            font_sizes=self.radius * 3,
+                            vertical_alignments='bottom',
+                            horizontal_alignments='center')
 
-                    if skeleton_style == 'openpose':
-                        mX = np.mean(X)
-                        mY = np.mean(Y)
-                        length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
-                        angle = math.degrees(
-                            math.atan2(Y[0] - Y[1], X[0] - X[1]))
-                        stickwidth = 2
-                        polygons = cv2.ellipse2Poly(
-                            (int(mX), int(mY)),
-                            (int(length / 2), int(stickwidth)), int(angle), 0,
-                            360, 1)
-
-                        self.draw_polygons(
-                            polygons,
-                            edge_colors=color,
-                            face_colors=color,
-                            alpha=transparency)
-
+                # draw links
+                if self.skeleton is not None and self.link_color is not None:
+                    if self.link_color is None or isinstance(
+                            self.link_color, str):
+                        link_color = [self.link_color] * len(self.skeleton)
+                    elif len(self.link_color) == len(self.skeleton):
+                        link_color = self.link_color
                     else:
-                        self.draw_lines(
-                            X, Y, color, line_widths=self.line_width)
+                        raise ValueError(
+                            f'the length of link_color '
+                            f'({len(self.link_color)}) does not matches '
+                            f'that of skeleton ({len(self.skeleton)})')
+
+                    for sk_id, sk in enumerate(self.skeleton):
+                        pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
+                        pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
+                        if not (visible[sk[0]] and visible[sk[1]]):
+                            continue
+
+                        if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
+                                or pos1[1] >= img_h or pos2[0] <= 0
+                                or pos2[0] >= img_w or pos2[1] <= 0
+                                or pos2[1] >= img_h or score[sk[0]] < kpt_thr
+                                or score[sk[1]] < kpt_thr
+                                or link_color[sk_id] is None):
+                            # skip the link that should not be drawn
+                            continue
+                        X = np.array((pos1[0], pos2[0]))
+                        Y = np.array((pos1[1], pos2[1]))
+                        color = link_color[sk_id]
+                        if not isinstance(color, str):
+                            color = tuple(int(c) for c in color)
+                        transparency = self.alpha
+                        if self.show_keypoint_weight:
+                            transparency *= max(
+                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
+
+                        if skeleton_style == 'openpose':
+                            mX = np.mean(X)
+                            mY = np.mean(Y)
+                            length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
+                            angle = math.degrees(
+                                math.atan2(Y[0] - Y[1], X[0] - X[1]))
+                            stickwidth = 2
+                            polygons = cv2.ellipse2Poly(
+                                (int(mX), int(mY)),
+                                (int(length / 2), int(stickwidth)), int(angle),
+                                0, 360, 1)
+
+                            self.draw_polygons(
+                                polygons,
+                                edge_colors=color,
+                                face_colors=color,
+                                alpha=transparency)
+
+                        else:
+                            self.draw_lines(
+                                X, Y, color, line_widths=self.line_width)
 
         return self.get_image()
 
