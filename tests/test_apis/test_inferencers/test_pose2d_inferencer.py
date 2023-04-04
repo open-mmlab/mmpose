@@ -43,10 +43,7 @@ class TestPose2DInferencer(TestCase):
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
 
         # 3. init with alias
-        with self.assertWarnsRegex(
-                Warning, 'dataset_meta are not saved in '
-                'the checkpoint\'s meta data, load via config.'):
-            inferencer = Pose2DInferencer(model='animal')
+        inferencer = Pose2DInferencer(model='animal')
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids,

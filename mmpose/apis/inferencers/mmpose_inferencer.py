@@ -3,6 +3,7 @@ import warnings
 from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
+import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
@@ -107,6 +108,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             # only supports inference with batch size 1
             yield data_batch, [input]
 
+    @torch.no_grad()
     def forward(self, inputs: InputType, **forward_kwargs) -> PredType:
         """Forward the inputs to the model.
 
