@@ -46,7 +46,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
         self.backbone = MODELS.build(backbone)
 
-        # the PR #2108 and #2126 modifies the interface of neck and head.
+        # the PR #2108 and #2126 modified the interface of neck and head.
         # The following function automatically detects outdated
         # configurations and updates them accordingly, while also providing
         # clear and concise information on the changes made.

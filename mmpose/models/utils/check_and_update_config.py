@@ -60,8 +60,17 @@ def process_extra_field(extra: Dict, head_new: Dict, head_deleted_dict: Dict,
     head_deleted_dict['extra'] = head_deleted_dict['extra'][:-1] + ')'
     if 'final_conv_kernel' in extra:
         kernel_size = extra['final_conv_kernel']
-        head_new['final_layer'] = dict(kernel_size=kernel_size)
-        head_append_dict['final_layer'] = f'dict(kernel_size={kernel_size})'
+        if kernel_size > 1:
+            padding = kernel_size // 2
+            head_new['final_layer'] = dict(
+                kernel_size=kernel_size, padding=padding)
+            head_append_dict[
+                'final_layer'] = f'dict(kernel_size={kernel_size}, ' \
+                                 f'padding={padding})'
+        else:
+            head_new['final_layer'] = dict(kernel_size=kernel_size)
+            head_append_dict[
+                'final_layer'] = f'dict(kernel_size={kernel_size})'
     if 'upsample' in extra:
         neck_new.update(
             dict(
