@@ -176,6 +176,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         inputs = self.preprocess(
             inputs, batch_size=batch_size, **preprocess_kwargs)
 
+        forward_kwargs['bbox_thr'] = preprocess_kwargs.get('bbox_thr', -1)
+
         preds = []
         if 'pose2d' not in self.mode or not hasattr(self.pose2d_inferencer,
                                                     'detector'):
