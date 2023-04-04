@@ -7,7 +7,7 @@ from typing import Dict, Optional, Sequence
 
 import numpy as np
 from mmengine.evaluator import BaseMetric
-from mmengine.fileio import dump, load
+from mmengine.fileio import dump, get_local_path, load
 from mmengine.logging import MMLogger
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
@@ -102,7 +102,8 @@ class CocoMetric(BaseMetric):
         # initialize coco helper with the annotation json file
         # if ann_file is not specified, initialize with the converted dataset
         if ann_file is not None:
-            self.coco = COCO(ann_file)
+            with get_local_path(ann_file) as local_path:
+                self.coco = COCO(local_path)
         else:
             self.coco = None
 
