@@ -151,7 +151,7 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
 Results and models are available in the **README.md** of each method's config directory.
 A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo.html) page.
 
-<details open>
+<details close>
 <summary><b>Supported algorithms:</b></summary>
 
 - [x] [DeepPose](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
@@ -178,7 +178,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/m
 
 </details>
 
-<details open>
+<details close>
 <summary><b>Supported techniques:</b></summary>
 
 - [ ] [FPN](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
@@ -193,7 +193,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/m
 
 </details>
 
-<details open>
+<details close>
 <summary><b>Supported <a href="https://mmpose.readthedocs.io/en/1.x/dataset_zoo.html">datasets</a>:</b></summary>
 
 - [x] [AFLW](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
@@ -230,7 +230,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/m
 
 </details>
 
-<details open>
+<details close>
 <summary><b>Supported backbones:</b></summary>
 
 - [x] [AlexNet](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/backbones.html#alexnet-neurips-2012) (NeurIPS'2012)
