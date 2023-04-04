@@ -129,20 +129,6 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 安装
 
-用户可以通过以下方式安装 MMPose：
-
-```shell
-conda create -n open-mmlab python=3.8 pytorch==1.10.1 torchvision==0.11.2 cudatoolkit=11.3 -c pytorch -y
-conda activate open-mmlab
-pip install openmim
-git clone -b 1.x https://github.com/open-mmlab/mmpose.git
-cd mmpose
-mim install -e
-
-# 如果您当前环境下安装了旧版本的 mmdet，您需要升级到 3.x 版本
-mim install "mmdet>=3.0.0rc6"
-```
-
 关于安装的详细说明请参考[安装文档](https://mmpose.readthedocs.io/zh_CN/1.x/installation.html)。
 
 ## 教程
