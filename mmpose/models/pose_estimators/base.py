@@ -7,6 +7,7 @@ from mmengine.model import BaseModel
 from torch import Tensor
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
+from mmpose.models.utils import check_and_update_config
 from mmpose.registry import MODELS
 from mmpose.utils.typing import (ConfigType, ForwardResults, OptConfigType,
                                  Optional, OptMultiConfig, OptSampleList,
@@ -44,6 +45,12 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         self.metainfo = self._load_metainfo(metainfo)
 
         self.backbone = MODELS.build(backbone)
+
+        # the PR #2108 and #2126 modifies the interface of neck and head.
+        # The following function automatically detects outdated
+        # configurations and updates them accordingly, while also providing
+        # clear and concise information on the changes made.
+        neck, head = check_and_update_config(neck, head)
 
         if neck is not None:
             self.neck = MODELS.build(neck)
