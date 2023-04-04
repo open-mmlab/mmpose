@@ -79,6 +79,23 @@ python demo/topdown_demo_with_mmdet.py \
 
 The original video can be downloaded from [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing).
 
+### 2D Face Pose Demo with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py tests/data/wflw \
+    --pose2d face --vis-out-dir vis_results/wflw --radius 1
+```
+
+This command infers all images located in `tests/data/wflw` and saves the visualization results in the `vis_results/wflw` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229793095-702f9d3b-461f-45bd-8535-d628e33bc907.jpg" alt="Image 1" width="400"/>
+
+<img src="https://user-images.githubusercontent.com/26127467/229793121-9969f014-70da-40b5-8561-e21c3edd1aeb.jpg" alt="Image 2" width="400"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
+
 ### Speed Up Inference
 
 For 2D face keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [aflw_hrnetv2](../../configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py#90).

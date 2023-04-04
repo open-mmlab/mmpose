@@ -125,6 +125,22 @@ Visualization result:
 
 <img src="https://user-images.githubusercontent.com/26127467/207224032-a8dab45d-39e4-4b4e-80e0-3c71a64f5f39.jpg" height="300px" alt><br>
 
+### 2D Human Pose Demo with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py --pose2d human \
+    tests/data/posetrack18/videos/000001_mpiinew_test/000001_mpiinew_test.mp4 \
+    --vis-out-dir vis_results/posetrack18
+```
+
+This command infers the video and saves the visualization results in the `vis_results/posetrack18` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229831445-44c9662b-edc5-4ef0-92a6-13558f0906cc.gif" alt="Image 1" height="300"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
+
 ### Speed Up Inference
 
 Some tips to speed up MMPose inference:

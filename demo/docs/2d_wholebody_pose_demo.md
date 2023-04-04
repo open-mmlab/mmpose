@@ -88,6 +88,21 @@ Visualization result:
 
 <img src="https://user-images.githubusercontent.com/87690686/190854069-634e1142-d13c-4863-9930-1120057ca77e.gif" height="350px" alt><br>
 
+### 2D Human Whole-Body Pose with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py tests/data/crowdpose \
+    --pose2d animal --vis-out-dir vis_results/crowdpose
+```
+
+This command infers all images located in `tests/data/crowdpose` and saves the visualization results in the `vis_results/crowdpose` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229832887-31edb6d5-bcf0-44a4-a66f-9d523061a6e9.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229832908-bc82dbc9-5e43-4800-acc7-a7da85a653c7.jpg" alt="Image 2" height="200"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
+
 ### Speed Up Inference
 
 Some tips to speed up MMPose inference:

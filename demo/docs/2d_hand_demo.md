@@ -80,6 +80,22 @@ python demo/topdown_demo_with_mmdet.py \
 
 The original video can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi).
 
+### 2D Hand Keypoints Demo with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py tests/data/onehand10k \
+    --pose2d animal --vis-out-dir vis_results/onehand10k \
+    --bbox-thr 0.5 --kpt-thr 0.05
+```
+
+This command infers all images located in `tests/data/onehand10k` and saves the visualization results in the `vis_results/onehand10k` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229824447-b444e92d-9b5b-4a50-9a32-68be3ff8c527.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824466-6ae47a40-70a6-451d-94ee-4ffc34204a9c.jpg" alt="Image 2" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824477-679201c3-1e0b-45fe-b0c7-bab67b245a10.jpg" alt="Image 3" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824488-bd874362-7401-41a5-8209-51bad1563a11.jpg" alt="Image 4" height="200"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
+
 ### Speed Up Inference
 
 For 2D hand keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py#90).

@@ -58,6 +58,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         'return_vis',
         'show',
         'wait_time',
+        'draw_bbox',
         'radius',
         'thickness',
         'kpt_thr',
