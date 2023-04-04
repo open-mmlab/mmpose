@@ -178,13 +178,19 @@ class CocoMetric(BaseMetric):
             pred['keypoint_scores'] = keypoint_scores
             pred['category_id'] = data_sample.get('category_id', 1)
 
-            if ('bbox_scores' not in data_sample['gt_instances']
-                    or len(data_sample['gt_instances']['bbox_scores']) !=
-                    len(keypoints)):
+            if 'bbox_scores' in data_sample['pred_instances']:
+                # some one-stage models will predict bboxes and scores
+                # together with keypoints
+                bbox_scores = data_sample['pred_instances']['bbox_scores']
+            elif ('bbox_scores' not in data_sample['gt_instances']
+                  or len(data_sample['gt_instances']['bbox_scores']) !=
+                  len(keypoints)):
                 # bottom-up models might output different number of
                 # instances from annotation
                 bbox_scores = np.ones(len(keypoints))
             else:
+                # top-down models use detected bboxes, the scores of which
+                # are contained in the gt_instances
                 bbox_scores = data_sample['gt_instances']['bbox_scores']
             pred['bbox_scores'] = bbox_scores
 
