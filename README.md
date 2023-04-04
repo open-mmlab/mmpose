@@ -131,21 +131,6 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## Installation
 
-Below are quick steps for installation:
-
-```shell
-conda create -n open-mmlab python=3.8 pytorch==1.10.1 torchvision==0.11.2 cudatoolkit=11.3 -c pytorch -y
-conda activate open-mmlab
-pip install openmim
-git clone -b 1.x https://github.com/open-mmlab/mmpose.git
-cd mmpose
-mim install -e .
-
-# If you have an older version of mmdet installed in your current environment,
-# please upgrade to version 3.x
-mim install "mmdet>=3.0.0rc6"
-```
-
 Please refer to [installation.md](https://mmpose.readthedocs.io/en/1.x/installation.html) for more detailed installation and dataset preparation.
 
 ## Getting Started
@@ -164,7 +149,7 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
 ## Model Zoo
 
 Results and models are available in the **README.md** of each method's config directory.
-A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html) page.
+A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo.html) page.
 
 <details open>
 <summary><b>Supported algorithms:</b></summary>
