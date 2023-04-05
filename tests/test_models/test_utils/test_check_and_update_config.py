@@ -28,7 +28,8 @@ class TestCheckAndUpdateConfig(unittest.TestCase):
                 apply_relu=True,
             ))
         self.assertIn('final_layer', head)
-        self.assertDictEqual(head['final_layer'], dict(kernel_size=3))
+        self.assertDictEqual(head['final_layer'],
+                             dict(kernel_size=3, padding=1))
         self.assertNotIn('extra', head)
         self.assertNotIn('input_transform', head)
         self.assertNotIn('input_index', head)
