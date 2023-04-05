@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+import platform
 import unittest
 from collections import defaultdict
 from tempfile import TemporaryDirectory
@@ -15,6 +16,19 @@ from mmpose.structures import PoseDataSample
 
 
 class TestPose2DInferencer(TestCase):
+
+    def _get_det_model_weights(self):
+        if platform.system().lower() == 'windows':
+            # the default human pose estimator utilizes rtmdet-m detector
+            # through alias, which seems not compatible with windows
+            det_model = 'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'
+            det_weights = 'https://download.openmmlab.com/mmdetection/v2.0/' \
+                          'faster_rcnn/faster_rcnn_r50_fpn_1x_coco/' \
+                          'faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
+        else:
+            det_model, det_weights = None, None
+
+        return det_model, det_weights
 
     def test_init(self):
 
@@ -36,14 +50,18 @@ class TestPose2DInferencer(TestCase):
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
 
         # 2. init with config name
+        det_model, det_weights = self._get_det_model_weights()
         inferencer = Pose2DInferencer(
-            model='td-hm_res50_8xb32-210e_onehand10k-256x256')
+            model='td-hm_res50_8xb32-210e_onehand10k-256x256',
+            det_model=det_model,
+            det_weights=det_weights)
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
 
         # 3. init with alias
-        inferencer = Pose2DInferencer(model='animal')
+        inferencer = Pose2DInferencer(
+            model='animal', det_model=det_model, det_weights=det_weights)
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids,
@@ -68,7 +86,9 @@ class TestPose2DInferencer(TestCase):
             return unittest.skip('mmdet is not installed')
 
         # top-down model
-        inferencer = Pose2DInferencer('human')
+        det_model, det_weights = self._get_det_model_weights()
+        inferencer = Pose2DInferencer(
+            'human', det_model=det_model, det_weights=det_weights)
 
         img_path = 'tests/data/coco/000000197388.jpg'
         img = mmcv.imread(img_path)
