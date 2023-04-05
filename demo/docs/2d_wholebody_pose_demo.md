@@ -94,7 +94,7 @@ The Inferencer provides a convenient interface for inference, allowing customiza
 
 ```shell
 python demo/inferencer_demo.py tests/data/crowdpose \
-    --pose2d animal --vis-out-dir vis_results/crowdpose
+    --pose2d wholebody --vis-out-dir vis_results/crowdpose
 ```
 
 This command infers all images located in `tests/data/crowdpose` and saves the visualization results in the `vis_results/crowdpose` directory.

@@ -86,7 +86,7 @@ The Inferencer provides a convenient interface for inference, allowing customiza
 
 ```shell
 python demo/inferencer_demo.py tests/data/onehand10k \
-    --pose2d animal --vis-out-dir vis_results/onehand10k \
+    --pose2d hand --vis-out-dir vis_results/onehand10k \
     --bbox-thr 0.5 --kpt-thr 0.05
 ```
 
