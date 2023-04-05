@@ -19,8 +19,8 @@ class TestPose2DInferencer(TestCase):
 
     def _get_det_model_weights(self):
         if platform.system().lower() == 'windows':
-            # the default human pose estimator utilizes rtmdet-m detector
-            # through alias, which seems not compatible with windows
+            # the default human/animal pose estimator utilizes rtmdet-m 
+            # detector through alias, which seems not compatible with windows
             det_model = 'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'
             det_weights = 'https://download.openmmlab.com/mmdetection/v2.0/' \
                           'faster_rcnn/faster_rcnn_r50_fpn_1x_coco/' \
@@ -36,6 +36,8 @@ class TestPose2DInferencer(TestCase):
             from mmdet.apis.det_inferencer import DetInferencer  # noqa: F401
         except (ImportError, ModuleNotFoundError):
             return unittest.skip('mmdet is not installed')
+        
+        det_model, det_weights = self._get_det_model_weights()
 
         # 1. init with config path and checkpoint
         inferencer = Pose2DInferencer(
@@ -44,13 +46,13 @@ class TestPose2DInferencer(TestCase):
             weights='https://download.openmmlab.com/mmpose/'
             'v1/body_2d_keypoint/simcc/coco/'
             'simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth',
+            det_model=det_model, det_weights=det_weights
         )
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
 
         # 2. init with config name
-        det_model, det_weights = self._get_det_model_weights()
         inferencer = Pose2DInferencer(
             model='td-hm_res50_8xb32-210e_onehand10k-256x256',
             det_model=det_model,
