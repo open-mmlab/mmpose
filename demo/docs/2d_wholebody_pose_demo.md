@@ -88,7 +88,7 @@ Visualization result:
 
 <img src="https://user-images.githubusercontent.com/87690686/190854069-634e1142-d13c-4863-9930-1120057ca77e.gif" height="350px" alt><br>
 
-### 2D Human Whole-Body Pose with Inferencer
+### 2D Human Whole-Body Pose Estimation with Inferencer
 
 The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
 
