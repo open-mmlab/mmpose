@@ -47,7 +47,8 @@ class TestPose2DInferencer(TestCase):
             'v1/body_2d_keypoint/simcc/coco/'
             'simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth',
             det_model=det_model,
-            det_weights=det_weights)
+            det_weights=det_weights,
+            det_cat_ids=0 if det_model else None)
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
@@ -56,14 +57,19 @@ class TestPose2DInferencer(TestCase):
         inferencer = Pose2DInferencer(
             model='td-hm_res50_8xb32-210e_onehand10k-256x256',
             det_model=det_model,
-            det_weights=det_weights)
+            det_weights=det_weights,
+            det_cat_ids=0 if det_model else None)
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids, (0, ))
 
         # 3. init with alias
         inferencer = Pose2DInferencer(
-            model='animal', det_model=det_model, det_weights=det_weights)
+            model='animal',
+            det_model=det_model,
+            det_weights=det_weights,
+            det_cat_ids=(15, 16, 17, 18, 19, 20, 21, 22,
+                         23) if det_model else None)
         self.assertIsInstance(inferencer.model, torch.nn.Module)
         self.assertIsInstance(inferencer.detector, BaseInferencer)
         self.assertSequenceEqual(inferencer.det_cat_ids,
