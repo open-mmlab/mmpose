@@ -1,7 +1,7 @@
 # 教程 1：如何微调模型
 
 在 COCO 数据集上进行预训练，然后在其他数据集（如 COCO-WholeBody 数据集）上进行微调，往往可以提升模型的效果。
-本教程介绍如何使用[模型库](https://mmpose.readthedocs.io/en/latest/modelzoo.html)中的预训练模型，并在其他数据集上进行微调。
+本教程介绍如何使用[模型库](https://mmpose.readthedocs.io/en/0.x/modelzoo.html)中的预训练模型，并在其他数据集上进行微调。
 
 <!-- TOC -->
 
