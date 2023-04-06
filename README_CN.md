@@ -106,7 +106,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - 通过独立项目的形式，利用 MMPose 的强大功能，同时不被代码框架所束缚
   - 最新添加的项目包括：
     - [RTMPose](/projects/rtmpose/)
-    - [YOLOX-Pose](/projects/yolox_pose/)
+    - [YOLOX-Pose](/projects/yolox-pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
   - 从简单的 [示例项目](/projects/example_project/) 开启您的 MMPose 代码贡献者之旅吧，让我们共同打造更好用的 MMPose！
 
