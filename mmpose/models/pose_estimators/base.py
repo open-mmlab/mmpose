@@ -24,7 +24,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         metainfo (dict): Meta information for dataset, such as keypoints
             definition and properties. If set, the metainfo of the input data
             batch will be overridden. For more details, please refer to
-            https://mmpose.readthedocs.io/en/1.x/user_guides/
+            https://mmpose.readthedocs.io/en/latest/user_guides/
             prepare_datasets.html#create-a-custom-dataset-info-
             config-file-for-the-dataset. Defaults to ``None``
     """

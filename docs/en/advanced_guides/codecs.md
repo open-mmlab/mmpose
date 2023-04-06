@@ -1,4 +1,4 @@
-# Codecs
+# Learn about Codecs
 
 In the keypoint detection task, depending on the algorithm, it is often necessary to generate targets in different formats, such as normalized coordinates, vectors and heatmaps, etc. Similarly, for the model outputs, a decoding process is required to transform them into coordinates.
 

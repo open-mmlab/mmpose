@@ -37,7 +37,7 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 
 ### Data Preparation
 
-Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/1.x/dataset_zoo/2d_body_keypoint.html#coco).
+Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/dev-1.x/dataset_zoo/2d_body_keypoint.html#coco).
 
 ### Training commands
 
@@ -149,7 +149,7 @@ to MMPose projects.
 
   - [ ] Unit tests
 
-    > Unit tests for the major module are required. [Example](https://github.com/open-mmlab/mmpose/blob/1.x/tests/test_models/test_heads/test_heatmap_heads/test_heatmap_head.py)
+    > Unit tests for the major module are required. [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/tests/test_models/test_heads/test_heatmap_heads/test_heatmap_head.py)
 
   - [ ] Code polishing
 

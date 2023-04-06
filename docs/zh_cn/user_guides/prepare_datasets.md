@@ -1,6 +1,6 @@
 # 准备数据集
 
-MMPose 目前已支持了多个任务和相应的数据集。您可以在 [数据集](https://mmpose.readthedocs.io/zh_CN/1.x/dataset_zoo.html) 找到它们。请按照相应的指南准备数据。
+MMPose 目前已支持了多个任务和相应的数据集。您可以在 [数据集](https://mmpose.readthedocs.io/zh_CN/latest/dataset_zoo.html) 找到它们。请按照相应的指南准备数据。
 
 <!-- TOC -->
 

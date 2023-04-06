@@ -47,26 +47,30 @@ MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs�
 
 2. MMPose 的基本使用方法：
 
-   - [快速上手](./quick_run.md)
+   - [20 分钟上手教程](./guide_to_framework.md)
+   - [Demos](./demos.md)
    - [模型推理](./user_guides/inference.md)
-
-3. 对于希望了解 MMPose 各个组件的用户：
-
    - [配置文件](./user_guides/configs.md)
    - [准备数据集](./user_guides/prepare_datasets.md)
-   - [编解码器](./user_guides/codecs.md)
    - [训练与测试](./user_guides/train_and_test.md)
-   - [可视化](./user_guides/visualization.md)
-   - [How to](./user_guides/how_to.md)
 
-4. 对于希望将自己的项目迁移到 MMPose 的开发者：
+3. 对于希望基于 MMPose 进行开发的研究者和开发者：
 
+   - [编解码器](./advanced_guides/codecs.md)
+   - [数据流](./advanced_guides/dataflow.md)
+   - [实现新模型](./advanced_guides/implement_new_models.md)
+   - [自定义数据集](./advanced_guides/customize_datasets.md)
+   - [自定义数据变换](./advanced_guides/customize_transforms.md)
+   - [自定义优化器](./advanced_guides/customize_optimizer.md)
+   - [自定义日志](./advanced_guides/customize_logging.md)
+   - [模型部署](./advanced_guides/how_to_deploy.md)
+   - [模型分析工具](./advanced_guides/model_analysis.md)
    - [迁移指南](./migration.md)
 
-5. 对于希望加入开源社区，向 MMPose 贡献代码的研究者和开发者：
+4. 对于希望加入开源社区，向 MMPose 贡献代码的研究者和开发者：
 
    - [参与贡献代码](./contribution_guide.md)
 
-6. 对于使用过程中的常见问题：
+5. 对于使用过程中的常见问题：
 
    - [FAQ](./faq.md)
