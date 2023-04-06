@@ -18,7 +18,7 @@
     &nbsp;&nbsp;&nbsp;&nbsp;
     <b><font size="5">MMPose 1.0</font></b>
     <sup>
-      <a href="https://mmpose.readthedocs.io/en/latest/overview.html">
+      <a href="https://mmpose.readthedocs.io/zh_CN/latest/overview.html">
         <i><font size="4">TRY</font></i>
       </a>
     </sup>
@@ -88,7 +88,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - 2022-10-14: MMPose [v0.29.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.29.0) 已经发布，主要更新包括：
   - 新增算法 [DEKR](https://arxiv.org/abs/2104.02300) (CVPR'2021). 详情请见 [模型页面](/configs/body/2d_kpt_sview_rgb_img/dekr/coco/hrnet_coco.md)
   - 新增算法 [CID](https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html) (CVPR'2022). 详情请见 [模型页面](/configs/body/2d_kpt_sview_rgb_img/cid/coco/hrnet_coco.md)
-- 2022-09-01: **MMPose v1.0.0** 公测版本已经发布 \[ [Code](https://github.com/open-mmlab/mmpose/tree/1.x) | [Docs](https://mmpose.readthedocs.io/en/latest/) \]，欢迎尝试并提出宝贵意见
+- 2022-09-01: **MMPose v1.0.0** 公测版本已经发布 \[ [Code](https://github.com/open-mmlab/mmpose/tree/1.x) | [Docs](https://mmpose.readthedocs.io/zh_CN/latest/) \]，欢迎尝试并提出宝贵意见
 - 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
 - 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
