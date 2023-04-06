@@ -121,7 +121,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
   请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) 以了解更多 MMPose v1.0.0 带来的更新!
 
-## 0.x -> 1.x 迁移进度
+## 0.x / 1.x 迁移
 
 MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的变化。目前 v1.0.0 中已经完成了一部分算法的迁移工作，剩余的算法将在后续的版本中陆续完成，我们将在下面的列表中展示迁移进度。
 
