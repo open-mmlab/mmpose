@@ -170,7 +170,7 @@ def display_modifications(head_deleted_dict: Dict, head_append_dict: Dict,
                   'guide_to_framework.html#step3-model'
 
     logger: MMLogger = MMLogger.get_current_instance()
-    logger.info(total_info)
+    logger.warning(total_info)
 
 
 def build_model_info(head_deleted_dict: Dict, head_append_dict: Dict,
