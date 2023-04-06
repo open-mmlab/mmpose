@@ -123,6 +123,48 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
   Please refer to the [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) for more updates brought by MMPose v1.0.0!
 
+## 0.x -> 1.x 迁移进度
+
+MMPose v1.0.0 is a major update, including many API and config file changes. Currently, a part of the algorithms have been migrated to v1.0.0, and the remaining algorithms will be completed in subsequent versions. We will show the migration progress in the following list.
+
+<details close>
+<summary><b>Migration Progress</b></summary>
+
+| Algorithm | Status |
+| :--- | :---: |
+| MTUT (CVPR 2019) |  | 
+| MSPN (ArXiv 2019)| done | 
+| InterNet (ECCV 2020) |  | 
+| DEKR (CVPR 2021) | done |
+| HigherHRNet (CVPR 2020) | |
+| DeepPose (CVPR 2014) | done |
+| RLE (ICCV 2021) | done |
+| SoftWingloss (TIP 2021) | |
+| VideoPose3D (CVPR 2019) | |
+| Hourglass (ECCV 2016) | done |
+| LiteHRNet (CVPR 2021) | done |
+| AdaptiveWingloss (ICCV 2019) | done |
+| SimpleBaseline2D (ECCV 2018) | done |
+| PoseWarper (NeurIPS 2019) | |
+| SimpleBaseline3D (ICCV 2017) | |
+| HMR (CVPR 2018) | |
+| UDP (CVPR 2020) | done |
+| VIPNAS (CVPR 2021) | done |
+| Wingloss (CVPR 2018) | |
+| DarkPose (CVPR 2020) | done |
+| Associative Embedding (NIPS 2017) | in progress |
+| VoxelPose (ECCV 2020) | |
+| RSN (ECCV 2020) | done |
+| CID (CVPR 2022) | done |
+| CPM (CVPR 2016) | done |
+| HRNet (CVPR 2019) | done |
+| HRNetv2 (TPAMI 2019) | done |
+| SCNet (CVPR 2020) | done |
+
+</details>
+
+If your algorithm has not been migrated, you can continue to use the [0.x branch](https://github.com/open-mmlab/mmpose/tree/0.x) and [old documentation](https://mmpose.readthedocs.io/en/0.x/).
+
 ## Installation
 
 Please refer to [installation.md](https://mmpose.readthedocs.io/en/latest/installation.html) for more detailed installation and dataset preparation.
