@@ -1,6 +1,7 @@
 Models:
 - Config: configs/animal_2d_keypoint/rtmpose/ap10k/rtmpose-m_8xb64-210e_ap10k-256x256.py
   In Collection: RTMPose
+  Alias: animal
   Metadata:
     Architecture:
     - RTMPose

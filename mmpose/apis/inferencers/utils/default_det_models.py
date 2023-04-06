@@ -7,13 +7,7 @@ from mmengine.utils import get_installed_path
 mmpose_path = get_installed_path(MODULE2PACKAGE['mmpose'])
 
 default_det_models = dict(
-    human=dict(
-        model=osp.join(mmpose_path, '.mim',
-                       'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'),
-        weights='https://download.openmmlab.com/mmdetection/v2.0/'
-        'faster_rcnn/faster_rcnn_r50_fpn_1x_coco/'
-        'faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth',
-        cat_ids=(0, )),
+    human=dict(model='rtmdet-m', weights=None, cat_ids=(0, )),
     face=dict(
         model=osp.join(mmpose_path, '.mim',
                        'demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py'),
@@ -22,17 +16,14 @@ default_det_models = dict(
         cat_ids=(0, )),
     hand=dict(
         model=osp.join(
-            mmpose_path, '.mim',
-            'demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py'),
+            mmpose_path, '.mim', 'demo/mmdetection_cfg/'
+            'ssdlite_mobilenetv2_scratch_600e_onehand.py'),
         weights='https://download.openmmlab.com/mmpose/mmdet_pretrained/'
-        'cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth',
+        'ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth',
         cat_ids=(0, )),
     animal=dict(
-        model=osp.join(mmpose_path, '.mim',
-                       'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'),
-        weights='https://download.openmmlab.com/mmdetection/v2.0/'
-        'faster_rcnn/faster_rcnn_r50_fpn_1x_coco/'
-        'faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth',
+        model='rtmdet-m',
+        weights=None,
         cat_ids=(15, 16, 17, 18, 19, 20, 21, 22, 23)),
 )
 

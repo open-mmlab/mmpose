@@ -1,6 +1,7 @@
 Models:
 - Config: configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py
   In Collection: RTMPose
+  Alias: wholebody
   Metadata:
     Architecture: &id001
     - HRNet
