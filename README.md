@@ -108,7 +108,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - Build individual projects with full power of MMPose but not bound up with heavy frameworks
   - Checkout new projects:
     - [RTMPose](/projects/rtmpose/)
-    - [YOLOX-Pose](/projects/yolox_pose/)
+    - [YOLOX-Pose](/projects/yolox-pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
   - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
 
