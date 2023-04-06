@@ -166,7 +166,7 @@ def display_modifications(head_deleted_dict: Dict, head_append_dict: Dict,
     total_info += '```\nshould be updated to\n```\n'
     total_info += new_model_info
     total_info += '```\nFor more information, please refer to '\
-                  'https://mmpose.readthedocs.io/en/dev-1.x/' \
+                  'https://mmpose.readthedocs.io/en/latest/' \
                   'guide_to_framework.html#step3-model'
 
     logger: MMLogger = MMLogger.get_current_instance()
