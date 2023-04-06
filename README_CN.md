@@ -52,7 +52,7 @@
 
 MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
-0.x 分支代码目前支持PyTorch 1.5 以上的版本。此分支将不再推出新功能，仅进行基本维护。为了获得更佳的使用体验，请使用最新的 [MMPose 1.0](https://github.com/open-mmlab/mmpose)。
+0.x 分支代码目前支持 PyTorch 1.5 以上的版本。此分支将不再推出新功能，仅进行基本维护。**为了获得更佳的使用体验，请使用最新的 [MMPose 1.0](https://github.com/open-mmlab/mmpose)**。
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
