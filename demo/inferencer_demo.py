@@ -57,6 +57,10 @@ def parse_args():
         action='store_true',
         help='Display the image/video in a popup window.')
     parser.add_argument(
+        '--draw-bbox',
+        action='store_true',
+        help='Whether to draw the bounding boxes.')
+    parser.add_argument(
         '--bbox-thr',
         type=float,
         default=0.3,

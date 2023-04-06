@@ -97,6 +97,21 @@ python demo/topdown_demo_with_mmdet.py \
 
 The original video can be downloaded from [Google Drive](https://drive.google.com/file/d/18d8K3wuUpKiDFHvOx0mh1TEwYwpOc5UO/view?usp=sharing).
 
+### 2D Animal Pose Demo with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py tests/data/ap10k \
+    --pose2d animal --vis-out-dir vis_results/ap10k
+```
+
+This command infers all images located in `tests/data/ap10k` and saves the visualization results in the `vis_results/ap10k` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229789306-83ea56fa-12f2-4e27-9031-329d335ec26d.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229789324-7fef5688-422d-4663-a57c-d1e1d511e83c.jpg" alt="Image 2" height="200"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
+
 ### Speed Up Inference
 
 Some tips to speed up MMPose inference:

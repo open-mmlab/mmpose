@@ -1,7 +1,6 @@
 Models:
 - Config: configs/face_2d_keypoint/topdown_heatmap/wflw/td-hm_hrnetv2-w18_8xb64-60e_wflw-256x256.py
   In Collection: HRNetv2
-  Alias: face
   Metadata:
     Architecture:
     - HRNetv2
