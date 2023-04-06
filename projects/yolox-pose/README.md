@@ -32,7 +32,7 @@ python demo/inferencer_demo.py $INPUTS \
     [--show] [--vis-out-dir $VIS_OUT_DIR] [--pred-out-dir $PRED_OUT_DIR]
 ```
 
-For more information on using the inferencer, please see [this document](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html#out-of-the-box-inferencer).
+For more information on using the inferencer, please see [this document](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html#out-of-the-box-inferencer).
 
 Here's an example code:
 
@@ -51,7 +51,7 @@ This will create an output image `vis_results/000000000785.jpg`, which appears l
 
 #### Data Preparation
 
-Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/1.x/dataset_zoo/2d_body_keypoint.html#coco).
+Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#coco).
 
 #### Commands
 

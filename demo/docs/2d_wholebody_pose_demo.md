@@ -14,7 +14,7 @@ python demo/image_demo.py \
     [--draw_heatmap]
 ```
 
-The pre-trained hand pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/2d_wholebody_keypoint.html).
+The pre-trained hand pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/2d_wholebody_keypoint.html).
 Take [coco-wholebody_vipnas_res50_dark](https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth) model as an example:
 
 ```shell

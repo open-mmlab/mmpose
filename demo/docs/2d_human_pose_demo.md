@@ -18,7 +18,7 @@ python demo/image_demo.py \
 
 If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
 
-The pre-trained human pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/body_2d_keypoint.html).
+The pre-trained human pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/body_2d_keypoint.html).
 Take [coco model](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth) as an example:
 
 ```shell

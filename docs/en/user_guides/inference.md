@@ -1,11 +1,11 @@
 # Inference with existing models
 
-MMPose provides a wide variety of pre-trained models for pose estimation, which can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html).
+MMPose provides a wide variety of pre-trained models for pose estimation, which can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
 This guide will demonstrate **how to perform inference**, or running pose estimation on provided images or videos using trained models.
 
 For instructions on testing existing models on standard datasets, refer to this [guide](./train_and_test.md#test).
 
-In MMPose, a model is defined by a configuration file, while its pre-existing parameters are stored in a checkpoint file. You can find the model configuration files and corresponding checkpoint URLs in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html). We recommend starting with the HRNet model, using [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth).
+In MMPose, a model is defined by a configuration file, while its pre-existing parameters are stored in a checkpoint file. You can find the model configuration files and corresponding checkpoint URLs in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html). We recommend starting with the HRNet model, using [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth).
 
 ## Inferencer: a Unified Inference Interface
 
