@@ -77,7 +77,7 @@ html_theme_options = {
     'menu': [
         {
             'name': 'GitHub',
-            'url': 'https://github.com/open-mmlab/mmpose/tree/1.x'
+            'url': 'https://github.com/open-mmlab/mmpose/tree/main'
         },
     ],
     # Specify the language of the shared menu

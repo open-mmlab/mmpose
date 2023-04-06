@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 from mmengine.config import Config
 from mmengine.dataset import Compose, pseudo_collate
+from mmengine.model.utils import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.runner import load_checkpoint
 from PIL import Image
@@ -98,6 +99,7 @@ def init_model(config: Union[str, Path, Config],
     init_default_scope(config.get('default_scope', 'mmpose'))
 
     model = build_pose_estimator(config.model)
+    model = revert_sync_batchnorm(model)
     # get dataset_meta in this priority: checkpoint > config > default (COCO)
     dataset_meta = None
 

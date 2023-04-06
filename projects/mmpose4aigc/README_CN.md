@@ -25,7 +25,7 @@
 ```shell
 # install mmpose mmdet
 pip install openmim
-git clone -b 1.x https://github.com/open-mmlab/mmpose.git
+git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
 mim install -e .
 mim install "mmdet>=3.0.0rc6"
