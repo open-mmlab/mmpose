@@ -32,20 +32,35 @@ MMPose consists of **8** main components:
 We have prepared detailed guidelines for all types of users:
 
 1. For installation instrunctions:
+
    - [Installation](./installation.md)
+
 2. For the basic usage of MMPose:
-   - [Quick Run](./quick_run.md)
+
+   - [A 20-minute Tour to MMPose](./guide_to_framework.md)
+   - [Demos](./demos.md)
    - [Inference](./user_guides/inference.md)
-3. For users who want to learn more about components of MMPose:
    - [Configs](./user_guides/configs.md)
    - [Prepare Datasets](./user_guides/prepare_datasets.md)
-   - [Codecs](./user_guides/codecs.md)
-   - [Train & Test](./user_guides/train_and_test.md)
-   - [Visualization](./user_guides/visualization.md)
-   - [How to](./user_guides/how_to.md)
-4. For developers who wish to develop based on MMPose:
+   - [Train and Test](./user_guides/train_and_test.md)
+
+3. For developers who wish to develop based on MMPose:
+
+   - [Learn about Codecs](./advanced_guides/codecs.md)
+   - [Dataflow in MMPose](./advanced_guides/dataflow.md)
+   - [Implement New Models](./advanced_guides/implement_new_models.md)
+   - [Customize Datasets](./advanced_guides/customize_datasets.md)
+   - [Customize Data Transforms](./advanced_guides/customize_transforms.md)
+   - [Customize Optimizer](./advanced_guides/customize_optimizer.md)
+   - [Customize Logging](./advanced_guides/customize_logging.md)
+   - [How to Deploy](./advanced_guides/how_to_deploy.md)
+   - [Model Analysis](./advanced_guides/model_analysis.md)
    - [Migration Guide](./migration.md)
-5. For researchers and developers who are willing to contribute to MMPose:
+
+4. For researchers and developers who are willing to contribute to MMPose:
+
    - [Contribution Guide](./contribution_guide.md)
-6. For some common issues, we provide a FAQ list:
+
+5. For some common issues, we provide a FAQ list:
+
    - [FAQ](./faq.md)

@@ -150,7 +150,7 @@ Feel free to join our community group for more help:
 **Notes**
 
 - Since all models are trained on multi-domain combined datasets for practical applications, results are **not** suitable for academic comparison.
-- More results of RTMPose on public benchmarks can refer to [Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html)
+- More results of RTMPose on public benchmarks can refer to [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html)
 - Flip test is used.
 - Inference speed measured on more hardware platforms can refer to [Benchmark](./benchmark/README.md)
 - If you have datasets you would like us to support, feel free to [contact us](https://docs.google.com/forms/d/e/1FAIpQLSfzwWr3eNlDzhU98qzk2Eph44Zio6hi5r0iSwfO9wSARkHdWg/viewform?usp=sf_link)/[联系我们](https://uua478.fanqier.cn/f/xxmynrki).
@@ -385,7 +385,7 @@ Result is as follows:
 
 ## 👨‍🏫 How to Train [🔝](#-table-of-contents)
 
-Please refer to [Train and Test](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html).
+Please refer to [Train and Test](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html).
 
 **Tips**:
 
@@ -403,7 +403,7 @@ Here is a basic example of deploy RTMPose with [MMDeploy-1.x](https://github.com
 
 Before starting the deployment, please make sure you install MMPose-1.x and MMDeploy-1.x correctly.
 
-- Install MMPose-1.x, please refer to the [MMPose-1.x installation guide](https://mmpose.readthedocs.io/en/1.x/installation.html).
+- Install MMPose-1.x, please refer to the [MMPose-1.x installation guide](https://mmpose.readthedocs.io/en/latest/installation.html).
 - Install MMDeploy-1.x, please refer to the [MMDeploy-1.x installation guide](https://mmdeploy.readthedocs.io/en/1.x/get_started.html#installation).
 
 Depending on the deployment backend, some backends require compilation of custom operators, so please refer to the corresponding document to ensure the environment is built correctly according to your needs:

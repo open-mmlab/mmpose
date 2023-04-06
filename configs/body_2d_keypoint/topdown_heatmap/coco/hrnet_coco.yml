@@ -7,7 +7,6 @@ Collections:
 Models:
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py
   In Collection: HRNet
-  Alias: human
   Metadata:
     Architecture: &id001
     - HRNet

@@ -32,7 +32,7 @@ python demo/inferencer_demo.py $INPUTS \
     [--show] [--vis-out-dir $VIS_OUT_DIR] [--pred-out-dir $PRED_OUT_DIR]
 ```
 
-For more information on using the inferencer, please see [this document](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html#out-of-the-box-inferencer).
+For more information on using the inferencer, please see [this document](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html#out-of-the-box-inferencer).
 
 Here's an example code:
 
@@ -51,7 +51,7 @@ This will create an output image `vis_results/000000000785.jpg`, which appears l
 
 #### Data Preparation
 
-Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/1.x/dataset_zoo/2d_body_keypoint.html#coco).
+Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#coco).
 
 #### Commands
 
@@ -91,10 +91,10 @@ Results on COCO val2017
 
 |                              Model                              | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                                 Download                                 |
 | :-------------------------------------------------------------: | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :----------------------------------------------------------------------: |
-| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    640     | 0.477 |      0.756      |      0.506      | 0.547 |      0.802      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
-|    [YOLOX-s-Pose](./configs/yolox-pose_s_8xb32-300e_coco.py)    |    640     | 0.595 |      0.836      |      0.653      | 0.658 |      0.878      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco_20230321.json) |
-|    [YOLOX-m-Pose](./configs/yolox-pose_m_4xb64-300e_coco.py)    |    640     | 0.659 |      0.870      |      0.729      | 0.713 |      0.903      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco-cbd11d30_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco_20230321.json) |
-|    [YOLOX-l-Pose](./configs/yolox-pose_l_4xb64-300e_coco.py)    |    640     | 0.679 |      0.882      |      0.749      | 0.733 |      0.911      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco-122e4cf8_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco_20230321.json) |
+| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    640     | 0.518 |      0.799      |      0.545      | 0.566 |      0.841      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
+|    [YOLOX-s-Pose](./configs/yolox-pose_s_8xb32-300e_coco.py)    |    640     | 0.632 |      0.875      |      0.692      | 0.676 |      0.907      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco_20230321.json) |
+|    [YOLOX-m-Pose](./configs/yolox-pose_m_4xb64-300e_coco.py)    |    640     | 0.685 |      0.897      |      0.753      | 0.727 |      0.925      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco-cbd11d30_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco_20230321.json) |
+|    [YOLOX-l-Pose](./configs/yolox-pose_l_4xb64-300e_coco.py)    |    640     | 0.706 |      0.907      |      0.775      | 0.747 |      0.934      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco-122e4cf8_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco_20230321.json) |
 
 We have only trained models with an input size of 640, as we couldn't replicate the performance enhancement mentioned in the paper when increasing the input size from 640 to 960. We warmly welcome any contributions if you can successfully reproduce the results from the paper!
 

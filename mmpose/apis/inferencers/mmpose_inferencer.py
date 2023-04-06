@@ -3,6 +3,7 @@ import warnings
 from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
+import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
@@ -58,6 +59,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         'return_vis',
         'show',
         'wait_time',
+        'draw_bbox',
         'radius',
         'thickness',
         'kpt_thr',
@@ -106,6 +108,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             # only supports inference with batch size 1
             yield data_batch, [input]
 
+    @torch.no_grad()
     def forward(self, inputs: InputType, **forward_kwargs) -> PredType:
         """Forward the inputs to the model.
 
@@ -175,6 +178,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         inputs = self.preprocess(
             inputs, batch_size=batch_size, **preprocess_kwargs)
+
+        forward_kwargs['bbox_thr'] = preprocess_kwargs.get('bbox_thr', -1)
 
         preds = []
         if 'pose2d' not in self.mode or not hasattr(self.pose2d_inferencer,

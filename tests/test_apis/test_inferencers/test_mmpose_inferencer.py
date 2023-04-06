@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+import platform
 import unittest
 from collections import defaultdict
 from tempfile import TemporaryDirectory
@@ -21,7 +22,17 @@ class TestMMPoseInferencer(TestCase):
             return unittest.skip('mmdet is not installed')
 
         # top-down model
-        inferencer = MMPoseInferencer('human')
+        if platform.system().lower() == 'windows':
+            # the default human pose estimator utilizes rtmdet-m detector
+            # through alias, which seems not compatible with windows
+            det_model = 'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'
+            det_weights = 'https://download.openmmlab.com/mmdetection/v2.0/' \
+                          'faster_rcnn/faster_rcnn_r50_fpn_1x_coco/' \
+                          'faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
+        else:
+            det_model, det_weights = None, None
+        inferencer = MMPoseInferencer(
+            'human', det_model=det_model, det_weights=det_weights)
 
         img_path = 'tests/data/coco/000000197388.jpg'
         img = mmcv.imread(img_path)

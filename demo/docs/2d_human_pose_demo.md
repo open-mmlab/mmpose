@@ -18,7 +18,7 @@ python demo/image_demo.py \
 
 If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
 
-The pre-trained human pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/body_2d_keypoint.html).
+The pre-trained human pose estimation models can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/body_2d_keypoint.html).
 Take [coco model](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth) as an example:
 
 ```shell
@@ -93,7 +93,7 @@ python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py \
-    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth \
+    https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth \
     --input tests/data/posetrack18/videos/000001_mpiinew_test/000001_mpiinew_test.mp4 \
     --output-root=vis_results/demo --show --draw-heatmap
 ```
@@ -116,7 +116,7 @@ Example:
 ```shell
 python demo/bottomup_demo.py \
     configs/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512.py \
-    https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w32_coco_512x512-2a3056de_20220928.pth \
+    https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512_ac7c17bf-20221228.pth \
     --input tests/data/coco/000000197388.jpg --output-root=vis_results \
     --show --save-predictions
 ```
@@ -124,6 +124,22 @@ python demo/bottomup_demo.py \
 Visualization result:
 
 <img src="https://user-images.githubusercontent.com/26127467/207224032-a8dab45d-39e4-4b4e-80e0-3c71a64f5f39.jpg" height="300px" alt><br>
+
+### 2D Human Pose Estimation with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py \
+    tests/data/posetrack18/videos/000001_mpiinew_test/000001_mpiinew_test.mp4 \
+    --pose2d human --vis-out-dir vis_results/posetrack18
+```
+
+This command infers the video and saves the visualization results in the `vis_results/posetrack18` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229831445-44c9662b-edc5-4ef0-92a6-13558f0906cc.gif" alt="Image 1" height="300"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
 
 ### Speed Up Inference
 

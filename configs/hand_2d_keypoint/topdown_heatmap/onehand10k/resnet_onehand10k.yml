@@ -1,7 +1,6 @@
 Models:
 - Config: configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_res50_8xb32-210e_onehand10k-256x256.py
   In Collection: SimpleBaseline2D
-  Alias: hand
   Metadata:
     Architecture:
     - SimpleBaseline2D

@@ -16,7 +16,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}]
 ```
 
-The pre-trained face keypoint estimation models can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/face_2d_keypoint.html).
+The pre-trained face keypoint estimation models can be found from [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/face_2d_keypoint.html).
 Take [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth) as an example:
 
 ```shell
@@ -78,6 +78,23 @@ python demo/topdown_demo_with_mmdet.py \
 <img src="https://user-images.githubusercontent.com/26127467/220541430-6ade5a59-3d06-466a-a94d-00c82ff96a00.gif" height="500px" alt><br>
 
 The original video can be downloaded from [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing).
+
+### 2D Face Pose Demo with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py tests/data/wflw \
+    --pose2d face --vis-out-dir vis_results/wflw --radius 1
+```
+
+This command infers all images located in `tests/data/wflw` and saves the visualization results in the `vis_results/wflw` directory.
+
+<img src="https://user-images.githubusercontent.com/26127467/229793095-702f9d3b-461f-45bd-8535-d628e33bc907.jpg" alt="Image 1" width="400"/>
+
+<img src="https://user-images.githubusercontent.com/26127467/229793121-9969f014-70da-40b5-8561-e21c3edd1aeb.jpg" alt="Image 2" width="400"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
 
 ### Speed Up Inference
 

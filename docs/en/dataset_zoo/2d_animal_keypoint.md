@@ -94,7 +94,6 @@ mmpose
         │   │-- dog
         │   │-- horse
         │   │-- sheep
-
 ```
 
 The official dataset does not provide the official train/val/test set split.
@@ -154,7 +153,6 @@ mmpose
         │   │-- 000000000001.jpg
         │   │-- 000000000002.jpg
         │   │-- ...
-
 ```
 
 The annotation files in 'annotation' folder contains 50 labeled animal species. There are total 10,015 labeled images with 13,028 instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
@@ -206,7 +204,6 @@ mmpose
         │   │-- BrownHorseinShadow
         │   │-- BrownHorseintoshadow
         │   │-- ...
-
 ```
 
 ## MacaquePose
@@ -255,7 +252,6 @@ mmpose
         │   │-- 020a1c75c8c85238.jpg
         │   │-- 020b1506eef2557d.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation (see [code](/tools/dataset/parse_macaquepose_dataset.py)).
@@ -308,7 +304,6 @@ mmpose
         │   │-- 2.jpg
         │   │-- 3.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation (see [code](/tools/dataset_converters/parse_deepposekit_dataset.py)).
@@ -360,7 +355,6 @@ mmpose
         │   │-- 2.jpg
         │   │-- 3.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation (see [code](/tools/dataset_converters/parse_deepposekit_dataset.py)).
@@ -389,7 +383,6 @@ Since the official dataset does not provide the test set, we randomly select 90%
 <div align="center">
   <img src="https://user-images.githubusercontent.com/100993824/227802783-ace952bb-1ff9-4720-80a8-c63cc9e714b6.png" height="200px">
 </div>
-
 For [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) dataset, images can be downloaded from [zebra_images](https://download.openmmlab.com/mmpose/datasets/zebra_images.tar).
 Please download the annotation files from [zebra_annotations](https://download.openmmlab.com/mmpose/datasets/zebra_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -412,7 +405,6 @@ mmpose
         │   │-- 2.jpg
         │   │-- 3.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation (see [code](/tools/dataset_converters/parse_deepposekit_dataset.py)).
@@ -476,5 +468,21 @@ mmpose
         │   │   │-- 000000.jpg
         │   │   │-- 000004.jpg
         │   │   │-- ...
+```
 
+## Animal Kingdom
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2204.08129">Animal Kingdom (CVPR'2022)</a></summary>
+
+```bibtex
+@InProceedings{
+    Ng_2022_CVPR,
+    author    = {Ng, Xun Long and Ong, Kian Eng and Zheng, Qichen and Ni, Yun and Yeo, Si Yong and Liu, Jun},
+    title     = {Animal Kingdom: A Large and Diverse Dataset for Animal Behavior Understanding},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {19023-19034}
+ }
 ```

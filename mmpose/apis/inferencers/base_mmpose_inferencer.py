@@ -42,6 +42,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         'return_vis',
         'show',
         'wait_time',
+        'draw_bbox',
         'radius',
         'thickness',
         'kpt_thr',
@@ -238,6 +239,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                   preds: List[PoseDataSample],
                   return_vis: bool = False,
                   show: bool = False,
+                  draw_bbox: bool = False,
                   wait_time: float = 0,
                   radius: int = 3,
                   thickness: int = 1,
@@ -255,6 +257,8 @@ class BaseMMPoseInferencer(BaseInferencer):
             show (bool): Whether to display the image in a popup window.
                 Defaults to False.
             wait_time (float): The interval of show (ms). Defaults to 0
+            draw_bbox (bool): Whether to draw the bounding boxes.
+                Defaults to False
             radius (int): Keypoint radius for visualization. Defaults to 3
             thickness (int): Link thickness for visualization. Defaults to 1
             kpt_thr (float): The threshold to visualize the keypoints.
@@ -311,6 +315,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                 img,
                 pred,
                 draw_gt=False,
+                draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
                 out_file=out_file,

@@ -1,11 +1,11 @@
 # Inference with existing models
 
-MMPose provides a wide variety of pre-trained models for pose estimation, which can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html).
+MMPose provides a wide variety of pre-trained models for pose estimation, which can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
 This guide will demonstrate **how to perform inference**, or running pose estimation on provided images or videos using trained models.
 
 For instructions on testing existing models on standard datasets, refer to this [guide](./train_and_test.md#test).
 
-In MMPose, a model is defined by a configuration file, while its pre-existing parameters are stored in a checkpoint file. You can find the model configuration files and corresponding checkpoint URLs in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html). We recommend starting with the HRNet model, using [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth).
+In MMPose, a model is defined by a configuration file, while its pre-existing parameters are stored in a checkpoint file. You can find the model configuration files and corresponding checkpoint URLs in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html). We recommend starting with the HRNet model, using [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth).
 
 ## Inferencer: a Unified Inference Interface
 
@@ -194,17 +194,18 @@ The inferencer is designed to handle both visualization and saving of prediction
 
 MMPose provides a set of pre-defined aliases for commonly used models. These aliases can be used as shorthand when initializing the `MMPoseInferencer` instead of specifying the full model configuration name. Below is a list of the available model aliases and their corresponding configuration names:
 
-| Alias     | Configuration Name                                 | Description                               |
-| --------- | -------------------------------------------------- | ----------------------------------------- |
-| animal    | td-hm_res50_8xb64-210e_ap10k-256x256               | Animal pose estimation using ResNet-50    |
-| human     | td-hm_hrnet-w32_8xb64-210e_coco-256x192            | Human pose estimation using HRNet-W32     |
-| vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation using base ViTPose  |
-| vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation using small ViTPose |
-| vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation using base ViTPose  |
-| vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation using large ViTPose |
-| vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation using huge ViTPose  |
-| face      | td-hm_hrnetv2-w18_8xb64-60e_wflw-256x256           | Face keypoint detection using HRNetV2-W18 |
-| hand      | td-hm_res50_8xb32-210e_onehand10k-256x256          | Hand keypoint detection using ResNet-50   |
+| Alias     | Configuration Name                                 | Task                            | Pose Estimator | Detector            |
+| --------- | -------------------------------------------------- | ------------------------------- | -------------- | ------------------- |
+| animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | Animal pose estimation          | RTMPose-m      | RTMDet-m            |
+| human     | rtmpose-m_8xb256-420e_aic-coco-256x192             | Human pose estimation           | RTMPose-m      | RTMDet-m            |
+| face      | rtmpose-m_8xb64-60e_wflw-256x256                   | Face keypoint detection         | RTMPose-m      | yolox-s             |
+| hand      | rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256   | Hand keypoint detection         | RTMPose-m      | ssdlite_mobilenetv2 |
+| wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | Human wholebody pose estimation | RTMPose-m      | RTMDet-m            |
+| vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base   | RTMDet-m            |
+| vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-small  | RTMDet-m            |
+| vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base   | RTMDet-m            |
+| vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large  | RTMDet-m            |
+| vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge   | RTMDet-m            |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 
