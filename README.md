@@ -53,7 +53,7 @@ English | [简体中文](README_CN.md)
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
-The 0.x branch works with **PyTorch 1.5+**. This branch will no longer introduce new features, and will only receive minimal maintenance. For a better user experience, please use the latest [MMPose 1.0](https://github.com/open-mmlab/mmpose).
+The 0.x branch works with **PyTorch 1.5+**. No new features will be added to this branch, and it will receive only limited maintenance. For a better user experience, please use the latest [MMPose 1.0](https://github.com/open-mmlab/mmpose).
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
