@@ -5,8 +5,10 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import mmcv
 import numpy as np
+import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.infer.infer import ModelType
+from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
 from rich.progress import track
@@ -67,6 +69,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         'return_vis',
         'show',
         'wait_time',
+        'draw_bbox',
         'radius',
         'thickness',
         'kpt_thr',
@@ -86,6 +89,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         init_default_scope(scope)
         super().__init__(
             model=model, weights=weights, device=device, scope=scope)
+        self.model = revert_sync_batchnorm(self.model)
 
         # assign dataset metainfo to self.visualizer
         self.visualizer.set_dataset_meta(self.model.dataset_meta)
@@ -107,6 +111,8 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             if has_mmdet:
                 self.detector = DetInferencer(
                     det_model, det_weights, device=device, scope=det_scope)
+                self.detector.model = revert_sync_batchnorm(
+                    self.detector.model)
             else:
                 raise RuntimeError(
                     'MMDetection (v3.0.0rc6 or above) is required to '
@@ -184,6 +190,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         return data_infos
 
+    @torch.no_grad()
     def forward(self, inputs: Union[dict, tuple], bbox_thr=-1):
         data_samples = super().forward(inputs)
         if self.cfg.data_mode == 'topdown':
