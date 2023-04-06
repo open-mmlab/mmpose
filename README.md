@@ -97,16 +97,9 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- We are excited to release **RTMPose**, a real-time pose estimation framework including:
+- We are excited to release **YOLOX-Pose**, a One-Stage multi-person pose estimation model based on YOLOX. Checkout our [project page](/projects/yolox-pose/) for more details.
 
-  - A family of lightweight pose estimation models with state-of-the-art performance
-  - Inference APIs for Python, C++, C#, Java, etc. Easy to integrate into your applications and empower real-time stable pose estimation
-  - Cross-platform deployment with various backends
-  - A step-by-step guide to training and deploying your own models
-
-  Checkout our [project page](/projects/rtmpose/) and [technical report](https://arxiv.org/abs/2303.07399) for more information!
-
-![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
+![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
 
 - Welcome to [*projects of MMPose*](/projects/README.md), where you can access to the latest features of MMPose, and share your ideas and codes with the community at once. Contribution to MMPose will be simple and smooth:
 
@@ -115,19 +108,20 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - Build individual projects with full power of MMPose but not bound up with heavy frameworks
   - Checkout new projects:
     - [RTMPose](/projects/rtmpose/)
-    - [YOLOX-Pose (coming soon)](<>)
-    - [MMPose4AIGC (coming soon)](<>)
+    - [YOLOX-Pose](/projects/yolox_pose/)
+    - [MMPose4AIGC](/projects/mmpose4aigc/)
   - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
 
 <br/>
 
-- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) is released. Major updates include:
+- 2022-04-06: MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) is officially released, with the main updates including:
 
-  - Release [RTMPose](/projects/rtmpose/), a high-performance real-time pose estimation framework based on MMPose
-  - Support [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/) (CVPR'21)
-  - Add [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer), a convenient interface for inference and visualization
+  - Release of [YOLOX-Pose](/projects/yolox-pose/), a One-Stage multi-person pose estimation model based on YOLOX
+  - Development of [MMPose for AIGC](/projects/mmpose4aigc/) based on RTMPose, generating high-quality skeleton images for Pose-guided AIGC projects
+  - Support for OpenPose-style skeleton visualization
+  - More complete and user-friendly [documentation and tutorials](https://mmpose.readthedocs.io/en/latest/overview.html)
 
-  See the full [release note](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) for more exciting updates brought by MMPose v1.0.0rc1!
+  Please refer to the [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) for more updates brought by MMPose v1.0.0!
 
 ## Installation
 
@@ -137,14 +131,35 @@ Please refer to [installation.md](https://mmpose.readthedocs.io/en/latest/instal
 
 We provided a series of tutorials about the basic usage of MMPose for new users:
 
-- [A 20 Minute Guide to MMPose](https://mmpose.readthedocs.io/en/latest/guide_to_framework.html)
-- [About Configs](https://mmpose.readthedocs.io/en/latest/user_guides/configs.html)
-- [Add New Dataset](https://mmpose.readthedocs.io/en/latest/user_guides/prepare_datasets.html)
-- [Keypoint Encoding & Decoding](https://mmpose.readthedocs.io/en/latest/user_guides/codecs.html)
-- [Inference with Existing Models](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)
-- [Train and Test](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html)
-- [Visualization Tools](https://mmpose.readthedocs.io/en/latest/user_guides/visualization.html)
-- [Other Useful Tools](https://mmpose.readthedocs.io/en/latest/user_guides/how_to.html)
+1. For the basic usage of MMPose:
+
+   - [A 20-minute Tour to MMPose](https://mmpose.readthedocs.io/en/latest/guide_to_framework.html)
+   - [Demos](https://mmpose.readthedocs.io/en/latest/demos.html)
+   - [Inference](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)
+   - [Configs](https://mmpose.readthedocs.io/en/latest/user_guides/configs.html)
+   - [Prepare Datasets](https://mmpose.readthedocs.io/en/latest/user_guides/prepare_datasets.html)
+   - [Train and Test](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html)
+
+2. For developers who wish to develop based on MMPose:
+
+   - [Learn about Codecs](https://mmpose.readthedocs.io/en/latest/advanced_guides/codecs.html)
+   - [Dataflow in MMPose](https://mmpose.readthedocs.io/en/latest/advanced_guides/dataflow.html)
+   - [Implement New Models](https://mmpose.readthedocs.io/en/latest/advanced_guides/implement_new_models.html)
+   - [Customize Datasets](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_datasets.html)
+   - [Customize Data Transforms](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_transforms.html)
+   - [Customize Optimizer](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_optimizer.html)
+   - [Customize Logging](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_logging.html)
+   - [How to Deploy](https://mmpose.readthedocs.io/en/latest/advanced_guides/how_to_deploy.html)
+   - [Model Analysis](https://mmpose.readthedocs.io/en/latest/advanced_guides/model_analysis.html)
+   - [Migration Guide](https://mmpose.readthedocs.io/en/latest/migration.html)
+
+3. For researchers and developers who are willing to contribute to MMPose:
+
+   - [Contribution Guide](https://mmpose.readthedocs.io/en/latest/contribution_guide.html)
+
+4. For some common issues, we provide a FAQ list:
+
+   - [FAQ](https://mmpose.readthedocs.io/en/latest/faq.html)
 
 ## Model Zoo
 
@@ -194,7 +209,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 </details>
 
 <details close>
-<summary><b>Supported <a href="https://mmpose.readthedocs.io/en/latest/dataset_zoo.html">datasets</a>:</b></summary>
+<summary><b>Supported datasets:</b></summary>
 
 - [x] [AFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
 - [x] [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#jhmdb-iccv-2013) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)

@@ -95,9 +95,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 我们发布了 **YOLOX-Pose**，一个基于 YOLOX 的 One-Stage 多人姿态估计模型。
-
-  更多信息敬请参阅 YOLOX-Pose [项目主页](/projects/yolox_pose/)
+- 我们发布了 **YOLOX-Pose**，一个基于 YOLOX 的 One-Stage 多人姿态估计模型。更多信息敬请参阅 YOLOX-Pose [项目主页](/projects/yolox_pose/)
 
 ![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
 
@@ -116,13 +114,12 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-04-06：MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) 正式发布了，主要更新包括:
 
-- 2022-03-15: MMPose [v1.0.0rc1](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) 正式发布了，主要更新包括:
+  - 发布了 [YOLOX-Pose](/projects/yolox-pose/)，一个基于 YOLOX 的 One-Stage 多人姿态估计模型
+  - 基于 RTMPose 开发的 [MMPose for AIGC](/projects/mmpose4aigc/)，生成高质量骨架图片用于 Pose-guided AIGC 项目
+  - 支持 OpenPose 风格的骨架可视化
+  - 更加完善、友好的 [文档和教程](https://mmpose.readthedocs.io/zh_CN/latest/overview.html)
 
-  - 发布了 [RTMPose](/projects/rtmpose/)，一个高性能实时多人姿态估计算法框架
-  - 支持了多个新算法： [ViTPose](/configs/body_2d_keypoint/topdown_heatmap/coco/vitpose_coco.md) (NeurIPS'22), [CID](/configs/body_2d_keypoint/cid/coco/hrnet_coco.md) (CVPR'22) and [DEKR](/configs/body_2d_keypoint/dekr/) (CVPR'21)
-  - 增加了 [*Inferencer*](/docs/en/user_guides/inference.md#out-of-the-box-inferencer)，一个非常便捷的模型推理接口，通过 1 行代码完成模型选择、权重加载、模型推理和结果可视化。
-
-  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0rc1) 以了解更多 MMPose v1.0.0rc1 带来的更新!
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) 以了解更多 MMPose v1.0.0 带来的更新!
 
 ## 安装
 
@@ -132,13 +129,35 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 我们提供了一系列简明的教程，帮助 MMPose 的新用户轻松上手使用：
 
-- [20 分钟了解 MMPose 架构设计](https://mmpose.readthedocs.io/zh_CN/latest/guide_to_framework.html)
-- [学习配置文件](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/configs.html)
-- [准备数据集](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/prepare_datasets.html)
-- [关键点编码、解码机制](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/codecs.html)
-- [使用现有模型推理](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/inference.html)
-- [模型训练和测试](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/train_and_test.html)
-- [可视化工具](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/visualization.html)
+1. MMPose 的基本使用方法：
+
+   - [20 分钟上手教程](https://mmpose.readthedocs.io/zh_CN/latest/guide_to_framework.html)
+   - [Demos](https://mmpose.readthedocs.io/zh_CN/latest/demos.html)
+   - [模型推理](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/inference.html)
+   - [配置文件](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/configs.html)
+   - [准备数据集](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/prepare_datasets.html)
+   - [训练与测试](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/train_and_test.html)
+
+2. 对于希望基于 MMPose 进行开发的研究者和开发者：
+
+   - [编解码器](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/codecs.html)
+   - [数据流](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/dataflow.html)
+   - [实现新模型](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/implement_new_models.html)
+   - [自定义数据集](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_datasets.html)
+   - [自定义数据变换](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_transforms.html)
+   - [自定义优化器](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_optimizer.html)
+   - [自定义日志](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_logging.html)
+   - [模型部署](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/how_to_deploy.html)
+   - [模型分析工具](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/model_analysis.html)
+   - [迁移指南](https://mmpose.readthedocs.io/zh_CN/latest/migration.html)
+
+3. 对于希望加入开源社区，向 MMPose 贡献代码的研究者和开发者：
+
+   - [参与贡献代码](https://mmpose.readthedocs.io/zh_CN/latest/contribution_guide.html)
+
+4. 对于使用过程中的常见问题：
+
+   - [FAQ](https://mmpose.readthedocs.io/zh_CN/latest/faq.html)
 
 ## 模型库
 
@@ -188,7 +207,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 </details>
 
 <details close>
-<summary><b>支持的<a href="https://mmpose.readthedocs.io/zh_CN/latest/datasets.html">数据集</a></b></summary>
+<summary><b>支持的数据集</b></summary>
 
 - [x] [AFLW](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[[主页](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
 - [x] [sub-JHMDB](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#jhmdb-iccv-2013) \[[主页](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
