@@ -37,7 +37,7 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 
 ### Data Preparation
 
-Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#coco).
+Prepare the COCO dataset according to the [instruction](https://mmpose.readthedocs.io/en/dev-1.x/dataset_zoo/2d_body_keypoint.html#coco).
 
 ### Training commands
 
@@ -83,7 +83,7 @@ mim test mmpose configs/example-head-loss_hrnet-w32_8xb64-210e_coco-256x192.py $
 
 ## Results
 
-> List the results as usually done in other model's README. Here is an [Example](https://github.com/open-mmlab/mmpose/blob/main/configs/body_2d_keypoint/topdown_heatmap/coco/hrnet_coco.md).
+> List the results as usually done in other model's README. Here is an [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/hrnet_coco.md).
 
 > You should claim whether this is based on the pre-trained weights, which are converted from the official release; or it's a reproduced result obtained from retraining the model in this project
 
