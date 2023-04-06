@@ -75,8 +75,7 @@ mim install "mmdet>=3.0.0rc0"
 如果基于 MMPose 框架开发自己的任务，需要添加新的功能，比如新的模型或是数据集，或者使用我们提供的各种工具。从源码按如下方式安装 mmpose：
 
 ```shell
-git clone https://github.com/open-mmlab/mmpose.git -b 1.x
-# "-b 1.x" 表示切换到 `1.x` 分支.
+git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
 pip install -v -e .
@@ -139,7 +138,7 @@ model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cud
 results = inference_topdown(model, 'demo.jpg')
 ```
 
-示例图片 `demo.jpg` 可以从 [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/1.x/tests/data/coco/000000000785.jpg) 下载。
+示例图片 `demo.jpg` 可以从 [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/main/tests/data/coco/000000000785.jpg) 下载。
 推理结果是一个 `PoseDataSample` 列表，预测结果将会保存在 `pred_instances` 中，包括检测到的关键点位置和置信度。
 
 ## 自定义安装
@@ -205,7 +204,7 @@ MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训
 **第 2 步** 从源码安装 mmpose
 
 ```shell
-!git clone https://github.com/open-mmlab/mmpose.git -b 1.x
+!git clone https://github.com/open-mmlab/mmpose.git
 %cd mmpose
 !pip install -e .
 ```

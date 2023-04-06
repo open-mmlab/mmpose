@@ -1,6 +1,6 @@
 # Prepare Datasets
 
-MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/1.x/dataset_zoo.html). Please follow the corresponding guidelines for data preparation.
+MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/latest/dataset_zoo.html). Please follow the corresponding guidelines for data preparation.
 
 <!-- TOC -->
 

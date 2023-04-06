@@ -64,6 +64,6 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 | [pose_cspnext_m_udp_aic_coco](/configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-m_udp_8xb256-210e_aic-coco-256x192.py) |  256x192   | 0.748 |      0.925      |      0.818      | 0.777 |      0.933      | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.json) |
 | [pose_cspnext_l_udp_aic_coco](/configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-l_udp_8xb256-210e_aic-coco-256x192.py) |  256x192   | 0.772 |      0.936      |      0.839      | 0.799 |      0.943      | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.json) |
 
-Note that, UDP also adopts the unbiased encoding/decoding algorithm of [DARK](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#darkpose-cvpr-2020).
+Note that, UDP also adopts the unbiased encoding/decoding algorithm of [DARK](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#darkpose-cvpr-2020).
 
 Flip test and detector is not used in the result of aic-coco training.
