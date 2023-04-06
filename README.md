@@ -123,7 +123,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
   Please refer to the [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) for more updates brought by MMPose v1.0.0!
 
-## 0.x -> 1.x 迁移进度
+## 0.x / 1.x Migration
 
 MMPose v1.0.0 is a major update, including many API and config file changes. Currently, a part of the algorithms have been migrated to v1.0.0, and the remaining algorithms will be completed in subsequent versions. We will show the migration progress in the following list.
 
