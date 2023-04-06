@@ -142,7 +142,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 - 此处提供的模型采用了多数据集联合训练以提高性能，模型指标不适用于学术比较。
 - 表格中为开启了 Flip Test 的测试结果。
-- RTMPose 在更多公开数据集上的性能指标可以前往 [Model Zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/algorithms.html) 查看。
+- RTMPose 在更多公开数据集上的性能指标可以前往 [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html) 查看。
 - RTMPose 在更多硬件平台上的推理速度可以前往 [Benchmark](./benchmark/README_CN.md) 查看。
 - 如果你有希望我们支持的数据集，欢迎[联系我们](https://uua478.fanqier.cn/f/xxmynrki)/[Google Questionnaire](https://docs.google.com/forms/d/e/1FAIpQLSfzwWr3eNlDzhU98qzk2Eph44Zio6hi5r0iSwfO9wSARkHdWg/viewform?usp=sf_link)！
 
@@ -361,7 +361,7 @@ example\cpp\build\Release
 
 ### MMPose demo 脚本
 
-通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html)和效果验证。
+通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)和效果验证。
 
 ```shell
 # 前往 mmpose 目录
@@ -383,7 +383,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 ## 👨‍🏫 模型训练 [🔝](#-table-of-contents)
 
-请参考 [训练与测试](https://mmpose.readthedocs.io/en/1.x/user_guides/train_and_test.html) 进行 RTMPose 的训练。
+请参考 [训练与测试](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html) 进行 RTMPose 的训练。
 
 **提示**：
 
@@ -401,7 +401,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 在开始部署之前，首先你需要确保正确安装了 MMPose, MMDetection, MMDeploy，相关安装教程如下：
 
-- [安装 MMPose 与 MMDetection](https://mmpose.readthedocs.io/zh_CN/1.x/installation.html)
+- [安装 MMPose 与 MMDetection](https://mmpose.readthedocs.io/zh_CN/latest/installation.html)
 - [安装 MMDeploy](https://mmdeploy.readthedocs.io/zh_CN/1.x/04-supported-codebases/mmpose.html)
 
 根据部署后端的不同，有的后端需要对自定义算子进行编译，请根据需求前往对应的文档确保环境搭建正确：

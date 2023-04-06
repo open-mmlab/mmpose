@@ -75,8 +75,7 @@ mim install "mmdet>=3.0.0rc6"
 To develop and run mmpose directly, install it from source:
 
 ```shell
-git clone https://github.com/open-mmlab/mmpose.git -b 1.x
-# "-b 1.x" means checkout to the `1.x` branch.
+git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
 pip install -v -e .
@@ -138,7 +137,7 @@ model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cud
 results = inference_topdown(model, 'demo.jpg')
 ```
 
-The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/1.x/tests/data/coco/000000000785.jpg).
+The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/main/tests/data/coco/000000000785.jpg).
 
 The inference results will be a list of `PoseDataSample`, and the predictions are in the `pred_instances`, indicating the detected keypoint locations and scores.
 
@@ -199,7 +198,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 **Step 2.** Install MMPose from the source.
 
 ```shell
-!git clone https://github.com/open-mmlab/mmpose.git -b 1.x
+!git clone https://github.com/open-mmlab/mmpose.git
 %cd mmpose
 !pip install -e .
 ```
