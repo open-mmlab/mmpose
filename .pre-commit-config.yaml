@@ -50,7 +50,7 @@ repos:
         name: update-model-index
         description: Collect model information and update model-index.yml
         entry: .dev_scripts/github/update_model_index.py
-        additional_dependencies: ["mmcv:1.7.1"]
+        additional_dependencies: ['mmcv:1.7.1']
         language: python
         files: ^configs/.*\.md$
         require_serial: true
