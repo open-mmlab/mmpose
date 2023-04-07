@@ -2,10 +2,11 @@
 import torch
 import torch.nn as nn
 from mmcv.parallel import MODULE_WRAPPERS as MMCV_MODULE_WRAPPERS
-from mmcv.parallel import MMDistributedDataParallel
 from mmcv.parallel.scatter_gather import scatter_kwargs
 from mmcv.utils import Registry
 from torch.cuda._utils import _get_device_index
+
+from mmpose.utils.util_distribution import build_ddp, get_device
 
 MODULE_WRAPPERS = Registry('module wrapper', parent=MMCV_MODULE_WRAPPERS)
 
@@ -79,14 +80,18 @@ class DistributedDataParallelWrapper(nn.Module):
 
         It only wraps the modules with parameters.
         """
+        device = get_device()
+        assert device in ['cuda', 'npu'], \
+            'Only available for cuda or npu devices.'
         for name, module in self.module._modules.items():
             if next(module.parameters(), None) is None:
-                module = module.cuda()
+                module = getattr(module, device)()
             elif all(not p.requires_grad for p in module.parameters()):
-                module = module.cuda()
+                module = getattr(module, device)()
             else:
-                module = MMDistributedDataParallel(
-                    module.cuda(),
+                module = build_ddp(
+                    module,
+                    device=device,
                     device_ids=device_ids,
                     dim=dim,
                     broadcast_buffers=broadcast_buffers,

@@ -1,11 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
 import warnings
 
 import mmcv
 import numpy as np
 import torch
 import torch.distributed as dist
-from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import (DistSamplerSeedHook, EpochBasedRunner, OptimizerHook,
                          get_dist_info)
 from mmcv.utils import digit_version
@@ -14,6 +14,7 @@ from mmpose.core import DistEvalHook, EvalHook, build_optimizers
 from mmpose.core.distributed_wrapper import DistributedDataParallelWrapper
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.utils import get_root_logger
+from mmpose.utils.util_distribution import build_ddp, build_dp, get_device
 
 try:
     from mmcv.runner import Fp16OptimizerHook
@@ -112,6 +113,9 @@ def train_model(model,
     # determine whether use adversarial training precess or not
     use_adverserial_train = cfg.get('use_adversarial_train', False)
 
+    # get currently existing device type
+    device = get_device()
+
     # put model on gpus
     if distributed:
         find_unused_parameters = cfg.get('find_unused_parameters', True)
@@ -122,19 +126,20 @@ def train_model(model,
             # Use DistributedDataParallelWrapper for adversarial training
             model = DistributedDataParallelWrapper(
                 model,
-                device_ids=[torch.cuda.current_device()],
+                device_ids=[int(os.environ['LOCAL_RANK'])],
                 broadcast_buffers=False,
                 find_unused_parameters=find_unused_parameters)
         else:
-            model = MMDistributedDataParallel(
-                model.cuda(),
-                device_ids=[torch.cuda.current_device()],
+            model = build_ddp(
+                model,
+                device=device,
+                device_ids=[int(os.environ['LOCAL_RANK'])],
                 broadcast_buffers=False,
                 find_unused_parameters=find_unused_parameters)
     else:
         if digit_version(mmcv.__version__) >= digit_version(
                 '1.4.4') or torch.cuda.is_available():
-            model = MMDataParallel(model, device_ids=cfg.gpu_ids)
+            model = build_dp(model, device=device, device_ids=cfg.gpu_ids)
         else:
             warnings.warn(
                 'We recommend to use MMCV >= 1.4.4 for CPU training. '
