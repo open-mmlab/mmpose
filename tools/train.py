@@ -18,6 +18,7 @@ from mmpose.apis import init_random_seed, train_model
 from mmpose.datasets import build_dataset
 from mmpose.models import build_posenet
 from mmpose.utils import collect_env, get_root_logger, setup_multi_processes
+from mmpose.utils.util_distribution import get_device
 
 
 def parse_args():
@@ -164,7 +165,7 @@ def main():
     logger.info(f'Config:\n{cfg.pretty_text}')
 
     # set random seeds
-    seed = init_random_seed(args.seed)
+    seed = init_random_seed(args.seed, device=get_device())
     seed = seed + dist.get_rank() if args.diff_seed else seed
     logger.info(f'Set random seed to {seed}, '
                 f'deterministic: {args.deterministic}')
