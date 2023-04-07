@@ -4,7 +4,7 @@ import os.path as osp
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
-from mmengine.utils import check_file_exist
+from mmengine.fileio import exists, get_local_path
 from scipy.io import loadmat
 
 from mmpose.registry import DATASETS
@@ -137,14 +137,16 @@ class MpiiDataset(BaseCocoStyleDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in MPII format."""
 
-        check_file_exist(self.ann_file)
-        with open(self.ann_file) as anno_file:
-            anns = json.load(anno_file)
+        assert exists(self.ann_file), 'Annotation file does not exist'
+        with get_local_path(self.ann_file) as local_path:
+            with open(local_path) as anno_file:
+                self.anns = json.load(anno_file)
 
         if self.headbox_file:
-            check_file_exist(self.headbox_file)
-            headbox_dict = loadmat(self.headbox_file)
-            headboxes_src = np.transpose(headbox_dict['headboxes_src'],
+            assert exists(self.headbox_file), 'Headbox file does not exist'
+            with get_local_path(self.headbox_file) as local_path:
+                self.headbox_dict = loadmat(local_path)
+            headboxes_src = np.transpose(self.headbox_dict['headboxes_src'],
                                          [2, 0, 1])
             SC_BIAS = 0.6
 
@@ -156,7 +158,7 @@ class MpiiDataset(BaseCocoStyleDataset):
         # mpii bbox scales are normalized with factor 200.
         pixel_std = 200.
 
-        for idx, ann in enumerate(anns):
+        for idx, ann in enumerate(self.anns):
             center = np.array(ann['center'], dtype=np.float32)
             scale = np.array([ann['scale'], ann['scale']],
                              dtype=np.float32) * pixel_std

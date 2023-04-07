@@ -130,36 +130,36 @@ MMPose v1.0.0 is a major update, including many API and config file changes. Cur
 <details close>
 <summary><b>Migration Progress</b></summary>
 
-| Algorithm | Status |
-| :--- | :---: |
-| MTUT (CVPR 2019) |  | 
-| MSPN (ArXiv 2019)| done | 
-| InterNet (ECCV 2020) |  | 
-| DEKR (CVPR 2021) | done |
-| HigherHRNet (CVPR 2020) | |
-| DeepPose (CVPR 2014) | done |
-| RLE (ICCV 2021) | done |
-| SoftWingloss (TIP 2021) | |
-| VideoPose3D (CVPR 2019) | |
-| Hourglass (ECCV 2016) | done |
-| LiteHRNet (CVPR 2021) | done |
-| AdaptiveWingloss (ICCV 2019) | done |
-| SimpleBaseline2D (ECCV 2018) | done |
-| PoseWarper (NeurIPS 2019) | |
-| SimpleBaseline3D (ICCV 2017) | |
-| HMR (CVPR 2018) | |
-| UDP (CVPR 2020) | done |
-| VIPNAS (CVPR 2021) | done |
-| Wingloss (CVPR 2018) | |
-| DarkPose (CVPR 2020) | done |
+| Algorithm                         |   Status    |
+| :-------------------------------- | :---------: |
+| MTUT (CVPR 2019)                  |             |
+| MSPN (ArXiv 2019)                 |    done     |
+| InterNet (ECCV 2020)              |             |
+| DEKR (CVPR 2021)                  |    done     |
+| HigherHRNet (CVPR 2020)           |             |
+| DeepPose (CVPR 2014)              |    done     |
+| RLE (ICCV 2021)                   |    done     |
+| SoftWingloss (TIP 2021)           |             |
+| VideoPose3D (CVPR 2019)           |             |
+| Hourglass (ECCV 2016)             |    done     |
+| LiteHRNet (CVPR 2021)             |    done     |
+| AdaptiveWingloss (ICCV 2019)      |    done     |
+| SimpleBaseline2D (ECCV 2018)      |    done     |
+| PoseWarper (NeurIPS 2019)         |             |
+| SimpleBaseline3D (ICCV 2017)      |             |
+| HMR (CVPR 2018)                   |             |
+| UDP (CVPR 2020)                   |    done     |
+| VIPNAS (CVPR 2021)                |    done     |
+| Wingloss (CVPR 2018)              |             |
+| DarkPose (CVPR 2020)              |    done     |
 | Associative Embedding (NIPS 2017) | in progress |
-| VoxelPose (ECCV 2020) | |
-| RSN (ECCV 2020) | done |
-| CID (CVPR 2022) | done |
-| CPM (CVPR 2016) | done |
-| HRNet (CVPR 2019) | done |
-| HRNetv2 (TPAMI 2019) | done |
-| SCNet (CVPR 2020) | done |
+| VoxelPose (ECCV 2020)             |             |
+| RSN (ECCV 2020)                   |    done     |
+| CID (CVPR 2022)                   |    done     |
+| CPM (CVPR 2016)                   |    done     |
+| HRNet (CVPR 2019)                 |    done     |
+| HRNetv2 (TPAMI 2019)              |    done     |
+| SCNet (CVPR 2020)                 |    done     |
 
 </details>
 
