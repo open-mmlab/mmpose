@@ -232,11 +232,6 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             window_name = ''
             if self._video_input:
                 window_name = self.video_info['name']
-                # if kwargs.get('vis_out_dir', ''):
-                #     kwargs['vis_out_dir'] = join_path(kwargs['vis_out_dir'],
-                #                                       'vis_frames')
-                # if kwargs.get('show', False):
-                #     kwargs['wait_time'] = 1e-5
             return self.inferencers['pose2d'].visualize(
                 inputs,
                 preds['pose2d'],
