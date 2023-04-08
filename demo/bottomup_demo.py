@@ -1,32 +1,32 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import mimetypes
 import os
-import tempfile
 from argparse import ArgumentParser
 
+import cv2
 import json_tricks as json
 import mmcv
 import mmengine
+import numpy as np
+from mmengine.utils import track_iter_progress
 
 from mmpose.apis import inference_bottomup, init_model
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import split_instances
 
 
-def process_one_image(args, img_path, pose_estimator, visualizer,
-                      show_interval):
+def process_one_image(args, img, pose_estimator, visualizer, show_interval):
     """Visualize predicted keypoints (and heatmaps) of one image."""
 
     # inference a single image
-    batch_results = inference_bottomup(pose_estimator, img_path)
+    batch_results = inference_bottomup(pose_estimator, img)
     results = batch_results[0]
 
     # show the results
-    img = mmcv.imread(img_path, channel_order='rgb')
-
-    out_file = None
-    if args.output_root:
-        out_file = f'{args.output_root}/{os.path.basename(img_path)}'
+    if isinstance(img, str):
+        img = mmcv.imread(img, channel_order='rgb')
+    elif isinstance(img, np.ndarray):
+        img = mmcv.bgr2rgb(img)
 
     visualizer.add_datasample(
         'result',
@@ -38,8 +38,7 @@ def process_one_image(args, img_path, pose_estimator, visualizer,
         show_kpt_idx=args.show_kpt_idx,
         show=args.show,
         wait_time=show_interval,
-        out_file=out_file,
-        kpt_score_thr=args.kpt_thr)
+        kpt_thr=args.kpt_thr)
 
     return results.pred_instances
 
@@ -97,8 +96,11 @@ def main():
     args = parse_args()
     assert args.show or (args.output_root != '')
     assert args.input != ''
+    output_file = None
     if args.output_root:
         mmengine.mkdir_or_exist(args.output_root)
+        output_file = os.path.join(args.output_root,
+                                   os.path.basename(args.input))
     if args.save_predictions:
         assert args.output_root != ''
         args.pred_save_path = f'{args.output_root}/results_' \
@@ -128,36 +130,40 @@ def main():
             args, args.input, model, visualizer, show_interval=0)
         pred_instances_list = split_instances(pred_instances)
 
+        if output_file:
+            img_vis = visualizer.get_image()
+            mmcv.imwrite(mmcv.rgb2bgr(img_vis), output_file)
+
     elif input_type == 'video':
-        tmp_folder = tempfile.TemporaryDirectory()
-        video = mmcv.VideoReader(args.input)
-        progressbar = mmengine.ProgressBar(len(video))
-        video.cvt2frames(tmp_folder.name, show_progress=False)
-        output_root = args.output_root
-        args.output_root = tmp_folder.name
+        video_reader = mmcv.VideoReader(args.input)
+        video_writer = None
+
         pred_instances_list = []
 
-        for frame_id, img_fname in enumerate(os.listdir(tmp_folder.name)):
+        for frame_id, frame in enumerate(track_iter_progress(video_reader)):
             pred_instances = process_one_image(
-                args,
-                f'{tmp_folder.name}/{img_fname}',
-                model,
-                visualizer,
-                show_interval=1)
-            progressbar.update()
+                args, frame, model, visualizer, show_interval=1)
+
             pred_instances_list.append(
                 dict(
                     frame_id=frame_id,
                     instances=split_instances(pred_instances)))
 
-        if output_root:
-            mmcv.frames2video(
-                tmp_folder.name,
-                f'{output_root}/{os.path.basename(args.input)}',
-                fps=video.fps,
-                fourcc='mp4v',
-                show_progress=False)
-        tmp_folder.cleanup()
+            if output_file:
+                frame_vis = visualizer.get_image()
+                if video_writer is None:
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                    # the size of image with visualization may vary with
+                    # heatmap type
+                    video_writer = cv2.VideoWriter(output_file, fourcc,
+                                                   video_reader.fps,
+                                                   (frame_vis.shape[1],
+                                                    frame_vis.shape[0]))
+
+                video_writer.write(mmcv.rgb2bgr(frame_vis))
+
+        if video_writer:
+            video_writer.release()
 
     else:
         args.save_predictions = False
