@@ -153,8 +153,8 @@ def main():
                 frame_vis = visualizer.get_image()
                 if video_writer is None:
                     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                    # the size of image with visualization may vary with
-                    # heatmap type
+                    # the size of the image with visualization may vary
+                    # depending on the presence of heatmaps
                     video_writer = cv2.VideoWriter(output_file, fourcc,
                                                    video_reader.fps,
                                                    (frame_vis.shape[1],
