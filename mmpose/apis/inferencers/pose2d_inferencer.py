@@ -55,12 +55,15 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         device (str, optional): Device to run inference. If None, the
             available device will be automatically used. Defaults to None.
         scope (str, optional): The scope of the model. Defaults to "mmpose".
-        det_model(str, optional): Config path or alias of detection model.
+        det_model (str, optional): Config path or alias of detection model.
             Defaults to None.
-        det_weights(str, optional): Path to the checkpoints of detection
+        det_weights (str, optional): Path to the checkpoints of detection
             model. Defaults to None.
-        det_cat_ids(int or list[int], optional): Category id for
+        det_cat_ids (int or list[int], optional): Category id for
             detection model. Defaults to None.
+        output_heatmaps (bool, optional): Flag to visualize predicted
+            heatmaps. If set to None, the default setting from the model
+            config will be used. Default is None.
     """
 
     preprocess_kwargs: set = {'bbox_thr', 'nms_thr'}
@@ -84,12 +87,15 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                  scope: Optional[str] = 'mmpose',
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
-                 det_cat_ids: Optional[Union[int, Tuple]] = None) -> None:
+                 det_cat_ids: Optional[Union[int, Tuple]] = None,
+                 output_heatmaps: Optional[bool] = None) -> None:
 
         init_default_scope(scope)
         super().__init__(
             model=model, weights=weights, device=device, scope=scope)
         self.model = revert_sync_batchnorm(self.model)
+        if output_heatmaps is not None:
+            self.model.test_cfg['output_heatmaps'] = output_heatmaps
 
         # assign dataset metainfo to self.visualizer
         self.visualizer.set_dataset_meta(self.model.dataset_meta)
@@ -111,8 +117,6 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             if has_mmdet:
                 self.detector = DetInferencer(
                     det_model, det_weights, device=device, scope=det_scope)
-                self.detector.model = revert_sync_batchnorm(
-                    self.detector.model)
             else:
                 raise RuntimeError(
                     'MMDetection (v3.0.0rc6 or above) is required to '
@@ -270,6 +274,6 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                                        **postprocess_kwargs)
             yield results
 
-        # merge visualization and prediction results
         if self._video_input:
-            self._merge_outputs(**visualize_kwargs, **postprocess_kwargs)
+            self._finalize_video_processing(
+                postprocess_kwargs.get('pred_out_dir', ''))

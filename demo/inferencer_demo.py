@@ -61,6 +61,11 @@ def parse_args():
         action='store_true',
         help='Whether to draw the bounding boxes.')
     parser.add_argument(
+        '--draw-heatmaps',
+        type=bool,
+        default=None,
+        help='Whether to draw the predicted heatmaps.')
+    parser.add_argument(
         '--bbox-thr',
         type=float,
         default=0.3,
@@ -104,6 +109,7 @@ def parse_args():
         'det_weights', 'det_cat_ids'
     ]
     init_args = {}
+    init_args['output_heatmaps'] = call_args.pop('draw_heatmaps')
     for init_kw in init_kws:
         init_args[init_kw] = call_args.pop(init_kw)
 
