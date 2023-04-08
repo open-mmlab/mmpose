@@ -3,7 +3,7 @@ import os.path as osp
 from typing import List, Tuple
 
 import numpy as np
-from mmengine.utils import check_file_exist
+from mmengine.fileio import exists, get_local_path
 from xtcocotools.coco import COCO
 
 from mmpose.registry import DATASETS
@@ -87,15 +87,16 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in COCO format."""
 
-        check_file_exist(self.ann_file)
+        assert exists(self.ann_file), 'Annotation file does not exist'
 
-        coco = COCO(self.ann_file)
+        with get_local_path(self.ann_file) as local_path:
+            self.coco = COCO(local_path)
         instance_list = []
         image_list = []
         id = 0
 
-        for img_id in coco.getImgIds():
-            img = coco.loadImgs(img_id)[0]
+        for img_id in self.coco.getImgIds():
+            img = self.coco.loadImgs(img_id)[0]
 
             img.update({
                 'img_id':
@@ -105,8 +106,8 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
             })
             image_list.append(img)
 
-            ann_ids = coco.getAnnIds(imgIds=img_id, iscrowd=False)
-            anns = coco.loadAnns(ann_ids)
+            ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
+            anns = self.coco.loadAnns(ann_ids)
             for ann in anns:
                 for type in ['left', 'right']:
                     # filter invalid hand annotations, there might be two
