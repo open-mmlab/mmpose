@@ -302,7 +302,7 @@ class BaseMMPoseInferencer(BaseInferencer):
             # since visualization and inference utilize the same process,
             # the wait time is reduced when a video input is utilized,
             # thereby eliminating the issue of inference getting stuck.
-            wait_time = 0 if self._video_input else wait_time
+            wait_time = 1e-5 if self._video_input else wait_time
 
             visualization = self.visualizer.add_datasample(
                 window_name,

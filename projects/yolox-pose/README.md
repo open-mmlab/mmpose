@@ -16,7 +16,7 @@ This project implements a YOLOX-based human pose estimator, utilizing the approa
 - [MMYOLO](https://github.com/open-mmlab/mmyolo) v0.5.0 or higher
 - [MMPose](https://github.com/open-mmlab/mmpose) v1.0.0rc1 or higher
 
-All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. In `yolox-pose/` root directory, run the following line to add the current directory to `PYTHONPATH`:
+All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. **In `yolox-pose/` root directory**, run the following line to add the current directory to `PYTHONPATH`:
 
 ```shell
 export PYTHONPATH=`pwd`:$PYTHONPATH
