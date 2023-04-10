@@ -3,15 +3,11 @@ _base_ = [
     '../../../_base_/datasets/deepfashion2.py'
 ]
 
-# default_hooks = dict(
-#     checkpoint=dict(save_best='PCK'),
-#     logger=dict(interval=10),
-# )
 default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
 resume = False  # 断点恢复
 load_from = None  # 模型权重加载
-train_cfg = dict(by_epoch=True, max_epochs=60, val_interval=10)  # 训练轮数，测试间隔
+train_cfg = dict(by_epoch=True, max_epochs=150, val_interval=10)  # 训练轮数，测试间隔
 param_scheduler = [
     dict(  # warmup策略
         type='LinearLR',
@@ -22,8 +18,8 @@ param_scheduler = [
     dict(  # scheduler
         type='MultiStepLR',
         begin=0,
-        end=60,
-        milestones=[20, 40],
+        end=150,
+        milestones=[100, 130],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -58,21 +54,21 @@ val_pipeline = [  # 测试时数据增强
     dict(type='PackPoseInputs')  # 对target进行打包用于训练
 ]
 train_dataloader = dict(  # 训练数据加载
-    batch_size=32,  # 批次大小
-    num_workers=8,  # 数据加载进程数
+    batch_size=8,  # 批次大小
+    num_workers=6,  # 数据加载进程数
     persistent_workers=True,  # 在不活跃时维持进程不终止，避免反复启动进程的开销
     sampler=dict(type='DefaultSampler', shuffle=True),  # 采样策略，打乱数据
     dataset=dict(
         type=dataset_type,  # 数据集类名
         data_root=data_root,  # 数据集路径
         data_mode=data_mode,  # 算法类型
-        ann_file='train/deepfashion2_short_sleeved_shirt_train.json',  # 标注文件路径
+        ann_file='train/deepfashion2_short_sleeved_outwear.json',  # 标注文件路径
         data_prefix=dict(img='train/image/'),  # 图像路径
         pipeline=train_pipeline  # 数据流水线
     ))
 val_dataloader = dict(
-    batch_size=32,
-    num_workers=4,
+    batch_size=8,
+    num_workers=6,
     persistent_workers=True,  # 在不活跃时维持进程不终止，避免反复启动进程的开销
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),  # 采样策略，不进行打乱
@@ -80,10 +76,7 @@ val_dataloader = dict(
         type=dataset_type,  # 数据集类名
         data_root=data_root,  # 数据集路径
         data_mode=data_mode,  # 算法类型
-        ann_file='validation/deepfashion2_short_'
-        'sleeved_shirt_validation.json',  # 标注文件路径
-        # 检测框标注文件，topdown方法专用
-        # bbox_file='data/coco/person_detection_results/COCO_val2017_detections_AP_H_56_person.json',
+        ann_file='validation/deepfashion2_short_sleeved_outwear.json',
         data_prefix=dict(img='validation/image/'),  # 图像路径
         test_mode=True,  # 测试模式开关
         pipeline=val_pipeline  # 数据流水线
