@@ -3,15 +3,11 @@ _base_ = [
     '../../../_base_/datasets/deepfashion2.py'
 ]
 
-# default_hooks = dict(
-#     checkpoint=dict(save_best='PCK'),
-#     logger=dict(interval=10),
-# )
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
 resume = False  # 断点恢复
 load_from = None  # 模型权重加载
-train_cfg = dict(by_epoch=True, max_epochs=60, val_interval=10)  # 训练轮数，测试间隔
+train_cfg = dict(by_epoch=True, max_epochs=120, val_interval=10)  # 训练轮数，测试间隔
 param_scheduler = [
     dict(  # warmup策略
         type='LinearLR',
@@ -22,8 +18,8 @@ param_scheduler = [
     dict(  # scheduler
         type='MultiStepLR',
         begin=0,
-        end=60,
-        milestones=[20, 40],
+        end=120,
+        milestones=[80, 100],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -31,7 +27,7 @@ optim_wrapper = dict(optimizer=dict(type='Adam', lr=0.0005))  # 优化器和学�
 auto_scale_lr = dict(base_batch_size=512)  # 根据batch_size自动缩放学习率
 
 backend_args = dict(backend='local')  # 数据加载后端设置，默认从本地硬盘加载
-dataset_type = 'CocoDataset'  # 数据集类名  DeepFashionDataset
+dataset_type = 'DeepFashion2Dataset'  # 数据集类名  DeepFashionDataset
 data_mode = 'topdown'  # 算法结构类型，用于指定标注信息加载策略
 data_root = 'data/deepfashion2/'  # 数据存放路径
 # 定义数据编解码器，用于生成target和对pred进行解码，同时包含了输入图片和输出heatmap尺寸等信息
@@ -59,20 +55,20 @@ val_pipeline = [  # 测试时数据增强
 ]
 train_dataloader = dict(  # 训练数据加载
     batch_size=32,  # 批次大小
-    num_workers=4,  # 数据加载进程数
+    num_workers=6,  # 数据加载进程数
     persistent_workers=True,  # 在不活跃时维持进程不终止，避免反复启动进程的开销
     sampler=dict(type='DefaultSampler', shuffle=True),  # 采样策略，打乱数据
     dataset=dict(
         type=dataset_type,  # 数据集类名
         data_root=data_root,  # 数据集路径
         data_mode=data_mode,  # 算法类型
-        ann_file='train/deepfashion2_short_sleeved_shirt_train.json',  # 标注文件路径
+        ann_file='train/deepfashion2_sling.json',  # 标注文件路径
         data_prefix=dict(img='train/image/'),  # 图像路径
         pipeline=train_pipeline  # 数据流水线
     ))
 val_dataloader = dict(
     batch_size=32,
-    num_workers=2,
+    num_workers=6,
     persistent_workers=True,  # 在不活跃时维持进程不终止，避免反复启动进程的开销
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),  # 采样策略，不进行打乱
@@ -80,10 +76,7 @@ val_dataloader = dict(
         type=dataset_type,  # 数据集类名
         data_root=data_root,  # 数据集路径
         data_mode=data_mode,  # 算法类型
-        ann_file='validation/deepfashion2_short_'
-        'sleeved_shirt_validation.json',  # 标注文件路径
-        # 检测框标注文件，topdown方法专用
-        # bbox_file='data/coco/person_detection_results/COCO_val2017_detections_AP_H_56_person.json',
+        ann_file='validation/deepfashion2_sling.json',  # 标注文件路径
         data_prefix=dict(img='validation/image/'),  # 图像路径
         test_mode=True,  # 测试模式开关
         pipeline=val_pipeline  # 数据流水线
@@ -158,7 +151,7 @@ model = dict(
         type='HeatmapHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
-        deconv_out_channels=None,
+        # deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),  # 损失函数
         decoder=codec),  # 解码器，将heatmap解码成坐标值
     test_cfg=dict(
@@ -167,10 +160,11 @@ model = dict(
         shift_heatmap=True,  # 对翻转后的结果进行平移提高精度
     ))
 
-val_evaluator = dict(
-    type='CocoMetric',  # coco 评测指标
-    ann_file='data/deepfashion2/validation/'
-    'deepfashion2_short_sleeved_shirt_validation.json')  # 加载评测标注数据
+val_evaluator = [
+    dict(type='PCKAccuracy', thr=0.2),
+    dict(type='AUC'),
+    dict(type='EPE'),
+]
 test_evaluator = val_evaluator  # 默认情况下不区分验证集和测试集，用户根据需要来自行定义
 
 visualizer = dict(
