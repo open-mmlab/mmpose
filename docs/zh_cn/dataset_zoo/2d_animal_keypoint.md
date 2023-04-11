@@ -478,3 +478,62 @@ mmpose
         │   │   │-- ...
 
 ```
+
+## Animal Kingdom
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2204.08129">Animal Kingdom (CVPR'2022)</a></summary>
+
+```bibtex
+@InProceedings{
+    Ng_2022_CVPR,
+    author    = {Ng, Xun Long and Ong, Kian Eng and Zheng, Qichen and Ni, Yun and Yeo, Si Yong and Liu, Jun},
+    title     = {Animal Kingdom: A Large and Diverse Dataset for Animal Behavior Understanding},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {19023-19034}
+ }
+```
+
+For [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom) dataset, images can be downloaded from [here](https://forms.office.com/pages/responsepage.aspx?id=drd2NJDpck-5UGJImDFiPVRYpnTEMixKqPJ1FxwK6VZUQkNTSkRISTNORUI2TDBWMUpZTlQ5WUlaSyQlQCN0PWcu).
+Please Extract dataset under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ak
+        │-- ak_P1
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P2
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_amphibian
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_bird
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_fish
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_mammal
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_reptile
+        │   │-- train.json
+        │   |-- test.json
+        │-- images
+        │   │-- AAACXZTV
+        |   |   |--AAACXZTV_f000059.jpg
+        │   │-- AAAUILHH
+        |   |   |--AAAUILHH_f000098.jpg
+        |   |   |--...
+        │   │-- ...
+```

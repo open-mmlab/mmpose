@@ -431,7 +431,6 @@ Since the official dataset does not provide the test set, we randomly select 90%
 <div align="center">
   <img src="https://user-images.githubusercontent.com/100993824/227797386-fce99241-8a0e-4a40-a179-dad013e6c5a4.png" height="200px">
 </div>
-
 ATRW captures images of the Amur tiger (also known as Siberian tiger, Northeast-China tiger) in the wild.
 For [ATRW](https://cvwc2019.github.io/challenge.html) dataset, please download images from
 [Pose_train](https://lilablobssc.blob.core.windows.net/cvwc2019/train/atrw_pose_train.tar.gz),
@@ -485,4 +484,46 @@ mmpose
     year      = {2022},
     pages     = {19023-19034}
  }
+```
+
+For [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom) dataset, images can be downloaded from [here](https://forms.office.com/pages/responsepage.aspx?id=drd2NJDpck-5UGJImDFiPVRYpnTEMixKqPJ1FxwK6VZUQkNTSkRISTNORUI2TDBWMUpZTlQ5WUlaSyQlQCN0PWcu).
+Please Extract dataset under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ak
+        │-- ak_P1
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P2
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_amphibian
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_bird
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_fish
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_mammal
+        │   │-- train.json
+        │   |-- test.json
+        │-- ak_P3_reptile
+        │   │-- train.json
+        │   |-- test.json
+        │-- images
+        │   │-- AAACXZTV
+        |   |   |--AAACXZTV_f000059.jpg
+        │   │-- AAAUILHH
+        |   |   |--AAAUILHH_f000098.jpg
+        |   |   |--...
+        │   │-- ...
 ```
