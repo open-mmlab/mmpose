@@ -62,7 +62,7 @@ train_dataloader = dict(  # 训练数据加载
         type=dataset_type,  # 数据集类名
         data_root=data_root,  # 数据集路径
         data_mode=data_mode,  # 算法类型
-        ann_file='train/deepfashion2_short_sleeved_shirt.json',  # 标注文件路径
+        ann_file='train/deepfashion2_short_sleeved_shirt_train.json',  # 标注文件路径
         data_prefix=dict(img='train/image/'),  # 图像路径
         pipeline=train_pipeline  # 数据流水线
     ))
@@ -76,7 +76,7 @@ val_dataloader = dict(
         type=dataset_type,  # 数据集类名
         data_root=data_root,  # 数据集路径
         data_mode=data_mode,  # 算法类型
-        ann_file='validation/deepfashion2_short_sleeved_shirt.json',  # 标注文件路径
+        ann_file='validation/deepfashion2_short_sleeved_shirt_validation.json',
         data_prefix=dict(img='validation/image/'),  # 图像路径
         test_mode=True,  # 测试模式开关
         pipeline=val_pipeline  # 数据流水线
