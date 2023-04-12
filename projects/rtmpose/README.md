@@ -267,10 +267,12 @@ bash opencv.sh
 # Compile executable programs
 bash build.sh
 
-# inference for an image
+# Inference for an image
+# Please pass the folder of the model, not the model file
 ./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 
-# inference for a video
+# Inference for a video
+# Please pass the folder of the model, not the model file
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
@@ -296,10 +298,12 @@ bash opencv.sh
 # Compile executable programs
 bash build.sh
 
-# inference for an image
+# Inference for an image
+# Please pass the folder of the model, not the model file
 ./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
 
-# inference for a video
+# Inference for a video
+# Please pass the folder of the model, not the model file
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
@@ -312,11 +316,21 @@ For details, see [Pipeline Inference](#-step4-pipeline-inference).
 1. Download the [pre-compiled SDK](https://github.com/open-mmlab/mmdeploy/releases).
 2. Unzip the SDK and go to the `sdk/python` folder.
 3. Install `mmdeploy_python` via `.whl` file.
+
+```shell
+pip install {file_name}.whl
+```
+
 4. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
 5. Inference with `pose_tracker.py`:
 
+> Note:
+
+- If you meet `ImportError: DLL load failed while importing mmdeploy_python`, please copy `thirdparty/onnxruntime/lib/onnxruntime.dll` to `site-packages/mmdeploy_python/` of your current Python env.
+
 ```shell
 # go to ./sdk/example/python
+# Please pass the folder of the model, not the model file
 python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 ```
 
@@ -363,7 +377,11 @@ example\cpp\build\Release
 
 ### MMPose demo scripts
 
-MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html).
+MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html).
+
+**Note:**
+
+- Inferencing with Pytorch can not reach the maximum speed of RTMPose, just for verification.
 
 ```shell
 # go to the mmpose folder
