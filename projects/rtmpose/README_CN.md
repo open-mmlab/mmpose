@@ -262,9 +262,11 @@ bash opencv.sh
 bash build.sh
 
 # 图片推理
+# 请传入模型目录，而不是模型文件
 ./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 
 # 视频推理
+# 请传入模型目录，而不是模型文件
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
@@ -290,9 +292,11 @@ bash opencv.sh
 bash build.sh
 
 # 图片推理
+# 请传入模型目录，而不是模型文件
 ./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
 
 # 视频推理
+# 请传入模型目录，而不是模型文件
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
@@ -313,8 +317,13 @@ pip install {file_name}.whl
 4. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
 5. 使用 `pose_tracker.py` 进行推理：
 
+**提示：**
+
+- 如果遇到 `ImportError: DLL load failed while importing mmdeploy_python`，请复制 `thirdparty/onnxruntime/lib/onnxruntime.dll` 到当前环境中 python 安装目录的 `site-packages/mmdeploy_python/`。
+
 ```shell
 # 进入 ./sdk/example/python
+# 请传入模型目录，而不是模型文件
 python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 ```
 
@@ -362,6 +371,10 @@ example\cpp\build\Release
 ### MMPose demo 脚本
 
 通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)和效果验证。
+
+**提示：**
+
+- 基于 Pytorch 推理并不能达到 RTMPose 模型的真实推理速度，只用于模型效果验证。
 
 ```shell
 # 前往 mmpose 目录
