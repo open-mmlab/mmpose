@@ -5,17 +5,13 @@ _base_ = [
 
 default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
 
-resume = False  # 断点恢复
-load_from = None  # 模型权重加载
-train_cfg = dict(by_epoch=True, max_epochs=60, val_interval=10)  # 训练轮数，测试间隔
+resume = False
+load_from = None
+train_cfg = dict(by_epoch=True, max_epochs=60, val_interval=10)
 param_scheduler = [
-    dict(  # warmup策略
-        type='LinearLR',
-        begin=0,
-        end=500,
-        start_factor=0.001,
-        by_epoch=False),
-    dict(  # scheduler
+    dict(
+        type='LinearLR', begin=0, end=500, start_factor=0.001, by_epoch=False),
+    dict(
         type='MultiStepLR',
         begin=0,
         end=60,
@@ -23,14 +19,14 @@ param_scheduler = [
         gamma=0.1,
         by_epoch=True)
 ]
-optim_wrapper = dict(optimizer=dict(type='Adam', lr=0.0005))  # 优化器和学习率
-auto_scale_lr = dict(base_batch_size=512)  # 根据batch_size自动缩放学习率
+optim_wrapper = dict(optimizer=dict(type='Adam', lr=0.0005))
+auto_scale_lr = dict(base_batch_size=512)
 
-backend_args = dict(backend='local')  # 数据加载后端设置，默认从本地硬盘加载
-dataset_type = 'DeepFashion2Dataset'  # 数据集类名  DeepFashionDataset
-data_mode = 'topdown'  # 算法结构类型，用于指定标注信息加载策略
-data_root = 'data/deepfashion2/'  # 数据存放路径
-# 定义数据编解码器，用于生成target和对pred进行解码，同时包含了输入图片和输出heatmap尺寸等信息
+backend_args = dict(backend='local')
+dataset_type = 'DeepFashion2Dataset'
+data_mode = 'topdown'
+data_root = 'data/deepfashion2/'
+
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
 
@@ -47,41 +43,39 @@ train_pipeline = [
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-val_pipeline = [  # 测试时数据增强
-    dict(type='LoadImage', backend_args=backend_args),  # 加载图片
-    dict(type='GetBBoxCenterScale'),  # 根据bbox获取center和scale
-    dict(type='TopdownAffine', input_size=codec['input_size']),  # 根据变换矩阵更新目标数据
-    dict(type='PackPoseInputs')  # 对target进行打包用于训练
+val_pipeline = [
+    dict(type='LoadImage', backend_args=backend_args),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='PackPoseInputs')
 ]
-train_dataloader = dict(  # 训练数据加载
-    batch_size=64,  # 批次大小
-    num_workers=6,  # 数据加载进程数
-    persistent_workers=True,  # 在不活跃时维持进程不终止，避免反复启动进程的开销
-    sampler=dict(type='DefaultSampler', shuffle=True),  # 采样策略，打乱数据
+train_dataloader = dict(
+    batch_size=64,
+    num_workers=6,
+    persistent_workers=True,
+    sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
-        type=dataset_type,  # 数据集类名
-        data_root=data_root,  # 数据集路径
-        data_mode=data_mode,  # 算法类型
-        ann_file='train/deepfashion2_short_sleeved_shirt_train.json',  # 标注文件路径
-        data_prefix=dict(img='train/image/'),  # 图像路径
-        pipeline=train_pipeline  # 数据流水线
-    ))
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file='train/deepfashion2_short_sleeved_shirt_train.json',
+        data_prefix=dict(img='train/image/'),
+        pipeline=train_pipeline))
 val_dataloader = dict(
     batch_size=32,
     num_workers=4,
-    persistent_workers=True,  # 在不活跃时维持进程不终止，避免反复启动进程的开销
+    persistent_workers=True,
     drop_last=False,
-    sampler=dict(type='DefaultSampler', shuffle=False),  # 采样策略，不进行打乱
+    sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
-        type=dataset_type,  # 数据集类名
-        data_root=data_root,  # 数据集路径
-        data_mode=data_mode,  # 算法类型
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
         ann_file='validation/deepfashion2_short_sleeved_shirt_validation.json',
-        data_prefix=dict(img='validation/image/'),  # 图像路径
-        test_mode=True,  # 测试模式开关
-        pipeline=val_pipeline  # 数据流水线
-    ))
-test_dataloader = val_dataloader  # 默认情况下不区分验证集和测试集，用户根据需要来自行定义
+        data_prefix=dict(img='validation/image/'),
+        test_mode=True,
+        pipeline=val_pipeline))
+test_dataloader = val_dataloader
 
 channel_cfg = dict(
     num_output_channels=294,
@@ -135,8 +129,8 @@ channel_cfg = dict(
     ])
 
 model = dict(
-    type='TopdownPoseEstimator',  # 模型结构决定了算法流程
-    data_preprocessor=dict(  # 数据归一化和通道顺序调整，作为模型的一部分
+    type='TopdownPoseEstimator',
+    data_preprocessor=dict(
         type='PoseDataPreprocessor',
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
@@ -144,20 +138,17 @@ model = dict(
     backbone=dict(
         type='ResNet',
         depth=50,
-        init_cfg=dict(
-            type='Pretrained',  # 预训练参数，只加载backbone权重用于迁移学习
-            checkpoint='torchvision://resnet50')),
-    head=dict(  # 模型头部
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50')),
+    head=dict(
         type='HeatmapHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
-        # deconv_out_channels=None,
-        loss=dict(type='KeypointMSELoss', use_target_weight=True),  # 损失函数
-        decoder=codec),  # 解码器，将heatmap解码成坐标值
+        loss=dict(type='KeypointMSELoss', use_target_weight=True),
+        decoder=codec),
     test_cfg=dict(
-        flip_test=True,  # 开启测试时水平翻转集成
-        flip_mode='heatmap',  # 对heatmap进行翻转
-        shift_heatmap=True,  # 对翻转后的结果进行平移提高精度
+        flip_test=True,
+        flip_mode='heatmap',
+        shift_heatmap=True,
     ))
 
 val_evaluator = [
@@ -165,7 +156,7 @@ val_evaluator = [
     dict(type='AUC'),
     dict(type='EPE'),
 ]
-test_evaluator = val_evaluator  # 默认情况下不区分验证集和测试集，用户根据需要来自行定义
+test_evaluator = val_evaluator
 
 visualizer = dict(
     vis_backends=[dict(type='LocalVisBackend'),
