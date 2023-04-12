@@ -142,7 +142,7 @@ def main():
 
         for frame_id, frame in enumerate(track_iter_progress(video_reader)):
             pred_instances = process_one_image(
-                args, frame, model, visualizer, show_interval=1)
+                args, frame, model, visualizer, show_interval=0.001)
 
             pred_instances_list.append(
                 dict(

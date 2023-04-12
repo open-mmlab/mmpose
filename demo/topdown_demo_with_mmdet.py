@@ -215,7 +215,7 @@ def main():
                 detector,
                 pose_estimator,
                 visualizer,
-                show_interval=1)
+                show_interval=0.001)
 
             pred_instances_list.append(
                 dict(
