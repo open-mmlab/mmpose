@@ -102,30 +102,33 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         # initialize detector for top-down models
         if self.cfg.data_mode == 'topdown':
-            det_scope = 'mmdet'
-            if det_model is None:
-                det_model = DATASETS.get(
-                    self.cfg.dataset_type).__module__.split(
-                        'datasets.')[-1].split('.')[0].lower()
-                det_info = default_det_models[det_model]
-                det_model, det_weights, det_cat_ids = det_info[
-                    'model'], det_info['weights'], det_info['cat_ids']
-            elif os.path.exists(det_model):
-                det_cfg = Config.fromfile(det_model)
-                det_scope = det_cfg.default_scope
+            if det_model != 'whole_image':
+                det_scope = 'mmdet'
+                if det_model is None:
+                    det_model = DATASETS.get(
+                        self.cfg.dataset_type).__module__.split(
+                            'datasets.')[-1].split('.')[0].lower()
+                    det_info = default_det_models[det_model]
+                    det_model, det_weights, det_cat_ids = det_info[
+                        'model'], det_info['weights'], det_info['cat_ids']
+                elif os.path.exists(det_model):
+                    det_cfg = Config.fromfile(det_model)
+                    det_scope = det_cfg.default_scope
 
-            if has_mmdet:
-                self.detector = DetInferencer(
-                    det_model, det_weights, device=device, scope=det_scope)
-            else:
-                raise RuntimeError(
-                    'MMDetection (v3.0.0rc6 or above) is required to '
-                    'build inferencers for top-down pose estimation models.')
+                if has_mmdet:
+                    self.detector = DetInferencer(
+                        det_model, det_weights, device=device, scope=det_scope)
+                else:
+                    raise RuntimeError(
+                        'MMDetection (v3.0.0 or above) is required to  build '
+                        'inferencers for top-down pose estimation models.')
 
-            if isinstance(det_cat_ids, (tuple, list)):
-                self.det_cat_ids = det_cat_ids
+                if isinstance(det_cat_ids, (tuple, list)):
+                    self.det_cat_ids = det_cat_ids
+                else:
+                    self.det_cat_ids = (det_cat_ids, )
             else:
-                self.det_cat_ids = (det_cat_ids, )
+                self.detector = None
 
         self._video_input = False
 
@@ -155,20 +158,24 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         data_info.update(self.model.dataset_meta)
 
         if self.cfg.data_mode == 'topdown':
-            det_results = self.detector(
-                input, return_datasample=True)['predictions']
-            pred_instance = det_results[0].pred_instances.cpu().numpy()
-            bboxes = np.concatenate(
-                (pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
+            if self.detector is not None:
+                det_results = self.detector(
+                    input, return_datasample=True)['predictions']
+                pred_instance = det_results[0].pred_instances.cpu().numpy()
+                bboxes = np.concatenate(
+                    (pred_instance.bboxes, pred_instance.scores[:, None]),
+                    axis=1)
 
-            label_mask = np.zeros(len(bboxes), dtype=np.uint8)
-            for cat_id in self.det_cat_ids:
-                label_mask = np.logical_or(label_mask,
-                                           pred_instance.labels == cat_id)
+                label_mask = np.zeros(len(bboxes), dtype=np.uint8)
+                for cat_id in self.det_cat_ids:
+                    label_mask = np.logical_or(label_mask,
+                                               pred_instance.labels == cat_id)
 
-            bboxes = bboxes[np.logical_and(label_mask,
-                                           pred_instance.scores > bbox_thr)]
-            bboxes = bboxes[nms(bboxes, nms_thr)]
+                bboxes = bboxes[np.logical_and(
+                    label_mask, pred_instance.scores > bbox_thr)]
+                bboxes = bboxes[nms(bboxes, nms_thr)]
+            else:
+                bboxes = []
 
             data_infos = []
             if len(bboxes) > 0:
