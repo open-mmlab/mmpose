@@ -377,7 +377,7 @@ example\cpp\build\Release
 
 ### MMPose demo scripts
 
-MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/1.x/user_guides/inference.html).
+MMPose provides demo scripts to conduct [inference with existing models](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html).
 
 **Note:**
 
