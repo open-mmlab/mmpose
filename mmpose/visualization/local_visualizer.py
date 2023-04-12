@@ -265,8 +265,8 @@ class PoseLocalVisualizer(Visualizer):
                 neck = np.mean(keypoints_info[:, [5, 6]], axis=1)
                 # neck score when visualizing pred
                 neck[:, 2:4] = np.logical_and(
-                    keypoints_info[:, 5, 2:4] < kpt_thr,
-                    keypoints_info[:, 6, 2:4] < kpt_thr).astype(int)
+                    keypoints_info[:, 5, 2:4] > kpt_thr,
+                    keypoints_info[:, 6, 2:4] > kpt_thr).astype(int)
                 new_keypoints_info = np.insert(
                     keypoints_info, 17, neck, axis=1)
 
