@@ -16,8 +16,15 @@ A list of resources related to MMPose. Feel free to contribute!
 ## Tutorials
 
 - [MMPose Tutorial (Chinese)](https://github.com/TommyZihao/MMPose_Tutorials)
-  MMPose 中文 Jupyter 教程，from 同济子豪兄
+
+  MMPose 中文视频代码教程，from 同济子豪兄
+
+  <div align=center>
+  <img src="https://user-images.githubusercontent.com/13503330/231640277-777f611c-b3d9-4d41-830f-8e48a352fd01.jpg" width="500"/>
+  </div><br/>
+
 - [OpenMMLab Course](https://github.com/open-mmlab/OpenMMLabCourse)
+
   This repository hosts articles, lectures and tutorials on computer vision and OpenMMLab, helping learners to understand algorithms and master our toolboxes in a systematical way.
 
 ## Papers
@@ -52,13 +59,21 @@ A list of resources related to MMPose. Feel free to contribute!
 
 ## Datasets
 
-- [\[github\]](https://github.com/luminxu/Pose-for-Everything) MP-100
+- [\[github\]](https://github.com/luminxu/Pose-for-Everything) **MP-100**
 
-  Existing works on 2D pose estimation mainly focus on a certain category, e.g. human, animal, and vehicle. However, there are lots of application scenarios that require detecting the poses/keypoints of the unseen class of objects. In this paper, we introduce the task of CategoryAgnostic Pose Estimation (CAPE), which aims to create a pose estimation model capable of detecting the pose of any class of object given only a few samples with keypoint definition. To achieve this goal, we formulate the pose estimation problem as a keypoint matching problem and design a novel CAPE framework, termed POse Matching Network (POMNet). A transformer-based Keypoint Interaction Module (KIM) is proposed to capture both the interactions among different keypoints and the relationship between the support and query images. We also introduce Multi-category Pose (MP-100) dataset, which is a 2D pose dataset of 100 object categories containing over 20K instances and is well-designed for developing CAPE algorithms. Experiments show that our method outperforms other baseline approaches by a large margin.
+  Multi-category Pose (MP-100) dataset, which is a 2D pose dataset of 100 object categories containing over 20K instances and is well-designed for developing CAPE algorithms.
 
-- [\[github\]](https://github.com/facebookresearch/Ego4d/) Ego4D
+  <div align=center>
+  <img src="https://user-images.githubusercontent.com/13503330/231639551-b32ed2ab-aec0-4410-937e-c81a2ac2cb0d.png" width="500"/>
+  </div><br/>
 
-  EGO4D is the world's largest egocentric (first person) video ML dataset and benchmark suite, with 3,600 hrs (and counting) of densely narrated video and a wide range of annotations across five new benchmark tasks. It covers hundreds of scenarios (household, outdoor, workplace, leisure, etc.) of daily life activity captured in-the-wild by 926 unique camera wearers from 74 worldwide locations and 9 different countries. Portions of the video are accompanied by audio, 3D meshes of the environment, eye gaze, stereo, and/or synchronized videos from multiple egocentric cameras at the same event. The approach to data collection was designed to uphold rigorous privacy and ethics standards with consenting participants and robust de-identification procedures where relevant.
+- [\[github\]](https://github.com/facebookresearch/Ego4d/) **Ego4D**
+
+  EGO4D is the world's largest egocentric (first person) video ML dataset and benchmark suite, with 3,600 hrs (and counting) of densely narrated video and a wide range of annotations across five new benchmark tasks. It covers hundreds of scenarios (household, outdoor, workplace, leisure, etc.) of daily life activity captured in-the-wild by 926 unique camera wearers from 74 worldwide locations and 9 different countries.
+
+  <div align=center>
+  <img src="https://user-images.githubusercontent.com/13503330/231640003-d43028cc-6f83-45e7-b76a-8e8f0cddcfcb.png" width="500"/>
+  </div><br/>
 
 ## Projects
 
