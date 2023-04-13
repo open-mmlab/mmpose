@@ -113,4 +113,4 @@ The result is as follows:
 +--------+------------+---------+
 ```
 
-If you want to learn more details of profiler, you can refer to the [Profiler Docs](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/useful_tools.html#profiler).
+If you want to learn more details of profiler, you can refer to the [Profiler Docs](https://mmdeploy.readthedocs.io/en/latest/02-how-to-run/useful_tools.html#profiler).
