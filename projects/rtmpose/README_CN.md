@@ -321,12 +321,8 @@ pip install mmdeploy-runtime-gpu
 2. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
 3. 使用 `pose_tracker.py` 进行推理：
 
-**提示：**
-
-- 如果遇到 `ImportError: DLL load failed while importing mmdeploy_python`，请复制 `thirdparty/onnxruntime/lib/onnxruntime.dll` 到当前环境中 python 安装目录的 `site-packages/mmdeploy_python/`。
-
 ```shell
-# 进入 ./sdk/example/python
+# 进入 ./example/python
 # 请传入模型目录，而不是模型文件
 python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 ```

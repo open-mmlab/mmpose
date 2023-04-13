@@ -328,12 +328,8 @@ download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/m
 2. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
 3. Inference with `pose_tracker.py`:
 
-**Note:**
-
-- If you meet `ImportError: DLL load failed while importing mmdeploy_python`, please copy `thirdparty/onnxruntime/lib/onnxruntime.dll` to `site-packages/mmdeploy_python/` of your current Python env.
-
 ```shell
-# go to ./sdk/example/python
+# go to ./example/python
 # Please pass the folder of the model, not the model file
 python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 ```
