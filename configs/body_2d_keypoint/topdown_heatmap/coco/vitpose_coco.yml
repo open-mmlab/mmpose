@@ -116,7 +116,7 @@ Models:
       AR: 0.809
       AR@0.5: 0.946
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192-0b8234ea_20230407.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192-fd73707d_20230314.pth
 - Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192.py
   In Collection: ViTPose
   Alias: vitpose-l

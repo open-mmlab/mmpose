@@ -7,8 +7,8 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from mmengine.dataset import BaseDataset, force_full_init
-from mmengine.fileio import exists, get_local_path, load
-from mmengine.utils import is_list_of
+from mmengine.fileio import load
+from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
 from mmpose.registry import DATASETS
@@ -195,19 +195,18 @@ class BaseCocoStyleDataset(BaseDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in COCO format."""
 
-        assert exists(self.ann_file), 'Annotation file does not exist'
+        check_file_exist(self.ann_file)
 
-        with get_local_path(self.ann_file) as local_path:
-            self.coco = COCO(local_path)
+        coco = COCO(self.ann_file)
         # set the metainfo about categories, which is a list of dict
         # and each dict contains the 'id', 'name', etc. about this category
-        self._metainfo['CLASSES'] = self.coco.loadCats(self.coco.getCatIds())
+        self._metainfo['CLASSES'] = coco.loadCats(coco.getCatIds())
 
         instance_list = []
         image_list = []
 
-        for img_id in self.coco.getImgIds():
-            img = self.coco.loadImgs(img_id)[0]
+        for img_id in coco.getImgIds():
+            img = coco.loadImgs(img_id)[0]
             img.update({
                 'img_id':
                 img_id,
@@ -216,8 +215,8 @@ class BaseCocoStyleDataset(BaseDataset):
             })
             image_list.append(img)
 
-            ann_ids = self.coco.getAnnIds(imgIds=img_id)
-            for ann in self.coco.loadAnns(ann_ids):
+            ann_ids = coco.getAnnIds(imgIds=img_id)
+            for ann in coco.loadAnns(ann_ids):
 
                 instance_info = self.parse_data_info(
                     dict(raw_ann_info=ann, raw_img_info=img))
@@ -381,18 +380,18 @@ class BaseCocoStyleDataset(BaseDataset):
     def _load_detection_results(self) -> List[dict]:
         """Load data from detection results with dummy keypoint annotations."""
 
-        assert exists(self.ann_file), 'Annotation file does not exist'
-        assert exists(self.bbox_file), 'Bbox file does not exist'
+        check_file_exist(self.ann_file)
+        check_file_exist(self.bbox_file)
+
         # load detection results
         det_results = load(self.bbox_file)
         assert is_list_of(det_results, dict)
 
         # load coco annotations to build image id-to-name index
-        with get_local_path(self.ann_file) as local_path:
-            self.coco = COCO(local_path)
+        coco = COCO(self.ann_file)
         # set the metainfo about categories, which is a list of dict
         # and each dict contains the 'id', 'name', etc. about this category
-        self._metainfo['CLASSES'] = self.coco.loadCats(self.coco.getCatIds())
+        self._metainfo['CLASSES'] = coco.loadCats(coco.getCatIds())
 
         num_keypoints = self.metainfo['num_keypoints']
         data_list = []
@@ -402,7 +401,7 @@ class BaseCocoStyleDataset(BaseDataset):
             if det['category_id'] != 1:
                 continue
 
-            img = self.coco.loadImgs(det['image_id'])[0]
+            img = coco.loadImgs(det['image_id'])[0]
 
             img_path = osp.join(self.data_prefix['img'], img['file_name'])
             bbox_xywh = np.array(

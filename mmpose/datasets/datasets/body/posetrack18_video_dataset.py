@@ -3,8 +3,8 @@ import os.path as osp
 from typing import Callable, List, Optional, Sequence, Union
 
 import numpy as np
-from mmengine.fileio import exists, get_local_path, load
-from mmengine.utils import is_list_of
+from mmengine.fileio import load
+from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
 from mmpose.registry import DATASETS
@@ -287,22 +287,22 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
 
     def _load_detection_results(self) -> List[dict]:
         """Load data from detection results with dummy keypoint annotations."""
-        assert exists(self.ann_file), 'Annotation file does not exist'
-        assert exists(self.bbox_file), 'Bbox file does not exist'
+
+        check_file_exist(self.ann_file)
+        check_file_exist(self.bbox_file)
 
         # load detection results
         det_results = load(self.bbox_file)
         assert is_list_of(det_results, dict)
 
         # load coco annotations to build image id-to-name index
-        with get_local_path(self.ann_file) as local_path:
-            self.coco = COCO(local_path)
+        coco = COCO(self.ann_file)
 
         # mapping image name to id
         name2id = {}
         # mapping image id to name
         id2name = {}
-        for img_id, image in self.coco.imgs.items():
+        for img_id, image in coco.imgs.items():
             file_name = image['file_name']
             id2name[img_id] = file_name
             name2id[file_name] = img_id
@@ -333,7 +333,7 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
                     img_id = name2id[det['image_name']]
                 else:
                     img_id = det['image_id']
-                img_ann = self.coco.loadImgs(img_id)[0]
+                img_ann = coco.loadImgs(img_id)[0]
                 nframes = int(img_ann['nframes'])
 
             # deal with multiple image paths

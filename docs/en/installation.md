@@ -59,13 +59,13 @@ conda install pytorch torchvision cpuonly -c pytorch
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install "mmcv>=2.0.0"
+mim install "mmcv>=2.0.0rc4"
 ```
 
 Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can easily install mmdet as a dependency by running:
 
 ```shell
-mim install "mmdet>=3.0.0"
+mim install "mmdet>=3.0.0rc6"
 ```
 
 ## Best Practices
@@ -89,7 +89,7 @@ pip install -v -e .
 To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
-mim install "mmpose>=1.0.0"
+mim install "mmpose>=1.0.0rc1"
 ```
 
 ## Verify the installation
@@ -173,7 +173,7 @@ To install MMCV with pip instead of MIM, please follow [MMCV installation guides
 For example, the following command install mmcv built for PyTorch 1.10.x and CUDA 11.3.
 
 ```shell
-pip install 'mmcv>=2.0.0' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
+pip install 'mmcv>=2.0.0rc1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
 ### Install on CPU-only platforms
@@ -192,7 +192,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```shell
 !pip3 install openmim
 !mim install mmengine
-!mim install "mmcv>=2.0.0"
+!mim install "mmcv>=2.0.0rc1"
 ```
 
 **Step 2.** Install MMPose from the source.
@@ -208,7 +208,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 1.0.0
+# Example output: 1.0.0rc0
 ```
 
 ```{note}

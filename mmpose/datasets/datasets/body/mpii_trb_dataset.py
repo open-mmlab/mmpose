@@ -4,7 +4,7 @@ import os.path as osp
 from typing import List, Tuple
 
 import numpy as np
-from mmengine.fileio import exists, get_local_path
+from mmengine.utils import check_file_exist
 
 from mmpose.registry import DATASETS
 from mmpose.structures.bbox import bbox_cs2xyxy
@@ -106,12 +106,11 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in MPII-TRB format."""
 
-        assert exists(self.ann_file), 'Annotation file does not exist'
-        with get_local_path(self.ann_file) as local_path:
-            with open(local_path) as anno_file:
-                self.data = json.load(anno_file)
+        check_file_exist(self.ann_file)
+        with open(self.ann_file) as anno_file:
+            data = json.load(anno_file)
 
-        imgid2info = {img['id']: img for img in self.data['images']}
+        imgid2info = {img['id']: img for img in data['images']}
 
         instance_list = []
         image_list = []
@@ -120,7 +119,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
         # mpii-trb bbox scales are normalized with factor 200.
         pixel_std = 200.
 
-        for ann in self.data['annotations']:
+        for ann in data['annotations']:
             img_id = ann['image_id']
 
             # center, scale in shape [1, 2] and bbox in [1, 4]
