@@ -36,6 +36,15 @@ Class Loss_A(nn.Module):
         return x
 ```
 
+并在对应目录下的 `__init__.py` 中进行 `import`：
+
+```Python
+# __init__.py of mmpose/models/losses
+from .loss_a.py import Loss_A
+
+__all__ = ['Loss_A']
+```
+
 我们就可以通过如下方式来从配置文件定义并进行实例化：
 
 ```Python

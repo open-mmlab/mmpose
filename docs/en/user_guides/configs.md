@@ -36,6 +36,15 @@ Class Loss_A(nn.Module):
         return x
 ```
 
+And import the new module in `__init__.py` in the corresponding directory:
+
+```Python
+# __init__.py of mmpose/models/losses
+from .loss_a.py import Loss_A
+
+__all__ = ['Loss_A']
+```
+
 Then you can define the module anywhere you want：
 
 ```Python
@@ -102,7 +111,7 @@ General configuration refers to the necessary configuration non-related to train
 Here is the description of General configuration:
 
 ```Python
-# 通用配置
+# General
 default_scope = 'mmpose'
 default_hooks = dict(
     timer=dict(type='IterTimerHook'), # time the data processing and model inference
