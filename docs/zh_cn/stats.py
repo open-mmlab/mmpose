@@ -88,7 +88,7 @@ modelzoo = f"""
 * 论文数量: {len(allpapers)}
 {countstr}
 
-已支持的数据集详细信息请见 [数据集](datasets.md).
+已支持的数据集详细信息请见 [数据集](dataset_zoo.md).
 
 {msglist}
 
@@ -167,7 +167,7 @@ dataset_zoo = f"""
 * 论文数量: {len(alldatapapers)}
 {countstr}
 
-已支持的算法详细信息请见 [模型池](modelzoo.md).
+已支持的算法详细信息请见 [模型池](model_zoo.txt).
 
 {datamsglist}
 """
