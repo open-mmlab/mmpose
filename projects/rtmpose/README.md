@@ -211,7 +211,7 @@ We provide the UDP pretraining configs of the CSPNeXt backbone. Find more detail
 |  CSPNeXt-m   |  256x192   |   13.05   |   3.06   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
 |  CSPNeXt-l   |  256x192   |   32.44   |   5.33   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
 
-We also provide the ImageNet classification pre-trained weights of the CSPNeXt backbone. Find more details in [RTMDet](https://github.com/open-mmlab/mmdetection/blob/dev-3.x/configs/rtmdet/README.md#classification).
+We also provide the ImageNet classification pre-trained weights of the CSPNeXt backbone. Find more details in [RTMDet](https://github.com/open-mmlab/mmdetection/blob/latest/configs/rtmdet/README.md#classification).
 
 |    Model     | Input Size | Params(M) | Flops(G) | Top-1 (%) | Top-5 (%) |                                                              Download                                                               |
 | :----------: | :--------: | :-------: | :------: | :-------: | :-------: | :---------------------------------------------------------------------------------------------------------------------------------: |
@@ -249,23 +249,23 @@ Env Requirements:
 
 ```shell
 # Download pre-compiled files
-wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
 
 # Unzip files
-tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+tar -xzvf mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
 
 # Go to the sdk folder
-cd mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/sdk
+cd mmdeploy-1.0.0-linux-x86_64-cxx11abi
 
 # Init environment
-source env.sh
+source set_env.sh
 
 # If opencv 3+ is not installed on your system, execute the following command.
 # If it is installed, skip this command
-bash opencv.sh
+bash install_opencv.sh
 
 # Compile executable programs
-bash build.sh
+bash build_sdk.sh
 
 # Inference for an image
 # Please pass the folder of the model, not the model file
@@ -280,23 +280,23 @@ bash build.sh
 
 ```shell
 # Download pre-compiled files
-wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
 
 # Unzip files
-tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+tar -xzvf mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
 
 # Go to the sdk folder
-cd mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0/sdk
+cd mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3
 
 # Init environment
-source env.sh
+source set_env.sh
 
 # If opencv 3+ is not installed on your system, execute the following command.
 # If it is installed, skip this command
-bash opencv.sh
+bash install_opencv.sh
 
 # Compile executable programs
-bash build.sh
+bash build_sdk.sh
 
 # Inference for an image
 # Please pass the folder of the model, not the model file
@@ -313,16 +313,20 @@ For details, see [Pipeline Inference](#-step4-pipeline-inference).
 
 ##### Python Inference
 
-1. Download the [pre-compiled SDK](https://github.com/open-mmlab/mmdeploy/releases).
-2. Unzip the SDK and go to the `sdk/python` folder.
-3. Install `mmdeploy_python` via `.whl` file.
+1. Install mmdeploy_runtime or mmdeploy_runtime_gpu
 
-```shell
-pip install {file_name}.whl
+```
+# for onnxruntime
+pip install mmdeploy-runtime
+download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) add third party runtime libraries to the PATH
+
+# for onnxruntime-gpu / tensorrt
+pip install mmdeploy-runtime-gpu
+download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) add third party runtime libraries to the PATH
 ```
 
-4. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
-5. Inference with `pose_tracker.py`:
+2. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
+3. Inference with `pose_tracker.py`:
 
 **Note:**
 
@@ -349,14 +353,14 @@ set-ExecutionPolicy RemoteSigned
 
 ```shell
 # in sdk folder:
-.\opencv.ps1
+.\install_opencv.ps1
 ```
 
 6. Set environment variables:
 
 ```shell
 # in sdk folder:
-.\env.ps1
+. .\set_env.ps1
 ```
 
 7. Compile the SDK:
@@ -364,7 +368,7 @@ set-ExecutionPolicy RemoteSigned
 ```shell
 # in sdk folder:
 # (if you installed opencv by .\install_opencv.ps1)
-.\build.ps1
+.\build_sdk.ps1
 # (if you installed opencv yourself)
 .\build_sdk.ps1 "path/to/folder/of/OpenCVConfig.cmake"
 ```
@@ -415,38 +419,38 @@ Please refer to [Train and Test](https://mmpose.readthedocs.io/en/latest/user_gu
 
 ## 🏗️ How to Deploy [🔝](#-table-of-contents)
 
-Here is a basic example of deploy RTMPose with [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x).
+Here is a basic example of deploy RTMPose with [MMDeploy](https://github.com/open-mmlab/mmdeploy/tree/main).
 
 ### 🧩 Step1. Install MMDeploy
 
-Before starting the deployment, please make sure you install MMPose-1.x and MMDeploy-1.x correctly.
+Before starting the deployment, please make sure you install MMPose and MMDeploy correctly.
 
-- Install MMPose-1.x, please refer to the [MMPose-1.x installation guide](https://mmpose.readthedocs.io/en/latest/installation.html).
-- Install MMDeploy-1.x, please refer to the [MMDeploy-1.x installation guide](https://mmdeploy.readthedocs.io/en/1.x/get_started.html#installation).
+- Install MMPose, please refer to the [MMPose installation guide](https://mmpose.readthedocs.io/en/latest/installation.html).
+- Install MMDeploy, please refer to the [MMDeploy installation guide](https://mmdeploy.readthedocs.io/en/latest/get_started.html#installation).
 
 Depending on the deployment backend, some backends require compilation of custom operators, so please refer to the corresponding document to ensure the environment is built correctly according to your needs:
 
-- [ONNX RUNTIME SUPPORT](https://mmdeploy.readthedocs.io/en/1.x/05-supported-backends/onnxruntime.html)
-- [TENSORRT SUPPORT](https://mmdeploy.readthedocs.io/en/1.x/05-supported-backends/tensorrt.html)
-- [OPENVINO SUPPORT](https://mmdeploy.readthedocs.io/en/1.x/05-supported-backends/openvino.html)
-- [More](https://github.com/open-mmlab/mmdeploy/tree/1.x/docs/en/05-supported-backends)
+- [ONNX RUNTIME SUPPORT](https://mmdeploy.readthedocs.io/en/latest/05-supported-backends/onnxruntime.html)
+- [TENSORRT SUPPORT](https://mmdeploy.readthedocs.io/en/latest/05-supported-backends/tensorrt.html)
+- [OPENVINO SUPPORT](https://mmdeploy.readthedocs.io/en/latest/05-supported-backends/openvino.html)
+- [More](https://github.com/open-mmlab/mmdeploy/tree/main/docs/en/05-supported-backends)
 
 ### 🛠️ Step2. Convert Model
 
 After the installation, you can enjoy the model deployment journey starting from converting PyTorch model to backend model by running MMDeploy's `tools/deploy.py`.
 
-The detailed model conversion tutorial please refer to the [MMDeploy document](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/convert_model.html). Here we only give the example of converting RTMPose.
+The detailed model conversion tutorial please refer to the [MMDeploy document](https://mmdeploy.readthedocs.io/en/latest/02-how-to-run/convert_model.html). Here we only give the example of converting RTMPose.
 
 Here we take converting RTMDet-nano and RTMPose-m to ONNX/TensorRT as an example.
 
 - If you only want to use ONNX, please use:
-  - [`detection_onnxruntime_static.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmdet/detection/detection_onnxruntime_static.py) for RTMDet.
-  - [`pose-detection_simcc_onnxruntime_dynamic.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py) for RTMPose.
+  - [`detection_onnxruntime_static.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmdet/detection/detection_onnxruntime_static.py) for RTMDet.
+  - [`pose-detection_simcc_onnxruntime_dynamic.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py) for RTMPose.
 - If you want to use TensorRT, please use：
-  - [`detection_tensorrt_static-320x320.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmdet/detection/detection_tensorrt_static-320x320.py) for RTMDet.
-  - [`pose-detection_simcc_tensorrt_dynamic-256x192.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py) for RTMPose.
+  - [`detection_tensorrt_static-320x320.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmdet/detection/detection_tensorrt_static-320x320.py) for RTMDet.
+  - [`pose-detection_simcc_tensorrt_dynamic-256x192.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py) for RTMPose.
 
-If you want to customize the settings in the deployment config for your requirements, please refer to [MMDeploy config tutorial](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/write_config.html).
+If you want to customize the settings in the deployment config for your requirements, please refer to [MMDeploy config tutorial](https://mmdeploy.readthedocs.io/en/latest/02-how-to-run/write_config.html).
 
 In this tutorial, we organize files as follows:
 
@@ -587,7 +591,7 @@ import argparse
 
 import cv2
 import numpy as np
-from mmdeploy_python import PoseDetector
+from mmdeploy_runtime import PoseDetector
 
 
 def parse_args():
@@ -701,8 +705,8 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 
 #### Other languages
 
-- [C# API Examples](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/csharp)
-- [JAVA API Examples](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/java)
+- [C# API Examples](https://github.com/open-mmlab/mmdeploy/tree/main/demo/csharp)
+- [JAVA API Examples](https://github.com/open-mmlab/mmdeploy/tree/main/demo/java)
 
 ## 🚀 Step4. Pipeline Inference
 
@@ -736,8 +740,8 @@ optional arguments:
 
 #### API Example
 
-- [`det_pose.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/det_pose.py)
-- [`det_pose.cxx`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/csrc/cpp/det_pose.cxx)
+- [`det_pose.py`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/python/det_pose.py)
+- [`det_pose.cxx`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/csrc/cpp/det_pose.cxx)
 
 ### Inference for a video
 
@@ -792,8 +796,8 @@ optional arguments:
 
 #### API Example
 
-- [`pose_tracker.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/pose_tracker.py)
-- [`pose_tracker.cxx`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/csrc/cpp/pose_tracker.cxx)
+- [`pose_tracker.py`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/python/pose_tracker.py)
+- [`pose_tracker.cxx`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/csrc/cpp/pose_tracker.cxx)
 
 ## 📚 Common Usage [🔝](#-table-of-contents)
 
@@ -846,7 +850,7 @@ The result is as follows:
 +--------+------------+---------+
 ```
 
-If you want to learn more details of profiler, you can refer to the [Profiler Docs](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/useful_tools.html#profiler).
+If you want to learn more details of profiler, you can refer to the [Profiler Docs](https://mmdeploy.readthedocs.io/en/latest/02-how-to-run/useful_tools.html#profiler).
 
 ### 📊 Model Test [🔝](#-table-of-contents)
 
@@ -860,7 +864,7 @@ python tools/test.py \
     --device cpu
 ```
 
-You can also refer to [MMDeploy Docs](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/docs/en/02-how-to-run/profile_model.md) for more details.
+You can also refer to [MMDeploy Docs](https://github.com/open-mmlab/mmdeploy/blob/main/docs/en/02-how-to-run/profile_model.md) for more details.
 
 ## 📜 Citation [🔝](#-table-of-contents)
 

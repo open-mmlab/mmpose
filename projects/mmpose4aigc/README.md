@@ -67,8 +67,8 @@ bash install_posetracker_linux.sh
 After installation, files are organized as follows:
 
 ```shell
-|----mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1
-|    |----sdk
+|----mmdeploy-1.0.0-linux-x86_64-cxx11abi
+|    |----README.md
 |    |----rtmpose-ort
 |    |    |----rtmdet-nano
 |    |    |----rtmpose-m
@@ -83,7 +83,7 @@ Run the following command to generate a skeleton image:
 ```shell
 # generate a skeleton image
 bash mmpose_style_skeleton.sh \
-    mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/rtmpose-ort/000000147979.jpg
+    mmdeploy-1.0.0-linux-x86_64-cxx11abi/rtmpose-ort/000000147979.jpg
 ```
 
 For more details, you can refer to [RTMPose](../rtmpose/README.md).
