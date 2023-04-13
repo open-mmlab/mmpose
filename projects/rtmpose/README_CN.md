@@ -311,11 +311,11 @@ bash build_sdk.sh
 ```
 # for onnxruntime
 pip install mmdeploy-runtime
-下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
+# 下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
 
 # for onnxruntime-gpu / tensorrt
 pip install mmdeploy-runtime-gpu
-下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64-cuda11.3.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
+# 下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64-cuda11.3.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
 ```
 
 2. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
