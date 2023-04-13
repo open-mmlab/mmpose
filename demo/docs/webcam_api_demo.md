@@ -18,11 +18,10 @@ python demo/webcam_api_demo.py
 python demo/webcam_api_demo.py --cpu
 ```
 
-The command above will use the default config file `demo/webcam_cfg/pose_estimation.py`. You can also specify the config file in the command:
+The command above will use the default config file `demo/webcam_cfg/human_pose.py`. You can also specify the config file in the command:
 
 ```shell
-# Use the config "pose_tracking.py" for higher infererence speed
-python demo/webcam_api_demo.py --config demo/webcam_cfg/pose_estimation.py
+python demo/webcam_api_demo.py --config demo/webcam_cfg/human_pose.py
 ```
 
 ### Hotkeys
@@ -30,8 +29,6 @@ python demo/webcam_api_demo.py --config demo/webcam_cfg/pose_estimation.py
 | Hotkey | Function                              |
 | ------ | ------------------------------------- |
 | v      | Toggle the pose visualization on/off. |
-| s      | Toggle the sunglasses effect on/off.  |
-| b      | Toggle the big-eye effect on/off.     |
 | h      | Show help information.                |
 | m      | Show the monitoring information.      |
 | q      | Exit.                                 |
