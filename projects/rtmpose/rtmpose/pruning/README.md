@@ -107,7 +107,7 @@ The divisor is important for the actual inference speed, and we suggest you to t
 
 ## Reference
 
-[GroupFisher in MMRazor](https://github.com/open-mmlab/mmrazor/tree/latest/configs/pruning/base/group_fisher)
+[GroupFisher in MMRazor](https://github.com/open-mmlab/mmrazor/tree/dev-1.x/configs/pruning/base/group_fisher)
 
 [rp_sa_f]: https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.pth
 [rp_sa_l]: https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.json
