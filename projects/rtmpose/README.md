@@ -324,7 +324,7 @@ pip install {file_name}.whl
 4. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
 5. Inference with `pose_tracker.py`:
 
-> Note:
+**Note:**
 
 - If you meet `ImportError: DLL load failed while importing mmdeploy_python`, please copy `thirdparty/onnxruntime/lib/onnxruntime.dll` to `site-packages/mmdeploy_python/` of your current Python env.
 
