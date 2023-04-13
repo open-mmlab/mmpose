@@ -315,14 +315,14 @@ For details, see [Pipeline Inference](#-step4-pipeline-inference).
 
 1. Install mmdeploy_runtime or mmdeploy_runtime_gpu
 
-```
+```shell
 # for onnxruntime
 pip install mmdeploy-runtime
 # download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) add third party runtime libraries to the PATH
 
 # for onnxruntime-gpu / tensorrt
 pip install mmdeploy-runtime-gpu
-# download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) add third party runtime libraries to the PATH
+# download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64-cuda11.3.zip) add third party runtime libraries to the PATH
 ```
 
 2. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
@@ -450,7 +450,7 @@ If you want to customize the settings in the deployment config for your requirem
 
 In this tutorial, we organize files as follows:
 
-```
+```shell
 |----mmdeploy
 |----mmdetection
 |----mmpose
@@ -567,7 +567,7 @@ python tools/deploy.py \
 
 After running the command, it will dump 3 json files additionally for the SDK:
 
-```
+```shell
 |----sdk
      |----end2end.onnx    # ONNX model
      |----end2end.engine  # TensorRT engine file
