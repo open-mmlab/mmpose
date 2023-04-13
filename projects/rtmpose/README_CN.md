@@ -308,7 +308,7 @@ bash build_sdk.sh
 
 1. 安装 mmdeploy_runtime 或者 mmdeploy_runtime_gpu
 
-```
+```shell
 # for onnxruntime
 pip install mmdeploy-runtime
 # 下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
@@ -446,7 +446,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 本教程中使用的文件结构如下：
 
-```Python
+```shell
 |----mmdeploy
 |----mmdetection
 |----mmpose
@@ -567,7 +567,7 @@ python tools/deploy.py \
 
 默认会导出三个 json 文件：
 
-```
+```shell
 |----sdk
      |----end2end.onnx    # ONNX model
      |----end2end.engine  # TensorRT engine file
