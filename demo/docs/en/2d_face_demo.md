@@ -1,8 +1,8 @@
 ## 2D Face Keypoint Demo
 
-We provide a demo script to test a single image or video with hand detectors and top-down pose estimators. Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) with version >= 3.0.
+We provide a demo script to test a single image or video with face detectors and top-down pose estimators. Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) with version >= 3.0.
 
-**Face Box Model Preparation:** The pre-trained face box estimation model can be found in [mmdet model zoo](/demo/docs/mmdet_modelzoo.md).
+**Face Bounding Box Model Preparation:** The pre-trained face box estimation model can be found in [mmdet model zoo](/demo/docs/en/mmdet_modelzoo.md#face-bounding-box-detection-models).
 
 ### 2D Face Image Demo
 
@@ -98,4 +98,4 @@ In addition, the Inferencer supports saving predicted poses. For more informatio
 
 ### Speed Up Inference
 
-For 2D face keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [aflw_hrnetv2](../../configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py#90).
+For 2D face keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in line 90 of [aflw_hrnetv2](../../../configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py).

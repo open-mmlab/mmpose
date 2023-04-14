@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Copyright (c) OpenMMLab. All rights reserved.
 
-sed -i '$a\\n' ../../demo/docs/*_demo.md
-cat ../../demo/docs/*_demo.md | sed "s/^## 2D\(.*\)Demo/##\1Estimation/" | sed "s/md###t/html#t/g" | sed '1i\# Demos\n' | sed 's=](/docs/en/=](/=g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/main/=g' >demos.md
+sed -i '$a\\n' ../../demo/docs/en/*_demo.md
+cat ../../demo/docs/en/*_demo.md | sed "s/^## 2D\(.*\)Demo/##\1Estimation/" | sed "s/md###t/html#t/g" | sed '1i\# Demos\n' | sed 's=](/docs/en/=](/=g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/main/=g' >demos.md
 
  # remove /docs/ for link used in doc site
 sed -i 's=](/docs/en/=](=g' overview.md

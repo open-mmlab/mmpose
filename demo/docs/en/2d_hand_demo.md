@@ -2,7 +2,7 @@
 
 We provide a demo script to test a single image or video with hand detectors and top-down pose estimators. Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) with version >= 3.0.
 
-**Hand Box Model Preparation:** The pre-trained hand box estimation model can be found in [mmdet model zoo](/demo/docs/mmdet_modelzoo.md).
+**Hand Box Model Preparation:** The pre-trained hand box estimation model can be found in [mmdet model zoo](/demo/docs/en/mmdet_modelzoo.md#hand-bounding-box-detection-models).
 
 ### 2D Hand Image Demo
 
@@ -14,7 +14,6 @@ python demo/topdown_demo_with_mmdet.py \
     [--show] [--device ${GPU_ID or CPU}] [--save-predictions] \
     [--draw-heatmap ${DRAW_HEATMAP}] [--radius ${KPT_RADIUS}] \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}]
-
 ```
 
 The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/hand_2d_keypoint.html).
