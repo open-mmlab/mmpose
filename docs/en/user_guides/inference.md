@@ -75,6 +75,8 @@ inferencer = MMPoseInferencer(
 
 The complere list of model alias can be found in the [Model Alias](#model-alias) section.
 
+**Custom Object Detector for Top-down Pose Estimation Models**
+
 In addition, top-down pose estimators also require an object detection model. The inferencer is capable of inferring the instance type for models trained with datasets supported in MMPose, and subsequently constructing the necessary object detection model. Alternatively, users may also manually specify the detection model using the following methods:
 
 ```python
@@ -106,6 +108,8 @@ inferencer = MMPoseInferencer(
     det_cat_ids=[0],  # the category id of 'human' class
 )
 ```
+
+To perform top-down pose estimation on cropped images containing a single object, users can set `det_model='whole_image'`. This bypasses the object detector initialization, creating a bounding box that matches the input image size and directly sending the entire image to the top-down pose estimator.
 
 ### Dump Results
 

@@ -1,12 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import mimetypes
 import os
-import shutil
-import tempfile
 import warnings
 from collections import defaultdict
-from typing import (Any, Callable, Dict, Generator, List, Optional, Sequence,
-                    Union)
+from typing import (Callable, Dict, Generator, Iterable, List, Optional,
+                    Sequence, Union)
 
 import cv2
 import mmcv
@@ -20,6 +18,7 @@ from mmengine.fileio import (get_file_backend, isdir, join_path,
 from mmengine.infer.infer import BaseInferencer
 from mmengine.runner.checkpoint import _load_checkpoint_to_model
 from mmengine.structures import InstanceData
+from mmengine.utils import mkdir_or_exist
 
 from mmpose.apis.inference import dataset_meta_from_config
 from mmpose.structures import PoseDataSample, split_instances
@@ -83,7 +82,7 @@ class BaseMMPoseInferencer(BaseInferencer):
             model.dataset_meta = dataset_meta_from_config(
                 cfg, dataset_mode='train')
 
-    def _inputs_to_list(self, inputs: InputsType) -> list:
+    def _inputs_to_list(self, inputs: InputsType) -> Iterable:
         """Preprocess the inputs to a list.
 
         Preprocess inputs to a list according to its type:
@@ -126,21 +125,24 @@ class BaseMMPoseInferencer(BaseInferencer):
                 input_type = mimetypes.guess_type(inputs)[0].split('/')[0]
                 if input_type == 'video':
                     self._video_input = True
-                    # split video frames into a temporary folder
-                    frame_folder = tempfile.TemporaryDirectory()
                     video = mmcv.VideoReader(inputs)
                     self.video_info = dict(
                         fps=video.fps,
                         name=os.path.basename(inputs),
-                        frame_folder=frame_folder)
-                    video.cvt2frames(frame_folder.name, show_progress=False)
-                    frames = sorted(list_dir_or_file(frame_folder.name))
-                    inputs = [join_path(frame_folder.name, f) for f in frames]
+                        writer=None,
+                        predictions=[])
+                    inputs = video
+                elif input_type == 'image':
+                    inputs = [inputs]
+                else:
+                    raise ValueError(f'Expected input to be an image, video, '
+                                     f'or folder, but received {inputs} of '
+                                     f'type {input_type}.')
 
-        if not isinstance(inputs, (list, tuple)):
+        elif isinstance(inputs, np.ndarray):
             inputs = [inputs]
 
-        return list(inputs)
+        return inputs
 
     def _get_webcam_inputs(self, inputs: str) -> Generator:
         """Sets up and returns a generator function that reads frames from a
@@ -182,7 +184,8 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         # Set video input flag and metadata.
         self._video_input = True
-        self.video_info = dict(fps=10, name='webcam.mp4', frame_folder=None)
+        self.video_info = dict(
+            fps=10, name='webcam.mp4', writer=None, predictions=[])
 
         # Set up webcam reader generator function.
         self._window_closing = False
@@ -288,27 +291,18 @@ class BaseMMPoseInferencer(BaseInferencer):
             if isinstance(single_input, str):
                 img = mmcv.imread(single_input, channel_order='rgb')
             elif isinstance(single_input, np.ndarray):
-                img = mmcv.bgr2rgb(single_input.copy())
+                img = mmcv.bgr2rgb(single_input)
             else:
                 raise ValueError('Unsupported input type: '
                                  f'{type(single_input)}')
 
             img_name = os.path.basename(pred.metainfo['img_path'])
-
-            if vis_out_dir:
-                if self._video_input:
-                    out_file = join_path(vis_out_dir, 'vis_frames', img_name)
-                else:
-                    out_file = join_path(vis_out_dir, img_name)
-            else:
-                out_file = None
+            window_name = window_name if window_name else img_name
 
             # since visualization and inference utilize the same process,
             # the wait time is reduced when a video input is utilized,
             # thereby eliminating the issue of inference getting stuck.
             wait_time = 1e-5 if self._video_input else wait_time
-
-            window_name = window_name if window_name else img_name
 
             visualization = self.visualizer.add_datasample(
                 window_name,
@@ -316,9 +310,9 @@ class BaseMMPoseInferencer(BaseInferencer):
                 pred,
                 draw_gt=False,
                 draw_bbox=draw_bbox,
+                draw_heatmap=True,
                 show=show,
                 wait_time=wait_time,
-                out_file=out_file,
                 kpt_thr=kpt_thr)
             results.append(visualization)
 
@@ -331,6 +325,26 @@ class BaseMMPoseInferencer(BaseInferencer):
                         'close_event',
                         window_close_event_handler
                     )
+
+            if vis_out_dir:
+                out_img = mmcv.rgb2bgr(visualization)
+
+                if self._video_input:
+
+                    if self.video_info['writer'] is None:
+                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                        mkdir_or_exist(vis_out_dir)
+                        out_file = join_path(
+                            vis_out_dir,
+                            os.path.basename(self.video_info['name']))
+                        self.video_info['writer'] = cv2.VideoWriter(
+                            out_file, fourcc, self.video_info['fps'],
+                            (visualization.shape[1], visualization.shape[0]))
+                    self.video_info['writer'].write(out_img)
+
+                else:
+                    out_file = join_path(vis_out_dir, img_name)
+                    mmcv.imwrite(out_img, out_file)
 
         if return_vis:
             return results
@@ -384,66 +398,42 @@ class BaseMMPoseInferencer(BaseInferencer):
             result_dict['predictions'].append(pred)
 
         if pred_out_dir != '':
-            if self._video_input:
-                pred_out_dir = join_path(pred_out_dir, 'pred_frames')
-
             for pred, data_sample in zip(result_dict['predictions'], preds):
-                fname = os.path.splitext(
-                    os.path.basename(
-                        data_sample.metainfo['img_path']))[0] + '.json'
-                mmengine.dump(
-                    pred, join_path(pred_out_dir, fname), indent='  ')
+                if self._video_input:
+                    self.video_info['predictions'].append(pred)
+                else:
+                    fname = os.path.splitext(
+                        os.path.basename(
+                            data_sample.metainfo['img_path']))[0] + '.json'
+                    mmengine.dump(
+                        pred, join_path(pred_out_dir, fname), indent='  ')
 
         return result_dict
 
-    def _merge_outputs(self, vis_out_dir: str, pred_out_dir: str,
-                       **kwargs: Dict[str, Any]) -> None:
-        """Merge the visualized frames and predicted instance outputs and save
-        them.
+    def _finalize_video_processing(
+        self,
+        pred_out_dir: str = '',
+    ):
+        """Finalize video processing by releasing the video writer and saving
+        predictions to a file.
 
-        Args:
-            vis_out_dir (str): Path to the directory where the visualized
-                frames are saved.
-            pred_out_dir (str): Path to the directory where the predicted
-                instance outputs are saved.
-            **kwargs: Other arguments that are not used in this method.
+        This method should be called after completing the video processing. It
+        releases the video writer, if it exists, and saves the predictions to a
+        JSON file if a prediction output directory is provided.
         """
-        assert self._video_input
 
-        if vis_out_dir != '':
-            vis_frame_out_dir = join_path(vis_out_dir, 'vis_frames')
-            if not isdir(vis_frame_out_dir) or len(
-                    os.listdir(vis_frame_out_dir)) == 0:
-                warnings.warn(
-                    f'{vis_frame_out_dir} does not exist or is empty.')
-            else:
-                mmcv.frames2video(
-                    vis_frame_out_dir,
-                    join_path(vis_out_dir, self.video_info['name']),
-                    fps=self.video_info['fps'],
-                    fourcc='mp4v',
-                    show_progress=False)
-                shutil.rmtree(vis_frame_out_dir)
+        # Release the video writer if it exists
+        if self.video_info['writer'] is not None:
+            self.video_info['writer'].release()
 
-        if pred_out_dir != '':
-            pred_frame_out_dir = join_path(pred_out_dir, 'pred_frames')
-            if not isdir(pred_frame_out_dir) or len(
-                    os.listdir(pred_frame_out_dir)) == 0:
-                warnings.warn(
-                    f'{pred_frame_out_dir} does not exist or is empty.')
-            else:
-                predictions = []
-                pred_files = list_dir_or_file(pred_frame_out_dir)
-                for frame_id, pred_file in enumerate(sorted(pred_files)):
-                    predictions.append({
-                        'frame_id':
-                        frame_id,
-                        'instances':
-                        mmengine.load(
-                            join_path(pred_frame_out_dir, pred_file))
-                    })
-                fname = os.path.splitext(
-                    os.path.basename(self.video_info['name']))[0] + '.json'
-                mmengine.dump(
-                    predictions, join_path(pred_out_dir, fname), indent='  ')
-                shutil.rmtree(pred_frame_out_dir)
+        # Save predictions
+        if pred_out_dir:
+            fname = os.path.splitext(
+                os.path.basename(self.video_info['name']))[0] + '.json'
+            predictions = [
+                dict(frame_id=i, instances=pred)
+                for i, pred in enumerate(self.video_info['predictions'])
+            ]
+
+            mmengine.dump(
+                predictions, join_path(pred_out_dir, fname), indent='  ')

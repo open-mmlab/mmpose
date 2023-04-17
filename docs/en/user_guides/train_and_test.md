@@ -1,23 +1,6 @@
-# Train and Test
+# Training and Testing
 
-<!-- TOC -->
-
-- [Train](#train)
-  - [Train with your PC](#train-with-your-pc)
-  - [Train with multiple GPUs](#train-with-multiple-gpus)
-  - [Train with multiple machines](#train-with-multiple-machines)
-    - [Multiple machines in the same network](#multiple-machines-in-the-same-network)
-    - [Multiple machines managed with slurm](#multiple-machines-managed-with-slurm)
-- [Test](#test)
-  - [Test with your PC](#test-with-your-pc)
-  - [Test with multiple GPUs](#test-with-multiple-gpus)
-  - [Test with multiple machines](#test-with-multiple-machines)
-    - [Multiple machines in the same network](#multiple-machines-in-the-same-network-1)
-    - [Multiple machines managed with slurm](#multiple-machines-managed-with-slurm-1)
-
-<!-- TOC -->
-
-## Train
+## Launch training
 
 ### Train with your PC
 
@@ -138,7 +121,134 @@ Here are the environment variables that can be used to configure the slurm job.
 | `CPUS_PER_TASK` | The number of CPUs to be allocated per task (Usually one GPU corresponds to one task). Defaults to 5.      |
 | `SRUN_ARGS`     | The other arguments of `srun`. Available options can be found [here](https://slurm.schedmd.com/srun.html). |
 
-## Test
+## Resume training
+
+Resume training means to continue training from the state saved from one of the previous trainings, where the state includes the model weights, the state of the optimizer and the optimizer parameter adjustment strategy.
+
+### Automatically resume training
+
+Users can add `--resume` to the end of the training command to resume training. The program will automatically load the latest weight file from `work_dirs` to resume training. If there is a latest `checkpoint` in `work_dirs` (e.g. the training was interrupted during the previous training), the training will be resumed from the `checkpoint`. Otherwise (e.g. the previous training did not save `checkpoint` in time or a new training task was started), the training will be restarted.
+
+Here is an example of resuming training:
+
+```shell
+python tools/train.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py --resume
+```
+
+### Specify the checkpoint to resume training
+
+You can also specify the `checkpoint` path for `--resume`. MMPose will automatically read the `checkpoint` and resume training from it. The command is as follows:
+
+```shell
+python tools/train.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py \
+    --resume work_dirs/td-hm_res50_8xb64-210e_coco-256x192/latest.pth
+```
+
+If you hope to manually specify the `checkpoint` path in the config file, in addition to setting `resume=True`, you also need to set the `load_from`.
+
+It should be noted that if only `load_from` is set without setting `resume=True`, only the weights in the `checkpoint` will be loaded and the training will be restarted from scratch, instead of continuing from the previous state.
+
+The following example is equivalent to the example above that specifies the `--resume` parameter:
+
+```python
+resume = True
+load_from = 'work_dirs/td-hm_res50_8xb64-210e_coco-256x192/latest.pth'
+# model settings
+model = dict(
+    ## omitted ##
+    )
+```
+
+## Freeze partial parameters during training
+
+In some scenarios, it might be desirable to freeze certain parameters of a model during training to fine-tune specific parts or to prevent overfitting. In MMPose, you can set different hyperparameters for any module in the model by setting custom_keys in `paramwise_cfg`. This allows you to control the learning rate and decay coefficient for specific parts of the model.
+
+For example, if you want to freeze the parameters in `backbone.layer0` and `backbone.layer1`, you can modify the optimizer wrapper in the config file as:
+
+```python
+optim_wrapper = dict(
+    optimizer=dict(...),
+    paramwise_cfg=dict(
+        custom_keys={
+            'backbone.layer0': dict(lr_mult=0, decay_mult=0),
+            'backbone.layer0': dict(lr_mult=0, decay_mult=0),
+        }))
+optimizer = build_optim_wrapper(ToyModel(), optim_wrapper)
+```
+
+This configuration will freeze the parameters in `backbone.layer0` and `backbone.layer1` by setting their learning rate and decay coefficient to 0. By using this approach, you can effectively control the training process and fine-tune specific parts of your model as needed.
+
+## Automatic Mixed Precision (AMP) training
+
+Mixed precision training can reduce training time and storage requirements without changing the model or reducing the model training accuracy, thus supporting larger batch sizes, larger models, and larger input sizes.
+
+To enable Automatic Mixing Precision (AMP) training, add `--amp` to the end of the training command, which is as follows:
+
+```shell
+python tools/train.py ${CONFIG_FILE} --amp
+```
+
+Specific examples are as follows:
+
+```shell
+python tools/train.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py  --amp
+```
+
+## Set the random seed
+
+If you want to specify the random seed during training, you can use the following command:
+
+```shell
+python ./tools/train.py \
+    ${CONFIG} \                               # config file
+    --cfg-options randomness.seed=2023 \      # set the random seed = 2023
+    [randomness.diff_rank_seed=True] \        # Set different seeds according to rank.
+    [randomness.deterministic=True]           # Set the cuDNN backend deterministic option to True
+# `[]` stands for optional parameters, when actually entering the command line, you do not need to enter `[]`
+```
+
+`randomness` has three parameters that can be set, with the following meanings.
+
+- `randomness.seed=2023`, set the random seed to `2023`.
+
+- `randomness.diff_rank_seed=True`, set different seeds according to global `rank`. Defaults to `False`.
+
+- `randomness.deterministic=True`, set the deterministic option for `cuDNN` backend, i.e., set `torch.backends.cudnn.deterministic` to `True` and `torch.backends.cudnn.benchmark` to `False`. Defaults to `False`. See [Pytorch Randomness](https://pytorch.org/docs/stable/notes/randomness.html) for more details.
+
+## Visualize training process
+
+Monitoring the training process is essential for understanding the performance of your model and making necessary adjustments. In this section, we will introduce two methods to visualize the training process of your MMPose model: TensorBoard and the MMEngine Visualizer.
+
+### TensorBoard
+
+TensorBoard is a powerful tool that allows you to visualize the changes in losses during training. To enable TensorBoard visualization, you may need to:
+
+1. Install TensorBoard environment
+
+   ```shell
+   pip install tensorboard
+   ```
+
+2. Enable TensorBoard in the config file
+
+   ```python
+   visualizer = dict(vis_backends=[
+       dict(type='LocalVisBackend'),
+       dict(type='TensorboardVisBackend'),
+   ])
+   ```
+
+The event file generated by TensorBoard will be save under the experiment log folder `${WORK_DIR}`, which defaults to `work_dir/${CONFIG}` or can be specified using the `--work-dir` option. To visualize the training process, use the following command:
+
+```shell
+tensorboard --logdir ${WORK_DIR}/${TIMESTAMP}/vis_data
+```
+
+### MMEngine visualizer
+
+MMPose also supports visualizing model inference results during validation. To activate this function, please use the `--show` option or set `--show-dir` when launching training. This feature provides an effective way to analyze the model's performance on specific examples and make any necessary adjustments.
+
+## Test your model
 
 ### Test with your PC
 

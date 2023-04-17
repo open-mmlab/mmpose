@@ -206,7 +206,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 | CSPNeXt-m |  256x192   |   13.05   |   3.06   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
 | CSPNeXt-l |  256x192   |   32.44   |   5.33   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
 
-我们提供了 ImageNet 分类训练的 CSPNeXt 模型参数，更多细节请参考 [RTMDet](https://github.com/open-mmlab/mmdetection/blob/dev-3.x/configs/rtmdet/README.md#classification)。
+我们提供了 ImageNet 分类训练的 CSPNeXt 模型参数，更多细节请参考 [RTMDet](https://github.com/open-mmlab/mmdetection/blob/latest/configs/rtmdet/README.md#classification)。
 
 |    Model     | Input Size | Params(M) | Flops(G) | Top-1 (%) | Top-5 (%) |                                                              Download                                                               |
 | :----------: | :--------: | :-------: | :------: | :-------: | :-------: | :---------------------------------------------------------------------------------------------------------------------------------: |
@@ -244,27 +244,29 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推
 
 ```shell
 # 下载预编译包
-wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
 
 # 解压文件
-tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1.tar.gz
+tar -xzvf mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
 
 # 切换到 sdk 目录
-cd mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/sdk
+cd mmdeploy-1.0.0-linux-x86_64-cxx11abi
 
 # 设置环境变量
-source env.sh
+source set_env.sh
 
 # 如果系统中没有安装 opencv 3+，请执行以下命令。如果已安装，可略过
-bash opencv.sh
+bash install_opencv.sh
 
 # 编译可执行程序
-bash build.sh
+bash build_sdk.sh
 
 # 图片推理
+# 请传入模型目录，而不是模型文件
 ./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
 
 # 视频推理
+# 请传入模型目录，而不是模型文件
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
 ```
 
@@ -272,27 +274,29 @@ bash build.sh
 
 ```shell
 # 下载预编译包
-wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0rc3/mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+wget https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
 
 # 解压文件
-tar -xzvf mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0.tar.gz
+tar -xzvf mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
 
 # 切换到 sdk 目录
-cd mmdeploy-1.0.0rc3-linux-x86_64-cuda11.1-tensorrt8.2.3.0/sdk
+cd mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3
 
 # 设置环境变量
-source env.sh
+source set_env.sh
 
 # 如果系统中没有安装 opencv 3+，请执行以下命令。如果已安装，可略过
-bash opencv.sh
+bash install_opencv.sh
 
 # 编译可执行程序
-bash build.sh
+bash build_sdk.sh
 
 # 图片推理
+# 请传入模型目录，而不是模型文件
 ./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
 
 # 视频推理
+# 请传入模型目录，而不是模型文件
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
 ```
 
@@ -302,19 +306,24 @@ bash build.sh
 
 ##### Python 推理
 
-1. 下载 [预编译包](https://github.com/open-mmlab/mmdeploy/releases)。
-2. 解压文件，进入 `sdk/python` 目录。
-3. 用 `whl` 安装 `mmdeploy_python`。
+1. 安装 mmdeploy_runtime 或者 mmdeploy_runtime_gpu
 
 ```shell
-pip install {file_name}.whl
+# for onnxruntime
+pip install mmdeploy-runtime
+# 下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
+
+# for onnxruntime-gpu / tensorrt
+pip install mmdeploy-runtime-gpu
+# 下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64-cuda11.3.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
 ```
 
-4. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
-5. 使用 `pose_tracker.py` 进行推理：
+2. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
+3. 使用 `pose_tracker.py` 进行推理：
 
 ```shell
-# 进入 ./sdk/example/python
+# 进入 ./example/python
+# 请传入模型目录，而不是模型文件
 python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 ```
 
@@ -333,14 +342,14 @@ set-ExecutionPolicy RemoteSigned
 
 ```shell
 # in sdk folder:
-.\opencv.ps1
+.\install_opencv.ps1
 ```
 
 6. 配置环境变量：
 
 ```shell
 # in sdk folder:
-.\set_env.ps1
+. .\set_env.ps1
 ```
 
 7. 编译 sdk：
@@ -362,6 +371,10 @@ example\cpp\build\Release
 ### MMPose demo 脚本
 
 通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)和效果验证。
+
+**提示：**
+
+- 基于 Pytorch 推理并不能达到 RTMPose 模型的真实推理速度，只用于模型效果验证。
 
 ```shell
 # 前往 mmpose 目录
@@ -395,45 +408,45 @@ python demo/topdown_demo_with_mmdet.py \
 
 ## 🏗️ 部署教程 [🔝](#-table-of-contents)
 
-本教程将展示如何通过 [MMDeploy-1.x](https://github.com/open-mmlab/mmdeploy/tree/1.x) 部署 RTMPose 项目。
+本教程将展示如何通过 [MMDeploy](https://github.com/open-mmlab/mmdeploy/tree/main) 部署 RTMPose 项目。
 
 ### 🧩 安装
 
 在开始部署之前，首先你需要确保正确安装了 MMPose, MMDetection, MMDeploy，相关安装教程如下：
 
 - [安装 MMPose 与 MMDetection](https://mmpose.readthedocs.io/zh_CN/latest/installation.html)
-- [安装 MMDeploy](https://mmdeploy.readthedocs.io/zh_CN/1.x/04-supported-codebases/mmpose.html)
+- [安装 MMDeploy](https://mmdeploy.readthedocs.io/zh_CN/latest/04-supported-codebases/mmpose.html)
 
 根据部署后端的不同，有的后端需要对自定义算子进行编译，请根据需求前往对应的文档确保环境搭建正确：
 
-- [ONNX](https://mmdeploy.readthedocs.io/zh_CN/1.x/05-supported-backends/onnxruntime.html)
-- [TensorRT](https://mmdeploy.readthedocs.io/zh_CN/1.x/05-supported-backends/tensorrt.html)
-- [OpenVINO](https://mmdeploy.readthedocs.io/zh_CN/1.x/05-supported-backends/openvino.html)
-- [更多](https://github.com/open-mmlab/mmdeploy/tree/1.x/docs/en/05-supported-backends)
+- [ONNX](https://mmdeploy.readthedocs.io/zh_CN/latest/05-supported-backends/onnxruntime.html)
+- [TensorRT](https://mmdeploy.readthedocs.io/zh_CN/latest/05-supported-backends/tensorrt.html)
+- [OpenVINO](https://mmdeploy.readthedocs.io/zh_CN/latest/05-supported-backends/openvino.html)
+- [更多](https://github.com/open-mmlab/mmdeploy/tree/main/docs/en/05-supported-backends)
 
 ### 🛠️ 模型转换
 
 在完成安装之后，你就可以开始模型部署了。通过 MMDeploy 提供的 `tools/deploy.py` 可以方便地将 Pytorch 模型转换到不同的部署后端。
 
-我们本节演示将 RTMDet 和 RTMPose 模型导出为 ONNX 和 TensorRT 格式，如果你希望了解更多内容请前往 [MMDeploy 文档](https://mmdeploy.readthedocs.io/zh_CN/1.x/02-how-to-run/convert_model.html)。
+我们本节演示将 RTMDet 和 RTMPose 模型导出为 ONNX 和 TensorRT 格式，如果你希望了解更多内容请前往 [MMDeploy 文档](https://mmdeploy.readthedocs.io/zh_CN/latest/02-how-to-run/convert_model.html)。
 
 - ONNX 配置
 
-  \- RTMDet：[`detection_onnxruntime_static.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmdet/detection/detection_onnxruntime_static.py)
+  \- RTMDet：[`detection_onnxruntime_static.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmdet/detection/detection_onnxruntime_static.py)
 
-  \- RTMPose：[`pose-detection_simcc_onnxruntime_dynamic.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py)
+  \- RTMPose：[`pose-detection_simcc_onnxruntime_dynamic.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py)
 
 - TensorRT 配置
 
-  \- RTMDet：[`detection_tensorrt_static-320x320.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmdet/detection/detection_tensorrt_static-320x320.py)
+  \- RTMDet：[`detection_tensorrt_static-320x320.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmdet/detection/detection_tensorrt_static-320x320.py)
 
-  \- RTMPose：[`pose-detection_simcc_tensorrt_dynamic-256x192.py`](https://github.com/open-mmlab/mmdeploy/blob/1.x/configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py)
+  \- RTMPose：[`pose-detection_simcc_tensorrt_dynamic-256x192.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py)
 
-如果你需要对部署配置进行修改，请参考 [MMDeploy config tutorial](https://mmdeploy.readthedocs.io/zh_CN/1.x/02-how-to-run/write_config.html).
+如果你需要对部署配置进行修改，请参考 [MMDeploy config tutorial](https://mmdeploy.readthedocs.io/zh_CN/latest/02-how-to-run/write_config.html).
 
 本教程中使用的文件结构如下：
 
-```Python
+```shell
 |----mmdeploy
 |----mmdetection
 |----mmpose
@@ -554,7 +567,7 @@ python tools/deploy.py \
 
 默认会导出三个 json 文件：
 
-```
+```shell
 |----sdk
      |----end2end.onnx    # ONNX model
      |----end2end.engine  # TensorRT engine file
@@ -572,7 +585,7 @@ import argparse
 
 import cv2
 import numpy as np
-from mmdeploy_python import PoseDetector
+from mmdeploy_runtime import PoseDetector
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -681,8 +694,8 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 
 #### 其他语言
 
-- [C# API 示例](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/csharp)
-- [JAVA API 示例](https://github.com/open-mmlab/mmdeploy/tree/1.x/demo/java)
+- [C# API 示例](https://github.com/open-mmlab/mmdeploy/tree/main/demo/csharp)
+- [JAVA API 示例](https://github.com/open-mmlab/mmdeploy/tree/main/demo/java)
 
 ### 🚀 Pipeline 推理
 
@@ -716,9 +729,9 @@ optional arguments:
 
 **API** **示例**
 
-\- [`det_pose.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/det_pose.py)
+\- [`det_pose.py`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/python/det_pose.py)
 
-\- [`det_pose.cxx`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/csrc/cpp/det_pose.cxx)
+\- [`det_pose.cxx`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/csrc/cpp/det_pose.cxx)
 
 #### 视频推理
 
@@ -768,9 +781,9 @@ optional arguments:
 
 **API** **示例**
 
-\- [`pose_tracker.py`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/python/pose_tracker.py)
+\- [`pose_tracker.py`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/python/pose_tracker.py)
 
-\- [`pose_tracker.cxx`](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/demo/csrc/cpp/pose_tracker.cxx)
+\- [`pose_tracker.cxx`](https://github.com/open-mmlab/mmdeploy/blob/main/demo/csrc/cpp/pose_tracker.cxx)
 
 ## 📚 常用功能 [🔝](#-table-of-contents)
 
@@ -823,7 +836,7 @@ python tools/profiler.py \
 +--------+------------+---------+
 ```
 
-如果你希望详细了解 profiler 的更多参数设置与功能，可以前往 [Profiler Docs](https://mmdeploy.readthedocs.io/en/1.x/02-how-to-run/useful_tools.html#profiler)
+如果你希望详细了解 profiler 的更多参数设置与功能，可以前往 [Profiler Docs](https://mmdeploy.readthedocs.io/en/main/02-how-to-run/useful_tools.html#profiler)
 
 ### 📊 精度验证 [🔝](#-table-of-contents)
 
@@ -837,7 +850,7 @@ python tools/test.py \
     --device cpu
 ```
 
-详细内容请参考 [MMDeploys Docs](https://github.com/open-mmlab/mmdeploy/blob/dev-1.x/docs/zh_cn/02-how-to-run/profile_model.md)
+详细内容请参考 [MMDeploys Docs](https://github.com/open-mmlab/mmdeploy/blob/main/docs/zh_cn/02-how-to-run/profile_model.md)
 
 ## 📜 引用 [🔝](#-table-of-contents)
 

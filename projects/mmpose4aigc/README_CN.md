@@ -66,8 +66,8 @@ bash install_posetracker_linux.sh
 最终的文件结构如下：
 
 ```shell
-|----mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1
-|    |----sdk
+|----mmdeploy-1.0.0-linux-x86_64-cxx11abi
+|    |----README.md
 |    |----rtmpose-ort
 |    |    |----rtmdet-nano
 |    |    |----rtmpose-m
@@ -82,7 +82,7 @@ bash install_posetracker_linux.sh
 ```shell
 # 生成骨架图片
 bash mmpose_style_skeleton.sh \
-    mmdeploy-1.0.0rc3-linux-x86_64-onnxruntime1.8.1/rtmpose-ort/000000147979.jpg
+    mmdeploy-1.0.0-linux-x86_64-cxx11abi/rtmpose-ort/000000147979.jpg
 ```
 
 更多详细信息可以查看 [RTMPose](../rtmpose/README_CN.md)。
