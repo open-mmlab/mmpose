@@ -116,7 +116,7 @@ python demo/inferencer_demo.py tests/data/ap10k \
 
 Inferencer 同样支持保存预测结果，更多的信息可以参考 [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface) 。
 
-### 推理加速
+### 加速推理
 
 用户可以通过修改配置文件来加速，更多具体例子可以参考：
 

@@ -98,7 +98,7 @@ python demo/inferencer_demo.py tests/data/crowdpose \
 
 Inferencer 支持保存姿态的检测结果，具体的使用可参考 [inferencer document](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/#inferencer-a-unified-inference-interface) 。
 
-### 推理加速
+### 加速推理
 
 对于 top-down 结构的模型，用户可以通过修改配置文件来加速，更多具体例子可以参考：
 
