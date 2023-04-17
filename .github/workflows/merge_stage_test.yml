@@ -182,7 +182,7 @@ jobs:
           coverage report -m
 
   build_windows:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
     strategy:
       matrix:
         os: [windows-2022]
