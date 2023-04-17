@@ -34,7 +34,7 @@ jobs:
       - name: Install Numpy
         run: pip install -U numpy
       - name: Install PyTorch
-        run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html
+        run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install mmpose dependencies
         run: |
           pip install -U numpy
@@ -43,6 +43,7 @@ jobs:
           mim install 'mmcv >= 2.0.0rc1'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
+          pip install -r requirements/runtime.txt
           pip install -r requirements/albu.txt
           pip install -r requirements/poseval.txt
       - name: Build and install
@@ -96,12 +97,14 @@ jobs:
           mim install 'mmcv >= 2.0.0rc1'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
+          pip install -r requirements/runtime.txt
           pip install -r requirements/albu.txt
           pip install -r requirements/poseval.txt
-      - name: Build and install
+      - name: Run unittests and generate coverage report
         run: |
-          python setup.py check -m -s
-          TORCH_CUDA_ARCH_LIST=7.0 pip install -e .
+          coverage run --branch --source mmpose -m pytest tests/
+          coverage xml
+          coverage report -m
 
   build_cu117:
     runs-on: ubuntu-22.04
@@ -132,6 +135,7 @@ jobs:
           mim install 'mmcv >= 2.0.0rc1'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
+          pip install -r requirements/runtime.txt
           pip install -r requirements/albu.txt
           pip install -r requirements/poseval.txt
       - name: Run unittests and generate coverage report
