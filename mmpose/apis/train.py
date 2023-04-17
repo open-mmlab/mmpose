@@ -115,6 +115,7 @@ def train_model(model,
 
     # get currently existing device type
     device = get_device()
+    cfg.device = device
 
     # put model on gpus
     if distributed:
@@ -165,6 +166,8 @@ def train_model(model,
     else:
         # fp16 setting
         fp16_cfg = cfg.get('fp16', None)
+        if fp16_cfg is None and cfg.get('device', None) == 'npu':
+            fp16_cfg = dict(loss_scale='dynamic')
         if fp16_cfg is not None:
             optimizer_config = Fp16OptimizerHook(
                 **cfg.optimizer_config, **fp16_cfg, distributed=distributed)
