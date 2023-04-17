@@ -274,6 +274,10 @@ bash build_sdk.sh
 # Inference for a video
 # Please pass the folder of the model, not the model file
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+
+# Inference using webcam
+# Please pass the folder of the model, not the model file
+./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cpu
 ```
 
 ##### TensorRT
@@ -305,6 +309,10 @@ bash build_sdk.sh
 # Inference for a video
 # Please pass the folder of the model, not the model file
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
+
+# Inference using webcam
+# Please pass the folder of the model, not the model file
+./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cuda
 ```
 
 For details, see [Pipeline Inference](#-step4-pipeline-inference).
@@ -393,7 +401,16 @@ python demo/topdown_demo_with_mmdet.py \
     {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
-    --input {YOUR_TEST_IMG_OR_VIDEO} \
+    --input {YOUR_TEST_IMG_or_VIDEO} \
+    --show
+
+# inference with webcam
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input webcam \
     --show
 ```
 
