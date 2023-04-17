@@ -1,15 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
-import tempfile
-from functools import partial
-from pathlib import Path
 
 import numpy as np
 import torch
-from mmengine.config import Config, DictAction
+from mmengine.config import DictAction
 from mmengine.logging import MMLogger
-from mmengine.registry import init_default_scope
-from mmengine.runner import Runner
 
 from mmpose.apis.inference import init_model
 
@@ -21,7 +16,8 @@ except ImportError:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Get complexity information from a model config')
+    parser = argparse.ArgumentParser(
+        description='Get complexity information from a model config')
     parser.add_argument('config', help='train config file path')
     parser.add_argument(
         '--device',
@@ -87,7 +83,7 @@ def inference(args, input_shape, logger):
         raise NotImplementedError(
             'FLOPs counter is currently not currently supported with {}'.
             format(model.__class__.__name__))
-    
+
     if args.batch_input == 'batch':
         outputs = {}
         avg_flops = []
@@ -110,7 +106,7 @@ def inference(args, input_shape, logger):
             show_table=(not args.not_show_complexity_table),
             show_arch=(not args.not_show_complexity_table))
     return outputs
-    
+
 
 def main():
     args = parse_args()
@@ -122,7 +118,7 @@ def main():
         input_shape = (3, ) + tuple(args.input_shape)
     else:
         raise ValueError('invalid input shape')
-    
+
     if args.device == 'cuda:0':
         assert torch.cuda.is_available(
         ), 'No valid cuda device detected, please double check...'
