@@ -34,9 +34,7 @@ jobs:
       - name: Install Numpy
         run: pip install -U numpy
       - name: Install PyTorch
-        run: |
-          pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
-          pip list
+        run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install mmpose dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
