@@ -137,12 +137,12 @@ def main():
     parser.add_argument(
         '--radius',
         type=int,
-        default=6,
+        default=3,
         help='Keypoint radius for visualization')
     parser.add_argument(
         '--thickness',
         type=int,
-        default=3,
+        default=1,
         help='Link thickness for visualization')
     parser.add_argument(
         '--show-interval', type=int, default=0, help='Sleep seconds per frame')
