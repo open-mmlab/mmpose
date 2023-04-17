@@ -157,7 +157,10 @@ def main():
         from mmpose.visualization import FastVisualizer
 
         visualizer = FastVisualizer(
-            model.dataset_meta, radius=args.radius, line_width=args.thickness)
+            model.dataset_meta,
+            radius=args.radius,
+            line_width=args.thickness,
+            kpt_thr=args.kpt_thr)
 
         if args.draw_heatmap:
             # init Localvisualizer

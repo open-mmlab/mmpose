@@ -222,7 +222,8 @@ def main():
         visualizer = FastVisualizer(
             pose_estimator.dataset_meta,
             radius=args.radius,
-            line_width=args.thickness)
+            line_width=args.thickness,
+            kpt_thr=args.kpt_thr)
 
         if args.draw_heatmap:
             # init Localvisualizer
