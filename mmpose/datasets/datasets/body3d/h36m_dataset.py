@@ -42,6 +42,16 @@ class Human36mDataset(BaseMocapDataset):
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
+        seq_len (int): Number of frames in a sequence. Default: 1.
+        seq_step (int): The interval for extracting frames from the video.
+            Default: 1.
+        pad_video_seq (bool): Whether to pad the video so that poses will be
+            predicted for every frame in the video. Default: ``False``.
+        causal (bool): If set to ``True``, the rightmost input frame will be
+            the target frame. Otherwise, the middle input frame will be the
+            target frame. Default: ``True``.
+        subset_frac (float): The fraction to reduce dataset size. If set to 1,
+            the dataset size is not reduced. Default: 1.
         keypoint_2d_src (str): Specifies 2D keypoint information options, which
             should be one of the following options:
 
@@ -125,11 +135,12 @@ class Human36mDataset(BaseMocapDataset):
             else:
                 self.keypoint_2d_det_file = keypoint_2d_det_file
 
+        self.seq_step = seq_step
+        self.pad_video_seq = pad_video_seq
+
         super().__init__(
             ann_file=ann_file,
             seq_len=seq_len,
-            seq_step=seq_step,
-            pad_video_seq=pad_video_seq,
             causal=causal,
             subset_frac=subset_frac,
             camera_param_file=camera_param_file,

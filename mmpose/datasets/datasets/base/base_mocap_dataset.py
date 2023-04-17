@@ -20,7 +20,12 @@ class BaseMocapDataset(BaseDataset):
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
-        # TODO
+        seq_len (int): Number of frames in a sequence. Default: 1.
+        causal (bool): If set to ``True``, the rightmost input frame will be
+            the target frame. Otherwise, the middle input frame will be the
+            target frame. Default: ``True``.
+        subset_frac (float): The fraction to reduce dataset size. If set to 1,
+            the dataset size is not reduced. Default: 1.
         camera_param_file (str): Cameras' parameters file. Default: ``None``.
         data_mode (str): Specifies the mode of data samples: ``'topdown'`` or
             ``'bottomup'``. In ``'topdown'`` mode, each data sample contains
@@ -58,8 +63,6 @@ class BaseMocapDataset(BaseDataset):
     def __init__(self,
                  ann_file: str = '',
                  seq_len: int = 1,
-                 seq_step: int = 1,
-                 pad_video_seq: bool = False,
                  causal: bool = True,
                  subset_frac: float = 1.0,
                  camera_param_file: Optional[str] = None,
@@ -96,8 +99,6 @@ class BaseMocapDataset(BaseDataset):
             self.camera_param = load(self.camera_param_file)
 
         self.seq_len = seq_len
-        self.seq_step = seq_step
-        self.pad_video_seq = pad_video_seq
         self.causal = causal
 
         assert 0 < subset_frac <= 1, (
