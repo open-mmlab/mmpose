@@ -13,6 +13,9 @@ class FastVisualizer:
             Defaults to 6.
         line_width (int, optional): Link width for visualization.
             Defaults to 3.
+        kpt_thr (float, optional): Threshold for keypoints' confidence score,
+            keypoints with score below this value will not be drawn.
+            Defaults to 0.3.
     """
 
     def __init__(self, metainfo, radius=6, line_width=3, kpt_thr=0.3):
@@ -27,6 +30,20 @@ class FastVisualizer:
         self.skeleton_link_colors = metainfo['skeleton_link_colors']
 
     def draw_pose(self, img, instances):
+        """Draw pose estimations on the given image.
+
+        This method draws keypoints and skeleton links on the input image
+        using the provided instances.
+
+        Args:
+            img (numpy.ndarray): The input image on which to
+                draw the pose estimations.
+            instances (object): An object containing detected instances'
+                information, including keypoints and keypoint_scores.
+
+        Returns:
+            None: The input image will be modified in place.
+        """
 
         if instances is None:
             print('no instance detected')
