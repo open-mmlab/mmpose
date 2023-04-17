@@ -268,6 +268,10 @@ bash build_sdk.sh
 # 视频推理
 # 请传入模型目录，而不是模型文件
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+
+# 摄像头推理
+# 请传入模型目录，而不是模型文件
+./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cpu
 ```
 
 ##### TensorRT
@@ -298,6 +302,10 @@ bash build_sdk.sh
 # 视频推理
 # 请传入模型目录，而不是模型文件
 ./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
+
+# 摄像头推理
+# 请传入模型目录，而不是模型文件
+./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cuda
 ```
 
 详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
@@ -386,7 +394,16 @@ python demo/topdown_demo_with_mmdet.py \
     {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
     {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
-    --input {YOUR_TEST_IMG} \
+    --input {YOUR_TEST_IMG_or_VIDEO} \
+    --show
+
+# 摄像头推理
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input webcam \
     --show
 ```
 

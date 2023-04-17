@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build_cpu:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: [3.7]
@@ -24,9 +24,9 @@ jobs:
           - torch: 1.8.1
             torchvision: 0.9.1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
@@ -37,12 +37,14 @@ jobs:
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install mmpose dependencies
         run: |
+          python -m pip install --upgrade pip setuptools wheel
           pip install -U numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
           mim install 'mmcv >= 2.0.0rc1'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
+          pip install -r requirements/runtime.txt
           pip install -r requirements/albu.txt
           pip install -r requirements/poseval.txt
       - name: Build and install
@@ -63,16 +65,16 @@ jobs:
           fail_ci_if_error: false
 
   build_cu102:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     container:
       image: pytorch/pytorch:1.8.1-cuda10.2-cudnn7-devel
     strategy:
       matrix:
         python-version: [3.7]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
@@ -96,24 +98,75 @@ jobs:
           mim install 'mmcv >= 2.0.0rc1'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
+          pip install -r requirements/runtime.txt
           pip install -r requirements/albu.txt
           pip install -r requirements/poseval.txt
       - name: Build and install
+        run: rm -rf .eggs && pip install -e .
+      - name: Run unittests and generate coverage report
         run: |
-          python setup.py check -m -s
-          TORCH_CUDA_ARCH_LIST=7.0 pip install -e .
+          coverage run --branch --source mmpose -m pytest tests/
+          coverage xml
+          coverage report -m
+
+  build_cu117:
+    runs-on: ubuntu-22.04
+    container:
+      image: pytorch/pytorch:2.0.0-cuda11.7-cudnn8-devel
+    strategy:
+      matrix:
+        python-version: [3.9]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Upgrade pip
+        run: pip install pip --upgrade
+      - name: Fetch GPG keys
+        run: |
+          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+      - name: Install system dependencies
+        run: apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libxrender-dev
+      - name: Install mmpose dependencies
+        run: |
+          pip install -U numpy
+          pip install git+https://github.com/open-mmlab/mmengine.git@main
+          pip install -U openmim
+          mim install 'mmcv >= 2.0.0rc1'
+          pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
+          pip install -r requirements/tests.txt
+          pip install -r requirements/runtime.txt
+          pip install -r requirements/albu.txt
+          pip install -r requirements/poseval.txt
+      - name: Build and install
+        run: rm -rf .eggs && pip install -e .
+      - name: Run unittests and generate coverage report
+        run: |
+          coverage run --branch --source mmpose -m pytest tests/
+          coverage xml
+          coverage report -m
 
   build_windows:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
     strategy:
       matrix:
         os: [windows-2022]
         python: [3.7]
         platform: [cpu, cu111]
+        torch: [1.8.1]
+        torchvision: [0.9.1]
+        include:
+          - python-version: 3.8
+            platform: cu117
+            torch: 2.0.0
+            torchvision: 0.15.1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
@@ -121,7 +174,7 @@ jobs:
       - name: Install lmdb
         run: python -m pip install lmdb
       - name: Install PyTorch
-        run: python -m pip install torch==1.8.1+${{matrix.platform}} torchvision==0.9.1+${{matrix.platform}} -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+        run: python -m pip install torch==${{matrix.torch}}+${{matrix.platform}} torchvision==${{matrix.torchvision}}+${{matrix.platform}} -f https://download.pytorch.org/whl/${{matrix.platform}}/torch_stable.html
       - name: Install mmpose dependencies
         run: |
           python -m pip install -U numpy
@@ -134,7 +187,8 @@ jobs:
           python -m pip install -r requirements/poseval.txt
       - name: Build and install
         run: |
-          python -m pip install -e .
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e . -v
       - name: Run unittests and generate coverage report
         run: |
           pytest tests/
