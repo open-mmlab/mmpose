@@ -4,6 +4,7 @@ import tempfile
 from functools import partial
 from pathlib import Path
 
+import numpy as np
 import torch
 from mmengine.config import Config, DictAction
 from mmengine.logging import MMLogger
@@ -20,7 +21,7 @@ except ImportError:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Train a recognizer')
+    parser = argparse.ArgumentParser(description='Get complexity information from a model config')
     parser.add_argument('config', help='train config file path')
     parser.add_argument(
         '--device',
@@ -35,13 +36,13 @@ def parse_args():
         'in xxx=yyy format will be merged into config file. For example, '
         "'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'")
     parser.add_argument(
-        '--shape',
+        '--input-shape',
         type=int,
         nargs='+',
         default=[256, 192],
         help='input image size')
     parser.add_argument(
-        '--input-constructor',
+        '--batch-input',
         '-c',
         type=str,
         choices=['none', 'batch'],
@@ -73,31 +74,12 @@ def batch_constructor(flops_model, batch_size, input_shape):
     return batch
 
 
-def main():
-    args = parse_args()
-    logger = MMLogger.get_instance(name='MMLogger')
-
-    if len(args.shape) == 1:
-        input_shape = (3, args.shape[0], args.shape[0])
-    elif len(args.shape) == 2:
-        input_shape = (3, ) + tuple(args.shape)
-    else:
-        raise ValueError('invalid input shape')
-
-    if args.device == 'cuda:0':
-        assert torch.cuda.is_available(
-        ), 'No valid cuda detected, please double check...'
-
+def inference(args, input_shape, logger):
     model = init_model(
         args.config,
         checkpoint=None,
         device=args.device,
         cfg_options=args.cfg_options)
-
-    if args.input_constructor == 'batch':
-        input_constructor = partial(batch_constructor, model, args.batch_size)
-    else:
-        input_constructor = None
 
     if hasattr(model, '_forward'):
         model.forward = model._forward
@@ -105,26 +87,47 @@ def main():
         raise NotImplementedError(
             'FLOPs counter is currently not currently supported with {}'.
             format(model.__class__.__name__))
+    
+    if args.batch_input == 'batch':
+        outputs = {}
+        avg_flops = []
+        batch = batch_constructor(model, args.batch_size, input_shape)
+        for i in range(args.batch_size):
+            outputs = get_model_complexity_info(
+                model,
+                input_shape,
+                inputs=batch['inputs'],
+                show_table=(not args.not_show_complexity_table),
+                show_arch=(not args.not_show_complexity_table))
+            avg_flops.append(outputs['flops'])
+        mean_flops = _format_size(int(np.average(avg_flops)))
+        outputs['flops'] = mean_flops
+    else:
+        outputs = get_model_complexity_info(
+            model,
+            input_shape,
+            inputs=None,
+            show_table=(not args.not_show_complexity_table),
+            show_arch=(not args.not_show_complexity_table))
+    return outputs
+    
 
-    config_name = Path(args.config)
-    if not config_name.exists():
-        logger.error(f'{config_name} not found.')
+def main():
+    args = parse_args()
+    logger = MMLogger.get_instance(name='MMLogger')
 
-    cfg = Config.fromfile(args.config)
-    cfg.val_dataloader.batch_size = 1
-    cfg.work_dir = tempfile.TemporaryDirectory().name
+    if len(args.input_shape) == 1:
+        input_shape = (3, args.input_shape[0], args.input_shape[0])
+    elif len(args.input_shape) == 2:
+        input_shape = (3, ) + tuple(args.input_shape)
+    else:
+        raise ValueError('invalid input shape')
+    
+    if args.device == 'cuda:0':
+        assert torch.cuda.is_available(
+        ), 'No valid cuda device detected, please double check...'
 
-    if args.cfg_options is not None:
-        cfg.merge_from_dict(args.cfg_options)
-
-    init_default_scope(cfg.get('default_scope', 'mmpose'))
-
-    outputs = get_model_complexity_info(
-        model,
-        input_shape,
-        inputs=input_constructor,
-        show_table=(not args.not_show_complexity_table),
-        show_arch=(not args.not_show_complexity_table))
+    outputs = inference(args, input_shape, logger)
     flops = outputs['flops_str']
     params = outputs['params_str']
     split_line = '=' * 30
