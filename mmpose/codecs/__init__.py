@@ -5,6 +5,7 @@ from .integral_regression_label import IntegralRegressionLabel
 from .megvii_heatmap import MegviiHeatmap
 from .msra_heatmap import MSRAHeatmap
 from .regression_label import RegressionLabel
+from .reshaped_keypoints import ReshapedKeypoints
 from .simcc_label import SimCCLabel
 from .spr import SPR
 from .udp_heatmap import UDPHeatmap
@@ -12,5 +13,5 @@ from .udp_heatmap import UDPHeatmap
 __all__ = [
     'MSRAHeatmap', 'MegviiHeatmap', 'UDPHeatmap', 'RegressionLabel',
     'SimCCLabel', 'IntegralRegressionLabel', 'AssociativeEmbedding', 'SPR',
-    'DecoupledHeatmap'
+    'DecoupledHeatmap', 'ReshapedKeypoints'
 ]
