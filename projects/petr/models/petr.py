@@ -383,7 +383,6 @@ class PETR(DeformableDETR):
             hm_memory = self.hm_encoder(
                 query=hm_memory,
                 query_pos=hm_pos_embed,
-                query_pos=None,
                 key_padding_mask=hm_mask,
                 spatial_shapes=spatial_shapes.narrow(0, 0, 1),
                 level_start_index=level_start_index[0],
@@ -685,6 +684,8 @@ class PETR(DeformableDETR):
 
         The hook will be automatically registered during initialization.
         """
+        return
+        
         if 'mmengine_version' in local_meta:
             return
 

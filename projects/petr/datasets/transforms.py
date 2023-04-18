@@ -85,6 +85,13 @@ class PackDetPoseInputs(PackDetInputs):
 
                 gt_fields.set_field(results[key], packed_key)
 
+        # Ensure all keys in `self.meta_keys` are in the `results` dictionary,
+        # which is necessary for `PackDetInputs` but not guaranteed during
+        # inference with an inferencer
+        for key in self.meta_keys:
+            if key not in results:
+                results[key] = None
+
         results = super().transform(results)
         if gt_fields:
             results['data_samples'].gt_fields = gt_fields.to_tensor()

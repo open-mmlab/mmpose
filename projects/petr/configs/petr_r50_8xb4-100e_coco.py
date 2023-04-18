@@ -134,8 +134,8 @@ model = dict(
             gamma=2.0,
             alpha=0.25,
             loss_weight=2.0),
-        loss_reg=dict(type='L1Loss', loss_weight=80.0),
-        loss_reg_aux=dict(type='L1Loss', loss_weight=70.0),
+        loss_reg=dict(type='L1Loss', loss_weight=40.0),
+        loss_reg_aux=dict(type='L1Loss', loss_weight=35.0),
         loss_oks=dict(
             type='OksLoss',
             metainfo='configs/_base_/datasets/coco.py',
@@ -174,6 +174,7 @@ train_pipeline = [
         # scaling_ratio_range=(1., 1.),
         # max_shear_degree=0.,
         scaling_ratio_range=(0.75, 1.0),
+        border_val=[103.53, 116.28, 123.675],
     ),
     dict(type='RandomFlip', prob=0.5),
     dict(
@@ -224,7 +225,7 @@ data_mode = 'bottomup'
 data_root = 'data/coco/'
 
 train_dataloader = dict(
-    batch_size=2,
+    batch_size=4,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

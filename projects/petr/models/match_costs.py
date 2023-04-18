@@ -21,14 +21,19 @@ class KptL1Cost(BaseMatchCost):
 
         pred_keypoints = pred_instances.keypoints
         gt_keypoints = gt_instances.keypoints
-
+        gt_keypoints_visible = gt_instances.keypoints_visible
+        gt_keypoints_visible = gt_keypoints_visible / (2 * gt_keypoints_visible.sum(dim=1, keepdim=True) + 1e-8)
+        
         # normalized
         img_h, img_w = img_meta['img_shape']
         factor = gt_keypoints.new_tensor([img_w, img_h]).reshape(1, 1, 2)
-        gt_keypoints = (gt_keypoints / factor).flatten(1)
-        pred_keypoints = (pred_keypoints / factor).flatten(1)
-
-        kpt_cost = torch.cdist(pred_keypoints, gt_keypoints, p=1)
+        gt_keypoints = (gt_keypoints / factor).unsqueeze(0)
+        gt_keypoints_visible = gt_keypoints_visible.unsqueeze(0).unsqueeze(-1)
+        pred_keypoints = (pred_keypoints / factor).unsqueeze(1)
+        
+        diff = (pred_keypoints - gt_keypoints) * gt_keypoints_visible
+        kpt_cost = diff.flatten(2).norm(dim=2, p=1)
+        
         return kpt_cost * self.weight
 
 
