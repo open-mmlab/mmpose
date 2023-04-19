@@ -584,6 +584,41 @@ set-ExecutionPolicy RemoteSigned
 example\cpp\build\Release
 ```
 
+### MMPose demo 脚本
+
+通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)和效果验证。
+
+**提示：**
+
+- 基于 Pytorch 推理并不能达到 RTMPose 模型的真实推理速度，只用于模型效果验证。
+
+```shell
+# 前往 mmpose 目录
+cd ${PATH_TO_MMPOSE}
+
+# RTMDet 与 RTMPose 联合推理
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input {YOUR_TEST_IMG_or_VIDEO} \
+    --show
+
+# 摄像头推理
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input webcam \
+    --show
+```
+
+效果展示：
+
+![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
+
 ## 👨‍🏫 模型训练 [🔝](#-table-of-contents)
 
 请参考 [训练与测试](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html) 进行 RTMPose 的训练。

@@ -11,7 +11,6 @@ import mmengine
 import numpy as np
 
 from mmpose.apis import inference_bottomup, init_model
-from mmpose.registry import VISUALIZERS
 from mmpose.structures import split_instances
 
 
