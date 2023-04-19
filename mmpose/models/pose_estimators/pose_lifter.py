@@ -1,12 +1,14 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from itertools import zip_longest
 from typing import Tuple, Union
 
 from torch import Tensor
 
 from mmpose.models.utils import check_and_update_config
 from mmpose.registry import MODELS
-from mmpose.utils.typing import (ConfigType, OptConfigType, Optional,
-                                 OptMultiConfig, OptSampleList, SampleList)
+from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
+                                 Optional, OptMultiConfig, OptSampleList,
+                                 PixelDataList, SampleList)
 from .base import BasePoseEstimator
 
 
@@ -163,6 +165,7 @@ class PoseLifter(BasePoseEstimator):
         feats = self.extract_feat(inputs)
 
         if self.with_traj:
+            # forward with trajectory model
             x, traj_x = feats
             if self.with_head:
                 x = self.head.forward(x)
@@ -170,6 +173,7 @@ class PoseLifter(BasePoseEstimator):
             traj_x = self.traj_head.forward(traj_x)
             return x, traj_x
         else:
+            # forward without trajectory model
             x = feats
             if self.with_head:
                 x = self.head.forward(x)
@@ -235,6 +239,8 @@ class PoseLifter(BasePoseEstimator):
 
         feats = self.extract_feat(inputs)
 
+        pose_preds, batch_pred_instances, batch_pred_fields = None, None, None
+        traj_preds, batch_traj_instances, batch_traj_fields = None, None, None
         if self.with_traj:
             x, traj_x = feats
             traj_preds = self.traj_head.predict(
@@ -247,12 +253,89 @@ class PoseLifter(BasePoseEstimator):
                 x, data_samples, test_cfg=self.test_cfg)
 
         if isinstance(pose_preds, tuple):
-            batch_pred_instances, batch_pred_fields = preds
+            batch_pred_instances, batch_pred_fields = pose_preds
         else:
-            batch_pred_instances = preds
-            batch_pred_fields = None
+            batch_pred_instances = pose_preds
+
+        if isinstance(traj_preds, tuple):
+            batch_traj_instances, batch_traj_fields = traj_preds
+        else:
+            batch_traj_instances = traj_preds
 
         results = self.add_pred_to_datasample(batch_pred_instances,
-                                              batch_pred_fields, data_samples)
+                                              batch_pred_fields,
+                                              batch_traj_instances,
+                                              batch_traj_fields, data_samples)
 
         return results
+
+    def add_pred_to_datasample(
+        self,
+        batch_pred_instances: InstanceList,
+        batch_pred_fields: Optional[PixelDataList],
+        batch_traj_instances: InstanceList,
+        batch_traj_fields: Optional[PixelDataList],
+        batch_data_samples: SampleList,
+    ) -> SampleList:
+        """Add predictions into data samples.
+
+        Args:
+            batch_pred_instances (List[InstanceData]): The predicted instances
+                of the input data batch
+            batch_pred_fields (List[PixelData], optional): The predicted
+                fields (e.g. heatmaps) of the input batch
+            batch_traj_instances (List[InstanceData]): The predicted instances
+                of the input data batch
+            batch_traj_fields (List[PixelData], optional): The predicted
+                fields (e.g. heatmaps) of the input batch
+            batch_data_samples (List[PoseDataSample]): The input data batch
+
+        Returns:
+            List[PoseDataSample]: A list of data samples where the predictions
+            are stored in the ``pred_instances`` field of each data sample.
+        """
+        assert len(batch_pred_instances) == len(batch_data_samples)
+        if batch_pred_fields is None:
+            batch_pred_fields = []
+        output_keypoint_indices = self.test_cfg.get('output_keypoint_indices',
+                                                    None)
+
+        for pred_instances, pred_fields, data_sample in zip_longest(
+                batch_pred_instances, batch_pred_fields, batch_data_samples):
+
+            gt_instances = data_sample.gt_instances
+
+            # convert keypoint coordinates from input space to image space
+            bbox_centers = gt_instances.bbox_centers
+            bbox_scales = gt_instances.bbox_scales
+            input_size = data_sample.metainfo['input_size']
+
+            pred_instances.keypoints = pred_instances.keypoints / input_size \
+                * bbox_scales + bbox_centers - 0.5 * bbox_scales
+
+            if output_keypoint_indices is not None:
+                # select output keypoints with given indices
+                num_keypoints = pred_instances.keypoints.shape[1]
+                for key, value in pred_instances.all_items():
+                    if key.startswith('keypoint'):
+                        pred_instances.set_field(
+                            value[:, output_keypoint_indices], key)
+
+            # add bbox information into pred_instances
+            pred_instances.bboxes = gt_instances.bboxes
+            pred_instances.bbox_scores = gt_instances.bbox_scores
+
+            data_sample.pred_instances = pred_instances
+
+            if pred_fields is not None:
+                if output_keypoint_indices is not None:
+                    # select output heatmap channels with keypoint indices
+                    # when the number of heatmap channel matches num_keypoints
+                    for key, value in pred_fields.all_items():
+                        if value.shape[0] != num_keypoints:
+                            continue
+                        pred_fields.set_field(value[output_keypoint_indices],
+                                              key)
+                data_sample.pred_fields = pred_fields
+
+        return batch_data_samples
