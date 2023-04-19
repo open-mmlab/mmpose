@@ -38,6 +38,6 @@
 
 Results on MPII val set
 
-| Arch                                                | Input Size | Mean / w. flip | Mean@0.1 |                            ckpt                             |                            log                             |
-| :-------------------------------------------------- | :--------: | :------------: | :------: | :---------------------------------------------------------: | :--------------------------------------------------------: |
-| [rtmpose-m](./rtmpose-m_8xb64-210e_mpii-256x256.py) |  256x256   |     0.907      |  0.348   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.json) |
+| Arch                                                     | Input Size | Mean / w. flip | Mean@0.1 |                           ckpt                           |                           log                            |
+| :------------------------------------------------------- | :--------: | :------------: | :------: | :------------------------------------------------------: | :------------------------------------------------------: |
+| [rtmpose-m](/configs/body_2d_keypoint/rtmpose/mpii/rtmpose-m_8xb64-210e_mpii-256x256.py) |  256x256   |     0.907      |  0.348   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.json) |
