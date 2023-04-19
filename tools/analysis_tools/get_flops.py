@@ -39,13 +39,10 @@ def parse_args():
         help='input image size')
     parser.add_argument(
         '--batch-input',
-        '-c',
-        type=str,
-        choices=['none', 'batch'],
-        default='none',
-        help='If specified, it takes a callable method that generates '
-        'input. Otherwise, it will generate a random tensor with '
-        'input shape to calculate FLOPs.')
+        action='store_true',
+        help='Whether to run in multiply batches. If specified, it takes a '
+        'callable method that generates a batch input. Otherwise, it will '
+        'generate a random tensor with input shape to calculate FLOPs.')
     parser.add_argument(
         '--batch-size', '-b', type=int, default=1, help='input batch size')
     parser.add_argument(
@@ -84,9 +81,10 @@ def inference(args, input_shape, logger):
             'FLOPs counter is currently not currently supported with {}'.
             format(model.__class__.__name__))
 
-    if args.batch_input == 'batch':
+    if args.batch_input:
         outputs = {}
         avg_flops = []
+        logger.info('Running get_flops with batch inputs, batch-size is {}'.format(args.batch_size))
         batch = batch_constructor(model, args.batch_size, input_shape)
         for i in range(args.batch_size):
             outputs = get_model_complexity_info(
