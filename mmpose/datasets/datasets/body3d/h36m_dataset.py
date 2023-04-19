@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
-from mmengine.fileio import exists
+from mmengine.fileio import exists, get_local_path
 from mmengine.utils import is_abs
 
 from mmpose.datasets.datasets import BaseMocapDataset
@@ -210,7 +210,7 @@ class Human36mDataset(BaseMocapDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         instance_list, image_list = super()._load_annotations()
 
-        h36m_data = np.load(self.ann_file)
+        h36m_data = self.ann_data
         kpts_3d = h36m_data['S']
 
         if self.keypoint_2d_src == 'detection':
@@ -253,6 +253,7 @@ class Human36mDataset(BaseMocapDataset):
 
     def _load_keypoint_2d_detection(self, det_file):
         """"Load 2D joint detection results from file."""
-        kpts_2d = np.load(det_file).astype(np.float32)
+        with get_local_path(det_file) as local_path:
+            kpts_2d = np.load(local_path).astype(np.float32)
 
         return kpts_2d

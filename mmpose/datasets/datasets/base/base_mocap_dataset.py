@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from mmengine.dataset import BaseDataset, force_full_init
-from mmengine.fileio import exists, load
+from mmengine.fileio import exists, get_local_path, load
 from mmengine.utils import is_abs
 from PIL import Image
 
@@ -88,7 +88,8 @@ class BaseMocapDataset(BaseDataset):
         if not is_abs(_ann_file):
             _ann_file = osp.join(data_root, _ann_file)
         assert exists(_ann_file), 'Annotation file does not exist.'
-        self.ann_data = np.load(_ann_file)
+        with get_local_path(_ann_file) as local_path:
+            self.ann_data = np.load(local_path)
 
         self.camera_param_file = camera_param_file
         if self.camera_param_file:
@@ -204,9 +205,11 @@ class BaseMocapDataset(BaseDataset):
 
     def get_img_info(self, img_idx, img_name):
         try:
-            im = Image.open(osp.join(self.data_prefix['img'], img_name))
-            w, h = im.size
-            im.close()
+            with get_local_path(osp.join(self.data_prefix['img'],
+                                         img_name)) as local_path:
+                im = Image.open(local_path)
+                w, h = im.size
+                im.close()
         except:  # noqa: E722
             return None
 
@@ -388,6 +391,7 @@ class BaseMocapDataset(BaseDataset):
 
         # add images without instance for evaluation
         if self.test_mode:
+            print(image_list)
             for img_info in image_list:
                 if img_info['img_id'] not in used_img_ids:
                     data_info_bu = {
