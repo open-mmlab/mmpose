@@ -282,8 +282,7 @@ class PETRHead(DeformableDETRHead):
             all_layers_classes,
             all_layers_coords,
             batch_gt_instances=batch_gt_instances,
-            batch_img_metas=batch_img_metas,
-            cache_targets=True)
+            batch_img_metas=batch_img_metas)
         # loss from the last decoder layer
         loss_dict['loss_cls'] = losses_cls[-1]
         loss_dict['loss_kpt'] = losses_kpt[-1]
@@ -299,12 +298,11 @@ class PETRHead(DeformableDETRHead):
             num_dec_layer += 1
 
         # calculate loss for encoder output
-        losses_cls, losses_kpt, losses_oks = self.loss_by_feat_single(
+        losses_cls, losses_kpt, _ = self.loss_by_feat_single(
             enc_outputs_class,
             enc_outputs_coord,
             batch_gt_instances=batch_gt_instances,
             batch_img_metas=batch_img_metas,
-            cache_targets=False,
             compute_oks_loss=False)
         loss_dict['enc_loss_cls'] = losses_cls
         loss_dict['enc_loss_kpt'] = losses_kpt
@@ -336,7 +334,6 @@ class PETRHead(DeformableDETRHead):
                             kpt_preds: Tensor,
                             batch_gt_instances: InstanceList,
                             batch_img_metas: List[dict],
-                            cache_targets: bool = False,
                             compute_oks_loss: bool = True) -> Tuple[Tensor]:
         """Loss function for outputs from a single decoder layer of a single
         feature level.
@@ -399,7 +396,6 @@ class PETRHead(DeformableDETRHead):
             cls_avg_factor = reduce_mean(
                 cls_scores.new_tensor([cls_avg_factor]))
         cls_avg_factor = max(cls_avg_factor, 1)
-
         loss_cls = self.loss_cls(
             cls_scores, labels, label_weights, avg_factor=cls_avg_factor)
 
@@ -422,7 +418,7 @@ class PETRHead(DeformableDETRHead):
             pos_kpt_targets = kpt_targets[pos_mask] * factors
             pos_kpt_weights = kpt_weights[pos_mask]
             pos_bbox_targets = (bbox_targets[pos_mask].reshape(-1, 2, 2) *
-                                factor).reshape(-1, 4)
+                                factors).flatten(-2)
 
             loss_oks = self.loss_oks_aux(pos_kpt_preds, pos_kpt_targets,
                                          pos_kpt_weights, pos_bbox_targets)
@@ -430,26 +426,6 @@ class PETRHead(DeformableDETRHead):
             loss_oks = torch.zeros_like(loss_kpt)
 
         return loss_cls, loss_kpt, loss_oks
-
-    def loss_heatmap(self, hm_memory, hm_mask, batch_gt_fields):
-
-        # compute heatmap predition
-        pred_heatmaps = self.heatmap_fc(hm_memory)
-        pred_heatmaps = torch.clamp(
-            pred_heatmaps.sigmoid_(), min=1e-4, max=1 - 1e-4)
-        pred_heatmaps = pred_heatmaps.permute(0, 3, 1, 2).contiguous()
-
-        # construct heatmap target
-        gt_heatmaps = torch.zeros_like(pred_heatmaps)
-        for i, gf in enumerate(batch_gt_fields):
-            gt_heatmap = gf.gt_heatmaps
-            h = min(gt_heatmap.size(1), gt_heatmaps.size(2))
-            w = min(gt_heatmap.size(2), gt_heatmaps.size(3))
-            gt_heatmaps[i, :, :h, :w] = gt_heatmap[:, :h, :w]
-
-        loss_hm = self.loss_hm(pred_heatmaps, gt_heatmaps, None,
-                               1 - hm_mask.unsqueeze(1).float())
-        return loss_hm
 
     def loss_refined_kpts(self, kpt_preds: Tensor,
                           batch_img_metas: List[dict]) -> Tuple[Tensor]:
@@ -517,7 +493,7 @@ class PETRHead(DeformableDETRHead):
             pos_kpt_targets = pos_kpt_targets * factors
             pos_kpt_weights = kpt_weights[pos_mask]
             pos_bbox_targets = (bbox_targets[pos_mask].reshape(-1, 2, 2) *
-                                factor).reshape(-1, 4)
+                                factors).flatten(-2)
 
             loss_oks = self.loss_oks_aux(pos_kpt_preds, pos_kpt_targets,
                                          pos_kpt_weights, pos_bbox_targets)
@@ -525,6 +501,26 @@ class PETRHead(DeformableDETRHead):
             loss_oks = torch.zeros_like(loss_kpt)
 
         return loss_kpt, loss_oks
+
+    def loss_heatmap(self, hm_memory, hm_mask, batch_gt_fields):
+
+        # compute heatmap predition
+        pred_heatmaps = self.heatmap_fc(hm_memory)
+        pred_heatmaps = torch.clamp(
+            pred_heatmaps.sigmoid_(), min=1e-4, max=1 - 1e-4)
+        pred_heatmaps = pred_heatmaps.permute(0, 3, 1, 2).contiguous()
+
+        # construct heatmap target
+        gt_heatmaps = torch.zeros_like(pred_heatmaps)
+        for i, gf in enumerate(batch_gt_fields):
+            gt_heatmap = gf.gt_heatmaps
+            h = min(gt_heatmap.size(1), gt_heatmaps.size(2))
+            w = min(gt_heatmap.size(2), gt_heatmaps.size(3))
+            gt_heatmaps[i, :, :h, :w] = gt_heatmap[:, :h, :w]
+
+        loss_hm = self.loss_hm(pred_heatmaps, gt_heatmaps, None,
+                               1 - hm_mask.unsqueeze(1).float())
+        return loss_hm
 
     @torch.no_grad()
     def get_targets(self,

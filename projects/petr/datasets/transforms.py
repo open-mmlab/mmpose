@@ -143,7 +143,7 @@ class GenerateHeatmap(BaseTransform):
             sq3 = np.sqrt(b3**2 - 4 * a3 * c3)
             r3 = (b3 + sq3) / 2
 
-            sigmas[i] = min(r1, r2, r3) / 3
+            sigmas[i] = min(r1, r2, r3, 3) / 3
 
         return sigmas
 
