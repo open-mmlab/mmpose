@@ -84,7 +84,9 @@ def inference(args, input_shape, logger):
     if args.batch_input:
         outputs = {}
         avg_flops = []
-        logger.info('Running get_flops with batch inputs, batch-size is {}'.format(args.batch_size))
+        logger.info(
+            'Running get_flops with batch inputs, batch-size is {}'.format(
+                args.batch_size))
         batch = batch_constructor(model, args.batch_size, input_shape)
         for i in range(args.batch_size):
             outputs = get_model_complexity_info(
