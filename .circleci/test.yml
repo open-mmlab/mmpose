@@ -83,7 +83,7 @@ jobs:
         type: string
       cuda:
         type: enum
-        enum: ["11.0"]
+        enum: ["11.0", "11.7"]
       cudnn:
         type: integer
         default: 8
@@ -157,8 +157,8 @@ workflows:
             - lint
       - build_cpu:
           name: maximum_version_cpu
-          torch: 1.13.0
-          torchvision: 0.14.0
+          torch: 2.0.0
+          torchvision: 0.15.1
           python: 3.9.0
           requires:
             - minimum_version_cpu
@@ -172,6 +172,13 @@ workflows:
           # Use double quotation mark to explicitly specify its type
           # as string instead of number
           cuda: "11.0"
+          requires:
+            - hold
+      - build_cuda:
+          name: maximum_version_gpu
+          torch: 2.0.0
+          cuda: "11.7"
+          cudnn: 8
           requires:
             - hold
   merge_stage_test:
