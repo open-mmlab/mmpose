@@ -59,6 +59,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_crowdpose.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_h36m.yml
