@@ -21,4 +21,4 @@ Models:
       Whole AP: 0.567
       Whole AR: 0.641
     Task: Wholebody 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_udp-coco-wholebody_pt-in1k_210e-256x192-320fa258_20230123.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-coco-wholebody_pt-in1k_210e-256x192-320fa258_20230123.pth
