@@ -209,7 +209,7 @@ class PoseLifter(BasePoseEstimator):
                 self.head.loss(x, data_samples, train_cfg=self.train_cfg))
 
         if self.semi_supervised:
-            losses.update(self.semi_loss(inputs, data_samples))
+            losses.update(semi_loss=self.semi_loss(inputs, data_samples))
 
         return losses
 
