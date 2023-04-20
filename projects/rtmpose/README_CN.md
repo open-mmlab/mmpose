@@ -267,7 +267,10 @@ python demo/topdown_demo_with_mmdet.py \
 
 ### MMDeploy SDK 预编译包 （推荐）
 
-MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推理，其中推理所用的模型为 SDK 版本。导出 SDK 版模型的教程见 [SDK 推理](#%EF%B8%8F-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
+MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推理，其中推理所用的模型为 SDK 版本。
+
+- 所有的模型必须经过 `tools/deploy.py` 导出后才能使用 PoseTracker 进行推理。
+- 导出 SDK 版模型的教程见 [SDK 推理](#%EF%B8%8F-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
 
 #### Linux\\
 
@@ -275,6 +278,63 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推
 
 - GCC 版本需大于 7.5
 - cmake 版本需大于 3.20
+
+##### Python 推理
+
+1. 安装 mmdeploy_runtime 或者 mmdeploy_runtime_gpu
+
+```shell
+# for onnxruntime
+pip install mmdeploy-runtime
+
+# for onnxruntime-gpu / tensorrt
+pip install mmdeploy-runtime-gpu
+```
+
+2. 下载预编译包：
+
+```shell
+# onnxruntime
+# for ubuntu
+wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
+# unzip then add third party runtime libraries to the PATH
+
+# for centos7 and lower
+wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64.tar.gz
+
+# onnxruntime-gpu / tensorrt
+# for ubuntu
+wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
+# unzip then add third party runtime libraries to the PATH
+
+# for centos7 and lower
+wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cuda11.3.tar.gz
+```
+
+3. 下载 sdk 模型并解压到 `./example/python` 下。（该模型只用于演示，如需其他模型，请参考 [SDK 推理](#%EF%B8%8F-sdk-推理)）
+
+```shell
+# rtmdet-nano + rtmpose-m for cpu sdk
+wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
+
+unzip rtmpose-cpu.zip
+```
+
+4. 使用 `pose_tracker.py` 进行推理：
+
+```shell
+# 进入 ./example/python
+
+# 请传入模型目录，而不是模型文件
+# 格式：
+# python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
+
+# 示例：
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ your_video.mp4
+
+# 摄像头
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ 0
+```
 
 ##### ONNX
 

@@ -272,7 +272,10 @@ Result is as follows:
 
 ### Pre-compiled MMDeploy SDK (Recommended)
 
-MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, where the model used for reasoning is the SDK version. For the tutorial of exporting the SDK version model, see [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk), and for detailed parameter settings of inference, see [Pipeline Reasoning](#-step4-pipeline-inference).
+MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, where the model used for reasoning is the SDK version.
+
+- All models must by exported by `tools/deploy.py` before PoseTracker can be used for inference.
+- For the tutorial of exporting the SDK version model, see [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk), and for detailed parameter settings of inference, see [Pipeline Reasoning](#-step4-pipeline-inference).
 
 #### Linux
 
@@ -280,6 +283,63 @@ Env Requirements:
 
 - GCC >= 7.5
 - cmake >= 3.20
+
+##### Python Inference
+
+1. Install mmdeploy_runtime or mmdeploy_runtime_gpu
+
+```shell
+# for onnxruntime
+pip install mmdeploy-runtime
+
+# for onnxruntime-gpu / tensorrt
+pip install mmdeploy-runtime-gpu
+```
+
+2. Download Pre-compiled files.
+
+```shell
+# onnxruntime
+# for ubuntu
+wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
+# unzip then add third party runtime libraries to the PATH
+
+# for centos7 and lower
+wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64.tar.gz
+
+# onnxruntime-gpu / tensorrt
+# for ubuntu
+wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
+# unzip then add third party runtime libraries to the PATH
+
+# for centos7 and lower
+wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cuda11.3.tar.gz
+```
+
+3. Download the sdk models and unzip to `./example/python`. (If you need other models, please export sdk models refer to [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk))
+
+```shell
+# rtmdet-nano + rtmpose-m for cpu sdk
+wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
+
+unzip rtmpose-cpu.zip
+```
+
+4. Inference with `pose_tracker.py`:
+
+```shell
+# go to ./example/python
+
+# Please pass the folder of the model, not the model file
+# Format:
+# python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
+
+# Example:
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ your_video.mp4
+
+# webcam
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ 0
+```
 
 ##### ONNX
 
