@@ -1,0 +1,136 @@
+Collections:
+- Name: ViTPose
+  Paper:
+    Title: 'TP}ose: Simple Vision Transformer Baselines for Human Pose Estimation'
+    URL: https://arxiv.org/abs/2204.12484
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/vitpose.md
+Models:
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_small_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: &id001
+    - ViTPose
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_small_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.738
+      AP@0.5: 0.903
+      AP@0.75: 0.813
+      AR: 0.792
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_base_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_base_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.758
+      AP@0.5: 0.907
+      AP@0.75: 0.832
+      AR: 0.811
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_large_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_large_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.783
+      AP@0.5: 0.914
+      AP@0.75: 0.852
+      AR: 0.835
+      AR@0.5: 0.953
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_huge_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_huge_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.791
+      AP@0.5: 0.917
+      AP@0.75: 0.857
+      AR: 0.841
+      AR@0.5: 0.954
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_simple_small_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_simple_small_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.735
+      AP@0.5: 0.9
+      AP@0.75: 0.811
+      AR: 0.789
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_simple_base_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_simple_base_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.755
+      AP@0.5: 0.906
+      AP@0.75: 0.829
+      AR: 0.809
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_simple_large_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_simple_large_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.782
+      AP@0.5: 0.914
+      AP@0.75: 0.853
+      AR: 0.834
+      AR@0.5: 0.953
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vitpose_simple_huge_coco_256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_vitpose_simple_huge_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.789
+      AP@0.5: 0.916
+      AP@0.75: 0.856
+      AR: 0.84
+      AR@0.5: 0.954
+    Task: Body 2D Keypoint
+  Weights: <>
