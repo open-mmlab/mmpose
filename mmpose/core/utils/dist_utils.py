@@ -8,6 +8,8 @@ from mmcv.runner import get_dist_info
 from torch._utils import (_flatten_dense_tensors, _take_tensors,
                           _unflatten_dense_tensors)
 
+from mmpose.utils.util_distribution import get_device
+
 
 def _allreduce_coalesced(tensors, world_size, bucket_size_mb=-1):
     """Allreduce parameters as a whole."""
@@ -54,7 +56,7 @@ def allreduce_grads(params, coalesce=True, bucket_size_mb=-1):
             dist.all_reduce(tensor.div_(world_size))
 
 
-def sync_random_seed(seed=None, device='cuda'):
+def sync_random_seed(seed=None, device=None):
     """Make sure different ranks share the same seed.
 
     All workers must call
@@ -76,6 +78,9 @@ def sync_random_seed(seed=None, device='cuda'):
     if seed is None:
         seed = np.random.randint(2**31)
     assert isinstance(seed, int)
+
+    if not device:
+        device = get_device()
 
     rank, world_size = get_dist_info()
 

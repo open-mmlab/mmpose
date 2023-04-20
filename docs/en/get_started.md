@@ -132,7 +132,7 @@ python demo/top_down_img_demo.py \
     --out-img-root vis_results
 ```
 
-More examples and details can be found in the [demo folder](/demo) and the [demo docs](https://mmpose.readthedocs.io/en/latest/demo.html).
+More examples and details can be found in the [demo folder](/demo) and the [demo docs](https://mmpose.readthedocs.io/en/0.x/demo.html).
 
 ## Train a model
 

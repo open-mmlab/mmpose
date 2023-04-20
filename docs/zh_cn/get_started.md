@@ -131,7 +131,7 @@ python demo/top_down_img_demo.py \
     --out-img-root vis_results
 ```
 
-更多实例和细节可以查看 [demo文件夹](/demo) 和 [demo文档](https://mmpose.readthedocs.io/en/latest/demo.html)。
+更多实例和细节可以查看 [demo文件夹](/demo) 和 [demo文档](https://mmpose.readthedocs.io/en/0.x/demo.html)。
 
 ## 如何训练模型
 
