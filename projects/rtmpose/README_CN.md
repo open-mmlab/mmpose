@@ -330,10 +330,10 @@ unzip rtmpose-cpu.zip
 # python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 
 # 示例：
-python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ your_video.mp4
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4
 
 # 摄像头
-python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ 0
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0
 ```
 
 ##### ONNX
@@ -359,15 +359,15 @@ bash build_sdk.sh
 
 # 图片推理
 # 请传入模型目录，而不是模型文件
-./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+./bin/det_pose rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_img.jpg --device cpu
 
 # 视频推理
 # 请传入模型目录，而不是模型文件
-./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4 --device cpu
 
 # 摄像头推理
 # 请传入模型目录，而不是模型文件
-./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cpu
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0 --device cpu
 ```
 
 ##### TensorRT
@@ -393,15 +393,15 @@ bash build_sdk.sh
 
 # 图片推理
 # 请传入模型目录，而不是模型文件
-./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
+./bin/det_pose rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_img.jpg --device cuda
 
 # 视频推理
 # 请传入模型目录，而不是模型文件
-./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4 --device cuda
 
 # 摄像头推理
 # 请传入模型目录，而不是模型文件
-./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cuda
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0 --device cuda
 ```
 
 详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
@@ -422,13 +422,25 @@ pip install mmdeploy-runtime-gpu
 # 下载 [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64-cuda11.3.zip) 并将 third_party 中第三方推理库的动态库添加到 PATH
 ```
 
-2. 下载 [sdk 模型](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip)并解压。
+2. 下载 sdk 模型并解压到 `./example/python` 下。（该模型只用于演示，如需其他模型，请参考 [SDK 推理](#%EF%B8%8F-sdk-推理)）
+
+```shell
+# rtmdet-nano + rtmpose-m for cpu sdk
+wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
+
+unzip rtmpose-cpu.zip
+```
+
 3. 使用 `pose_tracker.py` 进行推理：
 
 ```shell
 # 进入 ./example/python
 # 请传入模型目录，而不是模型文件
-python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4
+
+# 摄像头
+# 请传入模型目录，而不是模型文件
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0
 ```
 
 ##### 可执行文件推理
@@ -478,7 +490,7 @@ example\cpp\build\Release
 
 **提示**：
 
-- RTMPose 默认开启了 `drop_last=True`，当用户的数据集较小时请根据情况缩小 `batch_size` 和 `base_lr`。
+- 当用户的数据集较小时请根据情况缩小 `batch_size` 和 `base_lr`。
 - 模型选择
   - m：推荐首选使用
   - t/s：适用于极端低算力的移动设备，或对推理速度要求严格的场景

@@ -335,10 +335,10 @@ unzip rtmpose-cpu.zip
 # python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
 
 # Example:
-python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ your_video.mp4
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4
 
 # webcam
-python pose_tracker.py cpu rtmpose-ort/rtmdet-nano rtmpose-ort/rtmpose-m/ 0
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0
 ```
 
 ##### ONNX
@@ -365,15 +365,15 @@ bash build_sdk.sh
 
 # Inference for an image
 # Please pass the folder of the model, not the model file
-./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+./bin/det_pose rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_img.jpg --device cpu
 
 # Inference for a video
 # Please pass the folder of the model, not the model file
-./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4 --device cpu
 
 # Inference using webcam
 # Please pass the folder of the model, not the model file
-./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cpu
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0 --device cpu
 ```
 
 ##### TensorRT
@@ -400,15 +400,15 @@ bash build_sdk.sh
 
 # Inference for an image
 # Please pass the folder of the model, not the model file
-./bin/det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cuda
+./bin/det_pose rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_img.jpg --device cuda
 
 # Inference for a video
 # Please pass the folder of the model, not the model file
-./bin/pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cuda
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4 --device cuda
 
 # Inference using webcam
 # Please pass the folder of the model, not the model file
-./bin/pose_tracker {det work-dir} {pose work-dir} 0 --device cuda
+./bin/pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0 --device cuda
 ```
 
 For details, see [Pipeline Inference](#-step4-pipeline-inference).
@@ -429,13 +429,25 @@ pip install mmdeploy-runtime-gpu
 # download [sdk](https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-windows-amd64-cuda11.3.zip) add third party runtime libraries to the PATH
 ```
 
-2. Download the [sdk models](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip) and unzip.
+2. Download the sdk models and unzip to `./example/python`. (If you need other models, please export sdk models refer to [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk))
+
+```shell
+# rtmdet-nano + rtmpose-m for cpu sdk
+wget https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-cpu.zip
+
+unzip rtmpose-cpu.zip
+```
+
 3. Inference with `pose_tracker.py`:
 
 ```shell
 # go to ./example/python
 # Please pass the folder of the model, not the model file
-python pose_tracker.py cpu {det work-dir} {pose work-dir} {your_video.mp4}
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4
+
+# Inference using webcam
+# Please pass the folder of the model, not the model file
+python pose_tracker.py cpu rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ 0
 ```
 
 ##### Executable Inference
@@ -485,7 +497,7 @@ Please refer to [Train and Test](https://mmpose.readthedocs.io/en/latest/user_gu
 
 **Tips**:
 
-- RTMPose has `drop_last=True` enabled by default, please accordinally reduce `batch_size` and `base_lr` when your dataset is small.
+- Please accordinally reduce `batch_size` and `base_lr` when your dataset is small.
 - Guidelines to choose a model
   - m: Recommended and Preferred Use
   - t/s: For mobile devices with extremely low computing power, or scenarios with stringent inference speed requirements
