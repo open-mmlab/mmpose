@@ -1053,13 +1053,13 @@ class CIDGenerateTarget:
         results['multi_heatmap'] = heatmap_with_center
         results['multi_mask'] = mask[None, :, :]
         # pad instance targets for batching
-        instance_coord = np.zeros((self.max_num_people, 2), dtype=np.int32)
+        instance_coord = np.zeros((self.max_num_people, 2), dtype=int)
         instance_heatmap = np.zeros(
             (self.max_num_people, num_keypoints, output_size, output_size),
             dtype=np.float32)
         instance_mask = np.zeros((self.max_num_people, num_keypoints, 1, 1),
                                  dtype=np.float32)
-        instance_valid = np.zeros((self.max_num_people), dtype=np.int32)
+        instance_valid = np.zeros((self.max_num_people), dtype=int)
         if len(inst_coords) > 0:
             idx_list = list(range(len(inst_coords)))
             random.shuffle(idx_list)
