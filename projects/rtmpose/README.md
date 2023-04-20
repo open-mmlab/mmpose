@@ -306,6 +306,7 @@ wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeplo
 
 # for centos7 and lower
 wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64.tar.gz
+# unzip then add third party runtime libraries to the PATH
 
 # onnxruntime-gpu / tensorrt
 # for ubuntu
@@ -314,6 +315,7 @@ wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeplo
 
 # for centos7 and lower
 wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cuda11.3.tar.gz
+# unzip then add third party runtime libraries to the PATH
 ```
 
 3. Download the sdk models and unzip to `./example/python`. (If you need other models, please export sdk models refer to [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk))

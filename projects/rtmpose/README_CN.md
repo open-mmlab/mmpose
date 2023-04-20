@@ -301,6 +301,7 @@ wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeplo
 
 # for centos7 and lower
 wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64.tar.gz
+# unzip then add third party runtime libraries to the PATH
 
 # onnxruntime-gpu / tensorrt
 # for ubuntu
@@ -309,6 +310,7 @@ wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeplo
 
 # for centos7 and lower
 wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cuda11.3.tar.gz
+# unzip then add third party runtime libraries to the PATH
 ```
 
 3. 下载 sdk 模型并解压到 `./example/python` 下。（该模型只用于演示，如需其他模型，请参考 [SDK 推理](#%EF%B8%8F-sdk-推理)）
