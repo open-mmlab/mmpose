@@ -20,9 +20,7 @@ def parse_args():
         description='Get complexity information from a model config')
     parser.add_argument('config', help='train config file path')
     parser.add_argument(
-        '--device',
-        default='cuda:0',
-        help='Device used for model initialization')
+        '--device', default='cpu', help='Device used for model initialization')
     parser.add_argument(
         '--cfg-options',
         nargs='+',
@@ -38,18 +36,18 @@ def parse_args():
         default=[256, 192],
         help='input image size')
     parser.add_argument(
-        '--batch-input',
-        action='store_true',
-        help='Whether to run in multiply batches. If specified, it takes a '
+        '--batch-size',
+        '-b',
+        type=int,
+        default=1,
+        help='Input batch size. If specified and greater than 1, it takes a '
         'callable method that generates a batch input. Otherwise, it will '
         'generate a random tensor with input shape to calculate FLOPs.')
     parser.add_argument(
-        '--batch-size', '-b', type=int, default=1, help='input batch size')
-    parser.add_argument(
-        '--not-show-complexity-table',
-        '-n',
+        '--show-arch-info',
+        '-s',
         action='store_true',
-        help='Whether to show complexity information')
+        help='Whether to show model arch information')
     args = parser.parse_args()
     return args
 
@@ -58,7 +56,7 @@ def batch_constructor(flops_model, batch_size, input_shape):
     """Generate a batch of tensors to the model."""
     batch = {}
 
-    inputs = torch.ones(()).new_empty(
+    inputs = torch.randn(batch_size, *input_shape).new_empty(
         (batch_size, *input_shape),
         dtype=next(flops_model.parameters()).dtype,
         device=next(flops_model.parameters()).device)
@@ -81,30 +79,32 @@ def inference(args, input_shape, logger):
             'FLOPs counter is currently not currently supported with {}'.
             format(model.__class__.__name__))
 
-    if args.batch_input:
+    if args.batch_size > 1:
         outputs = {}
         avg_flops = []
-        logger.info(
-            'Running get_flops with batch inputs, batch-size is {}'.format(
-                args.batch_size))
+        logger.info('Running get_flops with batch size specified as {}'.format(
+            args.batch_size))
         batch = batch_constructor(model, args.batch_size, input_shape)
         for i in range(args.batch_size):
-            outputs = get_model_complexity_info(
+            result = get_model_complexity_info(
                 model,
                 input_shape,
                 inputs=batch['inputs'],
-                show_table=(not args.not_show_complexity_table),
-                show_arch=(not args.not_show_complexity_table))
-            avg_flops.append(outputs['flops'])
+                show_table=True,
+                show_arch=args.show_arch_info)
+            avg_flops.append(result['flops'])
         mean_flops = _format_size(int(np.average(avg_flops)))
-        outputs['flops'] = mean_flops
+        outputs['flops_str'] = mean_flops
+        outputs['params_str'] = result['params_str']
+        outputs['out_table'] = result['out_table']
+        outputs['out_arch'] = result['out_arch']
     else:
         outputs = get_model_complexity_info(
             model,
             input_shape,
             inputs=None,
-            show_table=(not args.not_show_complexity_table),
-            show_arch=(not args.not_show_complexity_table))
+            show_table=True,
+            show_arch=args.show_arch_info)
     return outputs
 
 
@@ -130,8 +130,8 @@ def main():
     input_shape = (args.batch_size, ) + input_shape
     print(f'{split_line}\nInput shape: {input_shape}\n'
           f'Flops: {flops}\nParams: {params}\n{split_line}')
-    if not args.not_show_complexity_table:
-        print(outputs['out_table'])
+    print(outputs['out_table'])
+    if args.show_arch_info:
         print(outputs['out_arch'])
     print('!!!Please be cautious if you use the results in papers. '
           'You may need to check if all ops are supported and verify that the '
