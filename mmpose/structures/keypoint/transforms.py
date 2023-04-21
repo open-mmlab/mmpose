@@ -62,3 +62,60 @@ def flip_keypoints(keypoints: np.ndarray,
         keypoints = [w, h] - keypoints - 1
 
     return keypoints, keypoints_visible
+
+
+def flip_regression(keypoints: np.ndarray,
+                    keypoints_visible: np.ndarray,
+                    flip_indices: List[int],
+                    center_mode: str = 'static',
+                    center_x: float = 0.5,
+                    center_index: int = 0):
+    """Flip human joints horizontally.
+
+    Note:
+        - num_keypoint: K
+        - dimension: D
+
+    Args:
+        keypoints (np.ndarray([..., K, D])): Coordinates of keypoints.
+        keypoints_visible (np.ndarray([..., K])): Visibility item of keypoints.
+        flip_indices (list[int]): The indices to flip the keypoints.
+        center_mode (str): The mode to set the center location on the x-axis
+            to flip around. Options are:
+
+            - static: use a static x value (see center_x also)
+            - root: use a root joint (see center_index also)
+
+            Defaults: ``'static'``.
+        center_x (float): Set the x-axis location of the flip center. Only used
+            when ``center_mode`` is ``'static'``. Defaults: 0.5.
+        center_index (int): Set the index of the root joint, whose x location
+            will be used as the flip center. Only used when ``center_mode`` is
+            ``'root'``. Defaults: 0.
+
+    Returns:
+        np.ndarray([..., K, C]): Flipped joints.
+    """
+
+    assert keypoints.ndim >= 2, f'Invalid pose shape {keypoints.shape}'
+
+    allowed_center_mode = {'static', 'root'}
+    assert center_mode in allowed_center_mode, 'Get invalid center_mode ' \
+        f'{center_mode}, allowed choices are {allowed_center_mode}'
+
+    if center_mode == 'static':
+        x_c = center_x
+    elif center_mode == 'root':
+        assert keypoints.shape[-2] > center_index
+        x_c = keypoints[..., center_index, 0]
+
+    keypoints_flipped = keypoints.copy()
+    keypoints_visible_flipped = keypoints_visible.copy()
+    # Swap left-right parts
+    for left, right in enumerate(flip_indices):
+        keypoints_flipped[..., left, :] = keypoints[..., right, :]
+        keypoints_visible_flipped[..., left] = keypoints_visible[..., right]
+
+    # Flip horizontally
+    keypoints_flipped[..., 0] = x_c * 2 - keypoints_flipped[..., 0]
+    return keypoints_flipped, keypoints_visible_flipped
