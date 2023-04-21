@@ -837,6 +837,8 @@ optional arguments:
 
 如果用户有跟随 MMDeploy 安装教程进行正确编译，在 `mmdeploy/build/bin/` 路径下会看到 `pose_tracker` 的可执行文件。
 
+- 将 `input` 输入 `0` 可以使用摄像头推理
+
 ```shell
 # 前往 mmdeploy 目录
 cd ${PATH_TO_MMDEPLOY}/build/bin/

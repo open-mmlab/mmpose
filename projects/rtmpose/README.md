@@ -841,6 +841,8 @@ optional arguments:
 
 If the user has MMDeploy compiled correctly, you will see the `pose_tracker` executable under the `mmdeploy/build/bin/`.
 
+- pass `0` to `input` can inference from a webcam
+
 ```shell
 # go to the mmdeploy folder
 cd ${PATH_TO_MMDEPLOY}/build/bin/
