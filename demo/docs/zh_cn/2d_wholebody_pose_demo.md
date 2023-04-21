@@ -1,6 +1,6 @@
 ## 2D Human Whole-Body Pose Demo
 
-### 2D 人体全身关键点 Top-Down 图片识别
+### 2D 人体全身姿态 Top-Down 图片识别
 
 #### 使用整张图片作为输入进行检测
 
@@ -14,7 +14,7 @@ python demo/image_demo.py \
     [--draw_heatmap]
 ```
 
-用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/2d_wholebody_keypoint.html) 获取预训练好的关键点识别模型。
+用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo/2d_wholebody_keypoint.html) 获取预训练好的关键点识别模型。
 
 这里我们用 [coco-wholebody_vipnas_res50_dark](https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth) 来进行演示：
 
@@ -98,7 +98,7 @@ python demo/inferencer_demo.py tests/data/crowdpose \
 
 <img src="https://user-images.githubusercontent.com/26127467/229832887-31edb6d5-bcf0-44a4-a66f-9d523061a6e9.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229832908-bc82dbc9-5e43-4800-acc7-a7da85a653c7.jpg" alt="Image 2" height="200"/>
 
-Inferencer 支持保存姿态的检测结果，具体的使用可参考 [inferencer document](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/#inferencer-a-unified-inference-interface) 。
+Inferencer 支持保存姿态的检测结果，具体的使用可参考 [Inferencer 文档](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/#inferencer-a-unified-inference-interface) 。
 
 ### 加速推理
 

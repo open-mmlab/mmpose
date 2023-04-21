@@ -1,8 +1,8 @@
 ## 2D Face Keypoint Demo
 
-本节我们继续演示如何使用 demo 脚本进行 2D 脸部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
+本节我们继续演示如何使用 demo 脚本进行 2D 脸部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [MMdetection](https://github.com/open-mmlab/mmdetection) 。
 
-我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#脸部-bounding-box-识别模型) 提供了一个预训练好的脸部 Bounding Box 预测模型，用户可以前往下载。
+我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#脸部-bounding-box-检测模型) 提供了一个预训练好的脸部 Bounding Box 预测模型，用户可以前往下载。
 
 ### 2D 脸部图片关键点识别推理
 
@@ -16,7 +16,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}]
 ```
 
-用户可以在 [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/face_2d_keypoint.html) 获取预训练好的脸部关键点识别模型。
+用户可以在 [model zoo](https://mmpose.readthedocs.io/en/dev-1.x/model_zoo/face_2d_keypoint.html) 获取预训练好的脸部关键点识别模型。
 
 这里我们用 [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth) 来进行演示：
 
@@ -81,7 +81,7 @@ python demo/inferencer_demo.py tests/data/wflw \
 
 <img src="https://user-images.githubusercontent.com/26127467/229793121-9969f014-70da-40b5-8561-e21c3edd1aeb.jpg" alt="Image 2" width="400"/>
 
-除此之外， Inferencer 也支持保存预测的姿态结果。具体信息可在 [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface) 查看。
+除此之外， Inferencer 也支持保存预测的姿态结果。具体信息可在 [Inferencer 文档](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface) 查看。
 
 ### 加速推理
 

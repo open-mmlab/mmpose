@@ -2,7 +2,7 @@
 
 本系列文档我们会来介绍如何使用提供了的脚本进行完成基本的推理 demo ，本节先介绍如何对 top-down 结构和动物的 2D 姿态进行单张图片和视频推理，请确保你已经安装了 3.0 以上版本的 [MMDetection](https://github.com/open-mmlab/mmdetection) 。
 
-### 2D 动物图片姿态 Demo
+### 2D 动物图片姿态识别推理
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -15,7 +15,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--device ${GPU_ID or CPU}]
 ```
 
-用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/animal_2d_keypoint.html) 获取预训练好的关键点识别模型。
+用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo/animal_2d_keypoint.html) 获取预训练好的关键点识别模型。
 
 这里我们用 [animalpose model](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth) 来进行演示：
 
@@ -81,7 +81,7 @@ python demo/topdown_demo_with_mmdet.py \
     --show --draw-heatmap --det-cat-id=15 --device cpu
 ```
 
-### 2D 动物视频姿态 Demo
+### 2D 动物视频姿态识别推理
 
 视频和图片使用了同样的接口，区别在于视频推理时 `${INPUT_PATH}` 既可以是本地视频文件的路径也可以是视频文件的 **URL** 地址。
 
@@ -101,7 +101,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 这段视频可以在 [Google Drive](https://drive.google.com/file/d/18d8K3wuUpKiDFHvOx0mh1TEwYwpOc5UO/view?usp=sharing) 下载。
 
-### 使用 Inferencer 进行 2D 动物姿态 Demo
+### 使用 Inferencer 进行 2D 动物姿态识别推理
 
 Inferencer 提供一个更便捷的推理接口，使得用户可以绕过模型的配置文件和 checkpoint 路径直接使用 model aliases ，支持包括图片路径、视频路径、图片文件夹路径和 webcams 在内的多种输入方式，例如可以这样使用：
 
@@ -114,7 +114,7 @@ python demo/inferencer_demo.py tests/data/ap10k \
 
 <img src="https://user-images.githubusercontent.com/26127467/229789306-83ea56fa-12f2-4e27-9031-329d335ec26d.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229789324-7fef5688-422d-4663-a57c-d1e1d511e83c.jpg" alt="Image 2" height="200"/>
 
-Inferencer 同样支持保存预测结果，更多的信息可以参考 [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface) 。
+Inferencer 同样支持保存预测结果，更多的信息可以参考 [Inferencer 文档](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface) 。
 
 ### 加速推理
 

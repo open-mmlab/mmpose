@@ -1,10 +1,10 @@
 ## 2D Hand Keypoint Demo
 
-本节我们继续通过 demo 脚本演示对单张图片或者视频的 2D 手部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
+本节我们继续通过 demo 脚本演示对单张图片或者视频的 2D 手部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [MMDetection](https://github.com/open-mmlab/mmdetection) 。
 
 我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#手部-bounding-box-识别模型) 提供了预训练好的手部 Bounding Box 预测模型，用户可以前往下载。
 
-### 2D 手部图片识别
+### 2D 手部图片关键点识别
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -16,7 +16,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}]
 ```
 
-用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/hand_2d_keypoint.html) 获取预训练好的关键点识别模型。
+用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo/hand_2d_keypoint.html) 获取预训练好的关键点识别模型。
 
 这里我们用 [onehand10k model](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth) 来进行演示：
 
@@ -62,7 +62,7 @@ python demo/topdown_demo_with_mmdet.py \
     --show --draw-heatmap  --device cpu
 ```
 
-### 2D 手部视频识别推理
+### 2D 手部视频关键点识别推理
 
 视频和图片使用了同样的接口，区别在于视频推理时 `${INPUT_PATH}` 既可以是本地视频文件的路径也可以是视频文件的 **URL** 地址。
 
@@ -80,7 +80,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 这段视频可以在 [Google Drive](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi) 下载到。
 
-### 使用 Inferencer 进行 2D 手势识别推理
+### 使用 Inferencer 进行 2D 手部关键点识别推理
 
 Inferencer 提供一个更便捷的推理接口，使得用户可以绕过模型的配置文件和 checkpoint 路径直接使用 model aliases ，支持包括图片路径、视频路径、图片文件夹路径和 webcams 在内的多种输入方式，例如可以这样使用：
 
@@ -94,7 +94,7 @@ python demo/inferencer_demo.py tests/data/onehand10k \
 
 <img src="https://user-images.githubusercontent.com/26127467/229824447-b444e92d-9b5b-4a50-9a32-68be3ff8c527.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824466-6ae47a40-70a6-451d-94ee-4ffc34204a9c.jpg" alt="Image 2" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824477-679201c3-1e0b-45fe-b0c7-bab67b245a10.jpg" alt="Image 3" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824488-bd874362-7401-41a5-8209-51bad1563a11.jpg" alt="Image 4" height="200"/>
 
-除此之外， Inferencer 也支持保存预测的姿态结果。具体信息可在 [inferencer document](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/inference.html) 查看。
+除此之外， Inferencer 也支持保存预测的姿态结果。具体信息可在 [Inferencer 文档](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/inference.html) 查看。
 
 ### 加速推理
 
