@@ -41,7 +41,7 @@ python demo/webcam_api_demo.py --config demo/webcam_cfg/human_pose.py
 
 - **设置识别模型**
 
-  用户可以直接使用 [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html) 里的识别模型，需要注意的是确保配置文件中的 detector node 里的 `model_config` 和 `model_checkpoint` 需要对应起来，这样模型就会被自动下载和加载，例如：
+  用户可以直接使用 [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html) 里的识别模型，需要注意的是确保配置文件中的 DetectorNode 里的 `model_config` 和 `model_checkpoint` 需要对应起来，这样模型就会被自动下载和加载，例如：
 
   ```python
   # 'DetectorNode':
@@ -62,7 +62,7 @@ python demo/webcam_api_demo.py --config demo/webcam_cfg/human_pose.py
 
 - **设置姿态预估模型**
 
-  本文档我们用两个 [top-down](https://github.com/open-mmlab/mmpose/tree/latest/configs/body_2d_keypoint/topdown_heatmap) 结构的人体和动物姿态预估模型进行演示。用户可以自由使用 [MMPose Model Zoo](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/body_2d_keypoint.html) 里的模型。需要注意的是，更换模型后用户需要在对应的 pose estimate node 里添加或修改对应的 `cls_names` ，例如：
+  这里我们用两个 [top-down](https://github.com/open-mmlab/mmpose/tree/latest/configs/body_2d_keypoint/topdown_heatmap) 结构的人体和动物姿态预估模型进行演示。用户可以自由使用 [MMPose Model Zoo](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/body_2d_keypoint.html) 里的模型。需要注意的是，更换模型后用户需要在对应的 pose estimate node 里添加或修改对应的 `cls_names` ，例如：
 
   ```python
   # 'TopdownPoseEstimatorNode':
@@ -96,9 +96,9 @@ python demo/webcam_api_demo.py --config demo/webcam_cfg/human_pose.py
 
   如果想直接使用本地的视频文件，用户只需要把文件路径设置到 `camera_id` 就行。
 
-- **本机没有摄像头怎么办？**
+- **本机没有摄像头怎么办**
 
-  用户可以使用自己的手机安装上一些 app 就能替代摄像头，譬如 [Camo](https://reincubate.com/camo/) 和 [DroidCam](https://www.dev47apps.com/) 。
+  用户可以在自己手机安装上一些 app 就能替代摄像头，例如 [Camo](https://reincubate.com/camo/) 和 [DroidCam](https://www.dev47apps.com/) 。
 
 - **测试摄像头和显示器连接**
 

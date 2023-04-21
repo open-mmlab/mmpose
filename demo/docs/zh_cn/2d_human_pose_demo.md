@@ -1,6 +1,6 @@
 ## 2D Human Pose Demo
 
-本节我们继续通过我们的 demo 脚本演示 2D 人体关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
+本节我们继续使用 demo 脚本演示 2D 人体关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
 
 ### 2D 人体姿态 Top-Down 图片识别
 
@@ -47,7 +47,7 @@ python demo/image_demo.py \
 
 #### 使用 MMDet 做人体 bounding box 识别
 
-使用 MMDet 进行识别的命令格式如下：
+使用 MMDet 进行识别的命令如下所示：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -59,7 +59,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--bbox-thr ${BBOX_SCORE_THR}] [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
-结合我们的具体例子如下：
+结合我们的具体例子：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -95,7 +95,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 ### 2D 人体姿态 Bottom-Up 图片视频识别
 
-除了 Top-Down ，我们也支持 Bottom-Up 形式不依赖人体识别器的人体姿态预估识别，使用方式如下所示：
+除了 Top-Down ，我们也支持 Bottom-Up 不依赖人体识别器的人体姿态预估识别，使用方式如下：
 
 ```shell
 python demo/bottomup_demo.py \
@@ -106,7 +106,7 @@ python demo/bottomup_demo.py \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
-例如：
+结合具体示例如下：
 
 ```shell
 python demo/bottomup_demo.py \
@@ -116,7 +116,7 @@ python demo/bottomup_demo.py \
     --show --save-predictions
 ```
 
-其可视化结果如下：
+其可视化结果如图所示：
 
 <img src="https://user-images.githubusercontent.com/26127467/207224032-a8dab45d-39e4-4b4e-80e0-3c71a64f5f39.jpg" height="300px" alt><br>
 
@@ -140,5 +140,5 @@ Inferencer 支持保存姿态的检测结果，具体的使用可参考 [inferen
 
 对于 top-down 结构的模型，用户可以通过修改配置文件来加速，更多具体例子可以参考：
 
-1. 设置 `model.test_cfg.flip_test=False`，如 [topdown-res50](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py#L56) 。
-2. 使用更快的人体 bounding box 检测器，如 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html) 。
+1. 设置 `model.test_cfg.flip_test=False`，如 [topdown-res50](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_res50_8xb64-210e_coco-256x192.py#L56) 所示。
+2. 使用更快的人体 bounding box 检测器，可参考 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html) 。

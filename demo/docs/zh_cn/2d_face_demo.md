@@ -1,6 +1,6 @@
 ## 2D Face Keypoint Demo
 
-本节我们继续通过我们的 demo 脚本演示 2D 脸部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
+本节我们继续演示如何使用 demo 脚本进行 2D 脸部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
 
 我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#脸部-bounding-box-识别模型) 提供了一个预训练好的脸部 Bounding Box 预测模型，用户可以前往下载。
 
@@ -64,9 +64,9 @@ python demo/topdown_demo_with_mmdet.py \
 
 <img src="https://user-images.githubusercontent.com/26127467/220541430-6ade5a59-3d06-466a-a94d-00c82ff96a00.gif" height="500px" alt><br>
 
-这段视频可以在 [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing) 下载到。
+这段视频可以在 [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing) 下载。
 
-### 使用 Inferencer 进行 2D 脸部和姿态识别推理
+### 使用 Inferencer 进行 2D 脸部关键点识别推理
 
 Inferencer 提供一个更便捷的推理接口，使得用户可以绕过模型的配置文件和 checkpoint 路径直接使用 model aliases ，支持包括图片路径、视频路径、图片文件夹路径和 webcams 在内的多种输入方式，例如可以这样使用：
 

@@ -35,7 +35,7 @@ python demo/image_demo.py \
     --device=cpu
 ```
 
-#### 使用 MMDet 做人体 bounding box 识别
+#### 使用 MMDet 进行人体 bounding box 识别
 
 使用 MMDet 进行识别的命令格式如下：
 
@@ -49,7 +49,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--bbox-thr ${BBOX_SCORE_THR}] [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
-具体例如：
+具体可例如：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -102,5 +102,5 @@ Inferencer 支持保存姿态的检测结果，具体的使用可参考 [inferen
 
 对于 top-down 结构的模型，用户可以通过修改配置文件来加速，更多具体例子可以参考：
 
-1. 设置 `model.test_cfg.flip_test=False`，如 [pose_hrnet_w48_dark+](/configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288.py#L90) 。
+1. 设置 `model.test_cfg.flip_test=False`，用户可参考 [pose_hrnet_w48_dark+](/configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288.py#L90) 。
 2. 使用更快的人体 bounding box 检测器，如 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html) 。

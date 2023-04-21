@@ -1,6 +1,6 @@
 ## 2D Hand Keypoint Demo
 
-本节我们继续通过我们的 demo 脚本演示对单张图片或者视频的 2D 手部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
+本节我们继续通过 demo 脚本演示对单张图片或者视频的 2D 手部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
 
 我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#手部-bounding-box-识别模型) 提供了预训练好的手部 Bounding Box 预测模型，用户可以前往下载。
 
@@ -48,9 +48,9 @@ python demo/topdown_demo_with_mmdet.py \
     --output-root vis_results --show --draw-heatmap
 ```
 
-如果想本地保存预测结果，需要使用 `--save-predictions` 。
+如果想本地保存预测结果，需要添加 `--save-predictions` 。
 
-如果想用 CPU 进行 demo ：
+如果想用 CPU 进行 demo 需添加 `--device cpu` ：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -80,7 +80,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 这段视频可以在 [Google Drive](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi) 下载到。
 
-### 使用 Inferencer 进行 2D 脸部和姿态识别推理
+### 使用 Inferencer 进行 2D 手势识别推理
 
 Inferencer 提供一个更便捷的推理接口，使得用户可以绕过模型的配置文件和 checkpoint 路径直接使用 model aliases ，支持包括图片路径、视频路径、图片文件夹路径和 webcams 在内的多种输入方式，例如可以这样使用：
 
@@ -98,4 +98,4 @@ python demo/inferencer_demo.py tests/data/onehand10k \
 
 ### 加速推理
 
-对于 2D 手部关键点预测模型，用户可以通过修改配置文件中的 `model.test_cfg.flip_test=False` 来加速，例如 [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py#90) 。
+对于 2D 手部关键点预测模型，用户可以通过修改配置文件中的 `model.test_cfg.flip_test=False` 来加速，如 [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py#90) 所示。

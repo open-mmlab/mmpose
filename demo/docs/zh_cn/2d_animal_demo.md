@@ -1,6 +1,6 @@
-## 2D 动物姿态 Demo
+## 2D Animal Pose Demo
 
-本系列文档我们会来介绍如何使用提供了的脚本进行完成基本的推理 demo ，本节先来介绍如何对 top-down 结构和动物姿态的 2D 姿态进行单张图片和视频推理，请确保你已经安装了3.0以上版本的 [MMDetection](https://github.com/open-mmlab/mmdetection) 。
+本系列文档我们会来介绍如何使用提供了的脚本进行完成基本的推理 demo ，本节先介绍如何对 top-down 结构和动物的 2D 姿态进行单张图片和视频推理，请确保你已经安装了 3.0 以上版本的 [MMDetection](https://github.com/open-mmlab/mmdetection) 。
 
 ### 2D 动物图片姿态 Demo
 
@@ -39,11 +39,11 @@ python demo/topdown_demo_with_mmdet.py \
 
 **COCO 数据集动物信息**
 
-COCO 数据集共包含 80 个类别，其中有 10 中常见动物，信息如下：
+COCO 数据集共包含 80 个类别，其中有 10 种常见动物，类别如下：
 
 (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe')
 
-对于其他类型的动物，我们也提供了一些训练好的动物检测模型，用户可以前往 [detection model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md) 查找下在。
+对于其他类型的动物，我们也提供了一些训练好的动物检测模型，用户可以前往 [detection model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md) 下载。
 
 如果想本地保存可视化结果可使用如下命令：
 
@@ -99,7 +99,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 <img src="https://user-images.githubusercontent.com/26127467/187655602-907db86e-710b-447a-8ec9-5b623d43d160.gif" height="500px" alt><br>
 
-这段视频可以在 [Google Drive](https://drive.google.com/file/d/18d8K3wuUpKiDFHvOx0mh1TEwYwpOc5UO/view?usp=sharing) 下载到。
+这段视频可以在 [Google Drive](https://drive.google.com/file/d/18d8K3wuUpKiDFHvOx0mh1TEwYwpOc5UO/view?usp=sharing) 下载。
 
 ### 使用 Inferencer 进行 2D 动物姿态 Demo
 
@@ -120,5 +120,5 @@ Inferencer 同样支持保存预测结果，更多的信息可以参考 [inferen
 
 用户可以通过修改配置文件来加速，更多具体例子可以参考：
 
-1. 设置 `model.test_cfg.flip_test=False`，如 [animalpose_hrnet-w32](../../configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py#85) 。
-2. 使用更快的人体 bounding box 检测器，如 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html) 。
+1. 设置 `model.test_cfg.flip_test=False`，如 [animalpose_hrnet-w32](../../configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py#85) 所示。
+2. 使用更快的 bounding box 检测器，可参考 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html) 。
