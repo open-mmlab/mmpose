@@ -10,12 +10,6 @@ Models:
   Results:
   - Dataset: WFLW
     Metrics:
-      NME blur: 5.45
-      NME expression: 5.2
-      NME illumination: 4.81
-      NME makeup: 4.82
-      NME occlusion: 5.69
-      NME pose: 8.5
-      NME test: 4.85
+      NME: 4.88
     Task: Face 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth

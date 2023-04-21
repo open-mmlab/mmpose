@@ -12,6 +12,6 @@ Top-down methods divide the task into two stages: object detection, followed by 
 
 Result on WFLW test set
 
-| Model      | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |    ckpt    |    log    |
-| :--------- | :--------: | :------------------: | :------------------: | :--------------------------: | :-----------------------: | :------------------: | :--------------------: | :------------------------: | :--------: | :-------: |
-| [ResNet-50](/configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_8x64e-210e_wflw-256x256.py) |  256x256   |         4.85         |         8.50         |             4.81             |           5.69            |         5.45         |          4.82          |            5.20            | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_20210303.log.json) |
+| Model                                                           | Input Size | NME  |                              ckpt                              |                              log                              |
+| :-------------------------------------------------------------- | :--------: | :--: | :------------------------------------------------------------: | :-----------------------------------------------------------: |
+| [ResNet-50](/configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_8x64e-210e_wflw-256x256.py) |  256x256   | 4.88 | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_20210303.log.json) |
