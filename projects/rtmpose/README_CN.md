@@ -243,6 +243,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 cd ${PATH_TO_MMPOSE}
 
 # RTMDet 与 RTMPose 联合推理
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python demo/topdown_demo_with_mmdet.py \
     projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
     https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
@@ -252,6 +253,7 @@ python demo/topdown_demo_with_mmdet.py \
     --show
 
 # 摄像头推理
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python demo/topdown_demo_with_mmdet.py \
     projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
     https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
@@ -297,20 +299,20 @@ pip install mmdeploy-runtime-gpu
 # onnxruntime
 # for ubuntu
 wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi.tar.gz
-# unzip then add third party runtime libraries to the PATH
+# 解压并将 third_party 中第三方推理库的动态库添加到 PATH
 
 # for centos7 and lower
 wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64.tar.gz
-# unzip then add third party runtime libraries to the PATH
+# 解压并将 third_party 中第三方推理库的动态库添加到 PATH
 
 # onnxruntime-gpu / tensorrt
 # for ubuntu
 wget -c  https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cxx11abi-cuda11.3.tar.gz
-# unzip then add third party runtime libraries to the PATH
+# 解压并将 third_party 中第三方推理库的动态库添加到 PATH
 
 # for centos7 and lower
 wget -c https://github.com/open-mmlab/mmdeploy/releases/download/v1.0.0/mmdeploy-1.0.0-linux-x86_64-cuda11.3.tar.gz
-# unzip then add third party runtime libraries to the PATH
+# 解压并将 third_party 中第三方推理库的动态库添加到 PATH
 ```
 
 3. 下载 sdk 模型并解压到 `./example/python` 下。（该模型只用于演示，如需其他模型，请参考 [SDK 推理](#%EF%B8%8F-sdk-推理)）
@@ -542,10 +544,6 @@ example\cpp\build\Release
 |----mmdeploy
 |----mmdetection
 |----mmpose
-|----rtmdet_nano
-|    |----rtmdet_nano.pth
-|----rtmpose_m
-     |----rtmpose_m.pth
 ```
 
 #### ONNX
@@ -557,24 +555,28 @@ example\cpp\build\Release
 cd ${PATH_TO_MMDEPLOY}
 
 # 转换 RTMDet
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python tools/deploy.py \
     configs/mmdet/detection/detection_onnxruntime_static.py \
-    {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
-    ../rtmdet_nano/rtmdet_nano.pth \
+    ../mmpose/projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmdet/ort \
+    --work-dir mmdeploy_models/rtmdet-ort-sdk \
     --device cpu \
-    --show
+    --show \
+    --dump-info   # 导出 sdk info
 
 # 转换 RTMPose
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
-    ../rtmpose_m/rtmpose_m.pth \
+    ../mmpose/projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmpose/ort \
+    --work-dir mmdeploy_models/rtmpose-ort-sdk \
     --device cpu \
-    --show
+    --show \
+    --dump-info   # 导出 sdk info
 ```
 
 默认导出模型文件为 `{work-dir}/end2end.onnx`
@@ -588,24 +590,28 @@ python tools/deploy.py \
 cd ${PATH_TO_MMDEPLOY}
 
 # 转换 RTMDet
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python tools/deploy.py \
     configs/mmdet/detection/detection_tensorrt_static-320x320.py \
-    {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
-    ../rtmdet_nano/rtmdet_nano.pth \
+    ../mmpose/projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmdet/trt \
+    --work-dir mmdeploy_models/rtmpose-trt \
     --device cuda:0 \
-    --show
+    --show \
+    --dump-info   # 导出 sdk info
 
 # 转换 RTMPose
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
-    ../rtmpose_m/rtmpose_m.pth \
+    ../mmpose/projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmpose/trt \
+    --work-dir mmdeploy_models/rtmpose-trt \
     --device cuda:0 \
-    --show
+    --show \
+    --dump-info   # 导出 sdk info
 ```
 
 默认导出模型文件为 `{work-dir}/end2end.engine`
@@ -635,23 +641,25 @@ backend_config = dict(
 
 ```shell
 # RTMDet
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python tools/deploy.py \
     configs/mmdet/detection/detection_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
-    ../rtmdet_nano/rtmdet_nano.pth \
+    ../mmpose/projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmdet/sdk \
+    --work-dir mmdeploy_models/rtmdet-ort-sdk \
     --device cpu \
     --show \
-    --dump-info  # 导出 sdk info
+    --dump-info   # 导出 sdk info
 
 # RTMPose
+# 输入模型路径可以是本地路径，也可以是下载链接。
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
-    ../rtmpose_m/rtmpose_m.pth \
+    ../mmpose/projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmpose/sdk \
+    --work-dir mmdeploy_models/rtmpose-ort-sdk \
     --device cpu \
     --show \
     --dump-info  # 导出 sdk info
@@ -800,7 +808,7 @@ target_link_libraries(${name} PRIVATE mmdeploy ${OpenCV_LIBS})
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # 单张图片推理
-./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+./det_pose rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_img.jpg --device cpu
 
 required arguments:
   det_model           Detection 模型路径 [string]
@@ -834,7 +842,7 @@ optional arguments:
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # 视频推理
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+./pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4 --device cpu
 
 required arguments:
   det_model             Detection 模型路径 [string]

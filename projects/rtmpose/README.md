@@ -546,10 +546,6 @@ In this tutorial, we organize files as follows:
 |----mmdeploy
 |----mmdetection
 |----mmpose
-|----rtmdet_nano
-|    |----rtmdet_nano.pth
-|----rtmpose_m
-     |----rtmpose_m.pth
 ```
 
 #### ONNX
@@ -559,24 +555,28 @@ In this tutorial, we organize files as follows:
 cd ${PATH_TO_MMDEPLOY}
 
 # run the command to convert RTMDet
+# Model file can be either a local path or a download link
 python tools/deploy.py \
     configs/mmdet/detection/detection_onnxruntime_static.py \
-    {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
-    ../rtmdet_nano/rtmdet_nano.pth \
+    ../mmpose/projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmdet/ort \
+    --work-dir mmdeploy_models/rtmdet-ort-sdk \
     --device cpu \
-    --show
+    --show \
+    --dump-info  # dump sdk info
 
 # run the command to convert RTMPose
+# Model file can be either a local path or a download link
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
-    ../rtmpose_m/rtmpose_m.pth \
+    ../mmpose/projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmpose/ort \
+    --work-dir mmdeploy_models/rtmpose-ort-sdk \
     --device cpu \
-    --show
+    --show \
+    --dump-info  # dump sdk info
 ```
 
 The converted model file is `{work-dir}/end2end.onnx` by defaults.
@@ -588,24 +588,28 @@ The converted model file is `{work-dir}/end2end.onnx` by defaults.
 cd ${PATH_TO_MMDEPLOY}
 
 # run the command to convert RTMDet
+# Model file can be either a local path or a download link
 python tools/deploy.py \
     configs/mmdet/detection/detection_tensorrt_static-320x320.py \
-    {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
-    ../rtmdet_nano/rtmdet_nano.pth \
+    ../mmpose/projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmdet/trt \
+    --work-dir mmdeploy_models/rtmpose-trt-sdk \
     --device cuda:0 \
-    --show
+    --show \
+    --dump-info  # dump sdk info
 
 # run the command to convert RTMPose
+# Model file can be either a local path or a download link
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
-    ../rtmpose_m/rtmpose_m.pth \
+    ../mmpose/projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmpose/trt \
+    --work-dir mmdeploy_models/rtmpose-trt-sdk \
     --device cuda:0 \
-    --show
+    --show \
+    --dump-info  # dump sdk info
 ```
 
 The converted model file is `{work-dir}/end2end.engine` by defaults.
@@ -631,27 +635,29 @@ backend_config = dict(
 
 We provide both Python and C++ inference API with MMDeploy SDK.
 
-To use SDK, you need to dump the required info during converting the model. Just add --dump-info to the model conversion command:
+To use SDK, you need to dump the required info during converting the model. Just add --dump-info to the model conversion command.
 
 ```shell
 # RTMDet
+# Model file can be either a local path or a download link
 python tools/deploy.py \
     configs/mmdet/detection/detection_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
-    ../rtmdet_nano/rtmdet_nano.pth \
+    ../mmpose/projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmdet/sdk \
+    --work-dir mmdeploy_models/rtmdet-ort-sdk \
     --device cpu \
     --show \
     --dump-info  # dump sdk info
 
 # RTMPose
+# Model file can be either a local path or a download link
 python tools/deploy.py \
     configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py \
-    {RTMPOSE_PROJECT}/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
-    ../rtmpose_m/rtmpose_m.pth \
+    ../mmpose/projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
     demo/resources/human-pose.jpg \
-    --work-dir mmdeploy_models/mmpose/sdk \
+    --work-dir mmdeploy_models/rtmpose-ort-sdk \
     --device cpu \
     --show \
     --dump-info  # dump sdk info
@@ -660,7 +666,7 @@ python tools/deploy.py \
 After running the command, it will dump 3 json files additionally for the SDK:
 
 ```shell
-|----sdk
+|----{work-dir}
      |----end2end.onnx    # ONNX model
      |----end2end.engine  # TensorRT engine file
 
@@ -807,7 +813,7 @@ If the user has MMDeploy compiled correctly, you will see the `det_pose` executa
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # inference for an image
-./det_pose {det work-dir} {pose work-dir} {your_img.jpg} --device cpu
+./det_pose rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_img.jpg --device cpu
 
 required arguments:
   det_model           Object detection model path [string]
@@ -840,7 +846,7 @@ If the user has MMDeploy compiled correctly, you will see the `pose_tracker` exe
 cd ${PATH_TO_MMDEPLOY}/build/bin/
 
 # inference for a video
-./pose_tracker {det work-dir} {pose work-dir} {your_video.mp4} --device cpu
+./pose_tracker rtmpose-ort/rtmdet-nano/ rtmpose-ort/rtmpose-m/ your_video.mp4 --device cpu
 
 required arguments:
   det_model             Object detection model path [string]
