@@ -112,7 +112,7 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='NME', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='NME', rule='less'))
 
 # evaluators
 val_evaluator = dict(
