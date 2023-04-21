@@ -39,7 +39,7 @@ python demo/webcam_api_demo.py --config demo/webcam_cfg/human_pose.py
 
 这里我们只进行一些基本的说明，更多的信息可以直接参考对应的配置文件。
 
-- **设置识别模型**
+- **设置检测模型**
 
   用户可以直接使用 [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html) 里的识别模型，需要注意的是确保配置文件中的 DetectorNode 里的 `model_config` 和 `model_checkpoint` 需要对应起来，这样模型就会被自动下载和加载，例如：
 

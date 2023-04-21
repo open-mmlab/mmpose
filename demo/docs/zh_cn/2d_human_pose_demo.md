@@ -2,9 +2,11 @@
 
 本节我们继续使用 demo 脚本演示 2D 人体关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [mmdet](https://github.com/open-mmlab/mmdetection) 。
 
-### 2D 人体姿态 Top-Down 图片识别
+### 2D 人体姿态 Top-Down 图片检测
 
-#### 使用 full image 作为 bounding box 输入进行识别
+#### 使用整张图片作为输入进行检测
+
+此时输入的整张图片会被当作 bounding box 使用。
 
 ```shell
 python demo/image_demo.py \
@@ -45,7 +47,7 @@ python demo/image_demo.py \
 
 <img src="https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg" height="500px" alt><br>
 
-#### 使用 MMDet 做人体 bounding box 识别
+#### 使用 MMDet 做人体 bounding box 检测
 
 使用 MMDet 进行识别的命令如下所示：
 
@@ -77,7 +79,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 想要本地保存识别结果，用户需要加上 `--save-predictions` 。
 
-### 2D 人体姿态 Top-Down 视频识别
+### 2D 人体姿态 Top-Down 视频检测
 
 我们的脚本同样支持视频作为输入，由 MMDet 完成人体检测后 MMPose 完成 Top-Down 的姿态预估，视频推理时 `${INPUT_PATH}` 既可以是本地视频文件的路径也可以是视频文件的 **URL** 地址。
 
@@ -93,7 +95,7 @@ python demo/topdown_demo_with_mmdet.py \
     --output-root=vis_results/demo --show --draw-heatmap
 ```
 
-### 2D 人体姿态 Bottom-Up 图片视频识别
+### 2D 人体姿态 Bottom-Up 图片和视频识别检测
 
 除了 Top-Down ，我们也支持 Bottom-Up 不依赖人体识别器的人体姿态预估识别，使用方式如下：
 
@@ -120,7 +122,7 @@ python demo/bottomup_demo.py \
 
 <img src="https://user-images.githubusercontent.com/26127467/207224032-a8dab45d-39e4-4b4e-80e0-3c71a64f5f39.jpg" height="300px" alt><br>
 
-### 使用 Inferencer 进行 2D 人体姿态识别
+### 使用 Inferencer 进行 2D 人体姿态识别检测
 
 Inferencer 提供一个更便捷的推理接口，使得用户可以绕过模型的配置文件和 checkpoint 路径直接使用 model aliases ，支持包括图片路径、视频路径、图片文件夹路径和 webcams 在内的多种输入方式，例如可以这样使用：
 

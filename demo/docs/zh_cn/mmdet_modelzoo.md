@@ -28,7 +28,9 @@ MMDetection 提供了基于 COCO 的包括 `person` 在内的 80 个类别的预
 
 #### COCO animals
 
-COCO 数据集内包括了 10 种常见的 `animal` 类型 (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe') 。
+COCO 数据集内包括了 10 种常见的 `animal` 类型：
+
+(14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe') 。
 
 用户如果需要使用以上类别的动物检测模型，可以前往 [MMDetection Model Zoo](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html) 下载。
 

@@ -4,7 +4,7 @@
 
 我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#手部-bounding-box-识别模型) 提供了预训练好的手部 Bounding Box 预测模型，用户可以前往下载。
 
-## 2D 手部图片识别
+### 2D 手部图片识别
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \

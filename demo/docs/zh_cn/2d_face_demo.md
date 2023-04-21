@@ -4,7 +4,7 @@
 
 我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#脸部-bounding-box-识别模型) 提供了一个预训练好的脸部 Bounding Box 预测模型，用户可以前往下载。
 
-### 2D 脸部图片识别推理
+### 2D 脸部图片关键点识别推理
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -48,7 +48,7 @@ python demo/topdown_demo_with_mmdet.py \
     --draw-heatmap --output-root vis_results
 ```
 
-### 2D 脸部视频识别推理
+### 2D 脸部视频关键点识别推理
 
 视频和图片使用了同样的接口，区别在于视频推理时 `${INPUT_PATH}` 既可以是本地视频文件的路径也可以是视频文件的 **URL** 地址。
 

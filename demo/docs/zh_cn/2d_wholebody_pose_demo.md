@@ -2,7 +2,9 @@
 
 ### 2D 人体全身关键点 Top-Down 图片识别
 
-#### 使用 full image 作为 bounding box 输入进行识别
+#### 使用整张图片作为输入进行检测
+
+此时输入的整张图片会被当作 bounding box 使用。
 
 ```shell
 python demo/image_demo.py \
@@ -35,7 +37,7 @@ python demo/image_demo.py \
     --device=cpu
 ```
 
-#### 使用 MMDet 进行人体 bounding box 识别
+#### 使用 MMDet 进行人体 bounding box 检测
 
 使用 MMDet 进行识别的命令格式如下：
 
@@ -63,7 +65,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 想要本地保存识别结果，用户需要加上 `--save-predictions` 。
 
-### 2D 人体全身姿态 Top-Down 视频识别
+### 2D 人体全身姿态 Top-Down 视频识别检测
 
 我们的脚本同样支持视频作为输入，由 MMDet 完成人体检测后 MMPose 完成 Top-Down 的姿态预估。
 
