@@ -1,6 +1,4 @@
-_base_ = [
-    '../../../_base_/default_runtime.py', '../../../_base_/datasets/wflw.py'
-]
+_base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
 train_cfg = dict(max_epochs=210, val_interval=1)
@@ -67,7 +65,10 @@ train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomBBoxTransform', scale_factor=[0.25], rotate_factor=80),
+    dict(
+        type='RandomBBoxTransform',
+        scale_factor=[0.75, 1.25],
+        rotate_factor=60),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
