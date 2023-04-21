@@ -1,271 +1,157 @@
 # Prepare Datasets
 
-MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/latest/dataset_zoo.html). Please follow the corresponding guidelines for data preparation.
+In this document, we will give a guide on the process of preparing datasets for the MMPose. Various aspects of dataset preparation will be discussed, including using built-in datasets, creating custom datasets, combining datasets for training, and browsing the dataset.
 
-<!-- TOC -->
+## Use built-in datasets
 
-- [Customize datasets by reorganizing data to COCO format](#customize-datasets-by-reorganizing-data-to-coco-format)
-- [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset)
-- [Create a custom dataset class](#create-a-custom-dataset-class)
-- [Create a custom training config file](#create-a-custom-training-config-file)
-- [Dataset Wrappers](#dataset-wrappers)
+**Step 1**: Prepare Data
 
-<!-- TOC -->
+MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/latest/dataset_zoo.html). To properly prepare your data, please follow the guidelines associated with your chosen dataset.
 
-## Customize datasets by reorganizing data to COCO format
+**Step 2**: Configure Dataset Settings in the Config File
 
-The simplest way to use the custom dataset is to convert your annotation format to COCO dataset format.
+Before training or evaluating models, you must configure the dataset settings. Take [`td-hm_hrnet-w32_8xb64-210e_coco-256x192.py`](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) for example, which can be used to train or evaluate the HRNet pose estimator on COCO dataset. We will go through the dataset configuration.
 
-The annotation JSON files in COCO format have the following necessary keys:
+- Basic Dataset Arguments
 
-```python
-'images': [
-    {
-        'file_name': '000000001268.jpg',
-        'height': 427,
-        'width': 640,
-        'id': 1268
-    },
-    ...
-],
-'annotations': [
-    {
-        'segmentation': [[426.36,
-            ...
-            424.34,
-            223.3]],
-        'keypoints': [0,0,0,
-            0,0,0,
-            0,0,0,
-            427,220,2,
-            443,222,2,
-            414,228,2,
-            449,232,2,
-            408,248,1,
-            454,261,2,
-            0,0,0,
-            0,0,0,
-            411,287,2,
-            431,287,2,
-            0,0,0,
-            458,265,2,
-            0,0,0,
-            466,300,1],
-        'num_keypoints': 10,
-        'area': 3894.5826,
-        'iscrowd': 0,
-        'image_id': 1268,
-        'bbox': [402.34, 205.02, 65.26, 88.45],
-        'category_id': 1,
-        'id': 215218
-    },
-    ...
-],
-'categories': [
-    {'id': 1, 'name': 'person'},
- ]
+  ```python
+  # base dataset settings
+  dataset_type = 'CocoDataset'
+  data_mode = 'topdown'
+  data_root = 'data/coco/'
+  ```
+
+  - `dataset_type` specifies the class name of the dataset. Users can refer to [Datasets APIs](https://mmpose.readthedocs.io/en/latest/api.html#datasets) to find the class name of their desired dataset.
+  - `data_mode` determines the output format of the dataset, with two options available: `'topdown'` and `'bottomup'`. If `data_mode='topdown'`, the data element represents a single instance with its pose; otherwise, the data element is an entire image containing multiple instances and poses.
+  - `data_root` designates the root directory of the dataset.
+
+- Data Processing Pipelines
+
+  ```python
+  # pipelines
+  train_pipeline = [
+      dict(type='LoadImage'),
+      dict(type='GetBBoxCenterScale'),
+      dict(type='RandomFlip', direction='horizontal'),
+      dict(type='RandomHalfBody'),
+      dict(type='RandomBBoxTransform'),
+      dict(type='TopdownAffine', input_size=codec['input_size']),
+      dict(type='GenerateTarget', encoder=codec),
+      dict(type='PackPoseInputs')
+  ]
+  val_pipeline = [
+      dict(type='LoadImage'),
+      dict(type='GetBBoxCenterScale'),
+      dict(type='TopdownAffine', input_size=codec['input_size']),
+      dict(type='PackPoseInputs')
+  ]
+  ```
+
+  The `train_pipeline` and `val_pipeline` define the steps to process data elements during the training and evaluation phases, respectively. In addition to loading images and packing inputs, the `train_pipeline` primarily consists of data augmentation techniques and target generator, while the `val_pipeline` focuses on transforming data elements into a unified format.
+
+- Data Loaders
+
+  ```python
+  # data loaders
+  train_dataloader = dict(
+      batch_size=64,
+      num_workers=2,
+      persistent_workers=True,
+      sampler=dict(type='DefaultSampler', shuffle=True),
+      dataset=dict(
+          type=dataset_type,
+          data_root=data_root,
+          data_mode=data_mode,
+          ann_file='annotations/person_keypoints_train2017.json',
+          data_prefix=dict(img='train2017/'),
+          pipeline=train_pipeline,
+      ))
+  val_dataloader = dict(
+      batch_size=32,
+      num_workers=2,
+      persistent_workers=True,
+      drop_last=False,
+      sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+      dataset=dict(
+          type=dataset_type,
+          data_root=data_root,
+          data_mode=data_mode,
+          ann_file='annotations/person_keypoints_val2017.json',
+          bbox_file='data/coco/person_detection_results/'
+          'COCO_val2017_detections_AP_H_56_person.json',
+          data_prefix=dict(img='val2017/'),
+          test_mode=True,
+          pipeline=val_pipeline,
+      ))
+  test_dataloader = val_dataloader
+  ```
+
+  This section is crucial for configuring the dataset in the config file. In addition to the basic dataset arguments and pipelines discussed earlier, other important parameters are defined here. The `batch_size` determines the batch size per GPU; the `ann_file` indicates the annotation file for the dataset; and `data_prefix` specifies the image folder. The `bbox_file`, which supplies detected bounding box information, is only used in the val/test data loader for top-down datasets.
+
+We recommend copying the dataset configuration from provided config files that use the same dataset, rather than writing it from scratch, in order to minimize potential errors. By doing so, users can simply make the necessary modifications as needed, ensuring a more reliable and efficient setup process.
+
+## Use a custom dataset
+
+The [Customize Datasets](../advanced_guides/customize_datasets.md) guide provides detailed information on how to build a custom dataset. In this section, we will highlight some key tips for using and configuring custom datasets.
+
+- Determine the dataset class name. If you reorganize your dataset into the COCO format, you can simply use `CocoDataset` as the value for `dataset_type`. Otherwise, you will need to use the name of the custom dataset class you added.
+
+- Specify the meta information config file. MMPose 1.x employs a different strategy for specifying meta information compared to MMPose 0.x. In MMPose 1.x, users can specify the meta information config file as follows:
+
+  ```python
+  train_dataloader = dict(
+      ...
+      dataset=dict(
+          type=dataset_type,
+          data_root='root/of/your/train/data',
+          ann_file='path/to/your/train/json',
+          data_prefix=dict(img='path/to/your/train/img'),
+          # specify dataset meta information
+          metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
+          ...),
+  )
+  ```
+
+  Note that the argument `metainfo` must be specified in the val/test data loaders as well.
+
+## Use mixed datasets for training
+
+MMPose offers a convenient and versatile solution for training with mixed datasets. Please refer to [Use Mixed Datasets for Training](./mixed_datasets.md).
+
+## Browse dataset
+
+`tools/analysis_tools/browse_dataset.py` helps the user to browse a pose dataset visually, or save the image to a designated directory.
+
+```shell
+python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
 ```
 
-There are three necessary keys in the json file:
+| ARGS                             | Description                                                                                                                                          |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG`                         | The path to the config file.                                                                                                                         |
+| `--output-dir OUTPUT_DIR`        | The target folder to save visualization results. If not specified, the visualization results will not be saved.                                      |
+| `--not-show`                     | Do not show the visualization results in an external window.                                                                                         |
+| `--phase {train, val, test}`     | Options for dataset.                                                                                                                                 |
+| `--mode {original, transformed}` | Specify the type of visualized images. `original` means to show images without pre-processing; `transformed` means to show images are pre-processed. |
+| `--show-interval SHOW_INTERVAL`  | Time interval between visualizing two images.                                                                                                        |
 
-- `images`: contains a list of images with their information like `file_name`, `height`, `width`, and `id`.
-- `annotations`: contains the list of instance annotations.
-- `categories`: contains the category name ('person') and its ID (1).
+For instance, users who want to visualize images and annotations in COCO dataset use:
 
-If the annotations have been organized in COCO format, there is no need to create a new dataset class. You can use `CocoDataset` class alternatively.
-
-## Create a custom dataset_info config file for the dataset
-
-Add a new dataset info config file that contains the metainfo about the dataset.
-
-```
-configs/_base_/datasets/custom.py
-```
-
-An example of the dataset config is as follows.
-
-`keypoint_info` contains the information about each keypoint.
-
-1. `name`: the keypoint name. The keypoint name must be unique.
-2. `id`: the keypoint id.
-3. `color`: (\[B, G, R\]) is used for keypoint visualization.
-4. `type`: 'upper' or 'lower', will be used in data augmentation.
-5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
-
-`skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
-
-`joint_weights` assigns different loss weights to different keypoints.
-
-`sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
-
-Here is an simplified example of dataset_info config file ([full text](/configs/_base_/datasets/coco.py)).
-
-```
-dataset_info = dict(
-    dataset_name='coco',
-    paper_info=dict(
-        author='Lin, Tsung-Yi and Maire, Michael and '
-        'Belongie, Serge and Hays, James and '
-        'Perona, Pietro and Ramanan, Deva and '
-        r'Doll{\'a}r, Piotr and Zitnick, C Lawrence',
-        title='Microsoft coco: Common objects in context',
-        container='European conference on computer vision',
-        year='2014',
-        homepage='http://cocodataset.org/',
-    ),
-    keypoint_info={
-        0:
-        dict(name='nose', id=0, color=[51, 153, 255], type='upper', swap=''),
-        1:
-        dict(
-            name='left_eye',
-            id=1,
-            color=[51, 153, 255],
-            type='upper',
-            swap='right_eye'),
-        ...
-        16:
-        dict(
-            name='right_ankle',
-            id=16,
-            color=[255, 128, 0],
-            type='lower',
-            swap='left_ankle')
-    },
-    skeleton_info={
-        0:
-        dict(link=('left_ankle', 'left_knee'), id=0, color=[0, 255, 0]),
-        ...
-        18:
-        dict(
-            link=('right_ear', 'right_shoulder'), id=18, color=[51, 153, 255])
-    },
-    joint_weights=[
-        1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2, 1.2, 1.5,
-        1.5
-    ],
-    sigmas=[
-        0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
-        0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
-    ])
+```shell
+python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-e210_coco-256x192.py --mode original
 ```
 
-## Create a custom dataset class
+The bounding boxes and keypoints will be plotted on the original image. Following is an example:
+![original_coco](https://user-images.githubusercontent.com/26127467/187383698-7e518f21-b4cc-4712-9e97-99ddd8f0e437.jpg)
 
-If the annotations are not organized in COCO format, you need to create a custom dataset class by the following steps:
+The original images need to be processed before being fed into models. To visualize pre-processed images and annotations, users need to modify the argument `mode`  to `transformed`. For example:
 
-1. First create a package inside the `mmpose/datasets/datasets` folder.
-
-2. Create a class definition of your dataset in the package folder and register it in the registry with a name. Without a name, it will keep giving the error. `KeyError: 'XXXXX is not in the dataset registry'`
-
-   ```
-   from mmengine.dataset import BaseDataset
-   from mmpose.registry import DATASETS
-
-   @DATASETS.register_module(name='MyCustomDataset')
-   class MyCustomDataset(BaseDataset):
-   ```
-
-   You can refer to [this doc](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) on how to build customed dataset class with `mmengine.BaseDataset`.
-
-3. Make sure you have updated the `__init__.py` of your package folder
-
-4. Make sure you have updated the `__init__.py` of the dataset package folder.
-
-## Create a custom training config file
-
-Create a custom training config file as per your need and the model/architecture you want to use in the configs folder. You may modify an existing config file to use the new custom dataset.
-
-In `configs/my_custom_config.py`:
-
-```python
-...
-# dataset and dataloader settings
-dataset_type = 'MyCustomDataset' # or 'CocoDataset'
-
-train_dataloader = dict(
-    batch_size=2,
-    dataset=dict(
-        type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
-        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
-        ...),
-    )
-
-val_dataloader = dict(
-    batch_size=2,
-    dataset=dict(
-        type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
-        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
-        ...),
-    )
-
-test_dataloader = dict(
-    batch_size=2,
-    dataset=dict(
-        type=dataset_type,
-        data_root='root/of/your/test/data',
-        ann_file='path/to/your/test/json',
-        data_prefix=dict(img='path/to/your/test/img'),
-        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
-        ...),
-    )
-...
+```shell
+python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-e210_coco-256x192.py --mode transformed
 ```
 
-Make sure you have provided all the paths correctly.
+Here is a processed sample
 
-## Dataset Wrappers
+![transformed_coco](https://user-images.githubusercontent.com/26127467/187386652-bd47335d-797c-4e8c-b823-2a4915f9812f.jpg)
 
-The following dataset wrappers are supported in [MMEngine](https://github.com/open-mmlab/mmengine), you can refer to [MMEngine tutorial](https://mmengine.readthedocs.io/en/latest) to learn how to use it.
-
-- [ConcatDataset](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html#concatdataset)
-- [RepeatDataset](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html#repeatdataset)
-
-### CombinedDataset
-
-MMPose provides `CombinedDataset` to combine multiple datasets with different annotations. A combined dataset can be defined in config files as:
-
-```python
-dataset_1 = dict(
-    type='dataset_type_1',
-    data_root='root/of/your/dataset1',
-    data_prefix=dict(img_path='path/to/your/img'),
-    ann_file='annotations/train.json',
-    pipeline=[
-        # the converter transforms convert data into a unified format
-        converter_transform_1
-    ])
-
-dataset_2 = dict(
-    type='dataset_type_2',
-    data_root='root/of/your/dataset2',
-    data_prefix=dict(img_path='path/to/your/img'),
-    ann_file='annotations/train.json',
-    pipeline=[
-        converter_transform_2
-    ])
-
-shared_pipeline = [
-    LoadImage(),
-    ParseImage(),
-]
-
-combined_dataset = dict(
-    type='CombinedDataset',
-    metainfo=dict(from_file='path/to/your/metainfo'),
-    datasets=[dataset_1, dataset_2],
-    pipeline=shared_pipeline,
-)
-```
-
-- **MetaInfo of combined dataset** determines the annotation format. Either metainfo of a sub-dataset or a customed dataset metainfo is valid here. To custom a dataset metainfo, please refer to [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset).
-
-- **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then `KeypointConverter` can be used to unify the keypoints number and order.
-
-- More details about `CombinedDataset` and `KeypointConverter` can be found in Advanced Guides-[Training with Mixed Datasets](../advanced_guides/mixed_datasets.md).
+The heatmap target will be visualized together if it is generated in the pipeline.
