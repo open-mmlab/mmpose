@@ -36,17 +36,11 @@ class TestPoseLiftingLabel(TestCase):
             'S1/S1_Directions_1.54138969/S1_Directions_1.54138969_000001.jpg',
             camera_param)
 
-        flip_indices = [
-            0, 4, 5, 6, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 11, 12, 13
-        ]
-        ann_info = dict(flip_indices=flip_indices)
-
         self.data = dict(
             keypoints=keypoints,
             keypoints_visible=keypoints_visible,
             target=target,
             target_visible=target_visible,
-            ann_info=ann_info,
             camera_param=camera_param,
             encoded_wo_sigma=encoded_wo_sigma)
 
@@ -60,12 +54,11 @@ class TestPoseLiftingLabel(TestCase):
         target = self.data['target']
         target_visible = self.data['target_visible']
         camera_param = self.data['camera_param']
-        ann_info = self.data['ann_info']
 
         # test default settings
         codec = self.build_pose_lifting_label()
         encoded = codec.encode(keypoints, keypoints_visible, target,
-                               target_visible, camera_param, ann_info)
+                               target_visible, camera_param)
 
         self.assertEqual(encoded['keypoint_labels'].shape, (17 * 2, 1))
         self.assertEqual(encoded['target_label'].shape, (17, 3))
@@ -77,7 +70,7 @@ class TestPoseLiftingLabel(TestCase):
         codec = self.build_pose_lifting_label(
             remove_root=True, save_index=True)
         encoded = codec.encode(keypoints, keypoints_visible, target,
-                               target_visible, camera_param, ann_info)
+                               target_visible, camera_param)
 
         self.assertTrue('target_root_removed' in encoded
                         and 'target_root_index' in encoded)
@@ -89,7 +82,7 @@ class TestPoseLiftingLabel(TestCase):
         # test normalizing camera
         codec = self.build_pose_lifting_label(normalize_camera=True)
         encoded = codec.encode(keypoints, keypoints_visible, target,
-                               target_visible, camera_param, ann_info)
+                               target_visible, camera_param)
 
         self.assertTrue('camera_param' in encoded)
         scale = np.array(0.5 * camera_param['w'], dtype=np.float32)
@@ -98,33 +91,6 @@ class TestPoseLiftingLabel(TestCase):
                 camera_param['f'] / scale,
                 encoded['camera_param']['f'],
                 atol=4.))
-
-        # test random flip
-        target_flip_cfg = dict(center_mode='root', center_index=0)
-        keypoints_flip_cfg = dict(center_mode='static', center_x=0.)
-        codec = self.build_pose_lifting_label(
-            random_flip=True,
-            flip_prob=1,
-            target_flip_cfg=target_flip_cfg,
-            keypoints_flip_cfg=keypoints_flip_cfg)
-        encoded = codec.encode(keypoints, keypoints_visible, target,
-                               target_visible, camera_param, ann_info)
-
-        self.assertTrue('keypoint_labels_visible' in encoded)
-        self.assertTrue('target_label_visible' in encoded)
-        self.assertEqual(encoded['keypoint_labels_visible'].shape, (1, 17))
-        self.assertEqual(encoded['target_label_visible'].shape, (17, ))
-        for left, right in enumerate(ann_info['flip_indices']):
-            self.assertTrue(
-                np.allclose(
-                    keypoints_visible[0][left],
-                    encoded['keypoint_labels_visible'][0][right],
-                    atol=4.))
-            self.assertTrue(
-                np.allclose(
-                    target_visible[left],
-                    encoded['target_label_visible'][right],
-                    atol=4.))
 
     def test_decode(self):
         target = self.data['target']
@@ -146,12 +112,11 @@ class TestPoseLiftingLabel(TestCase):
         target = self.data['target']
         target_visible = self.data['target_visible']
         camera_param = self.data['camera_param']
-        ann_info = self.data['ann_info']
 
         # test default settings
         codec = self.build_pose_lifting_label()
         encoded = codec.encode(keypoints, keypoints_visible, target,
-                               target_visible, camera_param, ann_info)
+                               target_visible, camera_param)
 
         _keypoints, _ = codec.decode(
             np.expand_dims(encoded['target_label'], axis=0),

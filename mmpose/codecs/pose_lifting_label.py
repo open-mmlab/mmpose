@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
 from copy import deepcopy
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
-from mmpose.structures.keypoint import flip_regression
 from .base import BaseKeypointCodec
 
 
@@ -30,35 +29,16 @@ class PoseLiftingLabel(BaseKeypointCodec):
             original pose. Default: ``False``.
         normalize_camera (bool): Whether to normalize camera intrinsics.
             Default: ``False``.
-        random_flip: Whether to perform random horizontal joint flip around the
-            root for ``keypoints`` and ``target``. Note that if this is set to
-            ``True``, the root must not be removed. Default: ``False``.
-        keypoints_flip_cfg (dict, optional): Configurations of the
-            ``flip_regression`` function for ``keypoints``.  Please refer to
-            the docstring of the ``flip_regression`` function for more details.
-        target_flip_cfg (dict, optional): Configurations of the
-            ``flip_regression`` function for ``target``.  Please refer to the
-            docstring of the ``flip_regression`` function for more details.
-        flip_prob (float):
-        flip_camera (bool): Whether to flip horizontal distortion coefficients.
-            Default: ``False``.
     """
 
-    auxiliary_encode_keys = {
-        'target', 'target_visible', 'camera_param', 'ann_info'
-    }
+    auxiliary_encode_keys = {'target', 'target_visible', 'camera_param'}
 
     def __init__(self,
                  num_keypoints: int,
                  root_index: int,
                  remove_root: bool = False,
                  save_index: bool = False,
-                 normalize_camera: bool = False,
-                 random_flip: bool = False,
-                 keypoints_flip_cfg: Optional[List[dict]] = None,
-                 target_flip_cfg: Optional[List[dict]] = None,
-                 flip_prob: float = 0.5,
-                 flip_camera: bool = False):
+                 normalize_camera: bool = False):
         super().__init__()
 
         self.num_keypoints = num_keypoints
@@ -66,22 +46,13 @@ class PoseLiftingLabel(BaseKeypointCodec):
         self.remove_root = remove_root
         self.save_index = save_index
         self.normalize_camera = normalize_camera
-        self.random_flip = random_flip
-        if self.random_flip:
-            assert keypoints_flip_cfg is not None
-            assert target_flip_cfg is not None
-        self.keypoints_flip_cfg = keypoints_flip_cfg
-        self.target_flip_cfg = target_flip_cfg
-        self.flip_prob = flip_prob
-        self.flip_camera = flip_camera
 
     def encode(self,
                keypoints: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None,
                target: Optional[np.ndarray] = None,
                target_visible: Optional[np.ndarray] = None,
-               camera_param: Optional[dict] = None,
-               ann_info: Optional[dict] = None) -> dict:
+               camera_param: Optional[dict] = None) -> dict:
         """Encoding keypoints from input image space to normalized space.
 
         Args:
@@ -92,8 +63,6 @@ class PoseLiftingLabel(BaseKeypointCodec):
             target_visible (np.ndarray, optional): Target coordinate in shape
                 (K, ).
             camera_param (dict, optional): The camera parameter dictionary.
-            ann_info (dict, optional): The ``ann_info`` property of the
-                dataset.
 
         Returns:
             encoded (dict): Contains the following items:
@@ -117,12 +86,6 @@ class PoseLiftingLabel(BaseKeypointCodec):
                   root. Added if ``self.remove_root`` and ``self.save_index``
                   are ``True``.
                 - camera_param (dict): The updated camera parameter dictionary.
-                # TODO: waiting decision
-                - keypoint_labels_visible (np.ndarray): Flipped keypoint
-                  visibilities in shape (N, K). Added if triggered random flip.
-                - target_label_visible (np.ndarray): Flipped target visibility
-                  item in shape (K, ) or (K-1, ). Added if triggered random
-                  flip.
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
@@ -142,9 +105,6 @@ class PoseLiftingLabel(BaseKeypointCodec):
 
         if camera_param is None:
             camera_param = dict()
-
-        if ann_info is None:
-            ann_info = dict(flip_indices=list(range(self.num_keypoints)))
 
         encoded = dict()
 
@@ -183,43 +143,6 @@ class PoseLiftingLabel(BaseKeypointCodec):
             _camera_param['f'] = _camera_param['f'] / scale
             _camera_param['c'] = (_camera_param['c'] - center[:, None]) / scale
             encoded['camera_param'] = _camera_param
-
-        # Random horizontal joint flip if needed
-        if self.random_flip:
-            if encoded.get('target_root_removed', False):
-                raise RuntimeError(
-                    'The transform should not be applied to target whose root '
-                    'has been removed and joint indices have been changed')
-
-            if np.random.rand() <= self.flip_prob:
-                flip_indices = ann_info['flip_indices']
-
-                # flip joint coordinates
-                keypoint_labels, keypoint_labels_visible = flip_regression(
-                    keypoint_labels, keypoints_visible, flip_indices,
-                    **self.keypoints_flip_cfg)
-                target_label, target_label_visible = flip_regression(
-                    target_label, target_visible, flip_indices,
-                    **self.target_flip_cfg)
-                for left, right in enumerate(flip_indices):
-                    target_weights[..., left] = target_weights[..., right]
-                    trajectory_weights[..., left] = trajectory_weights[...,
-                                                                       right]
-
-                encoded['keypoint_labels_visible'] = keypoint_labels_visible
-                encoded['target_label_visible'] = target_label_visible
-
-                # flip horizontal distortion coefficients
-                if self.flip_camera:
-                    assert 'c' in _camera_param
-                    _camera_param['c'][0] *= -1
-
-                    if 'p' in _camera_param:
-                        _camera_param['p'][0] *= -1
-
-                    if 'camera_param' not in encoded:
-                        encoded['camera_param'] = dict()
-                    encoded['camera_param'].update(_camera_param)
 
         # Generate reshaped keypoint coordinates
         assert keypoint_labels.ndim in {2, 3}
