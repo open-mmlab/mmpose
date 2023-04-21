@@ -1,33 +1,42 @@
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
----
+name: 🚀 Feature request
+description: Suggest an idea for this project
+labels: \[feature-request\]
+title: "\[Feature\] "
 
-Thanks for your feature request and we will review and plan for it when necessary.
-If you feel we have helped you, give us a STAR! :satisfied:
+body:
 
-**Steps**
+- type: markdown
+  attributes:
+  value: |
+  \## Note
+  For general usage questions or idea discussions, please post it to our [**Forum**](https://github.com/open-mmlab/mmpose/discussions)
 
-1. Check if the feature has been requested in the [meta issue](https://github.com/open-mmlab/mmpose/issues/9), and if so, click thumb up button.
-2. Post the feature request in the [meta issue](https://github.com/open-mmlab/mmpose/issues/9), if it is new.
+  ```
+  Please fill in as **much** of the following form as you're able to. **The clearer the description, the shorter it will take to solve it.**
+  ```
 
-**Describe the feature**
+- type: textarea
+  attributes:
+  label: What is the feature?
+  description: Tell us more about the feature and how this feature can help.
+  placeholder: |
+  E.g., It is inconvenient when \[....\].
+  validations:
+  required: true
 
-**Motivation**
+- type: textarea
+  attributes:
+  label: Any other context?
+  description: |
+  Have you considered any alternative solutions or features? If so, what are they? Also, feel free to add any other context or screenshots about the feature request here.
 
-A clear and concise description of the motivation of the feature.
+- type: markdown
+  attributes:
+  value: |
+  \## Acknowledgement
+  Thanks for taking the time to fill out this report.
 
-1. Ex1. It is inconvenient when \[....\].
-2. Ex2. There is a recent paper \[....\], which is very helpful for \[....\].
-
-**Related resources**
-
-If there is an official code released or third-party implementations, please also provide the information here, which would be very helpful.
-
-**Additional context**
-
-Add any other context or screenshots about the feature request here.
-If you would like to implement the feature and create a PR, please leave a comment here and that would be much appreciated.
+  ```
+  We strongly appreciate you creating a new PR to implement it [**Here**](https://github.com/open-mmlab/mmpose/pulls)!
+  Please refer to [**Contribution Guide**](https://mmpose.readthedocs.io/en/latest/contribution_guide.html) for contributing.
+  ```
