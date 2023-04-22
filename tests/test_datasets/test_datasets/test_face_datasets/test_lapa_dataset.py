@@ -74,7 +74,7 @@ class TestLaPaDataset(TestCase):
         self.assertEqual(
             len(dataset.metainfo['dataset_keypoint_weights']), num_keypoints)
         # note that len(sigmas) may be zero if dataset.metainfo['sigmas'] = []
-        self.assertEqual(len(dataset.metainfo['sigmas']), num_keypoints)
+        self.assertEqual(len(dataset.metainfo['sigmas']), 0)
 
     def test_topdown(self):
         # test topdown training
