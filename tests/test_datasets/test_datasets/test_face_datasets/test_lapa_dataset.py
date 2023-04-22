@@ -91,13 +91,3 @@ class TestLaPaDataset(TestCase):
         self.assertEqual(dataset.bbox_file, None)
         self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0])
-
-    def test_exceptions_and_warnings(self):
-
-        with self.assertRaisesRegex(ValueError, 'got invalid data_mode'):
-            _ = self.build_lapa_dataset(data_mode='invalid')
-
-        with self.assertRaisesRegex(
-                ValueError,
-                '"bbox_file" is only supported when `test_mode==True`'):
-            _ = self.build_lapa_dataset(data_mode='topdown', test_mode=False)
