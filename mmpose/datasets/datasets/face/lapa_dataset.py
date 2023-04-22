@@ -7,10 +7,11 @@ from ..base import BaseCocoStyleDataset
 class LapaDataset(BaseCocoStyleDataset):
     """LaPa dataset for face keypoint localization.
 
-    "Robust face landmark estimation under occlusion", ICCV'2013.
+    "A New Dataset and Boundary-Attention Semantic Segmentation
+    for Face Parsing", AAAI'2020.
 
-    The landmark annotations follow the 29 points mark-up. The definition
-    can be found in `http://www.vision.caltech.edu/xpburgos/ICCV13/`__ .
+    The landmark annotations follow the 106 points mark-up. The definition
+    can be found in `https://github.com/JDAI-CV/lapa-dataset/`__ .
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
