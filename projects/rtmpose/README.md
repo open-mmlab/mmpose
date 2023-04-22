@@ -196,7 +196,7 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 
 |                   Config                    | Input Size | NME<sup><br>(LaPa) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                    Download                    |
 | :-----------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: |
-| [RTMPose-m](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-aic-coco_60e-256x256-c28598e0_20230422.pth) |
+| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-aic-coco_60e-256x256-c28598e0_20230422.pth) |
 
 ### Hand 2d
 
