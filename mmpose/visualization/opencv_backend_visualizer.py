@@ -109,6 +109,8 @@ class OpencvBackendVisualizer(Visualizer):
                 face_colors=face_colors,
                 **kwargs)
         elif self.backend == 'opencv':
+            if isinstance(face_colors, str):
+                face_colors = mmcv.color_val(face_colors)
             self._image = cv2.circle(self._image,
                                      (int(center[0]), int(center[1])),
                                      int(radius), face_colors, -1)
@@ -387,10 +389,10 @@ class OpencvBackendVisualizer(Visualizer):
 
     @master_only
     def show(self,
-              drawn_img: Optional[np.ndarray] = None,
-              win_name: str = 'image',
-              wait_time: float = 0.,
-              continue_key=' ') -> None:
+             drawn_img: Optional[np.ndarray] = None,
+             win_name: str = 'image',
+             wait_time: float = 0.,
+             continue_key=' ') -> None:
         """Show the drawn image.
 
         Args:
@@ -420,9 +422,7 @@ class OpencvBackendVisualizer(Visualizer):
             else:
                 cv2.setWindowTitle(f'{id(self)}', win_name)
             shown_img = self.get_image() if drawn_img is None else drawn_img
-            cv2.imshow(
-                str(id(self)),
-                mmcv.bgr2rgb(shown_img))
+            cv2.imshow(str(id(self)), mmcv.bgr2rgb(shown_img))
             cv2.waitKey(int(np.ceil(wait_time * 1000)))
         else:
             raise ValueError(f'get unsupported backend {self.backend}')
