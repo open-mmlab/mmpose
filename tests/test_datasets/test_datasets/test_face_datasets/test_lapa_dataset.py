@@ -14,7 +14,7 @@ class TestLaPaDataset(TestCase):
             ann_file='test_lapa.json',
             bbox_file=None,
             data_mode='topdown',
-            data_root='tests/data/LaPa',
+            data_root='tests/data/lapa',
             pipeline=[],
             test_mode=False)
 
@@ -64,11 +64,10 @@ class TestLaPaDataset(TestCase):
         dataset = self.build_lapa_dataset()
         self.check_metainfo_keys(dataset.metainfo)
         # test dataset_name
-        self.assertEqual(dataset.metainfo['dataset_name'],
-                         'coco_wholebody_face')
+        self.assertEqual(dataset.metainfo['dataset_name'], 'lapa')
 
         # test number of keypoints
-        num_keypoints = 68
+        num_keypoints = 106
         self.assertEqual(dataset.metainfo['num_keypoints'], num_keypoints)
         self.assertEqual(
             len(dataset.metainfo['keypoint_colors']), num_keypoints)
