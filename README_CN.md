@@ -72,7 +72,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - **支持多种人体姿态分析相关任务**
 
   MMPose 支持当前学界广泛关注的主流姿态分析任务：主要包括 2D多人姿态估计、2D手部姿态估计、2D人脸关键点检测、133关键点的全身人体姿态估计、3D人体形状恢复、服饰关键点检测、动物关键点检测等。
-  具体请参考 [功能演示](demo/docs/)。
+  具体请参考 [功能演示](demo/docs/zh_cn/)。
 
 - **更高的精度和更快的速度**
 
@@ -138,13 +138,13 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 | DeepPose (CVPR 2014)              |    done     |
 | RLE (ICCV 2021)                   |    done     |
 | SoftWingloss (TIP 2021)           |             |
-| VideoPose3D (CVPR 2019)           |             |
+| VideoPose3D (CVPR 2019)           | in progress |
 | Hourglass (ECCV 2016)             |    done     |
 | LiteHRNet (CVPR 2021)             |    done     |
 | AdaptiveWingloss (ICCV 2019)      |    done     |
 | SimpleBaseline2D (ECCV 2018)      |    done     |
 | PoseWarper (NeurIPS 2019)         |             |
-| SimpleBaseline3D (ICCV 2017)      |             |
+| SimpleBaseline3D (ICCV 2017)      | in progress |
 | HMR (CVPR 2018)                   |             |
 | UDP (CVPR 2020)                   |    done     |
 | VIPNAS (CVPR 2021)                |    done     |

@@ -1,10 +1,10 @@
 ## 2D Hand Keypoint Demo
 
-We provide a demo script to test a single image or video with hand detectors and top-down pose estimators. Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) with version >= 3.0.
+本节我们继续通过 demo 脚本演示对单张图片或者视频的 2D 手部关键点的识别。同样的，用户仍要确保开发环境已经安装了 3.0 版本以上的 [MMDetection](https://github.com/open-mmlab/mmdetection) 。
 
-**Hand Box Model Preparation:** The pre-trained hand box estimation model can be found in [mmdet model zoo](/demo/docs/mmdet_modelzoo.md).
+我们在 [mmdet model zoo](/demo/docs/zh_cn/mmdet_modelzoo.md#手部-bounding-box-识别模型) 提供了预训练好的手部 Bounding Box 预测模型，用户可以前往下载。
 
-### 2D Hand Image Demo
+### 2D 手部图片关键点识别
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -14,11 +14,11 @@ python demo/topdown_demo_with_mmdet.py \
     [--show] [--device ${GPU_ID or CPU}] [--save-predictions] \
     [--draw-heatmap ${DRAW_HEATMAP}] [--radius ${KPT_RADIUS}] \
     [--kpt-thr ${KPT_SCORE_THR}] [--bbox-thr ${BBOX_SCORE_THR}]
-
 ```
 
-The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo/hand_2d_keypoint.html).
-Take [onehand10k model](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth) as an example:
+用户可以在 [model zoo](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo/hand_2d_keypoint.html) 获取预训练好的关键点识别模型。
+
+这里我们用 [onehand10k model](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth) 来进行演示：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -30,13 +30,13 @@ python demo/topdown_demo_with_mmdet.py \
     --show --draw-heatmap
 ```
 
-Visualization result:
+可视化结果如下：
 
 <img src="https://user-images.githubusercontent.com/26127467/187664103-cfbe0c4e-5876-42f9-9023-5fb58ce00d7b.jpg" height="500px" alt><br>
 
-If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
+如果使用了 heatmap-based 模型同时设置了 `--draw-heatmap` ，预测的热图也会跟随关键点一同可视化出来。
 
-To save visualized results on disk:
+如果想本地保存可视化结果可使用如下命令：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -48,9 +48,9 @@ python demo/topdown_demo_with_mmdet.py \
     --output-root vis_results --show --draw-heatmap
 ```
 
-To save the predicted results on disk, please specify `--save-predictions`.
+如果想本地保存预测结果，需要添加 `--save-predictions` 。
 
-To run demos on CPU:
+如果想用 CPU 进行 demo 需添加 `--device cpu` ：
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -62,9 +62,9 @@ python demo/topdown_demo_with_mmdet.py \
     --show --draw-heatmap  --device cpu
 ```
 
-### 2D Hand Keypoints Video Demo
+### 2D 手部视频关键点识别推理
 
-Videos share the same interface with images. The difference is that the `${INPUT_PATH}` for videos can be the local path or **URL** link to video file.
+视频和图片使用了同样的接口，区别在于视频推理时 `${INPUT_PATH}` 既可以是本地视频文件的路径也可以是视频文件的 **URL** 地址。
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -78,11 +78,11 @@ python demo/topdown_demo_with_mmdet.py \
 
 <img src="https://user-images.githubusercontent.com/26127467/187665873-3ac836ec-8da5-45e1-8d78-c0abe962bd5e.gif" height="500px" alt><br>
 
-The original video can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi).
+这段视频可以在 [Google Drive](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi) 下载到。
 
-### 2D Hand Keypoints Demo with Inferencer
+### 使用 Inferencer 进行 2D 手部关键点识别推理
 
-The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+Inferencer 提供一个更便捷的推理接口，使得用户可以绕过模型的配置文件和 checkpoint 路径直接使用 model aliases ，支持包括图片路径、视频路径、图片文件夹路径和 webcams 在内的多种输入方式，例如可以这样使用：
 
 ```shell
 python demo/inferencer_demo.py tests/data/onehand10k \
@@ -90,12 +90,12 @@ python demo/inferencer_demo.py tests/data/onehand10k \
     --bbox-thr 0.5 --kpt-thr 0.05
 ```
 
-This command infers all images located in `tests/data/onehand10k` and saves the visualization results in the `vis_results/onehand10k` directory.
+该命令会对输入的 `tests/data/onehand10k` 下所有的图片进行推理并且把可视化结果都存入 `vis_results/onehand10k` 文件夹下。
 
 <img src="https://user-images.githubusercontent.com/26127467/229824447-b444e92d-9b5b-4a50-9a32-68be3ff8c527.jpg" alt="Image 1" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824466-6ae47a40-70a6-451d-94ee-4ffc34204a9c.jpg" alt="Image 2" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824477-679201c3-1e0b-45fe-b0c7-bab67b245a10.jpg" alt="Image 3" height="200"/> <img src="https://user-images.githubusercontent.com/26127467/229824488-bd874362-7401-41a5-8209-51bad1563a11.jpg" alt="Image 4" height="200"/>
 
-In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/inference.html#inferencer-a-unified-inference-interface).
+除此之外， Inferencer 也支持保存预测的姿态结果。具体信息可在 [Inferencer 文档](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/inference.html) 查看。
 
-### Speed Up Inference
+### 加速推理
 
-For 2D hand keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py#90).
+对于 2D 手部关键点预测模型，用户可以通过修改配置文件中的 `model.test_cfg.flip_test=False` 来加速，如 [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py#90) 所示。

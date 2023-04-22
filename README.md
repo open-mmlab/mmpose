@@ -75,7 +75,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - **Support diverse tasks**
 
   We support a wide spectrum of mainstream pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, 3d human mesh recovery, fashion landmark detection and animal pose estimation.
-  See [Demo](demo/docs/) for more information.
+  See [Demo](demo/docs/en) for more information.
 
 - **Higher efficiency and higher accuracy**
 
@@ -140,13 +140,13 @@ MMPose v1.0.0 is a major update, including many API and config file changes. Cur
 | DeepPose (CVPR 2014)              |    done     |
 | RLE (ICCV 2021)                   |    done     |
 | SoftWingloss (TIP 2021)           |             |
-| VideoPose3D (CVPR 2019)           |             |
+| VideoPose3D (CVPR 2019)           | in progress |
 | Hourglass (ECCV 2016)             |    done     |
 | LiteHRNet (CVPR 2021)             |    done     |
 | AdaptiveWingloss (ICCV 2019)      |    done     |
 | SimpleBaseline2D (ECCV 2018)      |    done     |
 | PoseWarper (NeurIPS 2019)         |             |
-| SimpleBaseline3D (ICCV 2017)      |             |
+| SimpleBaseline3D (ICCV 2017)      | in progress |
 | HMR (CVPR 2018)                   |             |
 | UDP (CVPR 2020)                   |    done     |
 | VIPNAS (CVPR 2021)                |    done     |

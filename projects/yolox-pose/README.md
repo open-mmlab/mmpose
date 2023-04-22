@@ -16,7 +16,7 @@ This project implements a YOLOX-based human pose estimator, utilizing the approa
 - [MMYOLO](https://github.com/open-mmlab/mmyolo) v0.5.0 or higher
 - [MMPose](https://github.com/open-mmlab/mmpose) v1.0.0rc1 or higher
 
-All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. In `yolox-pose/` root directory, run the following line to add the current directory to `PYTHONPATH`:
+All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. **In `yolox-pose/` root directory**, run the following line to add the current directory to `PYTHONPATH`:
 
 ```shell
 export PYTHONPATH=`pwd`:$PYTHONPATH
@@ -91,7 +91,7 @@ Results on COCO val2017
 
 |                              Model                              | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                                 Download                                 |
 | :-------------------------------------------------------------: | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :----------------------------------------------------------------------: |
-| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    640     | 0.518 |      0.799      |      0.545      | 0.566 |      0.841      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
+| [YOLOX-tiny-Pose](./configs/yolox-pose_tiny_4xb64-300e_coco.py) |    416     | 0.518 |      0.799      |      0.545      | 0.566 |      0.841      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco-c47dd83b_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_tiny_4xb64-300e_coco_20230321.json) |
 |    [YOLOX-s-Pose](./configs/yolox-pose_s_8xb32-300e_coco.py)    |    640     | 0.632 |      0.875      |      0.692      | 0.676 |      0.907      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco-9f5e3924_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_s_8xb32-300e_coco_20230321.json) |
 |    [YOLOX-m-Pose](./configs/yolox-pose_m_4xb64-300e_coco.py)    |    640     | 0.685 |      0.897      |      0.753      | 0.727 |      0.925      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco-cbd11d30_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_m_4xb64-300e_coco_20230321.json) |
 |    [YOLOX-l-Pose](./configs/yolox-pose_l_4xb64-300e_coco.py)    |    640     | 0.706 |      0.907      |      0.775      | 0.747 |      0.934      | [model](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco-122e4cf8_20230321.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/yolox-pose/yolox-pose_l_4xb64-300e_coco_20230321.json) |

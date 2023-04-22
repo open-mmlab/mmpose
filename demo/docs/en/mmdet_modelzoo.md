@@ -7,7 +7,7 @@ MMDetection provides 80-class COCO-pretrained models, which already includes the
 
 ### Hand Bounding Box Detection Models
 
-For hand bounding box detection, we simply train our hand box models on onehand10k dataset using MMDetection.
+For hand bounding box detection, we simply train our hand box models on OneHand10K dataset using MMDetection.
 
 #### Hand detection results on OneHand10K test set
 
@@ -19,7 +19,7 @@ For hand bounding box detection, we simply train our hand box models on onehand1
 
 For face bounding box detection, we train a YOLOX detector on COCO-face data using MMDetection.
 
-#### Hand detection results on OneHand10K test set
+#### Face detection results on COCO-face test set
 
 | Arch                                                            | Box AP |                                                  ckpt                                                  |
 | :-------------------------------------------------------------- | :----: | :----------------------------------------------------------------------------------------------------: |
@@ -28,8 +28,6 @@ For face bounding box detection, we train a YOLOX detector on COCO-face data usi
 ### Animal Bounding Box Detection Models
 
 #### COCO animals
-
-<!-- TODO: update link to the doc of MMDetection 3.0 -->
 
 In COCO dataset, there are 80 object categories, including 10 common `animal` categories (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe')
 For animals in the categories, please download from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).
