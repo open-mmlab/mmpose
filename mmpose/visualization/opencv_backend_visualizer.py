@@ -386,7 +386,7 @@ class OpencvBackendVisualizer(Visualizer):
             raise ValueError(f'get unsupported backend {self.backend}')
 
     @master_only
-    def _show(self,
+    def show(self,
               drawn_img: Optional[np.ndarray] = None,
               win_name: str = 'image',
               wait_time: float = 0.,
@@ -419,9 +419,10 @@ class OpencvBackendVisualizer(Visualizer):
                 cv2.setWindowTitle(f'{id(self)}', win_name)
             else:
                 cv2.setWindowTitle(f'{id(self)}', win_name)
+            shown_img = self.get_image() if drawn_img is None else drawn_img
             cv2.imshow(
                 str(id(self)),
-                self.get_image() if drawn_img is None else drawn_img)
+                mmcv.bgr2rgb(shown_img))
             cv2.waitKey(int(np.ceil(wait_time * 1000)))
         else:
             raise ValueError(f'get unsupported backend {self.backend}')
