@@ -66,7 +66,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             config will be used. Default is None.
     """
 
-    preprocess_kwargs: set = {'bbox_thr', 'nms_thr'}
+    preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
         'return_vis',
@@ -102,13 +102,18 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         # initialize detector for top-down models
         if self.cfg.data_mode == 'topdown':
-            if det_model != 'whole_image':
+            object_type = DATASETS.get(self.cfg.dataset_type).__module__.split(
+                'datasets.')[-1].split('.')[0].lower()
+
+            if det_model in ('whole_image', 'whole-image') or \
+                (det_model is None and
+                 object_type not in default_det_models):
+                self.detector = None
+
+            else:
                 det_scope = 'mmdet'
                 if det_model is None:
-                    det_model = DATASETS.get(
-                        self.cfg.dataset_type).__module__.split(
-                            'datasets.')[-1].split('.')[0].lower()
-                    det_info = default_det_models[det_model]
+                    det_info = default_det_models[object_type]
                     det_model, det_weights, det_cat_ids = det_info[
                         'model'], det_info['weights'], det_info['cat_ids']
                 elif os.path.exists(det_model):
@@ -120,15 +125,13 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                         det_model, det_weights, device=device, scope=det_scope)
                 else:
                     raise RuntimeError(
-                        'MMDetection (v3.0.0 or above) is required to  build '
+                        'MMDetection (v3.0.0 or above) is required to build '
                         'inferencers for top-down pose estimation models.')
 
                 if isinstance(det_cat_ids, (tuple, list)):
                     self.det_cat_ids = det_cat_ids
                 else:
                     self.det_cat_ids = (det_cat_ids, )
-            else:
-                self.detector = None
 
         self._video_input = False
 
@@ -136,7 +139,9 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                           input: InputType,
                           index: int,
                           bbox_thr: float = 0.3,
-                          nms_thr: float = 0.3):
+                          nms_thr: float = 0.3,
+                          bboxes: Union[List[List], List[np.ndarray],
+                                        np.ndarray] = []):
         """Process a single input into a model-feedable format.
 
         Args:
@@ -174,8 +179,6 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                 bboxes = bboxes[np.logical_and(
                     label_mask, pred_instance.scores > bbox_thr)]
                 bboxes = bboxes[nms(bboxes, nms_thr)]
-            else:
-                bboxes = []
 
             data_infos = []
             if len(bboxes) > 0:

@@ -1,0 +1,92 @@
+name: "🐞 Bug report"
+description: "Create a report to help us reproduce and fix the bug"
+labels: bug
+title: "[Bug] "
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Note
+        For general usage questions or idea discussions, please post it to our [**Forum**](https://github.com/open-mmlab/mmpose/discussions)
+        Please fill in as **much** of the following form as you're able to. **The clearer the description, the shorter it will take to solve it.**
+
+  - type: checkboxes
+    attributes:
+      label: Prerequisite
+      description: Please check the following items before creating a new issue.
+      options:
+      - label: I have searched [Issues](https://github.com/open-mmlab/mmpose/issues) and [Discussions](https://github.com/open-mmlab/mmpose/discussions) but cannot get the expected help.
+        required: true
+      - label: The bug has not been fixed in the latest version(https://github.com/open-mmlab/mmpose).
+        required: true
+
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        Please run following commands and and copy-paste it here:
+          - `python -c "from mmpose.utils import collect_env; print(collect_env())"` to collect necessary environment information.
+          - `pip list | grep mm` to collect repositories related to OpenMMLab.
+          - \[Optional\] Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Reproduces the problem - code sample
+      description: |
+        Please provide a code sample that reproduces the problem you ran into. It can be a Colab link or just a code snippet.
+      placeholder: |
+        ```python
+        # Sample code to reproduce the problem
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Reproduces the problem - command or script
+      description: |
+        What command or script did you run?
+      placeholder: |
+        ```shell
+        The command or script you run.
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Reproduces the problem - error message
+      description: |
+        Please provide the error message or logs you got, with the full traceback.
+
+        Tip: You can attach screenshots or log files by dragging them into the text area..
+      placeholder: |
+        ```
+        The error message or logs you got, with the full traceback.
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: |
+        Tell us anything else you think we should know.
+
+        Tip: You can attach screenshots or log files by dragging them into the text area.
+      placeholder: |
+        1. What's your expected result?
+        2. What dataset did you use?
+        3. What do you think might be the reason?
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Acknowledgement
+        Thanks for taking the time to fill out this report.
+
+        If you have already identified the reason, we strongly appreciate you creating a new PR to fix it [**Here**](https://github.com/open-mmlab/mmpose/pulls)!
+        Please refer to [**Contribution Guide**](https://mmpose.readthedocs.io/en/latest/contribution_guide.html) for contributing.

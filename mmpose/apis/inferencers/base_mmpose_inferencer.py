@@ -35,7 +35,7 @@ ResType = Union[Dict, List[Dict], InstanceData, List[InstanceData]]
 class BaseMMPoseInferencer(BaseInferencer):
     """The base class for MMPose inferencers."""
 
-    preprocess_kwargs: set = {'bbox_thr', 'nms_thr'}
+    preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
         'return_vis',
@@ -159,6 +159,9 @@ class BaseMMPoseInferencer(BaseInferencer):
         Raises:
             ValueError: If the inputs string is not in the expected format.
         """
+        assert getattr(self.visualizer, 'backend', None) == 'opencv', \
+            'Visualizer must utilize the OpenCV backend in order to ' \
+            'support webcam inputs.'
 
         # Ensure the inputs string is in the expected format.
         inputs = inputs.lower()
@@ -187,12 +190,9 @@ class BaseMMPoseInferencer(BaseInferencer):
         self.video_info = dict(
             fps=10, name='webcam.mp4', writer=None, predictions=[])
 
-        # Set up webcam reader generator function.
-        self._window_closing = False
-
         def _webcam_reader() -> Generator:
             while True:
-                if self._window_closing:
+                if cv2.waitKey(5) & 0xFF == 27:
                     vcap.release()
                     break
 
@@ -220,7 +220,11 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
         return Compose(cfg.test_dataloader.dataset.pipeline)
 
-    def preprocess(self, inputs: InputsType, batch_size: int = 1, **kwargs):
+    def preprocess(self,
+                   inputs: InputsType,
+                   batch_size: int = 1,
+                   bboxes: Optional[List] = None,
+                   **kwargs):
         """Process the inputs into a model-feedable format.
 
         Args:
@@ -233,7 +237,9 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
 
         for i, input in enumerate(inputs):
-            data_infos = self.preprocess_single(input, index=i, **kwargs)
+            bbox = bboxes[i] if bboxes is not None else []
+            data_infos = self.preprocess_single(
+                input, index=i, bboxes=bbox, **kwargs)
             # only supports inference with batch size 1
             yield self.collate_fn(data_infos), [input]
 
@@ -315,16 +321,6 @@ class BaseMMPoseInferencer(BaseInferencer):
                 wait_time=wait_time,
                 kpt_thr=kpt_thr)
             results.append(visualization)
-
-            if show and not hasattr(self, '_window_close_cid'):
-                if window_close_event_handler is None:
-                    window_close_event_handler = \
-                        self._visualization_window_on_close
-                self._window_close_cid = \
-                    self.visualizer.manager.canvas.mpl_connect(
-                        'close_event',
-                        window_close_event_handler
-                    )
 
             if vis_out_dir:
                 out_img = mmcv.rgb2bgr(visualization)
