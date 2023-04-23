@@ -227,7 +227,7 @@ MMPose 提供 [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/dock
 用于构建镜像。请确保您的 [Docker 版本](https://docs.docker.com/engine/install/) >=19.03。
 
 ```shell
-# 构建默认的 PyTorch 1.6.0，CUDA 10.1 版本镜像
+# 构建默认的 PyTorch 1.8.0，CUDA 10.1 版本镜像
 # 如果您希望使用其他版本，请修改 Dockerfile
 docker build -t mmpose docker/
 ```

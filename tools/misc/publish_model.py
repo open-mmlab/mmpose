@@ -41,7 +41,7 @@ def process_checkpoint(in_file, out_file, save_keys=['meta', 'state_dict']):
     # if it is necessary to remove some sensitive data in checkpoint['meta'],
     # add the code here.
 
-    if digit_version(TORCH_VERSION) >= digit_version('1.6.0'):
+    if digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
         torch.save(checkpoint, out_file, _use_new_zipfile_serialization=False)
     else:
         torch.save(checkpoint, out_file)
