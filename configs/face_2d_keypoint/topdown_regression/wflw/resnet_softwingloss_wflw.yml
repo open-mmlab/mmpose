@@ -13,4 +13,4 @@ Models:
     Metrics:
       NME: 4.44
     Task: Face 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth
+  Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss-4d34f22a_20211212.pth
