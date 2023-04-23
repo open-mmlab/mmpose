@@ -55,4 +55,4 @@ The model is trained on WFLW train set.
 
 | Model                                                           | Input Size | NME  |                              ckpt                              |                              log                              |
 | :-------------------------------------------------------------- | :--------: | :--: | :------------------------------------------------------------: | :-----------------------------------------------------------: |
-| [ResNet-50](/configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_8x64e-210e_wflw-256x256.py) |  256x256   | 4.88 | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_20210303.log.json) |
+| [ResNet-50](/configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_8xb64-210e_wflw-256x256.py) |  256x256   | 4.88 | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_20210303.log.json) |

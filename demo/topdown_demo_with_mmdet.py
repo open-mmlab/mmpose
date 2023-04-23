@@ -13,6 +13,7 @@ import numpy as np
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
+from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
 from mmpose.utils import adapt_mmdet_pipeline
 
@@ -186,24 +187,22 @@ def main():
         cfg_options=dict(
             model=dict(test_cfg=dict(output_heatmaps=args.draw_heatmap))))
 
+    # build visualizer
+    pose_estimator.cfg.visualizer.radius = args.radius
+    pose_estimator.cfg.visualizer.alpha = args.alpha
+    pose_estimator.cfg.visualizer.line_width = args.thickness
+    visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
+    # the dataset_meta is loaded from the checkpoint and
+    # then pass to the model in init_pose_estimator
+    visualizer.set_dataset_meta(
+        pose_estimator.dataset_meta, skeleton_style=args.skeleton_style)
+
     if args.input == 'webcam':
         input_type = 'webcam'
     else:
         input_type = mimetypes.guess_type(args.input)[0].split('/')[0]
 
     if input_type == 'image':
-        # init visualizer
-        from mmpose.registry import VISUALIZERS
-
-        pose_estimator.cfg.visualizer.radius = args.radius
-        pose_estimator.cfg.visualizer.alpha = args.alpha
-        pose_estimator.cfg.visualizer.line_width = args.thickness
-        visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
-
-        # the dataset_meta is loaded from the checkpoint and
-        # then pass to the model in init_pose_estimator
-        visualizer.set_dataset_meta(
-            pose_estimator.dataset_meta, skeleton_style=args.skeleton_style)
 
         # inference
         pred_instances = process_one_image(args, args.input, detector,
@@ -214,31 +213,10 @@ def main():
 
         if output_file:
             img_vis = visualizer.get_image()
-            mmcv.imwrite(mmcv.rgb2bgr(img_vis), output_file)
+            if args.show:
+                mmcv.imwrite(mmcv.rgb2bgr(img_vis), output_file)
 
     elif input_type in ['webcam', 'video']:
-        from mmpose.visualization import FastVisualizer
-
-        visualizer = FastVisualizer(
-            pose_estimator.dataset_meta,
-            radius=args.radius,
-            line_width=args.thickness,
-            kpt_thr=args.kpt_thr)
-
-        if args.draw_heatmap:
-            # init Localvisualizer
-            from mmpose.registry import VISUALIZERS
-
-            pose_estimator.cfg.visualizer.radius = args.radius
-            pose_estimator.cfg.visualizer.alpha = args.alpha
-            pose_estimator.cfg.visualizer.line_width = args.thickness
-            local_visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
-
-            # the dataset_meta is loaded from the checkpoint and
-            # then pass to the model in init_pose_estimator
-            local_visualizer.set_dataset_meta(
-                pose_estimator.dataset_meta,
-                skeleton_style=args.skeleton_style)
 
         if args.input == 'webcam':
             cap = cv2.VideoCapture(0)
@@ -257,16 +235,9 @@ def main():
                 break
 
             # topdown pose estimation
-            if args.draw_heatmap:
-                pred_instances = process_one_image(args, frame, detector,
-                                                   pose_estimator,
-                                                   local_visualizer, 0.001)
-            else:
-                pred_instances = process_one_image(args, frame, detector,
-                                                   pose_estimator)
-                # visualization
-                visualizer.draw_pose(frame, pred_instances)
-                cv2.imshow('MMPose Demo [Press ESC to Exit]', frame)
+            pred_instances = process_one_image(args, frame, detector,
+                                               pose_estimator, visualizer,
+                                               0.001)
 
             if args.save_predictions:
                 # save prediction results
@@ -277,10 +248,7 @@ def main():
 
             # output videos
             if output_file:
-                if args.draw_heatmap:
-                    frame_vis = local_visualizer.get_image()
-                else:
-                    frame_vis = frame.copy()[:, :, ::-1]
+                frame_vis = visualizer.get_image()
 
                 if video_writer is None:
                     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
