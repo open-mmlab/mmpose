@@ -13,6 +13,7 @@ MMPose supported datasets:
   - [CrowdPose](#crowdpose) \[ [Homepage](https://github.com/Jeff-sjtu/CrowdPose) \]
   - [OCHuman](#ochuman) \[ [Homepage](https://github.com/liruilong940607/OCHumanApi) \]
   - [MHP](#mhp) \[ [Homepage](https://lv-mhp.github.io/dataset) \]
+  - [Human-Art](#humanart) \[ [Homepage](https://idea-research.github.io/HumanArt/) \]
 - Videos
   - [PoseTrack18](#posetrack18) \[ [Homepage](https://posetrack.net/users/download.php) \]
   - [sub-JHMDB](#sub-jhmdb-dataset) \[ [Homepage](http://jhmdb.is.tue.mpg.de/dataset) \]
@@ -385,6 +386,57 @@ mmpose
         │   │   │-- 10052.jpg
         │   │   │-- ...~~~~
 ```
+
+## Human-Art dataset
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://idea-research.github.io/HumanArt/">Human-Art (CVPR'2023)</a></summary>
+
+```bibtex
+@inproceedings{ju2023humanart,
+    title={Human-Art: A Versatile Human-Centric Dataset Bridging Natural and Artificial Scenes},
+    author={Ju, Xuan and Zeng, Ailing and Jianan, Wang and Qiang, Xu and Lei, Zhang},
+    booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR),
+    year={2023}}
+```
+
+</details>
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/100993824/227864552-489d03de-e1b8-4ca2-8ac1-80dd99826cb7.png" height="300px">
+</div>
+
+For [Human-Art](https://idea-research.github.io/HumanArt/) data, please download the images and annotation files from [its website](https://idea-research.github.io/HumanArt/). You need to fill in the [data form](https://docs.google.com/forms/d/e/1FAIpQLScroT_jvw6B9U2Qca1_cl5Kmmu1ceKtlh6DJNmWLte8xNEhEw/viewform) to get access to the data.
+Move them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+|── data
+    │── HumanArt
+        │-- images
+        │   │-- 2D_virtual_human
+        │   │   |-- cartoon
+        │   │   |   |-- 000000000000.jpg
+        │   │   |   |-- ...
+        │   │   |-- digital_art
+        │   │   |-- ...
+        │   |-- 3D_virtual_human
+        │   |-- real_human
+        |-- annotations
+        │   │-- validation_humanart.json
+        │   │-- training_humanart_coco.json
+        |-- person_detection_results
+        │   │-- HumanArt_validation_detections_AP_H_56_person.json
+```
+
+You can choose whether to download other annotation files in Human-Art. If you want to use additional annotation files (e.g. validation set of cartoon), you need to edit the corresponding code in config file.
 
 ## PoseTrack18
 
