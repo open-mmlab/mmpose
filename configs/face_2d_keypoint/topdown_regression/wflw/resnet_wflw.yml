@@ -1,5 +1,5 @@
 Models:
-- Config: configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_8x64e-210e_wflw-256x256.py
+- Config: configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_8xb64-210e_wflw-256x256.py
   In Collection: ResNet
   Metadata:
     Architecture:
