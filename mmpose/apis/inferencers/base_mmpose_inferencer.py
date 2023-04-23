@@ -159,6 +159,9 @@ class BaseMMPoseInferencer(BaseInferencer):
         Raises:
             ValueError: If the inputs string is not in the expected format.
         """
+        assert getattr(self.visualizer, 'backend', None) == 'opencv', \
+            'Visualizer must utilize the OpenCV backend in order to ' \
+            'support webcam inputs.'
 
         # Ensure the inputs string is in the expected format.
         inputs = inputs.lower()

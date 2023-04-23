@@ -10,7 +10,23 @@ from mmengine.visualization import Visualizer
 
 
 class OpencvBackendVisualizer(Visualizer):
-    """Base visualizer with opencv backend support."""
+    """Base visualizer with opencv backend support.
+
+    Args:
+        name (str): Name of the instance. Defaults to 'visualizer'.
+        image (np.ndarray, optional): the origin image to draw. The format
+            should be RGB. Defaults to None.
+        vis_backends (list, optional): Visual backend config list.
+            Defaults to None.
+        save_dir (str, optional): Save file dir for all storage backends.
+            If it is None, the backend storage will not save any data.
+        fig_save_cfg (dict): Keyword parameters of figure for saving.
+            Defaults to empty dict.
+        fig_show_cfg (dict): Keyword parameters of figure for showing.
+            Defaults to empty dict.
+        backend (str): Backend used to draw elements on the image and display
+            the image. Defaults to 'matplotlib'.
+    """
 
     def __init__(self,
                  name='visualizer',
@@ -115,7 +131,7 @@ class OpencvBackendVisualizer(Visualizer):
                                      (int(center[0]), int(center[1])),
                                      int(radius), face_colors, -1)
         else:
-            raise ValueError(f'get unsupported backend {self.backend}')
+            raise ValueError(f'got unsupported backend {self.backend}')
 
     @master_only
     def draw_texts(
@@ -232,7 +248,7 @@ class OpencvBackendVisualizer(Visualizer):
                                       cv2.FONT_HERSHEY_SIMPLEX, font_scale,
                                       colors, thickness - 1)
         else:
-            raise ValueError(f'get unsupported backend {self.backend}')
+            raise ValueError(f'got unsupported backend {self.backend}')
 
     @master_only
     def draw_bboxes(self,
@@ -286,7 +302,7 @@ class OpencvBackendVisualizer(Visualizer):
                 thickness=line_widths,
                 show=False)
         else:
-            raise ValueError(f'get unsupported backend {self.backend}')
+            raise ValueError(f'got unsupported backend {self.backend}')
 
     @master_only
     def draw_lines(self,
@@ -338,7 +354,7 @@ class OpencvBackendVisualizer(Visualizer):
                 colors,
                 thickness=line_widths)
         else:
-            raise ValueError(f'get unsupported backend {self.backend}')
+            raise ValueError(f'got unsupported backend {self.backend}')
 
     @master_only
     def draw_polygons(self,
@@ -385,7 +401,7 @@ class OpencvBackendVisualizer(Visualizer):
             self._image = cv2.fillConvexPoly(self._image, polygons,
                                              edge_colors)
         else:
-            raise ValueError(f'get unsupported backend {self.backend}')
+            raise ValueError(f'got unsupported backend {self.backend}')
 
     @master_only
     def show(self,
@@ -425,4 +441,4 @@ class OpencvBackendVisualizer(Visualizer):
             cv2.imshow(str(id(self)), mmcv.bgr2rgb(shown_img))
             cv2.waitKey(int(np.ceil(wait_time * 1000)))
         else:
-            raise ValueError(f'get unsupported backend {self.backend}')
+            raise ValueError(f'got unsupported backend {self.backend}')
