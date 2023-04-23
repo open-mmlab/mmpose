@@ -41,7 +41,7 @@ jobs:
           pip install -U numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
-          mim install 'mmcv >= 2.0.0rc1'
+          mim install 'mmcv >= 2.0.0'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
           pip install -r requirements/runtime.txt
@@ -95,7 +95,7 @@ jobs:
           pip install -U numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
-          mim install 'mmcv >= 2.0.0rc1'
+          mim install 'mmcv >= 2.0.0'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
           pip install -r requirements/runtime.txt
@@ -135,7 +135,7 @@ jobs:
           pip install -U numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
-          mim install 'mmcv >= 2.0.0rc1'
+          mim install 'mmcv >= 2.0.0'
           pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           pip install -r requirements/tests.txt
           pip install -r requirements/runtime.txt
@@ -180,7 +180,7 @@ jobs:
           python -m pip install -U numpy
           python -m pip install git+https://github.com/open-mmlab/mmengine.git@main
           python -m pip install -U openmim
-          mim install 'mmcv >= 2.0.0rc1'
+          mim install 'mmcv >= 2.0.0'
           python -m pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           python -m pip install -r requirements/tests.txt
           python -m pip install -r requirements/albu.txt
