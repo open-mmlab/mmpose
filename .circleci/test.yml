@@ -62,7 +62,7 @@ jobs:
             pip install -U numpy
             pip install git+https://github.com/open-mmlab/mmengine.git@main
             pip install -U openmim
-            mim install 'mmcv >= 2.0.0rc1'
+            mim install 'mmcv >= 2.0.0'
             pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
             pip install -r requirements/tests.txt
             pip install -r requirements/albu.txt
@@ -111,7 +111,7 @@ jobs:
             docker exec mmpose pip install -U numpy
             docker exec mmpose pip install -e /mmengine
             docker exec mmpose pip install -U openmim
-            docker exec mmpose mim install 'mmcv >= 2.0.0rc1'
+            docker exec mmpose mim install 'mmcv >= 2.0.0'
             docker exec mmpose pip install -e /mmdetection
             docker exec mmpose pip install -r requirements/tests.txt
             docker exec mmpose pip install -r requirements/albu.txt
