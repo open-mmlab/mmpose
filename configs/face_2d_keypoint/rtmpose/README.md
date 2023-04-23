@@ -22,3 +22,11 @@ Results on WFLW  dataset
 |   Model   | Input Size | NME  |           Details and Download            |
 | :-------: | :--------: | :--: | :---------------------------------------: |
 | RTMPose-m |  256x256   | 4.01 | [rtmpose_wflw.md](./wflw/rtmpose_wflw.md) |
+
+### LaPa Dataset
+
+Results on LaPa dataset
+
+|   Model   | Input Size | NME  |           Details and Download            |
+| :-------: | :--------: | :--: | :---------------------------------------: |
+| RTMPose-m |  256x256   | 1.29 | [rtmpose_lapa.md](./wflw/rtmpose_lapa.md) |
