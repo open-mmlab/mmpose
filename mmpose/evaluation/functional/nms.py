@@ -102,7 +102,7 @@ def oks_iou(g: np.ndarray,
         dy = yd - yg
         e = (dx**2 + dy**2) / vars / ((a_g + a_d[n_d]) / 2 + np.spacing(1)) / 2
         if vis_thr is not None:
-            ind = list(vg > vis_thr) and list(vd > vis_thr)
+            ind = list((vg > vis_thr) & (vd > vis_thr))
             e = e[ind]
         ious[n_d] = np.sum(np.exp(-e)) / len(e) if len(e) != 0 else 0.0
     return ious
