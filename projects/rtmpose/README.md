@@ -192,11 +192,15 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 | :-----------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: |
 | [RTMPose-m](./rtmpose/animal_2d_keypoint/rtmpose-m_8xb64-210e_ap10k-256x256.py) |  256x256   |        72.2        |   2.57   |               14.157               |                   2.404                   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth) |
 
-### Face 2d
+### Face 2d (106 Keypoints)
 
-|                   Config                    | Input Size | NME<sup><br>(LaPa) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                    Download                    |
-| :-----------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: |
-| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-aic-coco_60e-256x256-c28598e0_20230422.pth) |
+<div align=center>
+<img src="https://user-images.githubusercontent.com/13503330/233819275-0523118b-e6c2-41f7-8b72-324969310480.gif" width=450 height=250/>
+</div>
+
+|                                     Config                                     | Input Size | NME<sup><br>(LaPa) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |  Download   |
+| :----------------------------------------------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: |
+| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
 
 ### Hand 2d
 
