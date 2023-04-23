@@ -220,7 +220,7 @@ Note that within Jupyter, the exclamation mark `!` is used to call external exec
 We provide a [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/docker/Dockerfile) to build an image. Ensure that your [docker version](https://docs.docker.com/engine/install/) >=19.03.
 
 ```shell
-# build an image with PyTorch 1.6.0, CUDA 10.1, CUDNN 7.
+# build an image with PyTorch 1.8.0, CUDA 10.1, CUDNN 7.
 # If you prefer other versions, just modified the Dockerfile
 docker build -t mmpose docker/
 ```
