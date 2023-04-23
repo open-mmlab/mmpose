@@ -106,7 +106,7 @@ divisor 设置十分重要，我们建议你在尝试 \[1,2,4,8,16,32\]，以找
 
 ## Reference
 
-[GroupFisher in MMRazor](https://github.com/open-mmlab/mmrazor/tree/latest/configs/pruning/base/group_fisher)
+[GroupFisher in MMRazor](https://github.com/open-mmlab/mmrazor/tree/main/configs/pruning/base/group_fisher)
 
 [rp_sa_f]: https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.pth
 [rp_sa_l]: https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.json

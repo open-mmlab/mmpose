@@ -1,7 +1,7 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-max_epochs = 60
+max_epochs = 120
 stage2_num_epochs = 10
 base_lr = 4e-3
 
@@ -69,12 +69,12 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
+            'rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
         in_channels=768,
-        out_channels=68,
+        out_channels=106,
         input_size=codec['input_size'],
         in_featuremap_size=(8, 8),
         simcc_split_ratio=codec['simcc_split_ratio'],
@@ -97,16 +97,16 @@ model = dict(
     test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
-dataset_type = 'CocoWholeBodyFaceDataset'
+dataset_type = 'LapaDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+data_root = 'data/LaPa/'
 
 backend_args = dict(backend='local')
 # backend_args = dict(
 #     backend='petrel',
 #     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
+#         f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/',
+#         f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/'
 #     }))
 
 # pipelines
@@ -114,16 +114,17 @@ train_pipeline = [
     dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    # dict(type='RandomHalfBody'),
+    dict(type='RandomHalfBody'),
     dict(
-        type='RandomBBoxTransform', scale_factor=[0.6, 1.4], rotate_factor=80),
+        type='RandomBBoxTransform', scale_factor=[0.5, 1.5], rotate_factor=80),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(type='PhotometricDistortion'),
     dict(
         type='Albumentation',
         transforms=[
-            dict(type='Blur', p=0.1),
-            dict(type='MedianBlur', p=0.1),
+            dict(type='Blur', p=0.2),
+            dict(type='MedianBlur', p=0.2),
             dict(
                 type='CoarseDropout',
                 max_holes=1,
@@ -185,8 +186,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_train_v1.0.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='annotations/lapa_train.json',
+        data_prefix=dict(img='train/images/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -199,12 +200,26 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_val_v1.0.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file='annotations/lapa_val.json',
+        data_prefix=dict(img='val/images/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
-test_dataloader = val_dataloader
+test_dataloader = dict(
+    batch_size=32,
+    num_workers=10,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=dict(
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file='annotations/lapa_test.json',
+        data_prefix=dict(img='test/images/'),
+        test_mode=True,
+        pipeline=val_pipeline,
+    ))
 
 # hooks
 default_hooks = dict(

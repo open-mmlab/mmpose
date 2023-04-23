@@ -39,7 +39,7 @@ The augement `--det-cat-id=15` selected detected bounding boxes with label 'cat'
 **COCO-animals**
 In COCO dataset, there are 80 object categories, including 10 common `animal` categories (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe').
 
-For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [detection model zoo](/demo/docs/mmdet_modelzoo.md).
+For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [detection model zoo](/demo/docs/en/mmdet_modelzoo.md).
 
 To save visualized results on disk:
 
