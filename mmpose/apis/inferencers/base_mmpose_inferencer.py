@@ -35,7 +35,7 @@ ResType = Union[Dict, List[Dict], InstanceData, List[InstanceData]]
 class BaseMMPoseInferencer(BaseInferencer):
     """The base class for MMPose inferencers."""
 
-    preprocess_kwargs: set = {'bbox_thr', 'nms_thr'}
+    preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
         'return_vis',
@@ -220,7 +220,11 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
         return Compose(cfg.test_dataloader.dataset.pipeline)
 
-    def preprocess(self, inputs: InputsType, batch_size: int = 1, **kwargs):
+    def preprocess(self,
+                   inputs: InputsType,
+                   batch_size: int = 1,
+                   bboxes: Optional[List] = None,
+                   **kwargs):
         """Process the inputs into a model-feedable format.
 
         Args:
@@ -233,7 +237,9 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
 
         for i, input in enumerate(inputs):
-            data_infos = self.preprocess_single(input, index=i, **kwargs)
+            bbox = bboxes[i] if bboxes is not None else []
+            data_infos = self.preprocess_single(
+                input, index=i, bboxes=bbox, **kwargs)
             # only supports inference with batch size 1
             yield self.collate_fn(data_infos), [input]
 
