@@ -83,7 +83,27 @@ class TemporalRegressionHead(BaseHead):
         batch_coords = self.forward(feats)  # (B, K, D)
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
-        preds = self.decode(batch_coords)
+
+        # Denormalize the predicted coordinates
+        target_mean = batch_data_samples[0].metainfo.get('target_mean', None)
+        target_std = batch_data_samples[0].metainfo.get('target_std', None)
+        if target_mean is not None and target_std is not None:
+            target_mean = torch.stack(
+                [m['target_mean'] for m in batch_data_samples[0].metainfo])
+            target_std = torch.stack(
+                [m['target_std'] for m in batch_data_samples[0].metainfo])
+
+        # Restore global position
+        restore_global_position = self.test_cfg.get('restore_global_position',
+                                                    False)
+        target_root, root_idx = None, None
+        if restore_global_position:
+            target_root = torch.stack(
+                [m['target_root'] for m in batch_data_samples[0].metainfo])
+            root_idx = batch_data_samples[0].metainfo.get('root_idx', None)
+
+        preds = self.decode(batch_coords, restore_global_position, target_root,
+                            root_idx, target_mean, target_std)
 
         return preds
 
