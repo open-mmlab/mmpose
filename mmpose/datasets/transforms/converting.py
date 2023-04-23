@@ -25,6 +25,36 @@ class KeypointConverter(BaseTransform):
         num_keypoints (int): The number of keypoints in target dataset.
         mapping (list): A list containing mapping indexes. Each element has
             format (source_index, target_index)
+
+    Example:
+        >>> import numpy as np
+        >>> # case 1: 1-to-1 mapping
+        >>> # (0, 0) means target[0] = source[0]
+        >>> self = KeypointConverter(
+        >>>     num_keypoints=3,
+        >>>     mapping=[
+        >>>         (0, 0), (1, 1), (2, 2), (3, 3)
+        >>>     ])
+        >>> results = dict(
+        >>>     keypoints=np.arange(34).reshape(2, 3, 2),
+        >>>     keypoints_visible=np.arange(34).reshape(2, 3, 2) % 2)
+        >>> results = self(results)
+        >>> assert np.equal(results['keypoints'],
+        >>>                 np.arange(34).reshape(2, 3, 2)).all()
+        >>> assert np.equal(results['keypoints_visible'],
+        >>>                 np.arange(34).reshape(2, 3, 2) % 2).all()
+        >>>
+        >>> # case 2: 2-to-1 mapping
+        >>> # ((1, 2), 0) means target[0] = (source[1] + source[2]) / 2
+        >>> self = KeypointConverter(
+        >>>     num_keypoints=3,
+        >>>     mapping=[
+        >>>         ((1, 2), 0), (1, 1), (2, 2)
+        >>>     ])
+        >>> results = dict(
+        >>>     keypoints=np.arange(34).reshape(2, 3, 2),
+        >>>     keypoints_visible=np.arange(34).reshape(2, 3, 2) % 2)
+        >>> results = self(results)
     """
 
     def __init__(self, num_keypoints: int,
