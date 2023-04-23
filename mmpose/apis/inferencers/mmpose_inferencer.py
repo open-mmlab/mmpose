@@ -55,7 +55,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             config will be used. Default is None.
     """
 
-    preprocess_kwargs: set = {'bbox_thr', 'nms_thr'}
+    preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
         'return_vis',
