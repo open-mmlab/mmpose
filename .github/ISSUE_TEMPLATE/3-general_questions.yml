@@ -1,4 +1,9 @@
-name: General questions
-about: Ask general questions to get help
+name: "📚 General questions"
+description: "Ask general questions to get help"
 labels: general-questions
 title: "[Questions] "
+
+body:
+- type: textarea
+  attributes:
+    label: "What's wrong?"
