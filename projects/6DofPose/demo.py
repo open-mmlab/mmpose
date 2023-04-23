@@ -1,116 +1,107 @@
-import os
+import cv2
 import numpy as np
-from utils import *
-import argparse
-import torch
+from PIL import Image
+
 import matplotlib.pyplot as plt
 
-import mmengine
-import mmcv
+import torch
 
+import mmcv
+from mmcv import imread
+import mmengine
 from mmengine.registry import init_default_scope
+
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
-from mmpose.structures import merge_data_samples
 from mmpose.evaluation.functional import nms
+from mmpose.registry import VISUALIZERS
+from mmpose.structures import merge_data_samples
 
 from mmdet.apis import inference_detector, init_detector
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print('device', device)
 
-def predict(image_path):
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    
-    detector = init_detector(
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet_tiny_ape/rtmdet_tiny_ape.py',
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet_tiny_ape/best_coco_bbox_mAP_epoch_90.pth',
-        device=device)
-    
-    pose_estimator = init_pose_estimator(
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_ape/rtmpose-s_ape.py',
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_ape/best_PCK_epoch_240.pth',
-        device=device,
-        cfg_options={'model': {'test_cfg': {'output_heatmaps': True}}})
-    
-    init_default_scope(detector.cfg.get('default_scope', 'mmdet'))
-    detect_result = inference_detector(detector, image_path)
-    CONF_THRES = 0.5
+img_path = '/home/liuyoufu/code/mmpose-openmmlab/mmpose/data/Triangle_140_Keypoint_Dataset/test_triangle/triangle_4.jpg'
+Image.open(img_path)
 
-    pred_instance = detect_result.pred_instances.cpu().numpy()
-    bboxes = np.concatenate((pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
-    bboxes = bboxes[np.logical_and(pred_instance.labels == 0, pred_instance.scores > CONF_THRES)]
-    bboxes = bboxes[nms(bboxes, 0.3)][:, :4].astype('int')
-    
-    pose_results = inference_topdown(pose_estimator, image_path, bboxes)
-    data_samples = merge_data_samples(pose_results)
-    keypoints = data_samples.pred_instances.keypoints.astype('int')
-    
-    return keypoints
+detector = init_detector(
+    '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet_tiny_triangle/rtmdet_tiny_triangle.py',
+    '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet_tiny_triangle/best_coco_bbox_mAP_epoch_196.pth',
+    device=device
+)
+
+pose_estimator = init_pose_estimator(
+    '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_triangle_8xb256-420e_coco-256x192/rtmpose-s_triangle_8xb256-420e_coco-256x192.py',
+    '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_triangle_8xb256-420e_coco-256x192/best_PCK_epoch_190.pth',
+    device=device,
+    cfg_options={'model': {'test_cfg': {'output_heatmaps': True}}}
+)
+
+init_default_scope(detector.cfg.get('default_scope', 'mmdet'))
+detect_result = inference_detector(detector, img_path)
+CONF_THRES = 0.5
+
+pred_instance = detect_result.pred_instances.cpu().numpy()
+bboxes = np.concatenate((pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
+bboxes = bboxes[np.logical_and(pred_instance.labels == 0, pred_instance.scores > CONF_THRES)]
+bboxes = bboxes[nms(bboxes, 0.3)][:, :4].astype('int')
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='demo')
-    parser.add_argument('--image-path', help='image path')
-    parser.add_argument('--id', type=str, help='object id, for example: 01')
-    args = parser.parse_args()
-    return args
+pose_results = inference_topdown(pose_estimator, img_path, bboxes)
+data_samples = merge_data_samples(pose_results)
+keypoints = data_samples.pred_instances.keypoints.astype('int')
 
+img_bgr = cv2.imread(img_path)
+# 检测框的颜色
+bbox_color = (150,0,0)
+# 检测框的线宽
+bbox_thickness = 20
+# 关键点半径
+kpt_radius = 30
+# 连接线宽
+skeleton_thickness = 30
 
-def main():
-    args = parse_args()
-    image_path = args.image_path
-    obj_id = args.id
-    
-    # 根据图像文件路径，划分物体id 根目录 与 图像名称
-    file_name = os.path.basename(image_path)
-    root_path = os.path.dirname(image_path)[:-11]
-    
-    # get model_info_dict, obj_id
-    model_info_path = root_path + 'models/'
-    model_info_dict = mmengine.load(model_info_path + 'models_info.yml')
-    object_path = os.path.join(root_path, f'data/{args.id}/')
-    info_dict = mmengine.load(object_path + 'info.yml')
-    gt_dict = mmengine.load(object_path + 'gt.yml')
-    
-    # 根据图像名，获取对应图像的内参
-    intrinsic = np.array(info_dict[int(file_name.split(".")[0])]['cam_K']).reshape(3,3)
-    
-    # get corner3D (8*3)
-    corners3D = get_3D_corners(model_info_dict, obj_id)
-    
-    # get gt and prediction
-    keypoint_pr = predict(image_path)
-    corners2D_pr = keypoint_pr.reshape(-1,2)
-    
-    # Compute [R|t] by pnp  =====  pred
-    R_pr, t_pr = pnp(corners3D,
-                     corners2D_pr,
-                     np.array(intrinsic, dtype='float32'))
-    Rt_pr = np.concatenate((R_pr, t_pr), axis=1)
-    proj_corners_pr = np.transpose(compute_projection(corners3D, Rt_pr, intrinsic)) 
-    
-    # Compute [R|t] by pnp  =====  gt
-    R_gt = np.array(gt_dict[int(file_name.split(".")[0])][0]['cam_R_m2c']).reshape(3,3)
-    t_gt = np.array(gt_dict[int(file_name.split(".")[0])][0]['cam_t_m2c']).reshape(3,1)
-    Rt_gt = np.concatenate((R_gt, t_gt), axis=1)
-    proj_corners_gt = np.transpose(compute_projection(corners3D, Rt_gt, intrinsic)) 
+# 三角板关键点检测数据集-元数据（直接从config配置文件中粘贴）
+dataset_info = {
+    'keypoint_info':{
+        0:{'name':'angle_30','id':0,'color':[255,0,0],'type': '','swap': ''},
+        1:{'name':'angle_60','id':1,'color':[0,255,0],'type': '','swap': ''},
+        2:{'name':'angle_90','id':2,'color':[0,0,255],'type': '','swap': ''}
+    },
+    'skeleton_info': {
+        0: {'link':('angle_30','angle_60'),'id': 0,'color': [100,150,200]},
+        1: {'link':('angle_60','angle_90'),'id': 1,'color': [200,100,150]},
+        2: {'link':('angle_90','angle_30'),'id': 2,'color': [150,120,100]}
+    }
+}
 
+# 关键点类别和关键点ID的映射字典
+label2id = {}
+for each in dataset_info['keypoint_info'].items():
+    label2id[each[1]['name']] = each[0]
     
-    image = mmcv.imread(image_path)
-    height = image.shape[0]
-    width = image.shape[1]
-    
-    plt.xlim((0, width))
-    plt.ylim((0, height))
-    plt.imshow(mmcv.imresize(image, (width, height)))
-    # Projections
-    edges_corners = [[0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3], 
-                     [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]]
-    for edge in edges_corners:
-        plt.plot(proj_corners_pr[edge, 0], proj_corners_pr[edge, 1], color='b', linewidth=2.0)
-        plt.plot(proj_corners_pr[edge, 0], proj_corners_gt[edge, 1], color='g', linewidth=2.0)
-    plt.gca().invert_yaxis()
-    plt.show()
-    plt.pause(0)
+for bbox_idx, bbox in enumerate(bboxes): # 遍历每个检测框
 
-if __name__ == "__main__":
-    main()
+    # 画框
+    img_bgr = cv2.rectangle(img_bgr, (bbox[0], bbox[1]), (bbox[2], bbox[3]), bbox_color, bbox_thickness)
+    
+    # 索引为 0 的框，每个关键点的坐标
+    keypoints = data_samples.pred_instances.keypoints[bbox_idx,:,:].astype('int')
+
+    # 画连线
+    for skeleton_id, skeleton in dataset_info['skeleton_info'].items(): # 遍历每一种连接
+        skeleton_color = skeleton['color']
+        srt_kpt_id = label2id[skeleton['link'][0]] # 起始点的类别 ID
+        srt_kpt_xy = keypoints[srt_kpt_id]         # 起始点的 XY 坐标
+        dst_kpt_id = label2id[skeleton['link'][1]] # 终止点的类别 ID
+        dst_kpt_xy = keypoints[dst_kpt_id]         # 终止点的 XY 坐标
+        img_bgr = cv2.line(img_bgr, (srt_kpt_xy[0],srt_kpt_xy[1]),(dst_kpt_xy[0],dst_kpt_xy[1]),color=skeleton_color,thickness=skeleton_thickness)
+    
+    # 画关键点
+    for kpt_idx, kpt_xy in enumerate(keypoints): # 遍历该检测框中的每一个关键点
+        kpt_color = dataset_info['keypoint_info'][kpt_idx]['color']
+        img_bgr = cv2.circle(img_bgr, (kpt_xy[0], kpt_xy[1]), kpt_radius, kpt_color, -1)
+        
+plt.imshow(img_bgr[:,:,::-1])
+plt.show()
