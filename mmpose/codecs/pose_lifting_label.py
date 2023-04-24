@@ -164,7 +164,9 @@ class PoseLiftingLabel(BaseKeypointCodec):
                encoded: np.ndarray,
                restore_global_position: bool = False,
                target_root: Optional[np.ndarray] = None,
-               root_idx: Optional[int] = None
+               root_idx: Optional[int] = None,
+               target_mean: Optional[np.ndarray] = None,
+               target_std: Optional[np.ndarray] = None
                ) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
         space.
@@ -176,12 +178,21 @@ class PoseLiftingLabel(BaseKeypointCodec):
             target_root (np.ndarray, optional): The target root coordinate.
                 Default: ``None``.
             root_idx (int, optional): The root index. Default: ``None``.
+            target_mean (np.ndarray, optional): Mean values of joint
+                coordinates in shape (K, C).
+            target_std (np.ndarray, optional): Std values of joint coordinates
+                in shape (K, C).
 
         Returns:
             keypoints (np.ndarray): Decoded coordinates in shape (1, K, C).
             scores (np.ndarray): The keypoint scores in shape (1, K).
         """
         keypoints = encoded.copy()
+
+        if target_mean is not None and target_std is not None:
+            assert target_mean.shape == target_std.shape
+            assert target_mean.shape == keypoints.shape[1:]
+            keypoints = keypoints * target_std + target_mean
 
         if restore_global_position:
             assert target_root is not None

@@ -36,6 +36,9 @@ class TestPoseLiftingLabel(TestCase):
             'S1/S1_Directions_1.54138969/S1_Directions_1.54138969_000001.jpg',
             camera_param)
 
+        self.mean = np.random.rand(17, 3).astype(np.float32)
+        self.std = np.random.rand(17, 3).astype(np.float32) + 1e-6
+
         self.data = dict(
             keypoints=keypoints,
             keypoints_visible=keypoints_visible,
@@ -106,6 +109,18 @@ class TestPoseLiftingLabel(TestCase):
         self.assertEqual(decoded.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
 
+        codec = self.build_pose_lifting_label()
+
+        decoded, scores = codec.decode(
+            encoded_wo_sigma,
+            restore_global_position=True,
+            target_root=target[..., 0, :],
+            target_mean=self.mean,
+            target_std=self.std)
+
+        self.assertEqual(decoded.shape, (1, 17, 3))
+        self.assertEqual(scores.shape, (1, 17))
+
     def test_cicular_verification(self):
         keypoints = self.data['keypoints']
         keypoints_visible = self.data['keypoints_visible']
@@ -122,6 +137,23 @@ class TestPoseLiftingLabel(TestCase):
             np.expand_dims(encoded['target_label'], axis=0),
             restore_global_position=True,
             target_root=target[..., 0, :])
+
+        self.assertTrue(
+            np.allclose(np.expand_dims(target, axis=0), _keypoints, atol=5.))
+
+        # test normalization
+        codec = self.build_pose_lifting_label()
+        encoded = codec.encode(keypoints, keypoints_visible, target,
+                               target_visible, camera_param)
+
+        target_label = (encoded['target_label'] - self.mean) / self.std
+
+        _keypoints, _ = codec.decode(
+            np.expand_dims(target_label, axis=0),
+            restore_global_position=True,
+            target_root=target[..., 0, :],
+            target_mean=self.mean,
+            target_std=self.std)
 
         self.assertTrue(
             np.allclose(np.expand_dims(target, axis=0), _keypoints, atol=5.))
