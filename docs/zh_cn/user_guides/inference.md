@@ -6,11 +6,11 @@ MMPose为姿态估计提供了大量可以从[模型库](https://mmpose.readthed
 
 在MMPose，模型由配置文件定义，而其已计算好的参数存储在权重文件（checkpoint file）中。您可以在[模型库](https://mmpose.readthedocs.io/en/latest/model_zoo.html)中找到模型配置文件和相应的权重文件的URL。我们建议从使用HRNet模型的[配置文件](https://github.com/open-mmlab/mmpose/blob/main/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py)和[权重文件](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth)开始。
 
-# 推理器：统一的推理接口
+## 推理器：统一的推理接口
 
 MMPose提供了一个被称为`MMPoseInferencer`的、全面的推理API。这个API使得用户得以使用所有MMPose支持的模型来对图像和视频进行模型推理。此外，该API可以完成推理结果自动化，并方便用户保存预测结果。
 
-## 基本用法
+### 基本用法
 
 `MMPoseInferencer`可以在任何Python程序中被用来执行姿态估计任务。以下是在一个在Python Shell中使用预训练的人体姿态模型对给定图像进行推理的示例。
 
@@ -48,13 +48,13 @@ python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' \
 
 - 文件夹路径（这会导致该文件夹中的所有图像都被推断出来）
 
-- An image array (NA for CLI tool)
+- 表示图像的 numpy array (在命令行界面工具中未支持)
 
-- A list of image arrays (NA for CLI tool)
+- 表示图像的 numpy array 列表 (在命令行界面工具中未支持)
 
 - 摄像头（在这种情况下，输入参数应该设置为`webcam`或`webcam:{CAMERA_ID}`）
 
-## 自定义姿态估计模型
+### 自定义姿态估计模型
 
 `MMPoseInferencer`提供了几种可用于自定义所使用的模型的方法：
 
@@ -65,7 +65,7 @@ inferencer = MMPoseInferencer('human')
 # 使用模型配置名构建推断器
 inferencer = MMPoseInferencer('td-hm_hrnet-w32_8xb64-210e_coco-256x192')
 
-# 使用模型配置文件和权重文件的路径或URL构建推断器
+# 使用模型配置文件和权重文件的路径或 URL 构建推断器
 inferencer = MMPoseInferencer(
     pose2d='configs/body_2d_keypoint/topdown_heatmap/coco/' \
            'td-hm_hrnet-w32_8xb64-210e_coco-256x192.py',
@@ -74,7 +74,7 @@ inferencer = MMPoseInferencer(
 )
 ```
 
-模型别名的完整列表可以在模型别名部分（Model Alias section）中找到。
+模型别名的完整列表可以在模型别名部分中找到。
 
 此外，自顶向下的姿态估计器还需要一个对象检测模型。`MMPoseInferencer`能够推断用MMPose支持的数据集训练的模型的实例类型，然后构建必要的对象检测模型。用户也可以通过以下方式手动指定检测模型:
 
@@ -107,7 +107,7 @@ inferencer = MMPoseInferencer(
 )
 ```
 
-## 转储结果
+### 转储结果
 
 在执行姿态估计推理任务之后，您可能希望保存结果以供进一步分析或处理。本节将指导您将预测的关键点和可视化结果保存到本地。
 
@@ -131,7 +131,7 @@ result = next(result_generator)
 
 在这种情况下，可视化图像将保存在`output/visualization/`文件夹中，而预测将存储在`output/forecasts/`文件夹中。
 
-## 可视化
+### 可视化
 
 推理器`inferencer`可以自动对输入的图像或视频进行预测。可视化结果可以显示在一个新的窗口中，并保存在本地。
 
@@ -159,7 +159,7 @@ result_generator = inferencer(img_path, show=True, radius=4, thickness=2)
 result = next(result_generator)
 ```
 
-## 推理器参数
+### 推理器参数
 
 `MMPoseInferencer`提供了各种自定义姿态估计、可视化和保存预测结果的参数。下面是<mark>初始化</mark>推断器时可用的参数列表及对这些参数的描述：
 
@@ -188,7 +188,7 @@ result = next(result_generator)
 
 ### 模型别名
 
-MMPose为常用模型提供了一组预定义的别名。在初始化`MMPoseInferencer`时，这些别名可以用作简略的表达方式，而不是指定完整的模型配置名称。下面是可用的模型别名及其对应的配置名称的列表：
+MMPose为常用模型提供了一组预定义的别名。在初始化 `MMPoseInferencer` 时，这些别名可以用作简略的表达方式，而不是指定完整的模型配置名称。下面是可用的模型别名及其对应的配置名称的列表：
 
 | 别名      | 配置文件名称                                       | 对应任务                        | 姿态估计模型  | 检测模型            |
 | --------- | -------------------------------------------------- | ------------------------------- | ------------- | ------------------- |
@@ -203,7 +203,7 @@ MMPose为常用模型提供了一组预定义的别名。在初始化`MMPoseInfe
 | vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large | RTMDet-m            |
 | vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge  | RTMDet-m            |
 
-此外，用户可以使用CLI工具显示所有可用的别名，使用以下命令:
+此外，用户可以使用命令行界面工具显示所有可用的别名，使用以下命令:
 
 ```shell
 python demo/inferencer_demo.py --show-alias
