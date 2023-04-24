@@ -1,0 +1,16 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_softwingloss_8xb64-210e_wflw-256x256.py
+  In Collection: ResNet
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+    - SoftWingloss
+    Training Data: WFLW
+  Name: td-reg_res50_softwingloss_8xb64-210e_wflw-256x256
+  Results:
+  - Dataset: WFLW
+    Metrics:
+      NME: 4.44
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss-4d34f22a_20211212.pth
