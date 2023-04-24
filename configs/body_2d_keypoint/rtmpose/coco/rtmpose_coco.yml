@@ -21,7 +21,7 @@ Models:
       AR: 0.736
       AR@0.5: 0.92
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-s_8xb256-420e_coco-256x192.py
   In Collection: RTMPose
   Metadata:
@@ -37,7 +37,7 @@ Models:
       AR: 0.768
       AR@0.5: 0.929
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-256x192.py
   In Collection: RTMPose
   Metadata:
@@ -53,7 +53,7 @@ Models:
       AR: 0.795
       AR@0.5: 0.935
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_coco-256x192.py
   In Collection: RTMPose
   Metadata:
@@ -69,7 +69,7 @@ Models:
       AR: 0.806
       AR@0.5: 0.942
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-t_8xb256-420e_aic-coco-256x192.py
   In Collection: RTMPose
   Metadata:
@@ -87,7 +87,7 @@ Models:
       AR: 0.738
       AR@0.5: 0.918
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-s_8xb256-420e_aic-coco-256x192.py
   In Collection: RTMPose
   Metadata:
@@ -103,7 +103,7 @@ Models:
       AR: 0.772
       AR@0.5: 0.929
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py
   In Collection: RTMPose
   Alias: human
@@ -120,7 +120,7 @@ Models:
       AR: 0.806
       AR@0.5: 0.94
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py
   In Collection: RTMPose
   Metadata:
@@ -136,7 +136,7 @@ Models:
       AR: 0.813
       AR@0.5: 0.942
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-384x288.py
   In Collection: RTMPose
   Metadata:
@@ -152,7 +152,7 @@ Models:
       AR: 0.816
       AR@0.5: 0.943
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_aic-coco-384x288.py
   In Collection: RTMPose
   Metadata:
@@ -168,4 +168,4 @@ Models:
       AR: 0.819
       AR@0.5: 0.942
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth

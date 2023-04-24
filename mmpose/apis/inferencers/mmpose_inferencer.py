@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Sequence, Union
 import numpy as np
 import torch
 from mmengine.config import Config, ConfigDict
-from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
 from mmengine.structures import InstanceData
 from rich.progress import track
@@ -51,9 +50,12 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             model. Defaults to None.
         det_cat_ids(int or list[int], optional): Category id for
             detection model. Defaults to None.
+        output_heatmaps (bool, optional): Flag to visualize predicted
+            heatmaps. If set to None, the default setting from the model
+            config will be used. Default is None.
     """
 
-    preprocess_kwargs: set = {'bbox_thr', 'nms_thr'}
+    preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
         'return_vis',
@@ -74,17 +76,18 @@ class MMPoseInferencer(BaseMMPoseInferencer):
                  scope: str = 'mmpose',
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
-                 det_cat_ids: Optional[Union[int, List]] = None) -> None:
+                 det_cat_ids: Optional[Union[int, List]] = None,
+                 output_heatmaps: Optional[bool] = None) -> None:
 
         if pose2d is None:
             raise ValueError('2d pose estimation algorithm should provided.')
 
         self.visualizer = None
+        self.inferencers = dict()
         if pose2d is not None:
-            self.pose2d_inferencer = Pose2DInferencer(pose2d, pose2d_weights,
-                                                      device, scope, det_model,
-                                                      det_weights, det_cat_ids)
-            self.mode = 'pose2d'
+            self.inferencers['pose2d'] = Pose2DInferencer(
+                pose2d, pose2d_weights, device, scope, det_model, det_weights,
+                det_cat_ids, output_heatmaps)
 
     def preprocess(self, inputs: InputsType, batch_size: int = 1, **kwargs):
         """Process the inputs into a model-feedable format.
@@ -100,10 +103,10 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         for i, input in enumerate(inputs):
             data_batch = {}
-            if 'pose2d' in self.mode:
-                data_infos = self.pose2d_inferencer.preprocess_single(
+            if 'pose2d' in self.inferencers:
+                data_infos = self.inferencers['pose2d'].preprocess_single(
                     input, index=i, **kwargs)
-                data_batch['pose2d'] = self.pose2d_inferencer.collate_fn(
+                data_batch['pose2d'] = self.inferencers['pose2d'].collate_fn(
                     data_infos)
             # only supports inference with batch size 1
             yield data_batch, [input]
@@ -119,10 +122,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             Dict: The prediction results. Possibly with keys "pose2d".
         """
         result = {}
-        if self.mode == 'pose2d':
-            data_samples = self.pose2d_inferencer.forward(
-                inputs['pose2d'], **forward_kwargs)
-            result['pose2d'] = data_samples
+        for mode, inferencer in self.inferencers.items():
+            result[mode] = inferencer.forward(inputs[mode], **forward_kwargs)
 
         return result
 
@@ -179,11 +180,16 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         inputs = self.preprocess(
             inputs, batch_size=batch_size, **preprocess_kwargs)
 
+        # forward
         forward_kwargs['bbox_thr'] = preprocess_kwargs.get('bbox_thr', -1)
+        for inferencer in self.inferencers.values():
+            inferencer._video_input = self._video_input
+            if self._video_input:
+                inferencer.video_info = self.video_info
 
         preds = []
-        if 'pose2d' not in self.mode or not hasattr(self.pose2d_inferencer,
-                                                    'detector'):
+        if 'pose2d' not in self.inferencers or not hasattr(
+                self.inferencers['pose2d'], 'detector'):
             inputs = track(inputs, description='Inference')
 
         for proc_inputs, ori_inputs in inputs:
@@ -195,9 +201,9 @@ class MMPoseInferencer(BaseMMPoseInferencer):
                                        **postprocess_kwargs)
             yield results
 
-        # merge visualization and prediction results
         if self._video_input:
-            self._merge_outputs(**visualize_kwargs, **postprocess_kwargs)
+            self._finalize_video_processing(
+                postprocess_kwargs.get('pred_out_dir', ''))
 
     def visualize(self, inputs: InputsType, preds: PredType,
                   **kwargs) -> List[np.ndarray]:
@@ -222,16 +228,11 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             List[np.ndarray]: Visualization results.
         """
 
-        if 'pose2d' in self.mode:
+        if 'pose2d' in self.inferencers:
             window_name = ''
             if self._video_input:
                 window_name = self.video_info['name']
-                if kwargs.get('vis_out_dir', ''):
-                    kwargs['vis_out_dir'] = join_path(kwargs['vis_out_dir'],
-                                                      'vis_frames')
-                if kwargs.get('show', False):
-                    kwargs['wait_time'] = 1e-5
-            return self.pose2d_inferencer.visualize(
+            return self.inferencers['pose2d'].visualize(
                 inputs,
                 preds['pose2d'],
                 window_name=window_name,
@@ -275,6 +276,6 @@ class MMPoseInferencer(BaseMMPoseInferencer):
               as strings and numbers.
         """
 
-        if 'pose2d' in self.mode:
+        if 'pose2d' in self.inferencers:
             return super().postprocess(preds['pose2d'], visualization,
                                        return_datasample, pred_out_dir)

@@ -1,0 +1,35 @@
+name: 📚 Documentation
+description: Report an issue related to the documentation.
+labels: "docs"
+title: "[Docs] "
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Note
+        For general usage questions or idea discussions, please post it to our [**Forum**](https://github.com/open-mmlab/mmpose/discussions)
+        Please fill in as **much** of the following form as you're able to. **The clearer the description, the shorter it will take to solve it.**
+
+  - type: textarea
+    attributes:
+      label: 📚 The doc issue
+      description: >
+        A clear and concise description the issue.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Suggest a potential alternative/fix
+      description: >
+        Tell us how we could improve the documentation in this regard.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Acknowledgement
+        Thanks for taking the time to fill out this report.
+
+        If you have already identified the reason, we strongly appreciate you creating a new PR to fix it [**here**](https://github.com/open-mmlab/mmpose/pulls)!
+        Please refer to [**Contribution Guide**](https://mmpose.readthedocs.io/en/latest/contribution_guide.html) for contributing.

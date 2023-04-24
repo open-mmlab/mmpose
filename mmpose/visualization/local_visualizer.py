@@ -8,11 +8,11 @@ import numpy as np
 import torch
 from mmengine.dist import master_only
 from mmengine.structures import InstanceData, PixelData
-from mmengine.visualization import Visualizer
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
+from .opencv_backend_visualizer import OpencvBackendVisualizer
 from .simcc_vis import SimCCVisualizer
 
 
@@ -42,7 +42,7 @@ def _get_adaptive_scales(areas: np.ndarray,
 
 
 @VISUALIZERS.register_module()
-class PoseLocalVisualizer(Visualizer):
+class PoseLocalVisualizer(OpencvBackendVisualizer):
     """MMPose Local Visualizer.
 
     Args:
@@ -115,8 +115,15 @@ class PoseLocalVisualizer(Visualizer):
                  line_width: Union[int, float] = 1,
                  radius: Union[int, float] = 3,
                  show_keypoint_weight: bool = False,
+                 backend: str = 'opencv',
                  alpha: float = 0.8):
-        super().__init__(name, image, vis_backends, save_dir)
+        super().__init__(
+            name=name,
+            image=image,
+            vis_backends=vis_backends,
+            save_dir=save_dir,
+            backend=backend)
+
         self.bbox_color = bbox_color
         self.kpt_color = kpt_color
         self.link_color = link_color
@@ -265,8 +272,8 @@ class PoseLocalVisualizer(Visualizer):
                 neck = np.mean(keypoints_info[:, [5, 6]], axis=1)
                 # neck score when visualizing pred
                 neck[:, 2:4] = np.logical_and(
-                    keypoints_info[:, 5, 2:4] < kpt_thr,
-                    keypoints_info[:, 6, 2:4] < kpt_thr).astype(int)
+                    keypoints_info[:, 5, 2:4] > kpt_thr,
+                    keypoints_info[:, 6, 2:4] > kpt_thr).astype(int)
                 new_keypoints_info = np.insert(
                     keypoints_info, 17, neck, axis=1)
 
@@ -296,35 +303,6 @@ class PoseLocalVisualizer(Visualizer):
                         f'the length of kpt_color '
                         f'({len(self.kpt_color)}) does not matches '
                         f'that of keypoints ({len(kpts)})')
-
-                # draw each point on image
-                for kid, kpt in enumerate(kpts):
-                    if score[kid] < kpt_thr or not visible[
-                            kid] or kpt_color[kid] is None:
-                        # skip the point that should not be drawn
-                        continue
-
-                    color = kpt_color[kid]
-                    if not isinstance(color, str):
-                        color = tuple(int(c) for c in color)
-                    transparency = self.alpha
-                    if self.show_keypoint_weight:
-                        transparency *= max(0, min(1, score[kid]))
-                    self.draw_circles(
-                        kpt,
-                        radius=np.array([self.radius]),
-                        face_colors=color,
-                        edge_colors=color,
-                        alpha=transparency,
-                        line_widths=self.radius)
-                    if show_kpt_idx:
-                        self.draw_texts(
-                            str(kid),
-                            kpt,
-                            colors=color,
-                            font_sizes=self.radius * 3,
-                            vertical_alignments='bottom',
-                            horizontal_alignments='center')
 
                 # draw links
                 if self.skeleton is not None and self.link_color is not None:
@@ -384,6 +362,37 @@ class PoseLocalVisualizer(Visualizer):
                         else:
                             self.draw_lines(
                                 X, Y, color, line_widths=self.line_width)
+
+                # draw each point on image
+                for kid, kpt in enumerate(kpts):
+                    if score[kid] < kpt_thr or not visible[
+                            kid] or kpt_color[kid] is None:
+                        # skip the point that should not be drawn
+                        continue
+
+                    color = kpt_color[kid]
+                    if not isinstance(color, str):
+                        color = tuple(int(c) for c in color)
+                    transparency = self.alpha
+                    if self.show_keypoint_weight:
+                        transparency *= max(0, min(1, score[kid]))
+                    self.draw_circles(
+                        kpt,
+                        radius=np.array([self.radius]),
+                        face_colors=color,
+                        edge_colors=color,
+                        alpha=transparency,
+                        line_widths=self.radius)
+                    if show_kpt_idx:
+                        kpt[0] += self.radius
+                        kpt[1] -= self.radius
+                        self.draw_texts(
+                            str(kid),
+                            kpt,
+                            colors=color,
+                            font_sizes=self.radius * 3,
+                            vertical_alignments='bottom',
+                            horizontal_alignments='center')
 
         return self.get_image()
 
