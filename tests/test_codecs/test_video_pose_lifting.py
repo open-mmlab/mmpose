@@ -5,11 +5,11 @@ from unittest import TestCase
 import numpy as np
 from mmengine.fileio import load
 
-from mmpose.codecs import PoseLiftingLabel
+from mmpose.codecs import VideoPoseLifting
 from mmpose.registry import KEYPOINT_CODECS
 
 
-class TestPoseLiftingLabel(TestCase):
+class TestVideoPoseLifting(TestCase):
 
     def get_camera_param(self, imgname, camera_param) -> dict:
         """Get camera parameters of a frame by its image name."""
@@ -19,7 +19,7 @@ class TestPoseLiftingLabel(TestCase):
         return camera_param[(subj, camera)]
 
     def build_pose_lifting_label(self, **kwargs):
-        cfg = dict(type='PoseLiftingLabel', num_keypoints=17, root_index=0)
+        cfg = dict(type='VideoPoseLifting', num_keypoints=17)
         cfg.update(kwargs)
         return KEYPOINT_CODECS.build(cfg)
 
@@ -36,9 +36,6 @@ class TestPoseLiftingLabel(TestCase):
             'S1/S1_Directions_1.54138969/S1_Directions_1.54138969_000001.jpg',
             camera_param)
 
-        self.mean = np.random.rand(17, 3).astype(np.float32)
-        self.std = np.random.rand(17, 3).astype(np.float32) + 1e-6
-
         self.data = dict(
             keypoints=keypoints,
             keypoints_visible=keypoints_visible,
@@ -49,7 +46,7 @@ class TestPoseLiftingLabel(TestCase):
 
     def test_build(self):
         codec = self.build_pose_lifting_label()
-        self.assertIsInstance(codec, PoseLiftingLabel)
+        self.assertIsInstance(codec, VideoPoseLifting)
 
     def test_encode(self):
         keypoints = self.data['keypoints']
@@ -68,6 +65,16 @@ class TestPoseLiftingLabel(TestCase):
         self.assertEqual(encoded['target_weights'].shape, (17, ))
         self.assertEqual(encoded['trajectory_weights'].shape, (17, ))
         self.assertEqual(encoded['target_root'].shape, (3, ))
+
+        # test not zero-centering
+        codec = self.build_pose_lifting_label(zero_center=False)
+        encoded = codec.encode(keypoints, keypoints_visible, target,
+                               target_visible, camera_param)
+
+        self.assertEqual(encoded['keypoint_labels'].shape, (17 * 2, 1))
+        self.assertEqual(encoded['target_label'].shape, (17, 3))
+        self.assertEqual(encoded['target_weights'].shape, (17, ))
+        self.assertEqual(encoded['trajectory_weights'].shape, (17, ))
 
         # test removing root
         codec = self.build_pose_lifting_label(
@@ -109,18 +116,6 @@ class TestPoseLiftingLabel(TestCase):
         self.assertEqual(decoded.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
 
-        codec = self.build_pose_lifting_label()
-
-        decoded, scores = codec.decode(
-            encoded_wo_sigma,
-            restore_global_position=True,
-            target_root=target[..., 0, :],
-            target_mean=self.mean,
-            target_std=self.std)
-
-        self.assertEqual(decoded.shape, (1, 17, 3))
-        self.assertEqual(scores.shape, (1, 17))
-
     def test_cicular_verification(self):
         keypoints = self.data['keypoints']
         keypoints_visible = self.data['keypoints_visible']
@@ -137,23 +132,6 @@ class TestPoseLiftingLabel(TestCase):
             np.expand_dims(encoded['target_label'], axis=0),
             restore_global_position=True,
             target_root=target[..., 0, :])
-
-        self.assertTrue(
-            np.allclose(np.expand_dims(target, axis=0), _keypoints, atol=5.))
-
-        # test normalization
-        codec = self.build_pose_lifting_label()
-        encoded = codec.encode(keypoints, keypoints_visible, target,
-                               target_visible, camera_param)
-
-        target_label = (encoded['target_label'] - self.mean) / self.std
-
-        _keypoints, _ = codec.decode(
-            np.expand_dims(target_label, axis=0),
-            restore_global_position=True,
-            target_root=target[..., 0, :],
-            target_mean=self.mean,
-            target_std=self.std)
 
         self.assertTrue(
             np.allclose(np.expand_dims(target, axis=0), _keypoints, atol=5.))
