@@ -23,24 +23,14 @@ class MPJPE(BaseMetric):
         - number of keypoint dimensions: D (typically D = 2)
 
     Args:
-        norm_mode (str): The normalization mode. There are two valid modes:
-            `'use_norm_item'` and `'keypoint_distance'`.
-            When set as `'use_norm_item'`, should specify the argument
-            `norm_item`, which represents the item in the datainfo that
-            will be used as the normalization factor.
-            When set as `'keypoint_distance'`, should specify the argument
-            `keypoint_indices` that are used to calculate the keypoint
-            distance as the normalization factor.
-        norm_item (str, optional): The item used as the normalization factor.
-            For example, `'bbox_size'` in `'AFLWDataset'`. Only valid when
-            ``norm_mode`` is ``use_norm_item``.
-            Default: ``None``.
-        keypoint_indices (Sequence[int], optional): The keypoint indices used
-            to calculate the keypoint distance as the normalization factor.
-            Only valid when ``norm_mode`` is ``keypoint_distance``.
-            If set as None, will use the default ``keypoint_indices`` in
-            `DEFAULT_KEYPOINT_INDICES` for specific datasets, else use the
-            given ``keypoint_indices`` of the dataset. Default: ``None``.
+        mode (str): method to align the prediction with the
+            groundtruth. Supported options are:
+
+                - ``'mpjpe'``: no alignment will be applied
+                - ``'p-mpjpe'``: align in the least-square sense in scale
+                - ``'n-mpjpe'``: align in the least-square sense in
+                    scale, rotation and translation.
+
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
             ``'gpu'``. Default: ``'cpu'``.
