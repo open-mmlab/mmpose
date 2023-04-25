@@ -223,35 +223,6 @@ def main():
         else:
             cap = cv2.VideoCapture(args.input)
 
-    elif input_type in ['webcam', 'video']:
-        from mmpose.visualization import FastVisualizer
-
-        visualizer = FastVisualizer(
-            pose_estimator.dataset_meta,
-            radius=args.radius,
-            line_width=args.thickness,
-            kpt_thr=args.kpt_thr)
-
-        if args.draw_heatmap:
-            # init Localvisualizer
-            from mmpose.registry import VISUALIZERS
-
-            pose_estimator.cfg.visualizer.radius = args.radius
-            pose_estimator.cfg.visualizer.alpha = args.alpha
-            pose_estimator.cfg.visualizer.line_width = args.thickness
-            local_visualizer = VISUALIZERS.build(pose_estimator.cfg.visualizer)
-
-            # the dataset_meta is loaded from the checkpoint and
-            # then pass to the model in init_pose_estimator
-            local_visualizer.set_dataset_meta(
-                pose_estimator.dataset_meta,
-                skeleton_style=args.skeleton_style)
-
-        if args.input == 'webcam':
-            cap = cv2.VideoCapture(0)
-        else:
-            cap = cv2.VideoCapture(args.input)
-
         video_writer = None
         pred_instances_list = []
         frame_idx = 0

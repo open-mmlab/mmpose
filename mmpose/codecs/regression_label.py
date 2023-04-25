@@ -78,7 +78,7 @@ class RegressionLabel(BaseKeypointCodec):
         Returns:
             tuple:
             - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
-            - scores (np.ndarray): The keypoint scores in shape (N, K).
+            - socres (np.ndarray): The keypoint scores in shape (N, K).
                 It usually represents the confidence of the keypoint prediction
         """
 
