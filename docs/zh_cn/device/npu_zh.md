@@ -17,9 +17,9 @@ python tools/train.py configs/body/2d_kpt_sview_rgb_img/associative_embedding/co
 
 ## 经过验证的模型
 
-|   Model   | Input Size |  	AP  | 	AP50  | 	AP75  |  	AR   | 	AR50  | Config                                                                                                                           | Download                                                                                                                   |
-|:---------:|:----------:|:-----:|:------:|:------:|:------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------| :------------------------------------------------------------------------------------------------------------------------- |
-| [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/0.x/papers/backbones.html#associative-embedding-higherhrnet-on-coco) |  512x512   | 0.670 | 	0.859 | 	0.732 | 	0.724 | 	0.893 | [config](https://github.com/open-mmlab/mmpose/blob/dev-0.x/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py) | [log](https://download.openmmlab.com/mmpose/device/npu/hrnet_20230413_035450.log.json)     |
+|                         Model                         | Input Size |  AP   | AP50  | AP75  |  AR   | AR50  | Config                                                  | Download                                                  |
+| :---------------------------------------------------: | :--------: | :---: | :---: | :---: | :---: | :---: | :------------------------------------------------------ | :-------------------------------------------------------- |
+| [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/0.x/papers/backbones.html#associative-embedding-higherhrnet-on-coco) |  512x512   | 0.670 | 0.859 | 0.732 | 0.724 | 0.893 | [config](https://github.com/open-mmlab/mmpose/blob/dev-0.x/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py) | [log](https://download.openmmlab.com/mmpose/device/npu/hrnet_20230413_035450.log.json) |
 
 **注意:**
 
