@@ -116,6 +116,16 @@ class TestVideoPoseLifting(TestCase):
         self.assertEqual(decoded.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
 
+        codec = self.build_pose_lifting_label(remove_root=True)
+
+        decoded, scores = codec.decode(
+            encoded_wo_sigma,
+            restore_global_position=True,
+            target_root=target[..., 0, :])
+
+        self.assertEqual(decoded.shape, (1, 18, 3))
+        self.assertEqual(scores.shape, (1, 18))
+
     def test_cicular_verification(self):
         keypoints = self.data['keypoints']
         keypoints_visible = self.data['keypoints_visible']
@@ -125,6 +135,19 @@ class TestVideoPoseLifting(TestCase):
 
         # test default settings
         codec = self.build_pose_lifting_label()
+        encoded = codec.encode(keypoints, keypoints_visible, target,
+                               target_visible, camera_param)
+
+        _keypoints, _ = codec.decode(
+            np.expand_dims(encoded['target_label'], axis=0),
+            restore_global_position=True,
+            target_root=target[..., 0, :])
+
+        self.assertTrue(
+            np.allclose(np.expand_dims(target, axis=0), _keypoints, atol=5.))
+
+        # test removing root
+        codec = self.build_pose_lifting_label(remove_root=True)
         encoded = codec.encode(keypoints, keypoints_visible, target,
                                target_visible, camera_param)
 

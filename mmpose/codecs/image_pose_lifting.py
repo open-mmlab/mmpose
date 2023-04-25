@@ -167,13 +167,11 @@ class ImagePoseLifting(BaseKeypointCodec):
 
         return encoded
 
-    def decode(
-        self,
-        encoded: np.ndarray,
-        restore_global_position: bool = False,
-        target_root: Optional[np.ndarray] = None,
-        root_idx: Optional[int] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def decode(self,
+               encoded: np.ndarray,
+               restore_global_position: bool = False,
+               target_root: Optional[np.ndarray] = None
+               ) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
         space.
 
@@ -183,7 +181,6 @@ class ImagePoseLifting(BaseKeypointCodec):
                 Default: ``False``.
             target_root (np.ndarray, optional): The target root coordinate.
                 Default: ``None``.
-            root_idx (int, optional): The root index. Default: ``None``.
 
         Returns:
             keypoints (np.ndarray): Decoded coordinates in shape (N, K, C).
@@ -198,8 +195,9 @@ class ImagePoseLifting(BaseKeypointCodec):
         if restore_global_position:
             assert target_root is not None
             keypoints = keypoints + np.expand_dims(target_root, axis=0)
-            if root_idx is not None:
-                keypoints = np.insert(keypoints, root_idx, target_root, axis=1)
-        scores = np.ones(encoded.shape[:-1], dtype=np.float32)
+            if self.remove_root:
+                keypoints = np.insert(
+                    keypoints, self.root_index, target_root, axis=1)
+        scores = np.ones(keypoints.shape[:-1], dtype=np.float32)
 
         return keypoints, scores
