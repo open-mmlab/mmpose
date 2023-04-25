@@ -173,33 +173,27 @@ class ImagePoseLifting(BaseKeypointCodec):
         restore_global_position: bool = False,
         target_root: Optional[np.ndarray] = None,
         root_idx: Optional[int] = None,
-        mean: Optional[np.ndarray] = None,
-        std: Optional[np.ndarray] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
         space.
 
         Args:
-            encoded (np.ndarray): Coordinates in shape (1, K, C).
+            encoded (np.ndarray): Coordinates in shape (N, K, C).
             restore_global_position (bool): Whether to restore global position.
                 Default: ``False``.
             target_root (np.ndarray, optional): The target root coordinate.
                 Default: ``None``.
             root_idx (int, optional): The root index. Default: ``None``.
-            mean (np.ndarray, optional): Mean values of joint coordinates in
-                shape (K, C).
-            std (np.ndarray, optional): Std values of joint coordinates in
-                shape (K, C).
 
         Returns:
-            keypoints (np.ndarray): Decoded coordinates in shape (1, K, C).
-            scores (np.ndarray): The keypoint scores in shape (1, K).
+            keypoints (np.ndarray): Decoded coordinates in shape (N, K, C).
+            scores (np.ndarray): The keypoint scores in shape (N, K).
         """
         keypoints = encoded.copy()
 
-        if mean is not None and std is not None:
-            assert mean.shape == std.shape == keypoints.shape[1:]
-            keypoints = keypoints * std + mean
+        if self.target_mean is not None and self.target_std is not None:
+            assert self.target_mean.shape == keypoints.shape[1:]
+            keypoints = keypoints * self.target_std + self.target_mean
 
         if restore_global_position:
             assert target_root is not None
