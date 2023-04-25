@@ -6,7 +6,7 @@ import numpy as np
 from mmcv.transforms import BaseTransform
 
 from mmpose.registry import TRANSFORMS
-from mmpose.structures.keypoint import flip_regression
+from mmpose.structures.keypoint import flip_keypoints_custom_center
 
 
 @TRANSFORMS.register_module()
@@ -14,12 +14,14 @@ class RandomFlipAroundRoot(BaseTransform):
     """Data augmentation with random horizontal joint flip around a root joint.
 
     Args:
-        keypoints_flip_cfg (dict): Configurations of the ``flip_regression``
-            function for ``keypoints``.  Please refer to the docstring of the
-            ``flip_regression`` function for more details.
-        target_flip_cfg (dict): Configurations of the ``flip_regression``
-            function for ``target``.  Please refer to the docstring of the
-            ``flip_regression`` function for more details.
+        keypoints_flip_cfg (dict): Configurations of the
+            ``flip_keypoints_custom_center`` function for ``keypoints``. Please
+            refer to the docstring of the ``flip_keypoints_custom_center``
+            function for more details.
+        target_flip_cfg (dict): Configurations of the
+            ``flip_keypoints_custom_center`` function for ``target``. Please
+            refer to the docstring of the ``flip_keypoints_custom_center``
+            function for more details.
         flip_prob (float): Probability of flip. Default: 0.5.
         flip_camera (bool): Whether to flip horizontal distortion coefficients.
             Default: ``False``.
@@ -72,12 +74,11 @@ class RandomFlipAroundRoot(BaseTransform):
                 flip_indices = results['flip_indices']
 
             # flip joint coordinates
-            keypoints, keypoints_visible = flip_regression(
+            keypoints, keypoints_visible = flip_keypoints_custom_center(
                 keypoints, keypoints_visible, flip_indices,
                 **self.keypoints_flip_cfg)
-            target, target_visible = flip_regression(target, target_visible,
-                                                     flip_indices,
-                                                     **self.target_flip_cfg)
+            target, target_visible = flip_keypoints_custom_center(
+                target, target_visible, flip_indices, **self.target_flip_cfg)
 
             results['keypoints'] = keypoints
             results['keypoints_visible'] = keypoints_visible

@@ -64,12 +64,12 @@ def flip_keypoints(keypoints: np.ndarray,
     return keypoints, keypoints_visible
 
 
-def flip_regression(keypoints: np.ndarray,
-                    keypoints_visible: np.ndarray,
-                    flip_indices: List[int],
-                    center_mode: str = 'static',
-                    center_x: float = 0.5,
-                    center_index: int = 0):
+def flip_keypoints_custom_center(keypoints: np.ndarray,
+                                 keypoints_visible: np.ndarray,
+                                 flip_indices: List[int],
+                                 center_mode: str = 'static',
+                                 center_x: float = 0.5,
+                                 center_index: int = 0):
     """Flip human joints horizontally.
 
     Note:
