@@ -208,6 +208,7 @@ class PoseLifter(BasePoseEstimator):
             losses.update(
                 self.head.loss(x, data_samples, train_cfg=self.train_cfg))
 
+        # TODO: support semi-supervised learning
         if self.semi_supervised:
             losses.update(semi_loss=self.semi_loss(inputs, data_samples))
 
@@ -296,22 +297,16 @@ class PoseLifter(BasePoseEstimator):
         """
         assert len(batch_pred_instances) == len(batch_data_samples)
         if batch_pred_fields is None:
-            batch_pred_fields = []
+            batch_pred_fields, batch_traj_fields = [], []
         output_keypoint_indices = self.test_cfg.get('output_keypoint_indices',
                                                     None)
 
-        for pred_instances, pred_fields, data_sample in zip_longest(
-                batch_pred_instances, batch_pred_fields, batch_data_samples):
-
-            gt_instances = data_sample.gt_instances
-
-            # convert keypoint coordinates from input space to image space
-            bbox_centers = gt_instances.bbox_centers
-            bbox_scales = gt_instances.bbox_scales
-            input_size = data_sample.metainfo['input_size']
-
-            pred_instances.keypoints = pred_instances.keypoints / input_size \
-                * bbox_scales + bbox_centers - 0.5 * bbox_scales
+        for (pred_instances, pred_fields, traj_instances, traj_fields,
+             data_sample) in zip_longest(batch_pred_instances,
+                                         batch_pred_fields,
+                                         batch_traj_instances,
+                                         batch_traj_fields,
+                                         batch_data_samples):
 
             if output_keypoint_indices is not None:
                 # select output keypoints with given indices
@@ -320,10 +315,6 @@ class PoseLifter(BasePoseEstimator):
                     if key.startswith('keypoint'):
                         pred_instances.set_field(
                             value[:, output_keypoint_indices], key)
-
-            # add bbox information into pred_instances
-            pred_instances.bboxes = gt_instances.bboxes
-            pred_instances.bbox_scores = gt_instances.bbox_scores
 
             data_sample.pred_instances = pred_instances
 

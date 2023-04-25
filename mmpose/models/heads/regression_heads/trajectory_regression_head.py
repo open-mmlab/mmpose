@@ -75,7 +75,7 @@ class TrajectoryRegressionHead(BaseHead):
         return x.reshape(-1, self.num_joints, 3)
 
     def predict(self,
-                feats: Tuple[Tensor],
+                feats: Union[Tensor, Tuple[Tensor]],
                 batch_data_samples: OptSampleList,
                 test_cfg: ConfigType = {}) -> Predictions:
         """Predict results from outputs."""
@@ -83,7 +83,14 @@ class TrajectoryRegressionHead(BaseHead):
         batch_coords = self.forward(feats)  # (B, K, D)
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
-        preds = self.decode(batch_coords)
+
+        # Restore global position with target_root
+        target_root = batch_data_samples[0].metainfo.get('target_root', None)
+        if target_root is not None:
+            target_root = torch.stack(
+                [m['target_root'] for m in batch_data_samples[0].metainfo])
+
+        preds = self.decode(batch_coords, target_root)
 
         return preds
 
