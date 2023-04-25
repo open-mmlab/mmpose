@@ -89,6 +89,8 @@ class PackPoseInputs(BaseTransform):
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
+        'target': 'target',
+        'target_visible': 'target_visible',
     }
 
     # items in `label_mapping_table` will be packed into
@@ -137,10 +139,12 @@ class PackPoseInputs(BaseTransform):
             - 'data_samples' (obj:`PoseDataSample`): The annotation info of the
                 sample.
         """
-        # Pack image(s)
+        # Pack image(s) or 2d keypoints
         if 'img' in results:
             img = results['img']
-            img_tensor = image_to_tensor(img)
+            inputs_tensor = image_to_tensor(img)
+        elif 'keypoints_3d' in results and 'keypoints' in results:
+            inputs_tensor = results['keypoints']
 
         data_sample = PoseDataSample()
 
@@ -202,7 +206,7 @@ class PackPoseInputs(BaseTransform):
         data_sample.set_metainfo(img_meta)
 
         packed_results = dict()
-        packed_results['inputs'] = img_tensor
+        packed_results['inputs'] = inputs_tensor
         packed_results['data_samples'] = data_sample
 
         return packed_results
