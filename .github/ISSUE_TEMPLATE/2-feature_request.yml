@@ -1,0 +1,37 @@
+name: 🚀 Feature request
+description: Suggest an idea for this project
+labels: feature-request
+title: "[Feature] "
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Note
+        For general usage questions or idea discussions, please post it to our [**Forum**](https://github.com/open-mmlab/mmpose/discussions)
+
+        Please fill in as **much** of the following form as you're able to. **The clearer the description, the shorter it will take to solve it.**
+
+  - type: textarea
+    attributes:
+      label: What is the feature?
+      description: Tell us more about the feature and how this feature can help.
+      placeholder: |
+        E.g., It is inconvenient when \[....\].
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Any other context?
+      description: |
+        Have you considered any alternative solutions or features? If so, what are they? Also, feel free to add any other context or screenshots about the feature request here.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Acknowledgement
+        Thanks for taking the time to fill out this report.
+
+        We strongly appreciate you creating a new PR to implement it [**Here**](https://github.com/open-mmlab/mmpose/pulls)!
+        Please refer to [**Contribution Guide**](https://mmpose.readthedocs.io/en/latest/contribution_guide.html) for contributing.

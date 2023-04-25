@@ -62,7 +62,7 @@
 
 MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](https://github.com/open-mmlab) 项目的成员之一。
 
-主分支代码目前支持 **PyTorch 1.6 以上**的版本。
+主分支代码目前支持 **PyTorch 1.8 以上**的版本。
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
@@ -72,7 +72,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - **支持多种人体姿态分析相关任务**
 
   MMPose 支持当前学界广泛关注的主流姿态分析任务：主要包括 2D多人姿态估计、2D手部姿态估计、2D人脸关键点检测、133关键点的全身人体姿态估计、3D人体形状恢复、服饰关键点检测、动物关键点检测等。
-  具体请参考 [功能演示](demo/docs/)。
+  具体请参考 [功能演示](demo/docs/zh_cn/)。
 
 - **更高的精度和更快的速度**
 

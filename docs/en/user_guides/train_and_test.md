@@ -173,7 +173,6 @@ optim_wrapper = dict(
             'backbone.layer0': dict(lr_mult=0, decay_mult=0),
             'backbone.layer0': dict(lr_mult=0, decay_mult=0),
         }))
-optimizer = build_optim_wrapper(ToyModel(), optim_wrapper)
 ```
 
 This configuration will freeze the parameters in `backbone.layer0` and `backbone.layer1` by setting their learning rate and decay coefficient to 0. By using this approach, you can effectively control the training process and fine-tune specific parts of your model as needed.

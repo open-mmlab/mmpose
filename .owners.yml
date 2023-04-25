@@ -1,0 +1,16 @@
+assign:
+  issues: enabled
+  pull_requests: disabled
+  strategy:
+    # random
+    daily-shift-based
+  scedule:
+    '*/1 * * * *'
+  assignees:
+    - Tau-J
+    - LareinaM
+    - Ben-Louis
+    - LareinaM
+    - Ben-Louis
+    - Tau-J
+    - Tau-J
