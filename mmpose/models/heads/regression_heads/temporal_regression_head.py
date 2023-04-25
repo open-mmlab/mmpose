@@ -75,7 +75,7 @@ class TemporalRegressionHead(BaseHead):
         return x.reshape(-1, self.num_joints, 3)
 
     def predict(self,
-                feats: Tuple[Tensor],
+                feats: Union[Tensor, Tuple[Tensor]],
                 batch_data_samples: OptSampleList,
                 test_cfg: ConfigType = {}) -> Predictions:
         """Predict results from outputs."""
@@ -84,15 +84,13 @@ class TemporalRegressionHead(BaseHead):
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
 
-        # Restore global position
-        restore_global_position = self.test_cfg.get('restore_global_position',
-                                                    False)
-        target_root = None
-        if restore_global_position:
+        # Restore global position with target_root
+        target_root = batch_data_samples[0].metainfo.get('target_root', None)
+        if target_root is not None:
             target_root = torch.stack(
                 [m['target_root'] for m in batch_data_samples[0].metainfo])
 
-        preds = self.decode(batch_coords, restore_global_position, target_root)
+        preds = self.decode(batch_coords, target_root)
 
         return preds
 
