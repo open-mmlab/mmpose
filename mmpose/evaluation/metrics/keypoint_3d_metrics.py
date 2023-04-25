@@ -72,11 +72,11 @@ class MPJPE(BaseMetric):
             # ground truth data_info
             gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['keypoints']
+            gt_coords = gt['target']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
+            mask = gt['target_visible'].astype(bool).reshape(1, -1)
             # instance action
-            img_path = gt['img_path']
+            img_path = data_sample['target_img_path']
             _, rest = osp.basename(img_path).split('_', 1)
             action, _ = rest.split('.', 1)
 
@@ -116,7 +116,7 @@ class MPJPE(BaseMetric):
 
         error_name = self.mode.upper()
 
-        logger.info(f'Evaluating {self.__class__.__name__}...')
+        logger.info(f'Evaluating {self.mode.upper()}...')
         metrics = dict()
 
         metrics[error_name] = keypoint_mpjpe(pred_coords, gt_coords, mask,

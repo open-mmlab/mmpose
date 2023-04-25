@@ -5,6 +5,7 @@ import numpy as np
 from mmengine.structures import InstanceData
 
 from mmpose.evaluation import MPJPE
+from mmpose.structures import PoseDataSample
 
 
 class TestMPJPE(TestCase):
@@ -19,25 +20,23 @@ class TestMPJPE(TestCase):
         for i in range(self.batch_size):
             gt_instances = InstanceData()
             keypoints = np.random.random((1, num_keypoints, 3))
-            gt_instances.keypoints = keypoints
-            gt_instances.keypoints_visible = np.ones(
+            gt_instances.target = keypoints
+            gt_instances.target_visible = np.ones(
                 (1, num_keypoints, 1)).astype(bool)
-            gt_instances.set_metainfo(
-                dict(img_path='tests/data/h36m/S7/'
-                     'S7_Greeting.55011271/S7_Greeting.55011271_000396.jpg'))
 
             pred_instances = InstanceData()
             pred_instances.keypoints = keypoints + np.random.normal(
                 0, 0.01, keypoints.shape)
 
             data = {'inputs': None}
-            data_sample = {
-                'gt_instances': gt_instances.to_dict(),
-                'pred_instances': pred_instances.to_dict(),
-            }
+            data_sample = PoseDataSample(
+                gt_instances=gt_instances, pred_instances=pred_instances)
+            data_sample.set_metainfo(
+                dict(target_img_path='tests/data/h36m/S7/'
+                     'S7_Greeting.55011271/S7_Greeting.55011271_000396.jpg'))
 
             self.data_batch.append(data)
-            self.data_samples.append(data_sample)
+            self.data_samples.append(data_sample.to_dict())
 
     def test_init(self):
         """Test metric init method."""
