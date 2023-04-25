@@ -171,7 +171,6 @@ class VideoPoseLifting(BaseKeypointCodec):
 
     def decode(self,
                encoded: np.ndarray,
-               restore_global_position: bool = False,
                target_root: Optional[np.ndarray] = None
                ) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
@@ -190,8 +189,7 @@ class VideoPoseLifting(BaseKeypointCodec):
         """
         keypoints = encoded.copy()
 
-        if restore_global_position:
-            assert target_root is not None
+        if target_root is not None:
             keypoints = keypoints + np.expand_dims(target_root, axis=0)
             if self.remove_root:
                 keypoints = np.insert(

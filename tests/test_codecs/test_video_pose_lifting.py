@@ -109,9 +109,7 @@ class TestVideoPoseLifting(TestCase):
         codec = self.build_pose_lifting_label()
 
         decoded, scores = codec.decode(
-            encoded_wo_sigma,
-            restore_global_position=True,
-            target_root=target[..., 0, :])
+            encoded_wo_sigma, target_root=target[..., 0, :])
 
         self.assertEqual(decoded.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
@@ -119,9 +117,7 @@ class TestVideoPoseLifting(TestCase):
         codec = self.build_pose_lifting_label(remove_root=True)
 
         decoded, scores = codec.decode(
-            encoded_wo_sigma,
-            restore_global_position=True,
-            target_root=target[..., 0, :])
+            encoded_wo_sigma, target_root=target[..., 0, :])
 
         self.assertEqual(decoded.shape, (1, 18, 3))
         self.assertEqual(scores.shape, (1, 18))
@@ -140,7 +136,6 @@ class TestVideoPoseLifting(TestCase):
 
         _keypoints, _ = codec.decode(
             np.expand_dims(encoded['target_label'], axis=0),
-            restore_global_position=True,
             target_root=target[..., 0, :])
 
         self.assertTrue(
@@ -153,7 +148,6 @@ class TestVideoPoseLifting(TestCase):
 
         _keypoints, _ = codec.decode(
             np.expand_dims(encoded['target_label'], axis=0),
-            restore_global_position=True,
             target_root=target[..., 0, :])
 
         self.assertTrue(
