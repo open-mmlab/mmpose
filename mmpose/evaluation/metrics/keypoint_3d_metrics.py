@@ -15,7 +15,7 @@ from ..functional import keypoint_mpjpe
 class MPJPE(BaseMetric):
     """MPJPE evaluation metric.
 
-    Calculate the mean per-joint position error (NME) of keypoints.
+    Calculate the mean per-joint position error (MPJPE) of keypoints.
 
     Note:
         - length of dataset: N
@@ -23,13 +23,13 @@ class MPJPE(BaseMetric):
         - number of keypoint dimensions: D (typically D = 2)
 
     Args:
-        mode (str): method to align the prediction with the
-            groundtruth. Supported options are:
+        mode (str): Method to align the prediction with the
+            ground truth. Supported options are:
 
                 - ``'mpjpe'``: no alignment will be applied
                 - ``'p-mpjpe'``: align in the least-square sense in scale
                 - ``'n-mpjpe'``: align in the least-square sense in
-                    scale, rotation and translation.
+                    scale, rotation, and translation.
 
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
@@ -49,8 +49,8 @@ class MPJPE(BaseMetric):
         super().__init__(collect_device=collect_device, prefix=prefix)
         allowed_modes = self.ALIGNMENT.keys()
         if mode not in allowed_modes:
-            raise KeyError("`mode` should be 'mpjpe', 'p-mpjpe' or "
-                           f"'n-mpjpe', but got {mode}.")
+            raise KeyError("`mode` should be 'mpjpe', 'p-mpjpe', or "
+                           f"'n-mpjpe', but got '{mode}'.")
 
         self.mode = mode
 
@@ -97,7 +97,7 @@ class MPJPE(BaseMetric):
 
         Returns:
             Dict[str, float]: The computed metrics. The keys are the names of
-            the metrics, and the values are corresponding results.
+            the metrics, and the values are the corresponding results.
         """
         logger: MMLogger = MMLogger.get_current_instance()
 
@@ -110,7 +110,7 @@ class MPJPE(BaseMetric):
         mask = np.concatenate([result['mask'] for result in results])
         # action_category_indices: Dict[List[int]]
         action_category_indices = defaultdict(list)
-        for idx, result in results:
+        for idx, result in enumerate(results):
             action_category = result['action'].split('_')[0]
             action_category_indices[action_category].append(idx)
 
