@@ -301,9 +301,8 @@ class BaseMocapDataset(BaseDataset):
                 'iscrowd': 0,
                 'img_paths': list(_img_names),
                 'img_ids': frame_ids,
-                'target': keypoints_3d[target_idx],
-                'target_visible': keypoints_3d_visible[target_idx],
-                'target_img_id': frame_ids[target_idx],
+                'lifting_target': keypoints_3d[target_idx],
+                'lifting_target_visible': keypoints_3d_visible[target_idx],
                 'target_img_path': _img_names[target_idx],
             }
 
@@ -392,7 +391,6 @@ class BaseMocapDataset(BaseDataset):
 
         # add images without instance for evaluation
         if self.test_mode:
-            print(image_list)
             for img_info in image_list:
                 if img_info['img_id'] not in used_img_ids:
                     data_info_bu = {
