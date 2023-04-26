@@ -346,6 +346,7 @@ def keypoint_mpjpe(pred: np.ndarray,
                 - ``'scale'``: align in the least-square sense in scale
                 - ``'procrustes'``: align in the least-square sense in
                     scale, rotation and translation.
+
     Returns:
         tuple: A tuple containing joint position errors
 

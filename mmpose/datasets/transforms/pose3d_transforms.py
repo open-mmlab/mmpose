@@ -19,19 +19,20 @@ class RandomFlipAroundRoot(BaseTransform):
             refer to the docstring of the ``flip_keypoints_custom_center``
             function for more details.
         target_flip_cfg (dict): Configurations of the
-            ``flip_keypoints_custom_center`` function for ``target``. Please
-            refer to the docstring of the ``flip_keypoints_custom_center``
-            function for more details.
+            ``flip_keypoints_custom_center`` function for ``lifting_target``.
+            Please refer to the docstring of the
+            ``flip_keypoints_custom_center`` function for more details.
         flip_prob (float): Probability of flip. Default: 0.5.
         flip_camera (bool): Whether to flip horizontal distortion coefficients.
             Default: ``False``.
 
     Required keys:
         keypoints
-        target
+        lifting_target
 
     Modified keys:
-        (keypoints, keypoints_visible, target, target_visible, camera_param)
+        (keypoints, keypoints_visible, lifting_target, lifting_target_visible,
+        camera_param)
     """
 
     def __init__(self,
@@ -61,11 +62,12 @@ class RandomFlipAroundRoot(BaseTransform):
             keypoints_visible = results['keypoints_visible']
         else:
             keypoints_visible = np.ones(keypoints.shape[:-1], dtype=np.float32)
-        target = results['target']
-        if 'target_visible' in results:
-            target_visible = results['target_visible']
+        lifting_target = results['lifting_target']
+        if 'lifting_target_visible' in results:
+            lifting_target_visible = results['lifting_target_visible']
         else:
-            target_visible = np.ones(target.shape[:-1], dtype=np.float32)
+            lifting_target_visible = np.ones(
+                lifting_target.shape[:-1], dtype=np.float32)
 
         if np.random.rand() <= self.flip_prob:
             if 'flip_indices' not in results:
@@ -77,13 +79,14 @@ class RandomFlipAroundRoot(BaseTransform):
             keypoints, keypoints_visible = flip_keypoints_custom_center(
                 keypoints, keypoints_visible, flip_indices,
                 **self.keypoints_flip_cfg)
-            target, target_visible = flip_keypoints_custom_center(
-                target, target_visible, flip_indices, **self.target_flip_cfg)
+            lifting_target, lifting_target_visible = flip_keypoints_custom_center(  # noqa
+                lifting_target, lifting_target_visible, flip_indices,
+                **self.target_flip_cfg)
 
             results['keypoints'] = keypoints
             results['keypoints_visible'] = keypoints_visible
-            results['target'] = target
-            results['target_visible'] = target_visible
+            results['lifting_target'] = lifting_target
+            results['lifting_target_visible'] = lifting_target_visible
 
             # flip horizontal distortion coefficients
             if self.flip_camera:

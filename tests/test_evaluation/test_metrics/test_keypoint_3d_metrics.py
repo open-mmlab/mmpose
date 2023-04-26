@@ -20,8 +20,8 @@ class TestMPJPE(TestCase):
         for i in range(self.batch_size):
             gt_instances = InstanceData()
             keypoints = np.random.random((1, num_keypoints, 3))
-            gt_instances.target = keypoints
-            gt_instances.target_visible = np.ones(
+            gt_instances.lifting_target = keypoints
+            gt_instances.lifting_target_visible = np.ones(
                 (1, num_keypoints, 1)).astype(bool)
 
             pred_instances = InstanceData()

@@ -50,8 +50,8 @@ def get_h36m_sample():
         'category_id': 1,
         'iscrowd': 0,
         'sample_idx': idx,
-        'target': keypoints_3d[target_idx, :, :3],
-        'target_visible': keypoints_3d[target_idx, :, 3],
+        'lifting_target': keypoints_3d[target_idx, :, :3],
+        'lifting_target_visible': keypoints_3d[target_idx, :, 3],
         'target_img_path': osp.join('tests/data/h36m', imgnames[target_idx]),
     }
 
@@ -94,8 +94,8 @@ class TestRandomFlipAroundRoot(TestCase):
     def test_transform(self):
         kpts1 = self.data_info['keypoints']
         kpts_vis1 = self.data_info['keypoints_visible']
-        tar1 = self.data_info['target']
-        tar_vis1 = self.data_info['target_visible']
+        tar1 = self.data_info['lifting_target']
+        tar_vis1 = self.data_info['lifting_target_visible']
 
         transform = RandomFlipAroundRoot(
             self.keypoints_flip_cfg, self.target_flip_cfg, flip_prob=1)
@@ -104,8 +104,8 @@ class TestRandomFlipAroundRoot(TestCase):
 
         kpts2 = results['keypoints']
         kpts_vis2 = results['keypoints_visible']
-        tar2 = results['target']
-        tar_vis2 = results['target_visible']
+        tar2 = results['lifting_target']
+        tar_vis2 = results['lifting_target_visible']
 
         self.assertEqual(kpts_vis2.shape, (1, 17))
         self.assertEqual(tar_vis2.shape, (17, ))

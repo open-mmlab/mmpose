@@ -78,7 +78,16 @@ class TrajectoryRegressionHead(BaseHead):
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
                 test_cfg: ConfigType = {}) -> Predictions:
-        """Predict results from outputs."""
+        """Predict results from outputs.
+
+        Returns:
+            preds (sequence[InstanceData]): Prediction results.
+                Each contains the following fields:
+
+                - keypoints: Predicted keypoints of shape (B, N, K, D).
+                - keypoint_scores: Scores of predicted keypoints of shape
+                  (B, N, K).
+        """
 
         batch_coords = self.forward(feats)  # (B, K, D)
 
@@ -89,8 +98,13 @@ class TrajectoryRegressionHead(BaseHead):
         if target_root is not None:
             target_root = torch.stack(
                 [m['target_root'] for m in batch_data_samples[0].metainfo])
+        else:
+            target_root = torch.stack([
+                torch.empty((0), dtype=torch.float32)
+                for _ in batch_data_samples[0].metainfo
+            ])
 
-        preds = self.decode(batch_coords, target_root)
+        preds = self.decode((batch_coords, target_root))
 
         return preds
 
@@ -102,28 +116,30 @@ class TrajectoryRegressionHead(BaseHead):
 
         pred_outputs = self.forward(inputs)
 
-        keypoint_labels = torch.cat(
-            [d.gt_instance_labels.keypoint_labels for d in batch_data_samples])
-        trjectory_weights = torch.cat([
-            d.gt_instance_labels.trjectory_weights for d in batch_data_samples
+        lifting_target_label = torch.cat([
+            d.gt_instance_labels.lifting_target_label
+            for d in batch_data_samples
+        ])
+        trajectory_weights = torch.cat([
+            d.gt_instance_labels.trajectory_weights for d in batch_data_samples
         ])
 
         # calculate losses
         losses = dict()
-        loss = self.loss_module(pred_outputs, keypoint_labels,
-                                trjectory_weights.unsqueeze(-1))
+        loss = self.loss_module(pred_outputs, lifting_target_label,
+                                trajectory_weights.unsqueeze(-1))
 
         losses.update(loss_traj=loss)
 
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
             pred=to_numpy(pred_outputs),
-            gt=to_numpy(keypoint_labels),
-            mask=to_numpy(trjectory_weights) > 0,
+            gt=to_numpy(lifting_target_label),
+            mask=to_numpy(trajectory_weights) > 0,
             thr=0.05,
-            norm_factor=np.ones((pred_outputs.size(0), 2), dtype=np.float32))
+            norm_factor=np.ones((pred_outputs.size(0), 3), dtype=np.float32))
 
-        mpjpe_traj = torch.tensor(avg_acc, device=keypoint_labels.device)
+        mpjpe_traj = torch.tensor(avg_acc, device=lifting_target_label.device)
         losses.update(mpjpe_traj=mpjpe_traj)
 
         return losses
