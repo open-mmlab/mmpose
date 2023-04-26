@@ -67,8 +67,8 @@ namespace stubbornhuang
 
 #elif defined(linux) || defined(__linux)
 		static int code_convert(
-			const char* from_charset, 
-			const char* to_charset, 
+			const char* from_charset,
+			const char* to_charset,
 			char* inbuf, size_t inlen,
 			char* outbuf, size_t outlen
 		) {
@@ -144,7 +144,7 @@ namespace stubbornhuang
 		}
 
 #endif
-		
+
 	};
 }
 

@@ -12,7 +12,7 @@ class RTMPoseTrackerOnnxruntime
 public:
 	RTMPoseTrackerOnnxruntime() = delete;
 	RTMPoseTrackerOnnxruntime(
-		const std::string& det_model_path, 
+		const std::string& det_model_path,
 		const std::string& pose_model_path,
 		int dectect_interval = 10
 	);
