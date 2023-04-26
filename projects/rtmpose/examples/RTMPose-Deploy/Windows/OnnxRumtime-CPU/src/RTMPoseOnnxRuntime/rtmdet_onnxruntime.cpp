@@ -35,17 +35,14 @@ RTMDetOnnxruntime::~RTMDetOnnxruntime()
 DetectBox RTMDetOnnxruntime::Inference(const cv::Mat& input_mat)
 {
 	// Deep copy
-	// 深拷贝
 	cv::Mat input_mat_copy;
 	input_mat.copyTo(input_mat_copy);
 
 	// BGR to RGB
-	// BGR转RGB
 	cv::Mat input_mat_copy_rgb;
 	cv::cvtColor(input_mat_copy, input_mat_copy_rgb, CV_BGR2RGB);
 
-	// image data，HWC->CHW，image_data - mean / std normalize
-	// 图片数据，HWC->CHW，image_data - mean / std归一化
+	// image data, HWC->CHW, image_data - mean / std normalize
 	int image_height = input_mat_copy_rgb.rows;
 	int image_width = input_mat_copy_rgb.cols;
 	int image_channels = input_mat_copy_rgb.channels();
@@ -70,7 +67,6 @@ DetectBox RTMDetOnnxruntime::Inference(const cv::Mat& input_mat)
 	}
 
 	// inference
-	// 推理
 	std::vector<const char*> m_onnx_input_names{ "input" };
 	std::vector<const char*> m_onnx_output_names{ "dets","labels"};
 	std::array<int64_t, 4> input_shape{ 1, image_channels, image_height, image_width };
@@ -96,7 +92,6 @@ DetectBox RTMDetOnnxruntime::Inference(const cv::Mat& input_mat)
 	);
 
 	// pose process
-	// 后处理
 	std::vector<int64_t> det_result_dims = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
 	std::vector<int64_t> label_result_dims = output_tensors[1].GetTensorTypeAndShapeInfo().GetShape();
 
@@ -128,7 +123,6 @@ DetectBox RTMDetOnnxruntime::Inference(const cv::Mat& input_mat)
 	}
 
 	// descending sort
-	// 降序排序
 	std::sort(all_box.begin(), all_box.end(), BoxCompare);
 
 	//cv::rectangle(input_mat_copy, cv::Point{ all_box[0].left, all_box[0].top }, cv::Point{ all_box[0].right, all_box[0].bottom }, cv::Scalar{ 0, 255, 0 });
@@ -146,27 +140,23 @@ DetectBox RTMDetOnnxruntime::Inference(const cv::Mat& input_mat)
 }
 
 void RTMDetOnnxruntime::PrintModelInfo(Ort::Session& session)
-{	
+{
 	// print the number of model input nodes
-	//输出模型输入节点的数量
 	size_t num_input_nodes = session.GetInputCount();
 	size_t num_output_nodes = session.GetOutputCount();
 	std::cout << "Number of input node is:" << num_input_nodes << std::endl;
 	std::cout << "Number of output node is:" << num_output_nodes << std::endl;
 
 	// print node name
-	//输入输出的节点名
 	Ort::AllocatorWithDefaultOptions allocator;
-	std::cout << std::endl;//换行输出
+	std::cout << std::endl;
 	for (auto i = 0; i < num_input_nodes; i++)
 		std::cout << "The input op-name " << i << " is:" << session.GetInputNameAllocated(i, allocator) << std::endl;
 	for (auto i = 0; i < num_output_nodes; i++)
 		std::cout << "The output op-name " << i << " is:" << session.GetOutputNameAllocated(i, allocator) << std::endl;
 
-	// 获取输入输出类型
 
 	// print input and output dims
-	//获取输入输出维度
 	for (auto i = 0; i < num_input_nodes; i++)
 	{
 		std::vector<int64_t> input_dims = session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape();

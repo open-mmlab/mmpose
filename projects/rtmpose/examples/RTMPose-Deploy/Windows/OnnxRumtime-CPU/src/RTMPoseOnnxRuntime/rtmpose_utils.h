@@ -57,10 +57,8 @@ typedef PosePoint Vector2D;
 static cv::Mat GetAffineTransform(float center_x, float center_y, float scale_width, float scale_height, int output_image_width, int output_image_height, bool inverse = false)
 {
 	// solve the affine transformation matrix
-	/* 求解仿射变换矩阵 */
 
 	// get the three points corresponding to the source picture and the target picture
-	// 获取源图片与目标图片的对应的三个点
 	cv::Point2f src_point_1;
 	src_point_1.x = center_x;
 	src_point_1.y = center_y;
@@ -101,7 +99,6 @@ static cv::Mat GetAffineTransform(float center_x, float center_y, float scale_wi
 	dstPoints[2] = dst_point_3;
 
 	// get affine matrix
-	// 获取仿射矩阵
 	cv::Mat affineTransform;
 	if (inverse)
 	{
