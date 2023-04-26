@@ -72,9 +72,9 @@ class MPJPE(BaseMetric):
             # ground truth data_info
             gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['target']
+            gt_coords = gt['lifting_target']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['target_visible'].astype(bool).reshape(1, -1)
+            mask = gt['lifting_target_visible'].astype(bool).reshape(1, -1)
             # instance action
             img_path = data_sample['target_img_path']
             _, rest = osp.basename(img_path).split('_', 1)
