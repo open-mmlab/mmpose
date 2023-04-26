@@ -304,6 +304,7 @@ class BaseMocapDataset(BaseDataset):
                 'target': keypoints_3d[target_idx],
                 'target_visible': keypoints_3d_visible[target_idx],
                 'target_img_id': frame_ids[target_idx],
+                'target_img_path': _img_names[target_idx],
             }
 
             if self.camera_param_file:
