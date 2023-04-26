@@ -176,8 +176,6 @@ class ImagePoseLifting(BaseKeypointCodec):
 
         Args:
             encoded (np.ndarray): Coordinates in shape (N, K, C).
-            restore_global_position (bool): Whether to restore global position.
-                Default: ``False``.
             target_root (np.ndarray, optional): The target root coordinate.
                 Default: ``None``.
 

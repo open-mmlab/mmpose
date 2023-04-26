@@ -139,10 +139,11 @@ class PackPoseInputs(BaseTransform):
             - 'data_samples' (obj:`PoseDataSample`): The annotation info of the
                 sample.
         """
-        # Pack image(s) or 2d keypoints
+        # Pack image(s) for 2d pose estimation
         if 'img' in results:
             img = results['img']
             inputs_tensor = image_to_tensor(img)
+        # Pack keypoints for 3d pose-lifting
         elif 'keypoints_3d' in results and 'keypoints' in results:
             inputs_tensor = results['keypoints']
 

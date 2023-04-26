@@ -177,15 +177,13 @@ class VideoPoseLifting(BaseKeypointCodec):
         space.
 
         Args:
-            encoded (np.ndarray): Coordinates in shape (1, K, C).
-            restore_global_position (bool): Whether to restore global position.
-                Default: ``False``.
+            encoded (np.ndarray): Coordinates in shape (N, K, C).
             target_root (np.ndarray, optional): The target root coordinate.
                 Default: ``None``.
 
         Returns:
-            keypoints (np.ndarray): Decoded coordinates in shape (1, K, C).
-            scores (np.ndarray): The keypoint scores in shape (1, K).
+            keypoints (np.ndarray): Decoded coordinates in shape (N, K, C).
+            scores (np.ndarray): The keypoint scores in shape (N, K).
         """
         keypoints = encoded.copy()
 
