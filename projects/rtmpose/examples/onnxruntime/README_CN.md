@@ -63,6 +63,12 @@ python mmdeploy/tools/deploy.py \
 
 ## 运行
 
+### 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
 ### 用法：
 
 ```bash

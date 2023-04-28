@@ -63,6 +63,12 @@ python mmdeploy/tools/deploy.py \
 
 ## Run demo
 
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
 ### Usage:
 
 ```bash
