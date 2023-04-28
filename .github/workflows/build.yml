@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   build_cpu:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         torch: [1.5.0, 1.8.0, 1.10.0]
@@ -47,9 +47,9 @@ jobs:
             python-version: '3.9'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
@@ -76,7 +76,7 @@ jobs:
           coverage report -m --omit="mmpose/apis/webcam/*"
 
   build_cuda101:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     container:
       image: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
     strategy:
@@ -92,9 +92,9 @@ jobs:
             torch_version: 1.8.0
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Fetch GPG keys
@@ -141,7 +141,7 @@ jobs:
           fail_ci_if_error: false
 
   build_cuda102:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     container:
       image: pytorch/pytorch:1.9.0-cuda10.2-cudnn7-devel
     strategy:
@@ -157,9 +157,9 @@ jobs:
             torchvision: 0.11.0
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Fetch GPG keys
@@ -206,16 +206,16 @@ jobs:
           fail_ci_if_error: false
 
   build_windows:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
     strategy:
       matrix:
         os: [windows-2022]
         python-version: [3.8]
         platform: [cpu]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
@@ -235,7 +235,9 @@ jobs:
       - name: Show pip list
         run: python -m pip list
       - name: Build and install
-        run: python -m pip install -e .
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e .
       - name: Run unittests
         run: coverage run --branch --source mmpose -m pytest tests -sv
       - name: Generate coverage report
