@@ -1,0 +1,4 @@
+loguru==0.6.0
+numpy==1.21.6
+onnxruntime==1.14.1
+onnxruntime-gpu==1.8.1
