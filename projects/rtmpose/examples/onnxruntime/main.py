@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import time
-from itertools import product
 from typing import List, Tuple
 
 import cv2
@@ -410,33 +409,6 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     vals = vals.reshape(N, K)
 
     return locs, vals
-
-
-def gaussian_blur1d(simcc: np.ndarray, kernel: int = 11) -> np.ndarray:
-    """Modulate simcc distribution with Gaussian.
-
-    Args:
-        simcc (np.ndarray[K, Wx]): model predicted simcc.
-        kernel (int): Gaussian kernel size (K) for modulation, which should
-            match the simcc gaussian sigma when training.
-            K=17 for sigma=3 and k=11 for sigma=2.
-
-    Returns:
-        np.ndarray ([K, Wx]): Modulated simcc distribution.
-    """
-    border = (kernel - 1) // 2
-    N, K, Wx = simcc.shape
-
-    # modulate simcc distribution with Gaussian
-    for n, k in product(range(N), range(K)):
-        origin_max = np.max(simcc[n, k])
-        dr = np.zeros((1, Wx + 2 * border), dtype=np.float32)
-        dr[0, border:-border] = simcc[n, k].copy()
-        dr = cv2.GaussianBlur(dr, (kernel, 1), 0)
-        simcc[n, k] = dr[0, border:-border].copy()
-        simcc[n, k] *= origin_max / np.max(simcc[n, k])
-
-    return simcc
 
 
 def decode(simcc_x: np.ndarray, simcc_y: np.ndarray,
