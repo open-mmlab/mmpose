@@ -37,6 +37,31 @@ def image_to_tensor(img: Union[np.ndarray,
     return tensor
 
 
+def keypoints_to_tensor(keypoints: Union[np.ndarray, Sequence[np.ndarray]]
+                        ) -> torch.torch.Tensor:
+    """Translate keypoints or sequence of keypoints to tensor. Multiple
+    keypoints tensors will be stacked.
+
+    Args:
+        keypoints (np.ndarray | Sequence[np.ndarray]): The keypoints or
+            keypoints sequence.
+
+    Returns:
+        torch.Tensor: The output tensor.
+    """
+    if isinstance(keypoints, np.ndarray):
+        keypoints = np.ascontiguousarray(keypoints)
+        N = keypoints.shape[0]
+        keypoints = keypoints.transpose(1, 2, 0).reshape(-1, N)
+        tensor = torch.from_numpy(keypoints).contiguous()
+    else:
+        assert is_seq_of(keypoints, np.ndarray)
+        tensor = torch.stack(
+            [keypoints_to_tensor(_keypoints) for _keypoints in keypoints])
+
+    return tensor
+
+
 @TRANSFORMS.register_module()
 class PackPoseInputs(BaseTransform):
     """Pack the inputs data for pose estimation.
@@ -148,7 +173,11 @@ class PackPoseInputs(BaseTransform):
             inputs_tensor = image_to_tensor(img)
         # Pack keypoints for 3d pose-lifting
         elif 'lifting_target' in results and 'keypoints' in results:
-            inputs_tensor = results['keypoints']
+            if 'keypoint_labels' in results:
+                keypoints = results['keypoint_labels']
+            else:
+                keypoints = results['keypoints']
+            inputs_tensor = keypoints_to_tensor(keypoints)
 
         data_sample = PoseDataSample()
 
