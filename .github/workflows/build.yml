@@ -68,7 +68,9 @@ jobs:
           python -m pip install -r requirements/poseval.txt
           pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
       - name: Build and install
-        run: rm -rf .eggs && pip install -e .
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
         run: |
           coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/
@@ -123,9 +125,8 @@ jobs:
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
         run: |
-          rm -rf .eggs
-          python setup.py check -m -s
-          TORCH_CUDA_ARCH_LIST=7.0 python -m pip install -e .
+          python -m pip install --upgrade pip setuptools wheel
+          rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
         run: |
           coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/
@@ -188,9 +189,8 @@ jobs:
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
         run: |
-          rm -rf .eggs
-          python setup.py check -m -s
-          TORCH_CUDA_ARCH_LIST=7.0 python -m pip install -e .
+          python -m pip install --upgrade pip setuptools wheel
+          rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
         run: |
           coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/

@@ -39,6 +39,8 @@ jobs:
       - name: Install openmim
         run: pip install openmim
       - name: Build and install
-        run: rm -rf .eggs && mim install -e .
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          rm -rf .eggs && mim install -e .
       - name: test commands of mim
         run: mim search mmpose

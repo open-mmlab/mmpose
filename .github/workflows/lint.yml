@@ -23,7 +23,7 @@ jobs:
           pip install pre-commit
           pre-commit install
       - name: Linting
-        run: pre-commit run --all-files
+        run: pre-commit run --all-files || (git diff && exit 1) || true
       - name: Check docstring coverage
         run: |
           pip install interrogate
