@@ -107,7 +107,7 @@ def main():
                      [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]]
     for edge in edges_corners:
         plt.plot(proj_corners_pr[edge, 0], proj_corners_pr[edge, 1], color='b', linewidth=2.0)
-        plt.plot(proj_corners_pr[edge, 0], proj_corners_gt[edge, 1], color='g', linewidth=2.0)
+        plt.plot(proj_corners_gt[edge, 0], proj_corners_gt[edge, 1], color='g', linewidth=2.0)
     plt.gca().invert_yaxis()
     plt.show()
     plt.pause(0)
