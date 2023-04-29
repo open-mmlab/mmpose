@@ -15,25 +15,38 @@ from mmpose.structures import merge_data_samples
 from mmpose.evaluation.functional import nms
 
 from mmdet.apis import inference_detector, init_detector
+from mmengine.visualization import Visualizer
+
+import time
 
 
-def predict(image_path):
+def predict(image_path, start_time):
+    
+    Visualizer.get_instance('visualization_hook')
+    
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     
     detector = init_detector(
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet_tiny_ape/rtmdet_tiny_ape.py',
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet_tiny_ape/best_coco_bbox_mAP_epoch_90.pth',
+        # '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet-tiny_milk/rtmdet-tiny_milk.py',
+        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet-tiny_ape/rtmdet-tiny_ape.py',
+        # '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet-tiny_milk/best_coco_bbox_mAP_epoch_197.pth',
+        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmdet-tiny_ape/best_coco_bbox_mAP_epoch_198.pth',
         device=device)
     
     pose_estimator = init_pose_estimator(
+        # '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_milk/rtmpose-s_milk.py',
         '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_ape/rtmpose-s_ape.py',
-        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_ape/best_PCK_epoch_240.pth',
+        # '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_milk/best_PCK_epoch_20.pth',
+        '/home/liuyoufu/code/mmpose-openmmlab/mmpose/work_dirs/rtmpose-s_ape/best_PCK_epoch_260.pth',
         device=device,
         cfg_options={'model': {'test_cfg': {'output_heatmaps': True}}})
     
     init_default_scope(detector.cfg.get('default_scope', 'mmdet'))
+    
+    start_time = time.time()
+        
     detect_result = inference_detector(detector, image_path)
-    CONF_THRES = 0.5
+    CONF_THRES = 0.004
 
     pred_instance = detect_result.pred_instances.cpu().numpy()
     bboxes = np.concatenate((pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
@@ -44,7 +57,7 @@ def predict(image_path):
     data_samples = merge_data_samples(pose_results)
     keypoints = data_samples.pred_instances.keypoints.astype('int')
     
-    return keypoints
+    return keypoints, start_time
 
 
 def parse_args():
@@ -77,8 +90,12 @@ def main():
     # get corner3D (8*3)
     corners3D = get_3D_corners(model_info_dict, obj_id)
     
+    image_path = './result.jpg'
+
+    
     # get gt and prediction
-    keypoint_pr = predict(image_path)
+    start_time = 0
+    keypoint_pr, start_time = predict(image_path, start_time)
     corners2D_pr = keypoint_pr.reshape(-1,2)
     
     # Compute [R|t] by pnp  =====  pred
@@ -93,6 +110,11 @@ def main():
     t_gt = np.array(gt_dict[int(file_name.split(".")[0])][0]['cam_t_m2c']).reshape(3,1)
     Rt_gt = np.concatenate((R_gt, t_gt), axis=1)
     proj_corners_gt = np.transpose(compute_projection(corners3D, Rt_gt, intrinsic)) 
+    
+    end_time = time.time()
+    
+    run_time = end_time - start_time
+    print('推理时间为:{:.2f}秒'.format(run_time))
 
     
     image = mmcv.imread(image_path)
@@ -101,13 +123,19 @@ def main():
     
     plt.xlim((0, width))
     plt.ylim((0, height))
-    plt.imshow(mmcv.imresize(image, (width, height))[:,:,::-1])
+    
+    save = mmcv.imresize(image, (width, height))[:,:,::-1]
+    plt.imshow(save)
+    
+    filename = os.path.basename(image_path)
+    mmcv.imwrite(save, './photo/'+filename)
+    
     # Projections
     edges_corners = [[0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3], 
                      [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]]
     for edge in edges_corners:
-        plt.plot(proj_corners_pr[edge, 0], proj_corners_pr[edge, 1], color='b', linewidth=2.0)
-        plt.plot(proj_corners_gt[edge, 0], proj_corners_gt[edge, 1], color='g', linewidth=2.0)
+        plt.plot(proj_corners_pr[edge, 0], proj_corners_pr[edge, 1], color='g', linewidth=2.0)
+        # plt.plot(proj_corners_gt[edge, 0], proj_corners_gt[edge, 1], color='g', linewidth=2.0)
     plt.gca().invert_yaxis()
     plt.show()
     plt.pause(0)
