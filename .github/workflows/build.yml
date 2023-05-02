@@ -60,7 +60,7 @@ jobs:
           python -m pip install mmtrack==0.14
           pip install -r requirements.txt
           python -m pip install -r requirements/poseval.txt
-          pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
+          pip install 'albumentations>=0.3.2' --no-binary imgaug,albumentations
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
@@ -107,7 +107,7 @@ jobs:
           pip install mmtrack==0.14
           pip install -r requirements.txt
           pip install -r requirements/poseval.txt
-          pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
+          pip install 'albumentations>=0.3.2' --no-binary imgaug,albumentations
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
