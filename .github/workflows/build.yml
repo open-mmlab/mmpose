@@ -49,7 +49,7 @@ jobs:
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMCV
         run: |
-          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/${{matrix.torch_version}}/index.html
+          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/${{matrix.torch}}/index.html
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Install other dependencies
         run: |
@@ -67,14 +67,6 @@ jobs:
           coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/
           coverage xml
           coverage report -m --omit="mmpose/apis/webcam/*"
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.0.14
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          env_vars: OS,PYTHON
-          name: codecov-umbrella
-          fail_ci_if_error: false
 
   build_cuda102:
     runs-on: ubuntu-22.04
@@ -113,8 +105,9 @@ jobs:
       #   run: python -m pip install torch==${{matrix.torch}}+cu102 torchvision==${{matrix.torchvision}}+cu102 -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install mmpose dependencies
         run: |
+          python -m pip install --upgrade pip setuptools wheel
           python -m pip install -U numpy
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch_version}}/index.html
+          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch}}/index.html
           python -m pip install mmdet==2.28
           python -m pip install mmtrack==0.14
           python -m pip install -r requirements.txt
@@ -128,6 +121,14 @@ jobs:
           coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/
           coverage xml
           coverage report -m --omit="mmpose/apis/webcam/*"
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1.0.14
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
   build_windows:
     runs-on: windows-2022

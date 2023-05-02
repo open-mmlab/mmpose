@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
-from mmcv.ops import DeformConv2d
 from mmcv.utils import digit_version
 from torch.nn.modules.batchnorm import _BatchNorm
 
@@ -12,7 +11,11 @@ from mmpose.models.utils.ops import resize
 from ..backbones.resnet import BasicBlock, Bottleneck
 from ..builder import NECKS
 
-has_mmcv_full = True
+try:
+    from mmcv.ops import DeformConv2d
+    has_mmcv_full = True
+except (ImportError, ModuleNotFoundError):
+    has_mmcv_full = False
 
 
 @NECKS.register_module()
