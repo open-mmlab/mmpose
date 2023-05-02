@@ -83,6 +83,9 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
+        include:
+          - torch: 1.8.1
+            torchvision: 0.9.1
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
