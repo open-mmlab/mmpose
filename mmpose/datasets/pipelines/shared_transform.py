@@ -2,6 +2,7 @@
 import warnings
 from collections.abc import Sequence
 
+import albumentations
 import mmcv
 import numpy as np
 import torch
@@ -11,11 +12,6 @@ from numpy import random
 from torchvision.transforms import functional as F
 
 from ..builder import PIPELINES
-
-try:
-    import albumentations
-except ImportError:
-    albumentations = None
 
 
 @PIPELINES.register_module()
