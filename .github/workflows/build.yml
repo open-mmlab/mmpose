@@ -100,7 +100,7 @@ jobs:
           apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libxrender-dev libturbojpeg
       - name: Install mmpose dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
+          pip install --upgrade pip setuptools wheel typing_extensions
           pip install -U numpy
           pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch}}/index.html
           pip install mmdet==2.28
