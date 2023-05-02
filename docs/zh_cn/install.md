@@ -80,7 +80,7 @@ mim install mmcv-full
 这种情况下，从源码按如下方式安装 mmpose：
 
 ```shell
-git clone https://github.com/open-mmlab/mmpose.git
+git clone https://github.com/open-mmlab/mmpose.git -b 0.x
 cd mmpose
 pip install -r requirements.txt
 pip install -v -e .

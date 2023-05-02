@@ -67,7 +67,7 @@ mim install mmcv-full
 Case a: If you develop and run mmpose directly, install it from source:
 
 ```shell
-git clone https://github.com/open-mmlab/mmpose.git
+git clone https://github.com/open-mmlab/mmpose.git -b 0.x
 cd mmpose
 pip install -r requirements.txt
 pip install -v -e .
