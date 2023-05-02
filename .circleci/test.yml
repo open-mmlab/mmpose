@@ -60,8 +60,8 @@ jobs:
           name: Install mmpose dependencies
           command: |
             python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/torch<< parameters.torch >>/index.html
-            python -m pip install mmdet
-            python -m pip install mmtrack
+            python -m pip install mmdet==2.28
+            python -m pip install mmtrack==0.14
             python -m pip install -r requirements.txt
             python -m pip install -r requirements/poseval.txt
             python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
@@ -115,7 +115,7 @@ jobs:
           name: Install mmocr dependencies
           command: |
             python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/<< parameters.cuda >>/torch<< parameters.torch >>/index.html
-            python -m pip install mmdet
+            python -m pip install mmdet==2.28
             python -m pip install -r requirements.txt
             python -m pip install -r requirements/poseval.txt
             python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
