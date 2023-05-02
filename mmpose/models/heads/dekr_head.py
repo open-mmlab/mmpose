@@ -14,7 +14,8 @@ from .deconv_head import DeconvHead
 try:
     from mmcv.ops import DeformConv2d
     has_mmcv_full = True
-except (ImportError, ModuleNotFoundError):
+except (ImportError, ModuleNotFoundError) as e:
+    print(e)
     has_mmcv_full = False
 
 
