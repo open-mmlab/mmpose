@@ -1,0 +1,89 @@
+Models:
+- Config: configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-l_8xb64-210e_animalpose-256x256.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+      - RTMPose
+    Training Data: Animal-Pose
+  Name: rtmpose-l_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.766
+      AP@0.5: 0.959
+      AP@0.75: 0.855
+      AP (M): 0.725
+      AP (L): 0.778
+      AR: 0.800
+      AR@0.5: 0.968
+      AR@0.75: 0.874
+      AR (M): 0.769
+      AR (L): 0.808
+    Task: Animal 2D Keypoint
+#  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth
+- Config: configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-m_8xb64-210e_animalpose-256x256.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+      - RTMPose
+    Training Data: Animal-Pose
+  Name: rtmpose-m_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.598
+      AP@0.5: 0.896
+      AP@0.75: 0.653
+      AP (M): 0.596
+      AP (L): 0.603
+      AR: 0.642
+      ARP@0.5: 0.900
+      AR@0.75: 0.699
+      AR (M): 0.660
+      AR (L): 0.641
+    Task: Animal 2D Keypoint
+#  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth
+- Config: configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-s_8xb64-210e_animalpose-256x256.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+      - RTMPose
+    Training Data: Animal-Pose
+  Name: rtmpose-s_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.709
+      AP@0.5: 0.938
+      AP@0.75: 0.799
+      AP (M): 0.674
+      AP (L): 0.718
+      AR: 0.748
+      ARP@0.5: 0.946
+      AR@0.75: 0.824
+      AR (M): 0.730
+      AR (L): 0.754
+    Task: Animal 2D Keypoint
+#  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth
+- Config: configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-t_8xb64-210e_animalpose-256x256.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+      - RTMPose
+    Training Data: Animal-Pose
+  Name: rtmpose-t_8xb64-210e_animalpose-256x256
+  Results:
+  - Dataset: Animal-Pose
+    Metrics:
+      AP: 0.680
+      AP@0.5: 0.927
+      AP@0.75: 0.770
+      AP (M): 0.657
+      AP (L): 0.688
+      AR: .718
+      ARP@0.5: 0.934
+      AR@0.75: 0.792
+      AR (M): 0.712
+      AR (L): 0.721
+    Task: Animal 2D Keypoint
+#  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth
