@@ -8,7 +8,12 @@ If the contents here do not cover your issue, please create an issue using the [
 
 Compatibility issue between MMCV and MMPose; "AssertionError: MMCV==xxx is used but incompatible. Please install mmcv>=xxx, \<=xxx."
 
-Compatible MMPose and MMCV versions are shown as below. Please choose the correct version of MMCV to avoid installation issues.
+Here are the version correspondences between `mmdet`, `mmcv` and `mmpose`:
+
+- mmdet 2.x \<=> mmpose 0.x \<=> mmcv 1.x
+- mmdet 3.x \<=> mmpose 1.x \<=> mmcv 2.x
+
+Detailed compatible MMPose and MMCV versions are shown as below. Please choose the correct version of MMCV to avoid installation issues.
 
 ### MMPose 1.x
 
