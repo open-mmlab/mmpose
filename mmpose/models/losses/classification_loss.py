@@ -139,11 +139,10 @@ class KLDiscretLoss(nn.Module):
 
     def criterion(self, dec_outs, labels):
         """Criterion function."""
-
-        scores = self.log_softmax(dec_outs * self.beta)
+        log_pt = self.log_softmax(dec_outs * self.beta)
         if self.label_softmax:
             labels = F.softmax(labels * self.beta, dim=1)
-        loss = torch.mean(self.kl_loss(scores, labels), dim=1)
+        loss = torch.mean(self.kl_loss(log_pt, labels), dim=1)
         return loss
 
     def forward(self, pred_simcc, gt_simcc, target_weight):
@@ -156,26 +155,19 @@ class KLDiscretLoss(nn.Module):
             target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
                 Weights across different labels.
         """
-        output_x, output_y = pred_simcc
-        target_x, target_y = gt_simcc
-        num_joints = output_x.size(1)
+        num_joints = pred_simcc[0].size(1)
         loss = 0
 
-        for idx in range(num_joints):
-            coord_x_pred = output_x[:, idx].squeeze()
-            coord_y_pred = output_y[:, idx].squeeze()
-            coord_x_gt = target_x[:, idx].squeeze()
-            coord_y_gt = target_y[:, idx].squeeze()
+        if self.use_target_weight:
+            weight = target_weight.reshape(-1)
+        else:
+            weight = 1.
 
-            if self.use_target_weight:
-                weight = target_weight[:, idx].squeeze()
-            else:
-                weight = 1.
+        for pred, target in zip(pred_simcc, gt_simcc):
+            pred = pred.reshape(-1, pred.size(-1))
+            target = target.reshape(-1, target.size(-1))
 
-            loss += (
-                self.criterion(coord_x_pred, coord_x_gt).mul(weight).sum())
-            loss += (
-                self.criterion(coord_y_pred, coord_y_gt).mul(weight).sum())
+            loss += self.criterion(pred, target).mul(weight).sum()
 
         return loss / num_joints
 
