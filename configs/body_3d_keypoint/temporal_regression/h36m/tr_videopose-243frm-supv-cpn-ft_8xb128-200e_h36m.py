@@ -47,7 +47,9 @@ model = dict(
         type='TemporalRegressionHead',
         in_channels=1024,
         num_joints=17,
-        loss=dict(type='MPJPELoss')))
+        loss=dict(type='MPJPELoss'),
+        decoder=codec,
+    ))
 
 # base dataset settings
 dataset_type = 'Human36mDataset'

@@ -134,7 +134,7 @@ class PoseLifter(BasePoseEstimator):
         # pose model
         feats = self.backbone(inputs)
         if self.with_neck:
-            x = self.neck(feats)
+            feats = self.neck(feats)
 
         # trajectory model
         if self.with_traj:
@@ -145,9 +145,9 @@ class PoseLifter(BasePoseEstimator):
 
             if self.with_traj_neck:
                 traj_x = self.traj_neck(traj_x)
-            return x, traj_x
+            return feats, traj_x
         else:
-            return x
+            return feats
 
     def _forward(self,
                  inputs: Tensor,

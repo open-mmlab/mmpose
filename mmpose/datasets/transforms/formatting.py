@@ -185,6 +185,10 @@ class PackPoseInputs(BaseTransform):
         gt_instances = InstanceData()
         for key, packed_key in self.instance_mapping_table.items():
             if key in results:
+                if 'lifting_target' in results and key in {
+                        'keypoints', 'keypoints_visible'
+                }:
+                    continue
                 gt_instances.set_field(results[key], packed_key)
 
         # pack `transformed_keypoints` for visualizing data transform
@@ -200,7 +204,7 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.label_mapping_table.items():
             if key in results:
                 # For pose-lifting, store only target-related fields
-                if 'lifting_target' in results and key in {
+                if 'lifting_target_label' in results and key in {
                         'keypoint_labels', 'keypoint_weights'
                 }:
                     continue

@@ -47,7 +47,9 @@ model = dict(
         type='TemporalRegressionHead',
         in_channels=1024,
         num_joints=17,
-        loss=dict(type='MPJPELoss')),
+        loss=dict(type='MPJPELoss'),
+        decoder=codec,
+    ),
     traj_backbone=dict(
         type='TCN',
         in_channels=2 * 17,
