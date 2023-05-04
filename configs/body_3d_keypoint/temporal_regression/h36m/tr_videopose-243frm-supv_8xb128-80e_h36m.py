@@ -15,7 +15,11 @@ auto_scale_lr = dict(base_batch_size=1024)
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='MPJPE', rule='less', max_keep_ckpts=1),
+    checkpoint=dict(
+        type='CheckpointHook',
+        save_best='MPJPE',
+        rule='less',
+        max_keep_ckpts=1),
     logger=dict(type='LoggerHook', interval=20),
 )
 
