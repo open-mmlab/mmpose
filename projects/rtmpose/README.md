@@ -240,8 +240,8 @@ We provide the UDP pretraining configs of the CSPNeXt backbone. Find more detail
 | :----------: | :--------: | :-------: | :------: | :-------------: | :-------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
 | CSPNeXt-tiny |  256x192   |   6.03    |   1.43   |      65.5       |      68.9       | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth) |
 |  CSPNeXt-s   |  256x192   |   8.58    |   1.78   |      70.0       |      73.3       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-s_udp-aic-coco_210e-256x192-92f5a029_20230130.pth)   |
-|  CSPNeXt-m   |  256x192   |   13.05   |   3.06   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
-|  CSPNeXt-l   |  256x192   |   32.44   |   5.33   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
+|  CSPNeXt-m   |  256x192   |   17.53   |   3.05   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
+|  CSPNeXt-l   |  256x192   |   32.44   |   5.32   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
 
 #### Body8
 
@@ -259,10 +259,10 @@ We provide the UDP pretraining configs of the CSPNeXt backbone. Find more detail
 | :------------: | :--------: | :-------: | :------: | :---------------: | :---------------------: | :-----------------: | :-----------------: | :-------------------------------------------------------------------------------: |
 | CSPNeXt-tiny\* |  256x192   |   6.03    |   1.43   |       65.9        |          96.34          |        63.80        |        18.63        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-body7_210e-256x192-a3775292_20230504.pth) |
 |  CSPNeXt-s\*   |  256x192   |   8.58    |   1.78   |       68.7        |          96.59          |        64.92        |        17.84        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-s_udp-body7_210e-256x192-8c9ccbdb_20230504.pth) |
-|  CSPNeXt-m\*   |  256x192   |   13.05   |   3.06   |       73.7        |          97.42          |        68.19        |        15.12        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-256x192-e0c9327b_20230504.pth) |
-|  CSPNeXt-l\*   |  256x192   |   32.44   |   5.33   |       75.7        |          97.76          |        69.57        |        13.96        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-256x192-5e9558ef_20230504.pth) |
-|  CSPNeXt-m\*   |  384x288   |   13.05   |   3.06   |       75.8        |          97.60          |        70.18        |        14.04        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-384x288-b9bc2b57_20230504.pth) |
-|  CSPNeXt-l\*   |  384x288   |   32.44   |   5.33   |       77.2        |          97.89          |        71.23        |        13.05        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth) |
+|  CSPNeXt-m\*   |  256x192   |   17.53   |   3.05   |       73.7        |          97.42          |        68.19        |        15.12        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-256x192-e0c9327b_20230504.pth) |
+|  CSPNeXt-l\*   |  256x192   |   32.44   |   5.32   |       75.7        |          97.76          |        69.57        |        13.96        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-256x192-5e9558ef_20230504.pth) |
+|  CSPNeXt-m\*   |  384x288   |   17.53   |   6.86   |       75.8        |          97.60          |        70.18        |        14.04        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-384x288-b9bc2b57_20230504.pth) |
+|  CSPNeXt-l\*   |  384x288   |   32.44   |  11.96   |       77.2        |          97.89          |        71.23        |        13.05        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth) |
 
 #### ImageNet
 
