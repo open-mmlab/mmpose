@@ -28,45 +28,39 @@ concurrency:
 
 jobs:
   build_cpu:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        torch: [1.5.0, 1.8.0, 1.10.0]
+        python-version: [3.7]
         include:
-          - torch: 1.5.0
-            torchvision: 0.6.0
-            torch_version: 1.5.0
-            python-version: '3.7'
-          - torch: 1.8.0
-            torchvision: 0.9.0
-            torch_version: 1.8.0
-            python-version: '3.8'
-          - torch: 1.10.0
-            torchvision: 0.11.1
-            torch_version: 1.10.0
-            python-version: '3.9'
-
+          - torch: 1.8.1
+            torchvision: 0.9.1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
-        run: pip install pip numpy --upgrade
+        run: pip install pip --upgrade
       - name: Install onnx
         run: pip install onnx
       - name: Install PyTorch
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMCV
         run: |
-          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/${{matrix.torch_version}}/index.html
+          pip install -U openmim
+          mim install mmcv-full
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Install other dependencies
         run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -U numpy
+          python -m pip install mmdet==2.28
+          python -m pip install mmtrack==0.14
           pip install -r requirements.txt
           python -m pip install -r requirements/poseval.txt
-          pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
+          pip install 'albumentations>=0.3.2' --no-binary imgaug,albumentations
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
@@ -75,129 +69,54 @@ jobs:
           coverage xml
           coverage report -m --omit="mmpose/apis/webcam/*"
 
-  build_cuda101:
-    runs-on: ubuntu-18.04
-    container:
-      image: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
-    strategy:
-      matrix:
-        python-version: [3.8]
-        torch: [1.5.0, 1.8.0]
-        include:
-          - torch: 1.5.0
-            torchvision: 0.6.0
-            torch_version: 1.5.0
-          - torch: 1.8.0
-            torchvision: 0.9.0
-            torch_version: 1.8.0
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Fetch GPG keys
-        run: |
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
-      - name: Install system dependencies
-        run: |
-          apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
-          apt-get clean
-          rm -rf /var/lib/apt/lists/*
-      - name: Upgrade pip
-        run: python -m pip install pip numpy --upgrade
-      - name: Install dependencies for compiling onnx when python=3.9
-        run: python -m pip install protobuf && apt-get install -y libprotobuf-dev protobuf-compiler
-        if: ${{matrix.python-version == '3.9'}}
-      - name: Install PyTorch
-        run: python -m pip install torch==${{matrix.torch}}+cu101 torchvision==${{matrix.torchvision}}+cu101 -f https://download.pytorch.org/whl/torch_stable.html
-      - name: Install mmpose dependencies
-        run: |
-          python -V
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/${{matrix.torch_version}}/index.html
-          python -m pip install -r requirements.txt
-          python -m pip install -r requirements/poseval.txt
-          python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
-          python -c 'import mmcv; print(mmcv.__version__)'
-      - name: Build and install
-        run: |
-          rm -rf .eggs
-          python setup.py check -m -s
-          TORCH_CUDA_ARCH_LIST=7.0 python -m pip install -e .
-      - name: Run unittests and generate coverage report
-        run: |
-          coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/
-          coverage xml
-          coverage report -m --omit="mmpose/apis/webcam/*"
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          env_vars: OS,PYTHON
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
   build_cuda102:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     container:
-      image: pytorch/pytorch:1.9.0-cuda10.2-cudnn7-devel
+      image: pytorch/pytorch:1.8.1-cuda10.2-cudnn7-devel
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
-        torch: [1.9.0, 1.10.0]
+        python-version: [3.7]
         include:
-          - torch: 1.9.0
-            torch_version: torch1.9
-            torchvision: 0.10.0
-          - torch: 1.10.0
-            torch_version: torch1.10
-            torchvision: 0.11.0
-
+          - torch: 1.8.1
+            torchvision: 0.9.1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Upgrade pip
+        run: pip install pip --upgrade
       - name: Fetch GPG keys
         run: |
           apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
           apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+      - name: Install Python-dev
+        run: apt-get update && apt-get install -y python${{matrix.python-version}}-dev
+        if: ${{matrix.python-version != 3.9}}
       - name: Install system dependencies
         run: |
-          apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
-          apt-get clean
-          rm -rf /var/lib/apt/lists/*
-      - name: Upgrade pip
-        run: python -m pip install pip numpy --upgrade
-      - name: Install dependencies for compiling onnx when python=3.9
-        run: python -m pip install protobuf && apt-get update && apt-get -y install libprotobuf-dev protobuf-compiler cmake
-        if: ${{matrix.python-version == '3.9'}}
-      - name: Install PyTorch
-        run: python -m pip install torch==${{matrix.torch}}+cu102 torchvision==${{matrix.torchvision}}+cu102 -f https://download.pytorch.org/whl/torch_stable.html
+          apt-get update
+          apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libxrender-dev libturbojpeg
       - name: Install mmpose dependencies
         run: |
-          python -V
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch_version}}/index.html
-          python -m pip install -r requirements.txt
-          python -m pip install -r requirements/poseval.txt
-          python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
-          python -c 'import mmcv; print(mmcv.__version__)'
+          pip install --upgrade pip setuptools wheel typing_extensions
+          pip install -U numpy
+          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch}}/index.html
+          pip install mmdet==2.28
+          pip install mmtrack==0.14
+          pip install -r requirements.txt
+          pip install -r requirements/poseval.txt
+          pip install 'albumentations>=0.3.2' --no-binary imgaug,albumentations
       - name: Build and install
-        run: |
-          rm -rf .eggs
-          python setup.py check -m -s
-          TORCH_CUDA_ARCH_LIST=7.0 python -m pip install -e .
+        run: rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
         run: |
           coverage run --branch --omit="mmpose/apis/webcam/*" --source mmpose -m pytest tests/
           coverage xml
           coverage report -m --omit="mmpose/apis/webcam/*"
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v1.0.14
         with:
           files: ./coverage.xml
           flags: unittests
@@ -206,16 +125,16 @@ jobs:
           fail_ci_if_error: false
 
   build_windows:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
     strategy:
       matrix:
         os: [windows-2022]
         python-version: [3.8]
         platform: [cpu]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
@@ -235,7 +154,9 @@ jobs:
       - name: Show pip list
         run: python -m pip list
       - name: Build and install
-        run: python -m pip install -e .
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e .
       - name: Run unittests
         run: coverage run --branch --source mmpose -m pytest tests -sv
       - name: Generate coverage report

@@ -102,7 +102,7 @@ conda create -n openmmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -
 conda activate openmmlab
 pip3 install openmim
 mim install mmcv-full
-git clone https://github.com/open-mmlab/mmpose.git
+git clone https://github.com/open-mmlab/mmpose.git -b 0.x
 cd mmpose
 pip3 install -e .
 ```
