@@ -40,7 +40,7 @@ Results on AnimalPose validation set (1117 instances)
 
 | Arch                                                                                                   | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> | ckpt | log |
 | :----------------------------------------------------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--: | :-: |
-| [rtmpose-t](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-l_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.766 |      0.959      |      0.855      | 0.800 |      0.968      |      |     |
-| [rtmpose-s](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-m_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.598 |      0.896      |      0.653      | 0.642 |      0.900      |      |     |
-| [rtmpose-m](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-s_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.709 |      0.938      |      0.799      | 0.748 |      0.946      |      |     |
-| [rtmpose-l](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-t_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.680 |      0.927      |      0.770      | 0.934 |      0.792      |      |     |
+| [rtmpose-t](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-t_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.680 |      0.927      |      0.770      | 0.934 |      0.792      |      |     |
+| [rtmpose-s](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-s_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.709 |      0.938      |      0.799      | 0.748 |      0.946      |      |     |
+| [rtmpose-m](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-m_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.598 |      0.896      |      0.653      | 0.642 |      0.900      |      |     |
+| [rtmpose-l](/configs/animal_2d_keypoint/rtmpose/animalpose/rtmpose-l_8xb64-210e_animalpose-256x256.py) |  256x256   | 0.766 |      0.959      |      0.855      | 0.800 |      0.968      |      |     |
