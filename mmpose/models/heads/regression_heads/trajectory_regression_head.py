@@ -96,8 +96,10 @@ class TrajectoryRegressionHead(BaseHead):
         # Restore global position with target_root
         target_root = batch_data_samples[0].metainfo.get('target_root', None)
         if target_root is not None:
-            target_root = torch.stack(
-                [m['target_root'] for m in batch_data_samples[0].metainfo])
+            target_root = torch.stack([
+                torch.from_numpy(b.metainfo['target_root'])
+                for b in batch_data_samples
+            ])
         else:
             target_root = torch.stack([
                 torch.empty((0), dtype=torch.float32)

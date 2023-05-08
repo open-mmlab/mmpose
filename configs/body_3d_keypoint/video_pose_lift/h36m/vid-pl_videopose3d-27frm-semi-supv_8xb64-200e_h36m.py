@@ -1,15 +1,11 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=200, val_interval=10)
+train_cfg = None
 
 # optimizer
-optim_wrapper = dict(optimizer=dict(type='Adam', lr=1e-3))
 
 # learning policy
-param_scheduler = [
-    dict(type='ExponentialLR', gamma=0.98, end=200, by_epoch=True)
-]
 
 auto_scale_lr = dict(base_batch_size=1024)
 
@@ -63,7 +59,9 @@ model = dict(
         type='TrajectoryRegressionHead',
         in_channels=1024,
         num_joints=1,
-        loss=dict(type='MPJPELoss')),
+        loss=dict(type='MPJPELoss'),
+        decoder=codec,
+    ),
     semi_loss=dict(
         type='SemiSupervisionLoss',
         joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15],
