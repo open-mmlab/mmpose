@@ -59,7 +59,7 @@ model = dict(
         type='TrajectoryRegressionHead',
         in_channels=1024,
         num_joints=1,
-        loss=dict(type='MPJPELoss'),
+        loss=dict(type='MPJPELoss', use_target_weight=True),
         decoder=codec,
     ),
     semi_loss=dict(
