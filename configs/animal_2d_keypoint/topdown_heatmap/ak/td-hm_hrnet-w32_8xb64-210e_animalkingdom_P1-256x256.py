@@ -26,6 +26,9 @@ param_scheduler = [
 # automatically scaling LR based on the actual training batch size
 auto_scale_lr = dict(base_batch_size=512)
 
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
+
 # codec settings
 codec = dict(
     type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
