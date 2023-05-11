@@ -1,5 +1,11 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    type='Pose3dLocalVisualizer', vis_backends=vis_backends, name='visualizer')
+
 # runtime
 train_cfg = dict(max_epochs=80, val_interval=10)
 
