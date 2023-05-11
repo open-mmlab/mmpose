@@ -154,7 +154,6 @@ Feel free to join our community group for more help:
 - Flip test is used.
 - Inference speed measured on more hardware platforms can refer to [Benchmark](./benchmark/README.md)
 - If you have datasets you would like us to support, feel free to [contact us](https://docs.google.com/forms/d/e/1FAIpQLSfzwWr3eNlDzhU98qzk2Eph44Zio6hi5r0iSwfO9wSARkHdWg/viewform?usp=sf_link)/[联系我们](https://uua478.fanqier.cn/f/xxmynrki).
--
 
 ### Body 2d (17 Keypoints)
 
