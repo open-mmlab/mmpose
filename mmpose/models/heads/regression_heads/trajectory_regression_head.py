@@ -91,8 +91,6 @@ class TrajectoryRegressionHead(BaseHead):
 
         batch_coords = self.forward(feats)  # (B, K, D)
 
-        batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
-
         # Restore global position with target_root
         target_root = batch_data_samples[0].metainfo.get('target_root', None)
         if target_root is not None:
