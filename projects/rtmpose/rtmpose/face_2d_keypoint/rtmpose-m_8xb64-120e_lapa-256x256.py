@@ -102,12 +102,6 @@ data_mode = 'topdown'
 data_root = 'data/LaPa/'
 
 backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/',
-#         f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/'
-#     }))
 
 # pipelines
 train_pipeline = [
@@ -149,7 +143,7 @@ train_pipeline_stage2 = [
     dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    # dict(type='RandomHalfBody'),
+    dict(type='RandomHalfBody'),
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.,
@@ -186,8 +180,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/lapa_train.json',
-        data_prefix=dict(img='train/images/'),
+        ann_file='annotations/lapa_trainval.json',
+        data_prefix=dict(img=''),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -200,8 +194,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/lapa_val.json',
-        data_prefix=dict(img='val/images/'),
+        ann_file='annotations/lapa_test.json',
+        data_prefix=dict(img=''),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -216,7 +210,7 @@ test_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/lapa_test.json',
-        data_prefix=dict(img='test/images/'),
+        data_prefix=dict(img=''),
         test_mode=True,
         pipeline=val_pipeline,
     ))
