@@ -220,11 +220,29 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 |                                     Config                                     | Input Size | NME<sup><br>(LaPa) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |  Download   |
 | :----------------------------------------------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: |
-| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
+| [RTMPose-m (试用)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
 
-### 手部 2d 关键点
+### 手部 2d 关键点 (21 Keypoints)
 
-Coming soon
+|            Detection Config            | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |            Download             |
+| :------------------------------------: | :--------: | :---------------------------: | :---------------: | :--------------------------------: | :---------------------------------------: | :-----------------------------: |
+| [RTMDet-nano (试用)](./rtmdet/hand/rtmdet_nano_320-8xb32_hand.py) |  320x320   |             76.0              |       0.31        |                 -                  |                     -                     | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth) |
+
+<details open>
+<summary><b>Hand5</b></summary>
+
+- `Hand5` and `*` 代表模型在 5 个开源数据集上训练得到：
+  - [COCO-Wholebody-Hand](https://github.com/jin-s13/COCO-WholeBody/)
+  - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+  - [FreiHand2d](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+  - [RHD2d](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+
+|                                                Config                                                | Input Size | PCK@0.2<sup><br>(COCO-Wholebody-Hand) | PCK@0.2<sup><br>(Hand5) | AUC<sup><br>(Hand5) | EPE<sup><br>(Hand5) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                                                                 Download                                                                 |
+| :--------------------------------------------------------------------------------------------------: | :--------: | :-----------------------------------: | :---------------------: | :-----------------: | :-----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-m\* (试用)](./rtmpose/hand_2d_keypoint/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |                 81.5                  |          96.4           |        83.9         |        5.06         |  2.581   |                 -                  |                     -                     | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth) |
+
+</details>
 
 ### 预训练模型
 

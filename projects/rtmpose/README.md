@@ -231,9 +231,27 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 | :----------------------------------------------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: |
 | [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
 
-### Hand 2d
+### Hand 2d (21 Keypoints)
 
-Coming soon
+|            Detection Config            | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |            Download             |
+| :------------------------------------: | :--------: | :---------------------------: | :---------------: | :--------------------------------: | :---------------------------------------: | :-----------------------------: |
+| [RTMDet-nano<sup><br>(alpha version)](./rtmdet/hand/rtmdet_nano_320-8xb32_hand.py) |  320x320   |             76.0              |       0.31        |                 -                  |                     -                     | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth) |
+
+<details open>
+<summary><b>Hand5</b></summary>
+
+- `Hand5` and `*` denote model trained on 5 public datasets:
+  - [COCO-Wholebody-Hand](https://github.com/jin-s13/COCO-WholeBody/)
+  - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+  - [FreiHand2d](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+  - [RHD2d](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+
+|                                                        Config                                                         | Input Size | PCK@0.2<sup><br>(COCO-Wholebody-Hand) | PCK@0.2<sup><br>(Hand5) | AUC<sup><br>(Hand5) | EPE<sup><br>(Hand5) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                                                                 Download                                                                 |
+| :-------------------------------------------------------------------------------------------------------------------: | :--------: | :-----------------------------------: | :---------------------: | :-----------------: | :-----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-m\*<sup><br>(alpha version)](./rtmpose/hand_2d_keypoint/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |                 81.5                  |          96.4           |        83.9         |        5.06         |  2.581   |                 -                  |                     -                     | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth) |
+
+</details>
 
 ### Pretrained Models
 
