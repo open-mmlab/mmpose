@@ -148,7 +148,8 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ### 人体 2d 关键点 (17 Keypoints)
 
-#### AIC+COCO
+<details close>
+<summary><b>AIC+COCO</b></summary>
 
 |                                    Config                                     | Input Size | AP<sup><br>(COCO) | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | EPE<sup><br>(Body8) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                     |
 | :---------------------------------------------------------------------------: | :--------: | :---------------: | :---------------------: | :-----------------: | :-----------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -159,7 +160,10 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 | [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       77.0        |          94.32          |        69.85        |        14.64        |   13.72   |   4.33   |               24.78                |                   3.66                    |                       -                        |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth)   |
 | [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       77.3        |          94.54          |        70.14        |        14.30        |   27.79   |   9.35   |                 -                  |                   6.05                    |                       -                        |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth)   |
 
-#### Body8
+</details>
+
+<details open>
+<summary><b>Body8</b></summary>
 
 - `*` 代表模型在 7 个开源数据集上训练得到：
   - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
@@ -179,6 +183,8 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 | [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |       76.7        |          95.08          |        70.14        |        13.79        |   27.66   |   4.16   |               18.85                |                   3.46                    |                     45.37                      | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-256x192-4dba18fc_20230504.pth) |
 | [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       76.6        |          94.64          |        70.38        |        13.98        |   13.72   |   4.33   |               24.78                |                   3.66                    |                       -                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-384x288-65e718c4_20230504.pth) |
 | [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       78.3        |          95.36          |        71.58        |        13.08        |   27.79   |   9.35   |                 -                  |                   6.05                    |                       -                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth) |
+
+</details>
 
 #### 模型剪枝
 
