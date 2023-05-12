@@ -213,8 +213,7 @@ def main():
 
         if output_file:
             img_vis = visualizer.get_image()
-            if args.show:
-                mmcv.imwrite(mmcv.rgb2bgr(img_vis), output_file)
+            mmcv.imwrite(mmcv.rgb2bgr(img_vis), output_file)
 
     elif input_type in ['webcam', 'video']:
 
