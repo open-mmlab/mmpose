@@ -230,7 +230,8 @@ Coming soon
 
 我们提供了 UDP 预训练的 CSPNeXt 模型参数，训练配置请参考 [pretrain_cspnext_udp folder](./rtmpose/pretrain_cspnext_udp/)。
 
-#### AIC+COCO
+<details close>
+<summary><b>AIC+COCO</b></summary>
 
 |    Model     | Input Size | Params(M) | Flops(G) | AP<sup><br>(GT) | AR<sup><br>(GT) |                                                            Download                                                             |
 | :----------: | :--------: | :-------: | :------: | :-------------: | :-------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
@@ -239,7 +240,10 @@ Coming soon
 |  CSPNeXt-m   |  256x192   |   17.53   |   3.05   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
 |  CSPNeXt-l   |  256x192   |   32.44   |   5.32   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
 
-#### Body8
+</details>
+
+<details open>
+<summary><b>Body8</b></summary>
 
 - `*` 代表模型在 7 个开源数据集上训练得到：
   - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
@@ -259,6 +263,8 @@ Coming soon
 |  CSPNeXt-l\*   |  256x192   |   32.44   |   5.32   |       75.7        |          97.76          |        69.57        |        13.96        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-256x192-5e9558ef_20230504.pth) |
 |  CSPNeXt-m\*   |  384x288   |   17.53   |   6.86   |       75.8        |          97.60          |        70.18        |        14.04        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-384x288-b9bc2b57_20230504.pth) |
 |  CSPNeXt-l\*   |  384x288   |   32.44   |  11.96   |       77.2        |          97.89          |        71.23        |        13.05        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth) |
+
+</details>
 
 #### ImageNet
 
