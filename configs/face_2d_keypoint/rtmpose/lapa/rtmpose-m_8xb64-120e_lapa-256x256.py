@@ -187,7 +187,7 @@ train_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/lapa_train.json',
-        data_prefix=dict(img='train/images/'),
+        data_prefix=dict(img=''),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -201,7 +201,7 @@ val_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/lapa_val.json',
-        data_prefix=dict(img='val/images/'),
+        data_prefix=dict(img=''),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -216,7 +216,7 @@ test_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/lapa_test.json',
-        data_prefix=dict(img='test/images/'),
+        data_prefix=dict(img=''),
         test_mode=True,
         pipeline=val_pipeline,
     ))
