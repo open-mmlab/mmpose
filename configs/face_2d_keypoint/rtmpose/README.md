@@ -29,4 +29,4 @@ Results on LaPa dataset
 
 |   Model   | Input Size | NME  |           Details and Download            |
 | :-------: | :--------: | :--: | :---------------------------------------: |
-| RTMPose-m |  256x256   | 1.29 | [rtmpose_lapa.md](./wflw/rtmpose_lapa.md) |
+| RTMPose-m |  256x256   | 1.29 | [rtmpose_lapa.md](./lapa/rtmpose_lapa.md) |
