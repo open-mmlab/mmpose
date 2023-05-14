@@ -148,7 +148,8 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ### 人体 2d 关键点 (17 Keypoints)
 
-#### AIC+COCO
+<details close>
+<summary><b>AIC+COCO</b></summary>
 
 |                                    Config                                     | Input Size | AP<sup><br>(COCO) | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | EPE<sup><br>(Body8) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                     |
 | :---------------------------------------------------------------------------: | :--------: | :---------------: | :---------------------: | :-----------------: | :-----------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -159,7 +160,10 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 | [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       77.0        |          94.32          |        69.85        |        14.64        |   13.72   |   4.33   |               24.78                |                   3.66                    |                       -                        |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth)   |
 | [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       77.3        |          94.54          |        70.14        |        14.30        |   27.79   |   9.35   |                 -                  |                   6.05                    |                       -                        |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth)   |
 
-#### Body8
+</details>
+
+<details open>
+<summary><b>Body8</b></summary>
 
 - `*` 代表模型在 7 个开源数据集上训练得到：
   - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
@@ -179,6 +183,8 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 | [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |       76.7        |          95.08          |        70.14        |        13.79        |   27.66   |   4.16   |               18.85                |                   3.46                    |                     45.37                      | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-256x192-4dba18fc_20230504.pth) |
 | [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       76.6        |          94.64          |        70.38        |        13.98        |   13.72   |   4.33   |               24.78                |                   3.66                    |                       -                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-384x288-65e718c4_20230504.pth) |
 | [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       78.3        |          95.36          |        71.58        |        13.08        |   27.79   |   9.35   |                 -                  |                   6.05                    |                       -                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth) |
+
+</details>
 
 #### 模型剪枝
 
@@ -214,17 +220,36 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 |                                     Config                                     | Input Size | NME<sup><br>(LaPa) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |  Download   |
 | :----------------------------------------------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: |
-| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
+| [RTMPose-m (试用)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
 
-### 手部 2d 关键点
+### 手部 2d 关键点 (21 Keypoints)
 
-Coming soon
+|            Detection Config            | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |            Download             |
+| :------------------------------------: | :--------: | :---------------------------: | :---------------: | :--------------------------------: | :---------------------------------------: | :-----------------------------: |
+| [RTMDet-nano (试用)](./rtmdet/hand/rtmdet_nano_320-8xb32_hand.py) |  320x320   |             76.0              |       0.31        |                 -                  |                     -                     | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth) |
+
+<details open>
+<summary><b>Hand5</b></summary>
+
+- `Hand5` and `*` 代表模型在 5 个开源数据集上训练得到：
+  - [COCO-Wholebody-Hand](https://github.com/jin-s13/COCO-WholeBody/)
+  - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+  - [FreiHand2d](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+  - [RHD2d](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+
+|                                                Config                                                | Input Size | PCK@0.2<sup><br>(COCO-Wholebody-Hand) | PCK@0.2<sup><br>(Hand5) | AUC<sup><br>(Hand5) | EPE<sup><br>(Hand5) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                                                                 Download                                                                 |
+| :--------------------------------------------------------------------------------------------------: | :--------: | :-----------------------------------: | :---------------------: | :-----------------: | :-----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-m\* (试用)](./rtmpose/hand_2d_keypoint/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |                 81.5                  |          96.4           |        83.9         |        5.06         |  2.581   |                 -                  |                     -                     | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth) |
+
+</details>
 
 ### 预训练模型
 
 我们提供了 UDP 预训练的 CSPNeXt 模型参数，训练配置请参考 [pretrain_cspnext_udp folder](./rtmpose/pretrain_cspnext_udp/)。
 
-#### AIC+COCO
+<details close>
+<summary><b>AIC+COCO</b></summary>
 
 |    Model     | Input Size | Params(M) | Flops(G) | AP<sup><br>(GT) | AR<sup><br>(GT) |                                                            Download                                                             |
 | :----------: | :--------: | :-------: | :------: | :-------------: | :-------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
@@ -233,7 +258,10 @@ Coming soon
 |  CSPNeXt-m   |  256x192   |   17.53   |   3.05   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
 |  CSPNeXt-l   |  256x192   |   32.44   |   5.32   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
 
-#### Body8
+</details>
+
+<details open>
+<summary><b>Body8</b></summary>
 
 - `*` 代表模型在 7 个开源数据集上训练得到：
   - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
@@ -253,6 +281,8 @@ Coming soon
 |  CSPNeXt-l\*   |  256x192   |   32.44   |   5.32   |       75.7        |          97.76          |        69.57        |        13.96        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-256x192-5e9558ef_20230504.pth) |
 |  CSPNeXt-m\*   |  384x288   |   17.53   |   6.86   |       75.8        |          97.60          |        70.18        |        14.04        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-384x288-b9bc2b57_20230504.pth) |
 |  CSPNeXt-l\*   |  384x288   |   32.44   |  11.96   |       77.2        |          97.89          |        71.23        |        13.05        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth) |
+
+</details>
 
 #### ImageNet
 
