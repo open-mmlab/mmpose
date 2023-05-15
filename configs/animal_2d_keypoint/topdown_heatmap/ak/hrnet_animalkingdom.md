@@ -38,9 +38,9 @@ Results on AnimalKingdom validation set
 
 | Arch                                                                                                                                      | Input Size | PCK(0.05) | PCK(0.05) paper | ckpt | log |
 | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- | ---- | --- |
-| [P1_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P1-256x256.py)                      | 256x256    | 0.6272    |                 | ckpt | log |
-| [P2_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P2-256x256.py)                      | 256x256    | 0.3774    |                 | ckpt | log |
-| [P3_mammals_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P3_mammal-256x256.py)       | 256x256    | 0.5756    |                 | ckpt | log |
+| [P1_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P1-256x256.py)                      | 256x256    | 0.6272    | 0.6342          | ckpt | log |
+| [P2_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P2-256x256.py)                      | 256x256    | 0.3774    | 0.3726          | ckpt | log |
+| [P3_mammals_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P3_mammal-256x256.py)       | 256x256    | 0.5756    | 0.5719          | ckpt | log |
 | [P3_amphibians_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P3_amphibian-256x256.py) | 256x256    | 0.5356    | 0.5432          | ckpt | log |
 | [P3_reptiles_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P3_reptile-256x256.py)     | 256x256    | 0.5       | 0.5             | ckpt | log |
 | [P3_birds_hrnet_w32](configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb64-210e_animalkingdom_P3_bird-256x256.py)           | 256x256    | 0.7679    | 0.7636          | ckpt | log |

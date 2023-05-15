@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from .animal_ak_dataset import AnimalKingdomDataset
+from .animalkingdom_dataset import AnimalKingdomDataset
 from .animalpose_dataset import AnimalPoseDataset
 from .ap10k_dataset import AP10KDataset
 from .atrw_dataset import ATRWDataset

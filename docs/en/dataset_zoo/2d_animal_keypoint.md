@@ -473,6 +473,7 @@ mmpose
 
 <details>
 <summary align="right"><a href="https://arxiv.org/abs/2204.08129">Animal Kingdom (CVPR'2022)</a></summary>
+</details>
 
 ```bibtex
 @InProceedings{
@@ -498,32 +499,34 @@ mmpose
 ├── configs
 `── data
     │── ak
-        │-- ak_P1
-        │   │-- train.json
-        │   |-- test.json
-        │-- ak_P2
-        │   │-- train.json
-        │   |-- test.json
-        │-- ak_P3_amphibian
-        │   │-- train.json
-        │   |-- test.json
-        │-- ak_P3_bird
-        │   │-- train.json
-        │   |-- test.json
-        │-- ak_P3_fish
-        │   │-- train.json
-        │   |-- test.json
-        │-- ak_P3_mammal
-        │   │-- train.json
-        │   |-- test.json
-        │-- ak_P3_reptile
-        │   │-- train.json
-        │   |-- test.json
+        |--annotations
+        │  │-- ak_P1
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P2
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_amphibian
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_bird
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_fish
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_mammal
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_reptile
+        │      │-- train.json
+        │      │-- test.json
         │-- images
         │   │-- AAACXZTV
-        |   |   |--AAACXZTV_f000059.jpg
+        │   │   │--AAACXZTV_f000059.jpg
+        │   │   │--...
         │   │-- AAAUILHH
-        |   |   |--AAAUILHH_f000098.jpg
-        |   |   |--...
+        │   │   │--AAAUILHH_f000098.jpg
+        │   │   │--...
         │   │-- ...
 ```
