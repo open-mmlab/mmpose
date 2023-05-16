@@ -1,6 +1,10 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
-#
+custom_imports = dict(imports=['codecs2','models'])
+
+
+
+
 
 # runtime
 train_cfg = dict(max_epochs=60, val_interval=1)

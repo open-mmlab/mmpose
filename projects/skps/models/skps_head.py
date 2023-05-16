@@ -15,7 +15,7 @@ from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, Features, InstanceList,
                                  OptConfigType, OptSampleList, Predictions)
-from ..base_head import BaseHead
+from mmpose.models.heads.base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
 
