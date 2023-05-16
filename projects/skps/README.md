@@ -33,19 +33,19 @@ Prepare the COCO dataset according to the [instruction](https://mmpose.readthedo
 **To train with single GPU:**
 
 ```shell
-mim train mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py
+mim train mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py
 ```
 
 **To train with multiple GPUs:**
 
 ```shell
-mim train mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py --launcher pytorch --gpus 8
+mim train mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py --launcher pytorch --gpus 8
 ```
 
 **To train with multiple GPUs by slurm:**
 
 ```shell
-mim train mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py --launcher slurm \
+mim train mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py --launcher slurm \
     --gpus 16 --gpus-per-node 8 --partition $PARTITION
 ```
 
@@ -54,19 +54,19 @@ mim train mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py --laun
 **To test with single GPU:**
 
 ```shell
-mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKPOINT
+mim test mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py $CHECKPOINT
 ```
 
 **To test with multiple GPUs:**
 
 ```shell
-mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKPOINT --launcher pytorch --gpus 8
+mim test mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py $CHECKPOINT --launcher pytorch --gpus 8
 ```
 
 **To test with multiple GPUs by slurm:**
 
 ```shell
-mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKPOINT --launcher slurm \
+mim test mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py $CHECKPOINT --launcher slurm \
     --gpus 16 --gpus-per-node 8 --partition $PARTITION
 ```
 
