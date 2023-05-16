@@ -206,7 +206,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                                 xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
 
                 if title:
-                    ax.set_title(f'{title}_{idx}')
+                    ax.set_title(f'{title} ({idx})')
 
         pred_instances = pose_samples.pred_instances
         if 'keypoints' in pred_instances:

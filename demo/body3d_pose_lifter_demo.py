@@ -168,6 +168,7 @@ def parse_args():
         type=float,
         default=0.9,
         help='Bounding box score threshold')
+    parser.add_argument('--kpt-thr', type=float, default=0.3)
     parser.add_argument(
         '--use-oks-tracking', action='store_true', help='Using OKS tracking')
     parser.add_argument(
@@ -439,6 +440,7 @@ def main():
             det_dataset_link_color=det_dataset_link_color,
             show=args.show,
             draw_bbox=True,
+            kpt_thr=args.kpt_thr,
             wait_time=0.001)
 
         frame_vis = local_visualizer.get_image()
