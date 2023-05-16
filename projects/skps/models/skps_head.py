@@ -304,27 +304,17 @@ class SKPSHead(BaseHead):
                 # pack outputs
                 preds.append(InstanceData(keypoints=_keypoints))
             return preds
-            batch_displacements = (_displacements + _displacements_flip) / 2.0
+
 
         else:
             batch_heatmaps, batch_displacements = self.forward(feats)
 
-        preds = self.decode(batch_heatmaps, batch_displacements, test_cfg,
-                            metainfo)
+            preds = self.decode(batch_heatmaps, batch_displacements, test_cfg,
+                                metainfo)
 
-        if test_cfg.get('output_heatmaps', False):
-            heatmaps = [hm.detach() for hm in batch_heatmaps]
-            displacements = [dm.detach() for dm in batch_displacements]
-            B = heatmaps[0].shape[0]
-            pred_fields = []
-            for i in range(B):
-                pred_fields.append(
-                    PixelData(
-                        heatmaps=heatmaps[0][i],
-                        displacements=displacements[0][i]))
-            return preds, pred_fields
-        else:
+
             return preds
+
 
     def decode(self,
                heatmaps: Tuple[Tensor],
