@@ -120,7 +120,7 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/ak_P3_amphibain/train.json',
+        ann_file='annotations/ak_P3_amphibian/train.json',
         data_prefix=dict(img='image/'),
         pipeline=train_pipeline,
     ))
@@ -134,7 +134,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/ak_P3_amphibain/test.json',
+        ann_file='annotations/ak_P3_amphibian/test.json',
         data_prefix=dict(img='image/'),
         test_mode=True,
         pipeline=val_pipeline,
