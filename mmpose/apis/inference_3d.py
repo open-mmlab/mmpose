@@ -101,11 +101,12 @@ def _collate_pose_sequence(pose_results_2d,
         pred_instances = InstanceData()
 
         for k in pose_results_2d[target_frame][idx].gt_instances.keys():
-            gt_instances.k = pose_results_2d[target_frame][idx].gt_instances[k]
+            gt_instances.set_field(
+                pose_results_2d[target_frame][idx].gt_instances[k], k)
         for k in pose_results_2d[target_frame][idx].pred_instances.keys():
             if k != 'keypoints':
-                pred_instances.k = pose_results_2d[target_frame][
-                    idx].pred_instances[k]
+                pred_instances.set_field(
+                    pose_results_2d[target_frame][idx].pred_instances[k], k)
         pose_seq.pred_instances = pred_instances
         pose_seq.gt_instances = gt_instances
 
@@ -145,8 +146,6 @@ def _collate_pose_sequence(pose_results_2d,
                     break
             pose_seq.pred_instances.keypoints = keypoints
         pose_sequences.append(pose_seq)
-    if len(pose_sequences) == 1:
-        pose_sequences = [pose_sequences[0], pose_sequences[0]]
 
     return pose_sequences
 
@@ -219,7 +218,9 @@ def inference_pose_lifter_model(model,
     for i, pose_seq in enumerate(pose_sequences_2d):
         data_info = dict()
 
-        keypoints_2d = np.squeeze(pose_seq.pred_instances.keypoints)
+        keypoints_2d = pose_seq.pred_instances.keypoints
+        keypoints_2d = np.squeeze(
+            keypoints_2d) if keypoints_2d.ndim == 4 else keypoints_2d
 
         T, K, C = keypoints_2d.shape
 

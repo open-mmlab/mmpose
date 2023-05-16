@@ -8,6 +8,7 @@ import cv2
 import mmcv
 import numpy as np
 from mmengine.registry import init_default_scope
+from mmengine.structures import InstanceData
 
 from mmpose.apis import (_track_by_iou, _track_by_oks, collect_multi_frames,
                          extract_pose_sequence, inference_pose_lifter_model,
@@ -15,10 +16,8 @@ from mmpose.apis import (_track_by_iou, _track_by_oks, collect_multi_frames,
 from mmpose.models.pose_estimators import PoseLifter
 from mmpose.models.pose_estimators.topdown import TopdownPoseEstimator
 from mmpose.registry import VISUALIZERS
-from mmpose.structures import merge_data_samples
+from mmpose.structures import PoseDataSample, merge_data_samples
 from mmpose.utils import adapt_mmdet_pipeline
-
-# from mmpose.visualization import FastVisualizer
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -133,17 +132,17 @@ def parse_args():
         help='Checkpoint file for the 2nd stage pose lifter model')
     parser.add_argument('--input', type=str, default='', help='Video path')
     parser.add_argument(
-        '--num-instances',
-        type=int,
-        default=-1,
-        help='The number of 3D poses to be visualized in every frame. If '
-        'less than 0, it will be set to the number of pose results in the '
-        'first frame.')
-    parser.add_argument(
         '--show',
         action='store_true',
         default=False,
         help='Whether to show visualizations')
+    parser.add_argument(
+        '--rebase-keypoint-height',
+        action='store_true',
+        help='Rebase the predicted 3D pose so its lowest keypoint has a '
+        'height of 0 (landing on the ground). This is useful for '
+        'visualization when the model do not predict the global position '
+        'of the 3D pose.')
     parser.add_argument(
         '--norm-pose-2d',
         action='store_true',
@@ -239,6 +238,12 @@ def main():
     assert isinstance(pose_estimator, TopdownPoseEstimator), 'Only "TopDown"' \
         'model is supported for the 1st stage (2D pose detection)'
 
+    det_kpt_color = pose_estimator.dataset_meta.get('keypoint_colors', None)
+    det_dataset_skeleton = pose_estimator.dataset_meta.get(
+        'skeleton_links', None)
+    det_dataset_link_color = pose_estimator.dataset_meta.get(
+        'skeleton_link_colors', None)
+
     # frame index offsets for inference, used in multi-frame inference setting
     if args.use_multi_frames:
         assert 'frame_indices' in pose_estimator.cfg.test_dataloader.dataset
@@ -256,11 +261,6 @@ def main():
         'Only "PoseLifter" model is supported for the 2nd stage ' \
         '(2D-to-3D lifting)'
     pose_lift_dataset = pose_lifter.cfg.test_dataloader.dataset
-
-    # visualizer = FastVisualizer(
-    #     pose_lifter.dataset_meta,
-    #     radius=args.radius,
-    #     line_width=args.thickness)
 
     pose_lifter.cfg.visualizer.radius = args.radius
     pose_lifter.cfg.visualizer.line_width = args.thickness
@@ -281,30 +281,33 @@ def main():
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         video_writer = None
 
-    num_instances = args.num_instances
-
-    pose_det_results_list = []
+    pose_est_results_list = []
     next_id = 0
-    pose_det_results = []
-
-    print('Running 2D pose detection inference...')
+    pose_est_results = []
 
     video = cv2.VideoCapture(args.input)
     assert video.isOpened(), f'Failed to load video file {args.input}'
 
-    frame_id = -1
+    (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+    if int(major_ver) < 3:
+        fps = video.get(cv2.cv.CV_CAP_PROP_FPS)
+        width = video.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+        height = video.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+    else:
+        fps = video.get(cv2.CAP_PROP_FPS)
+        width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-    width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
-    height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    frame_idx = -1
 
     while video.isOpened():
         success, frame = video.read()
-        frame_id += 1
+        frame_idx += 1
 
         if not success:
             break
 
-        pose_det_results_last = pose_det_results
+        pose_est_results_last = pose_est_results
 
         # First stage: 2D pose detection
         # test a single image, the resulting box is (x1, y1, x2, y2)
@@ -316,59 +319,72 @@ def main():
                                        pred_instance.scores > args.bbox_thr)]
 
         if args.use_multi_frames:
-            frames = collect_multi_frames(video, frame_id, indices,
+            frames = collect_multi_frames(video, frame_idx, indices,
                                           args.online)
 
         # make person results for current image
-        pose_det_results = inference_topdown(
+        pose_est_results = inference_topdown(
             pose_estimator, frames if args.use_multi_frames else frame, bboxes)
 
-        pose_det_results = get_area(pose_det_results)
+        pose_est_results = get_area(pose_est_results)
         if args.use_oks_tracking:
             _track = partial(_track_by_oks)
         else:
             _track = _track_by_iou
 
-        for i, result in enumerate(pose_det_results):
-            track_id, pose_det_results_last, match_result = _track(
-                result, pose_det_results_last, args.tracking_thr)
+        for i, result in enumerate(pose_est_results):
+            track_id, pose_est_results_last, match_result = _track(
+                result, pose_est_results_last, args.tracking_thr)
             if track_id == -1:
                 pred_instances = result.pred_instances.cpu().numpy()
                 keypoints = pred_instances.keypoints
                 if np.count_nonzero(keypoints[:, :, 1]) >= 3:
-                    pose_det_results[i].set_field(next_id, 'track_id')
+                    pose_est_results[i].set_field(next_id, 'track_id')
                     next_id += 1
                 else:
                     # If the number of keypoints detected is small,
                     # delete that person instance.
                     keypoints[:, :, 1] = -10
-                    pose_det_results[i].pred_instances.set_field(
+                    pose_est_results[i].pred_instances.set_field(
                         keypoints, 'keypoints')
                     bboxes = pred_instances.bboxes * 0
-                    pose_det_results[i].pred_instances.set_field(
+                    pose_est_results[i].pred_instances.set_field(
                         bboxes, 'bboxes')
-                    pose_det_results[i].set_field(-1, 'track_id')
-                    pose_det_results[i].set_field(pred_instances,
+                    pose_est_results[i].set_field(-1, 'track_id')
+                    pose_est_results[i].set_field(pred_instances,
                                                   'pred_instances')
             else:
-                pose_det_results[i].set_field(track_id, 'track_id')
+                pose_est_results[i].set_field(track_id, 'track_id')
 
             del match_result
 
-        pose_det_results_list.append(pose_det_results.copy())
+        pose_est_results_converted = []
+        for pose_est_result in pose_est_results:
+            pose_est_result_converted = PoseDataSample()
+            gt_instances = InstanceData()
+            pred_instances = InstanceData()
+            for k in pose_est_result.gt_instances.keys():
+                gt_instances.set_field(pose_est_result.gt_instances[k], k)
+            for k in pose_est_result.pred_instances.keys():
+                pred_instances.set_field(pose_est_result.pred_instances[k], k)
+            pose_est_result_converted.gt_instances = gt_instances
+            pose_est_result_converted.pred_instances = pred_instances
+            pose_est_result_converted.track_id = pose_est_result.track_id
+            pose_est_results_converted.append(pose_est_result_converted)
 
-        for i, result in enumerate(pose_det_results):
+        for i, result in enumerate(pose_est_results_converted):
             keypoints = result.pred_instances.keypoints
             keypoints = convert_keypoint_definition(keypoints,
                                                     pose_det_dataset['type'],
                                                     pose_lift_dataset['type'])
-            pose_det_results_list[frame_id][i].set_field(
-                keypoints, 'keypoints')
+            pose_est_results_converted[i].pred_instances.keypoints = keypoints
+
+        pose_est_results_list.append(pose_est_results_converted.copy())
 
         # extract and pad input pose2d sequence
         pose_results_2d = extract_pose_sequence(
-            pose_det_results_list,
-            frame_idx=i,
+            pose_est_results_list,
+            frame_idx=frame_idx,
             causal=pose_lifter.causal,
             seq_len=pose_lift_dataset.get('seq_len', 1),
             step=pose_lift_dataset.get('seq_step', 1))
@@ -380,36 +396,52 @@ def main():
             pose_results_2d,
             image_size=(width, height),
             norm_pose_2d=args.norm_pose_2d)
-        data_samples = merge_data_samples(pose_lift_results)
 
         # Pose processing
-        # TODO
+        for idx, pose_lift_res in enumerate(pose_lift_results):
+            gt_instances = pose_lift_res.gt_instances
+
+            pose_lift_res.track_id = pose_est_results_converted[i].get(
+                'track_id', 1e4)
+
+            pred_instances = pose_lift_res.pred_instances
+            keypoints = pred_instances.keypoints
+
+            keypoints = keypoints[..., [0, 2, 1]]
+            keypoints[..., 0] = -keypoints[..., 0]
+            keypoints[..., 2] = -keypoints[..., 2]
+
+            # rebase height (z-axis)
+            if args.rebase_keypoint_height:
+                keypoints[..., 2] -= np.min(
+                    keypoints[..., 2], axis=-1, keepdims=True)
+
+            pose_lift_results[i].pred_instances.keypoints = keypoints
+
+        pose_lift_results = sorted(
+            pose_lift_results, key=lambda x: x.get('track_id', 1e4))
+
+        pred_3d_data_samples = merge_data_samples(pose_lift_results)
 
         # Visualization
         frame = mmcv.bgr2rgb(frame)
 
-        if num_instances < 0:
-            num_instances = len(pose_lift_results)
-
-        det_data_sample = merge_data_samples(pose_det_results)
+        det_data_sample = merge_data_samples(pose_est_results)
 
         local_visualizer.add_datasample(
-            'detection',
+            'result',
             frame,
-            data_sample=data_samples,
+            data_sample=pred_3d_data_samples,
             det_data_sample=det_data_sample,
-            det_dataset_skeleton=pose_estimator.dataset_meta['skeleton_links'],
-            det_dataset_link_color=pose_estimator.
-            dataset_meta['skeleton_link_colors'],
+            draw_gt=False,
+            det_kpt_color=det_kpt_color,
+            det_dataset_skeleton=det_dataset_skeleton,
+            det_dataset_link_color=det_dataset_link_color,
             show=args.show,
+            draw_bbox=True,
             wait_time=0.001)
 
         frame_vis = local_visualizer.get_image()
-
-        # visualization
-        # visualizer.draw_pose(frame, pred_instances)
-        # cv2.imshow('MMPose Demo [Press ESC to Exit]', frame)
-        # frame_vis = frame.copy()[:, :, ::-1]
 
         if save_out_video:
             if video_writer is None:
@@ -417,13 +449,13 @@ def main():
                 # depending on the presence of heatmaps
                 video_writer = cv2.VideoWriter(
                     osp.join(args.output_root,
-                             f'vis_{osp.basename(args.input)}'), fourcc, 25,
+                             f'vis_{osp.basename(args.input)}'), fourcc, fps,
                     (frame_vis.shape[1], frame_vis.shape[0]))
 
             video_writer.write(mmcv.rgb2bgr(frame_vis))
 
-        if frame_id == 25:
-            break  # TODO
+        # if frame_idx == 30:
+        #     break  # TODO
 
     video.release()
 
