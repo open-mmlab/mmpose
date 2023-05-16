@@ -3,7 +3,7 @@ custom_imports = dict(imports=['codecs2', 'models'])
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=60, val_interval=1)
+train_cfg = dict(max_epochs=80, val_interval=1)
 
 # optimizer
 optim_wrapper = dict(
@@ -17,8 +17,8 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=60,
-        milestones=[40, 55],
+        end=80,
+        milestones=[40, 60],
         gamma=0.1,
         by_epoch=True)
 ]
