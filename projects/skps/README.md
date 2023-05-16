@@ -72,9 +72,9 @@ mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKP
 
 ## Results
 
-| Arch                                                            | Input Size | NMEtest | NMEpose | NMEillumination | NMEocclusion | NMEblur | NMEmakeup | NMEexpression |
-| :-------------------------------------------------------------- | :--------: | :-----: | :-----: | :-------------: | :----------: | :-----: | :-------: | :-----------: |
-| [SKPS](./configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256) |  256x256   |  0.394  |         |      0.821      |    0.804     |  0.945  |   model   |      log      |
+| Arch                                                              | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |    ckpt    |    log    |
+|:------------------------------------------------------------------| :--------: |:--------------------:|:--------------------:|:----------------------------:|:-------------------------:|:--------------------:|:----------------------:|:--------------------------:| :--------: | :-------: |
+| [skps](/configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py) |  256x256   |         3.94         |         6.71         |             3.84             |           4.68            |         4.52         |          3.77          |            4.18            | [ckpt](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_wflw_256x256_dark-3f8e0c2c_20210125.pth) | [log](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_wflw_256x256_dark_20210125.log.json) |
 
 ## Citation
 
