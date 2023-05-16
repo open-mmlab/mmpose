@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import build_conv_layer
 from mmengine.model import ModuleDict
-from mmengine.structures import InstanceData, PixelData
+from mmengine.structures import InstanceData
 from torch import Tensor
 
 from mmpose.evaluation.functional import pose_pck_accuracy
@@ -289,7 +289,7 @@ class SKPSHead(BaseHead):
                 _keypoints_flip, _keypoint_scores_flip = self.decoder.decode(
                     _heatmaps_flip[b], _displacements_flip[b])
 
-                ##flip the kps coords
+                #flip the kps coords
                 N, C, H, W = _heatmaps.shape
                 _keypoints_flip /= (W - 1)
                 _keypoints_flip = flip_coordinates(
