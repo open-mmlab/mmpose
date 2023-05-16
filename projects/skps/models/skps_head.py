@@ -290,14 +290,17 @@ class SKPSHead(BaseHead):
                     _heatmaps_flip[b], _displacements_flip[b])
 
                 # flip the kps coords
-                N, C, H, W = _heatmaps.shape
-                _keypoints_flip /= (W - 1)
+                real_w=self.decoder.input_size[0]
+                real_h = self.decoder.input_size[1]
+
+                # the coordinate range is 0-255  for 256x256 input size
+                _keypoints_flip /= (real_w - 1)
                 _keypoints_flip = flip_coordinates(
                     _keypoints_flip,
                     flip_indices=flip_indices,
                     shift_coords=False,
-                    input_size=((W - 1), (H - 1)))
-                _keypoints_flip *= (W - 1)
+                    input_size=((real_w - 1), (real_h - 1)))
+                _keypoints_flip *= (real_w - 1)
 
                 _keypoints = (_keypoints + _keypoints_flip) / 2.
                 # pack outputs
