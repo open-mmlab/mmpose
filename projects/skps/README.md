@@ -5,8 +5,6 @@ The result in wflw achieves 3.94 NME.
 
 ## Description
 
-
-
 Author： @610265158.
 
 This project implements a top-down pose estimator with custom head and loss functions that have been seamlessly inherited from existing modules within MMPose.
@@ -74,9 +72,9 @@ mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKP
 
 ## Results
 
-|                                  Arch                                     | Input Size | NMEtest | NMEpose | NMEillumination	 |  NMEocclusion	   | NMEblur |                             NMEmakeup	                              |
-|:------------------------------------------------------------------------|:----------:|:-------:| :-------------: | :-------------: | :---: | :-------------: | :---------------------------------------------------------------: |
-| [SKPS](./configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256)  |  256x256   |  0.394  |         |      0.821      | 0.804 |      0.945      | [model](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) \| [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
+| Arch                                                            | Input Size | NMEtest | NMEpose | NMEillumination | NMEocclusion | NMEblur |                                    NMEmakeup                                    |
+| :-------------------------------------------------------------- | :--------: | :-----: | :-----: | :-------------: | :----------: | :-----: | :-----------------------------------------------------------------------------: |
+| [SKPS](./configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256) |  256x256   |  0.394  |         |      0.821      |    0.804     |  0.945  | [model](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) \| [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
 
 ## Citation
 
