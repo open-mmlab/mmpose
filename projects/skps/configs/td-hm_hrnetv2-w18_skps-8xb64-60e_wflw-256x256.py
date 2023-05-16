@@ -1,4 +1,3 @@
-
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 #
