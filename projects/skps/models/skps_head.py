@@ -289,13 +289,16 @@ class SKPSHead(BaseHead):
                 _keypoints_flip, _keypoint_scores_flip = self.decoder.decode(
                     _heatmaps_flip[b], _displacements_flip[b])
 
-                _keypoints_flip /= 255
+
+                ##flip the kps coords
+                N,C,H,W=_heatmaps.shape
+                _keypoints_flip /= (W-1)
                 _keypoints_flip = flip_coordinates(
                     _keypoints_flip,
                     flip_indices=flip_indices,
                     shift_coords=False,
-                    input_size=(255, 255))
-                _keypoints_flip *= 255
+                    input_size=((W-1), (H-1)))
+                _keypoints_flip *= (W-1)
 
                 _keypoints = (_keypoints + _keypoints_flip) / 2.
                 # pack outputs
