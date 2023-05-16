@@ -11,8 +11,8 @@ from .utils.post_processing import get_heatmap_maximum
 
 @KEYPOINT_CODECS.register_module()
 class SKPSHeatmap(BaseKeypointCodec):
-    """Generate heatmap the same with MSRAHeatmap, and produce offside within
-    x and y directions.
+    """Generate heatmap the same with MSRAHeatmap, and produce offside within x
+    and y directions.
 
     Note:
 

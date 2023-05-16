@@ -72,9 +72,9 @@ mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKP
 
 ## Results
 
-| Arch                                                            | Input Size | NMEtest | NMEpose | NMEillumination | NMEocclusion | NMEblur |                                    NMEmakeup                                    |
-| :-------------------------------------------------------------- | :--------: | :-----: | :-----: | :-------------: | :----------: | :-----: | :-----------------------------------------------------------------------------: |
-| [SKPS](./configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256) |  256x256   |  0.394  |         |      0.821      |    0.804     |  0.945  | [model](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) \| [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192_20220909.log) |
+| Arch                                                            | Input Size | NMEtest | NMEpose | NMEillumination | NMEocclusion | NMEblur | NMEmakeup | NMEexpression |
+| :-------------------------------------------------------------- | :--------: | :-----: | :-----: | :-------------: | :----------: | :-----: | :-------: | :-----------: |
+| [SKPS](./configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256) |  256x256   |  0.394  |         |      0.821      |    0.804     |  0.945  |   model   |      log      |
 
 ## Citation
 
@@ -88,64 +88,3 @@ mim test mmpose configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py $CHECKP
     year={2020}
 }
 ```
-
-## Checklist
-
-Here is a checklist of this project's progress. And you can ignore this part if you don't plan to contribute
-to MMPose projects.
-
-> The PIC (person in charge) or contributors of this project should check all the items that they believe have been finished, which will further be verified by codebase maintainers via a PR.
-
-> OpenMMLab's maintainer will review the code to ensure the project's quality. Reaching the first milestone means that this project suffices the minimum requirement of being merged into 'projects/'. But this project is only eligible to become a part of the core package upon attaining the last milestone.
-
-> Note that keeping this section up-to-date is crucial not only for this project's developers but the entire community, since there might be some other contributors joining this project and deciding their starting point from this list. It also helps maintainers accurately estimate time and effort on further code polishing, if needed.
-
-> A project does not necessarily have to be finished in a single PR, but it's essential for the project to at least reach the first milestone in its very first PR.
-
-- [ ] Milestone 1: PR-ready, and acceptable to be one of the `projects/`.
-
-  - [ ] Finish the code
-
-    > The code's design shall follow existing interfaces and convention. For example, each model component should be registered into `mmpose.registry.MODELS` and configurable via a config file.
-
-  - [ ] Basic docstrings & proper citation
-
-    > Each major class should contains a docstring, describing its functionality and arguments. If your code is copied or modified from other open-source projects, don't forget to cite the source project in docstring and make sure your behavior is not against its license. Typically, we do not accept any code snippet under GPL license. [A Short Guide to Open Source Licenses](https://medium.com/nationwide-technology/a-short-guide-to-open-source-licenses-cf5b1c329edd)
-
-  - [ ] Test-time correctness
-
-    > If you are reproducing the result from a paper, make sure your model's inference-time performance matches that in the original paper. The weights usually could be obtained by simply renaming the keys in the official pre-trained weights. This test could be skipped though, if you are able to prove the training-time correctness and check the second milestone.
-
-  - [ ] A full README
-
-    > As this template does.
-
-- [ ] Milestone 2: Indicates a successful model implementation.
-
-  - [ ] Training-time correctness
-
-    > If you are reproducing the result from a paper, checking this item means that you should have trained your model from scratch based on the original paper's specification and verified that the final result matches the report within a minor error range.
-
-- [ ] Milestone 3: Good to be a part of our core package!
-
-  - [ ] Type hints and docstrings
-
-    > Ideally *all* the methods should have [type hints](https://www.pythontutorial.net/python-basics/python-type-hints/) and [docstrings](https://google.github.io/styleguide/pyguide.html#381-docstrings). [Example](https://github.com/open-mmlab/mmpose/blob/0fb7f22000197181dc0629f767dd99d881d23d76/mmpose/utils/tensor_utils.py#L53)
-
-  - [ ] Unit tests
-
-    > Unit tests for the major module are required. [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/tests/test_models/test_heads/test_heatmap_heads/test_heatmap_head.py)
-
-  - [ ] Code polishing
-
-    > Refactor your code according to reviewer's comment.
-
-  - [ ] Metafile.yml
-
-    > It will be parsed by MIM and Inferencer. [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/hrnet_coco.yml)
-
-  - [ ] Move your modules into the core package following the codebase's file hierarchy structure.
-
-    > In particular, you may have to refactor this README into a standard one. [Example](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/README.md)
-
-  - [ ] Refactor your modules into the core package following the codebase's file hierarchy structure.
