@@ -290,7 +290,7 @@ class SKPSHead(BaseHead):
                     _heatmaps_flip[b], _displacements_flip[b])
 
                 # flip the kps coords
-                real_w=self.decoder.input_size[0]
+                real_w = self.decoder.input_size[0]
                 real_h = self.decoder.input_size[1]
 
                 # the coordinate range is 0-255  for 256x256 input size
