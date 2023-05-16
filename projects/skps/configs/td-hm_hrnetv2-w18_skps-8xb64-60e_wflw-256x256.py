@@ -1,10 +1,6 @@
+custom_imports = dict(imports=['codecs2', 'models'])
+
 _base_ = ['mmpose::_base_/default_runtime.py']
-
-custom_imports = dict(imports=['codecs2','models'])
-
-
-
-
 
 # runtime
 train_cfg = dict(max_epochs=60, val_interval=1)
@@ -53,8 +49,8 @@ model = dict(
                 num_modules=1,
                 num_branches=1,
                 block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
+                num_blocks=(4,),
+                num_channels=(64,)),
             stage2=dict(
                 num_modules=1,
                 num_branches=2,
@@ -86,8 +82,8 @@ model = dict(
         type='SKPSHead',
         in_channels=270,
         out_channels=98,
-        conv_out_channels=(270, ),
-        conv_kernel_sizes=(1, ),
+        conv_out_channels=(270,),
+        conv_kernel_sizes=(1,),
         heatmap_loss=dict(type='AdaptiveWingLoss', use_target_weight=True),
         offside_loss=dict(type='SoftWingLoss', use_target_weight=True),
         decoder=codec),
