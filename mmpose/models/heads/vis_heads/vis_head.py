@@ -66,8 +66,40 @@ class VisibilityPredictionHead(BaseHead):
         x = self.vis_head(x)
         return x.reshape(-1, self.num_joints)
 
-    def decode(self, batch_vis: Union[Tensor, Tuple[Tensor]],
-               pose_preds: Union[Tuple, Predictions]) -> InstanceList:
+    def integrate(self, batch_vis: Tensor,
+                  pose_preds: Union[Tuple, Predictions]) -> InstanceList:
+        """Add keypoints visibility prediction to pose prediction.
+
+        Args:
+            batch_vis (torch.Tensor): predicted batch keypoints visibility
+                in shape (B, num_instances, K, D) where K is the keypoint
+                number, D is the keypoint dimension and num_instances=1,
+                since vis_head only support top-down methods now
+            pose_preds (Union[Tuple, Predictions]): output of keypoints
+                prediction head
+
+        Returns:
+            Union[InstanceList | Tuple[InstanceList | PixelDataList]]: If
+            posehead's ``test_cfg['output_heatmap']==True``, return both
+            pose and heatmap prediction; otherwise only return the pose
+            prediction.
+
+            The pose prediction is a list of ``InstanceData``, each contains
+            the following fields:
+
+                - keypoints (np.ndarray): predicted keypoint coordinates in
+                    shape (num_instances, K, D) where K is the keypoint number
+                    and D is the keypoint dimension
+                - keypoint_scores (np.ndarray): predicted keypoint scores in
+                    shape (num_instances, K)
+                - keypoint_visibility (np.ndarray): predicted keypoints
+                    visibility in shape (num_instances, K)
+
+            The heatmap prediction is a list of ``PixelData``, each contains
+            the following fields:
+
+                - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
+        """
         if isinstance(pose_preds, tuple):
             pose_pred_instances, pose_pred_fields = pose_preds
         else:
@@ -90,6 +122,38 @@ class VisibilityPredictionHead(BaseHead):
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
                 test_cfg: ConfigType = {}) -> Predictions:
+        """Predict results from features.
+
+        Args:
+            feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
+                features (or multiple multi-stage features in TTA)
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            test_cfg (dict): The runtime config for testing process. Defaults
+                to {}
+
+        Returns:
+            Union[InstanceList | Tuple[InstanceList | PixelDataList]]: If
+            posehead's ``test_cfg['output_heatmap']==True``, return both
+            pose and heatmap prediction; otherwise only return the pose
+            prediction.
+
+            The pose prediction is a list of ``InstanceData``, each contains
+            the following fields:
+
+                - keypoints (np.ndarray): predicted keypoint coordinates in
+                    shape (num_instances, K, D) where K is the keypoint number
+                    and D is the keypoint dimension
+                - keypoint_scores (np.ndarray): predicted keypoint scores in
+                    shape (num_instances, K)
+                - keypoint_visibility (np.ndarray): predicted keypoints
+                    visibility in shape (num_instances, K)
+
+            The heatmap prediction is a list of ``PixelData``, each contains
+            the following fields:
+
+                - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
+        """
         if test_cfg.get('flip_test', False):
             # TTA: flip test -> feats = [orig, flipped]
             assert isinstance(feats, list) and len(feats) == 2
@@ -108,14 +172,25 @@ class VisibilityPredictionHead(BaseHead):
         batch_pose = self.pose_head.predict(feats, batch_data_samples,
                                             test_cfg)
 
-        return self.decode(batch_vis, batch_pose)
+        return self.integrate(batch_vis, batch_pose)
 
     def loss(self,
-             inputs: Tuple[Tensor],
+             feats: Tuple[Tensor],
              batch_data_samples: OptSampleList,
              train_cfg: OptConfigType = {}) -> dict:
+        """Calculate losses from a batch of inputs and data samples.
 
-        vis_pred_outputs = self.forward(inputs)
+        Args:
+            feats (Tuple[Tensor]): The multi-stage features
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            train_cfg (dict): The runtime config for training process.
+                Defaults to {}
+
+        Returns:
+            dict: A dictionary of losses.
+        """
+        vis_pred_outputs = self.forward(feats)
         vis_labels = torch.cat([
             d.gt_instance_labels.keypoints_visible for d in batch_data_samples
         ])
@@ -131,7 +206,7 @@ class VisibilityPredictionHead(BaseHead):
         losses.update(loss_vis=loss_vis)
 
         # calculate keypoints losses
-        loss_kpt = self.pose_head.loss(inputs, batch_data_samples)
+        loss_kpt = self.pose_head.loss(feats, batch_data_samples)
         losses.update(loss_kpt)
 
         return losses
