@@ -1,13 +1,11 @@
 # Simple Keypoints
 
-It is a simple keypoints detector model. The model predict a heatmap and a offside map.
-The result in wflw achieves 3.94 NME.
-
 ## Description
 
-Author： @lz
+Author： @2120140200@mail.nankai.edu.cn
 
-This project implements a top-down pose estimator with custom head and loss functions that have been seamlessly inherited from existing modules within MMPose.
+It is a simple keypoints detector model. The model predict a score heatmap and an encoded location map.
+The result in wflw achieves 3.94 NME.
 
 ## Usage
 
