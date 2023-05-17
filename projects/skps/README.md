@@ -72,6 +72,6 @@ mim test mmpose configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py -C $CHE
 
 ## Results
 
-| Arch       | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |   ckpt   |                        log                         |
-| :--------- | :--------: | :------------------: |:--------------------:|:----------------------------:| :-----------------------: |:--------------------:|:----------------------:|:--------------------------:|:--------:|:--------------------------------------------------:|
+| Arch       | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |    ckpt    |    log    |
+| :--------- | :--------: | :------------------: | :------------------: | :--------------------------: | :-----------------------: | :------------------: | :--------------------: | :------------------------: | :--------: | :-------: |
 | [skps](/configs/td-hm_hrnetv2-w18_skps-8xb64-60e_wflw-256x256.py) |  256x256   |         3.94         |         6.67         |             3.85             |           4.68            |         4.51         |          3.81          |            4.24            | [ckpt](https://drive.google.com/file/d/1QbBwOdwQoLf-gQ8jTFR9xdO43VGSTelg/view?usp=sharing) | [log](https://drive.google.com/file/d/1Y49HDhH2eSK6LyK7Ri2D86A_ab_4DQfW/view?usp=sharing) |
