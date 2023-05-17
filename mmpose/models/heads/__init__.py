@@ -6,9 +6,11 @@ from .heatmap_heads import (AssociativeEmbeddingHead, CIDHead, CPMHead,
 from .hybrid_heads import DEKRHead
 from .regression_heads import (DSNTHead, IntegralRegressionHead,
                                RegressionHead, RLEHead)
+from .vis_heads import VisibilityPredictionHead
 
 __all__ = [
     'BaseHead', 'HeatmapHead', 'CPMHead', 'MSPNHead', 'ViPNASHead',
     'RegressionHead', 'IntegralRegressionHead', 'SimCCHead', 'RLEHead',
-    'DSNTHead', 'AssociativeEmbeddingHead', 'DEKRHead', 'CIDHead', 'RTMCCHead'
+    'DSNTHead', 'AssociativeEmbeddingHead', 'DEKRHead', 'CIDHead', 'RTMCCHead',
+    'VisibilityPredictionHead'
 ]
