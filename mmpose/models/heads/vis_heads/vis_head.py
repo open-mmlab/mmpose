@@ -2,7 +2,6 @@
 from typing import Sequence, Tuple, Union
 
 import torch
-from mmengine.structures import InstanceData
 from torch import Tensor, nn
 
 from mmpose.models.utils.tta import flip_visibility
@@ -108,15 +107,12 @@ class VisibilityPredictionHead(BaseHead):
 
         batch_vis_np = to_numpy(batch_vis, unzip=True)
 
-        preds = [
-            InstanceData(
-                keypoints=pose_pred_instance.keypoints,
-                keypoint_scores=pose_pred_instance.keypoint_scores,
-                keypoint_visibility=vis_pred) for pose_pred_instance, vis_pred
-            in zip(pose_pred_instances, batch_vis_np)
-        ]
+        assert len(pose_pred_instances) == len(batch_vis_np)
+        for index in range(len(pose_pred_instances)):
+            pose_pred_instances[index].keypoint_visibility = batch_vis_np[
+                index]
 
-        return preds, pose_pred_fields
+        return pose_pred_instances, pose_pred_fields
 
     def predict(self,
                 feats: Tuple[Tensor],
