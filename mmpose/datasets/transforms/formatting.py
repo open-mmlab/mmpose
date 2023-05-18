@@ -150,11 +150,13 @@ class PackPoseInputs(BaseTransform):
             if key in results:
                 gt_instances.set_field(results[key], packed_key)
 
-        # pack `transformed_keypoints` for visualizing data transform
-        # and augmentation results
+        # pack `transformed_keypoints` and `transformed_keypoints_visible`
+        # for visualizing data transform and augmentation results
         if self.pack_transformed and 'transformed_keypoints' in results:
             gt_instances.set_field(results['transformed_keypoints'],
                                    'transformed_keypoints')
+            gt_instances.set_field(results['keypoint_weights'],
+                                   'transformed_keypoints_visible')
 
         data_sample.gt_instances = gt_instances
 
