@@ -111,7 +111,7 @@ We have only trained models with an input size of 640, as we couldn't replicate 
 
 ## Citation
 
-If this project benefits your work, please kindly consider citing the original paper:
+If this project benefits your work, please kindly consider citing the original papers:
 
 ```bibtex
 @inproceedings{maji2022yolo,
@@ -120,6 +120,15 @@ If this project benefits your work, please kindly consider citing the original p
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
   pages={2637--2646},
   year={2022}
+}
+```
+
+```bibtex
+@article{yolox2021,
+  title={{YOLOX}: Exceeding YOLO Series in 2021},
+  author={Ge, Zheng and Liu, Songtao and Wang, Feng and Li, Zeming and Sun, Jian},
+  journal={arXiv preprint arXiv:2107.08430},
+  year={2021}
 }
 ```
 
