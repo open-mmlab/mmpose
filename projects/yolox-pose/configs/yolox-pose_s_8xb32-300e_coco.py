@@ -92,7 +92,7 @@ img_scale = (640, 640)
 
 # pipelines
 pre_transform = [
-    dict(type='LoadImageFromFile', file_client_args=_base_.file_client_args),
+    dict(type='mmpose.LoadImage', backend_args=_base_.backend_args),
     dict(type='PoseToDetConverter')
 ]
 
