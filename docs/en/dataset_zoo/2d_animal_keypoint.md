@@ -13,6 +13,7 @@ MMPose supported datasets:
 - [Desert Locust](#desert-locust) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Grévy’s Zebra](#grvys-zebra) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [ATRW](#atrw) \[ [Homepage](https://cvwc2019.github.io/challenge.html) \]
+- [Animal Kingdom](#Animal-Kindom) \[ [Homepage](https://openaccess.thecvf.com/content/CVPR2022/html/Ng_Animal_Kingdom_A_Large_and_Diverse_Dataset_for_Animal_Behavior_CVPR_2022_paper.html) \]
 
 ## Animal-Pose
 
