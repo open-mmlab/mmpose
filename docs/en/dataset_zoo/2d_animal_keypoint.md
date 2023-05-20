@@ -474,6 +474,9 @@ mmpose
 <details>
 <summary align="right"><a href="https://arxiv.org/abs/2204.08129">Animal Kingdom (CVPR'2022)</a></summary>
 </details>
+<div align="center">
+  <img src="https://github.com/open-mmlab/mmpose/assets/53283758/8591989e-91fa-4f6e-99c8-48b614de862e" height="200px">
+</div>
 
 ```bibtex
 @InProceedings{
