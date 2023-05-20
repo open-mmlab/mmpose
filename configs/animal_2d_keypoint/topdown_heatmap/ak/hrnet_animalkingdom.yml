@@ -1,0 +1,86 @@
+Models:
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: AnimalKingdom_P1
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.6323
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256-08bf96cb_20230519.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AnimalKingdom_P2
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.3741
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256-2396cc58_20230519.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AnimalKingdom_P3_amphibian
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.5358
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256-845085f9_20230519.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AnimalKingdom_P3_bird
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.7671
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256-566feff5_20230519.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AnimalKingdom_P3_fish
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.6406
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256-76c3999f_20230519.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AnimalKingdom_P3_mammal
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.571
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256-e8aadf02_20230519.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AnimalKingdom_P3_reptile
+  Name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256
+  Results:
+  - Dataset: AnimalKingdom
+    Metrics:
+      PCK: 0.51
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256-e8440c16_20230519.pth

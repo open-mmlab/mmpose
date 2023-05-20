@@ -13,6 +13,7 @@ MMPose supported datasets:
 - [Desert Locust](#desert-locust) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Grévy’s Zebra](#grvys-zebra) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [ATRW](#atrw) \[ [Homepage](https://cvwc2019.github.io/challenge.html) \]
+- [Animal Kingdom](#Animal-Kindom) \[ [Homepage](https://openaccess.thecvf.com/content/CVPR2022/html/Ng_Animal_Kingdom_A_Large_and_Diverse_Dataset_for_Animal_Behavior_CVPR_2022_paper.html) \]
 
 ## Animal-Pose
 
@@ -94,7 +95,6 @@ mmpose
         │   │-- dog
         │   │-- horse
         │   │-- sheep
-
 ```
 
 The official dataset does not provide the official train/val/test set split.
@@ -154,7 +154,6 @@ mmpose
         │   │-- 000000000001.jpg
         │   │-- 000000000002.jpg
         │   │-- ...
-
 ```
 
 The annotation files in 'annotation' folder contains 50 labeled animal species. There are total 10,015 labeled images with 13,028 instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
@@ -206,7 +205,6 @@ mmpose
         │   │-- BrownHorseinShadow
         │   │-- BrownHorseintoshadow
         │   │-- ...
-
 ```
 
 ## MacaquePose
@@ -255,7 +253,6 @@ mmpose
         │   │-- 020a1c75c8c85238.jpg
         │   │-- 020b1506eef2557d.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation (see [code](/tools/dataset/parse_macaquepose_dataset.py)).
@@ -308,7 +305,6 @@ mmpose
         │   │-- 2.jpg
         │   │-- 3.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation (see [code](/tools/dataset_converters/parse_deepposekit_dataset.py)).
@@ -360,7 +356,6 @@ mmpose
         │   │-- 2.jpg
         │   │-- 3.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation (see [code](/tools/dataset_converters/parse_deepposekit_dataset.py)).
@@ -389,7 +384,6 @@ Since the official dataset does not provide the test set, we randomly select 90%
 <div align="center">
   <img src="https://user-images.githubusercontent.com/100993824/227802783-ace952bb-1ff9-4720-80a8-c63cc9e714b6.png" height="200px">
 </div>
-
 For [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) dataset, images can be downloaded from [zebra_images](https://download.openmmlab.com/mmpose/datasets/zebra_images.tar).
 Please download the annotation files from [zebra_annotations](https://download.openmmlab.com/mmpose/datasets/zebra_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -412,7 +406,6 @@ mmpose
         │   │-- 2.jpg
         │   │-- 3.jpg
         │   │-- ...
-
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation (see [code](/tools/dataset_converters/parse_deepposekit_dataset.py)).
@@ -439,7 +432,6 @@ Since the official dataset does not provide the test set, we randomly select 90%
 <div align="center">
   <img src="https://user-images.githubusercontent.com/100993824/227797386-fce99241-8a0e-4a40-a179-dad013e6c5a4.png" height="200px">
 </div>
-
 ATRW captures images of the Amur tiger (also known as Siberian tiger, Northeast-China tiger) in the wild.
 For [ATRW](https://cvwc2019.github.io/challenge.html) dataset, please download images from
 [Pose_train](https://lilablobssc.blob.core.windows.net/cvwc2019/train/atrw_pose_train.tar.gz),
@@ -476,5 +468,69 @@ mmpose
         │   │   │-- 000000.jpg
         │   │   │-- 000004.jpg
         │   │   │-- ...
+```
 
+## Animal Kingdom
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2204.08129">Animal Kingdom (CVPR'2022)</a></summary>
+</details>
+<div align="center">
+  <img src="https://github.com/open-mmlab/mmpose/assets/53283758/8591989e-91fa-4f6e-99c8-48b614de862e" height="200px">
+</div>
+
+```bibtex
+@InProceedings{
+    Ng_2022_CVPR,
+    author    = {Ng, Xun Long and Ong, Kian Eng and Zheng, Qichen and Ni, Yun and Yeo, Si Yong and Liu, Jun},
+    title     = {Animal Kingdom: A Large and Diverse Dataset for Animal Behavior Understanding},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {19023-19034}
+ }
+```
+
+For [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom) dataset, images can be downloaded from [here](https://forms.office.com/pages/responsepage.aspx?id=drd2NJDpck-5UGJImDFiPVRYpnTEMixKqPJ1FxwK6VZUQkNTSkRISTNORUI2TDBWMUpZTlQ5WUlaSyQlQCN0PWcu).
+Please Extract dataset under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ak
+        |--annotations
+        │  │-- ak_P1
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P2
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_amphibian
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_bird
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_fish
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_mammal
+        │  │   │-- train.json
+        │  │   │-- test.json
+        │  │-- ak_P3_reptile
+        │      │-- train.json
+        │      │-- test.json
+        │-- images
+        │   │-- AAACXZTV
+        │   │   │--AAACXZTV_f000059.jpg
+        │   │   │--...
+        │   │-- AAAUILHH
+        │   │   │--AAAUILHH_f000098.jpg
+        │   │   │--...
+        │   │-- ...
 ```
