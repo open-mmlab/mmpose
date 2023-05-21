@@ -122,9 +122,10 @@ train_pipeline = [
         ]),
     dict(
         type='RandomBBoxTransform',
-        shift_prob=0.3,
+        shift_prob=0.,
         rotate_factor=45,
-        scale_factor=(0.75, 1.25)),
+        scale_factor=(0.75, 1.25),
+        scale_prob=1.),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
@@ -138,7 +139,7 @@ val_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=16,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
