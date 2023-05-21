@@ -27,31 +27,34 @@ def parse_args():
 
 
 class LSConverter:
+
     def __init__(self, config: str):
         """Convert the Label Studio Format JSON file to COCO format JSON file
-           which is needed by mmpose.
+        which is needed by mmpose.
 
-           The annotations in label studio must follow the order: 
-           keypoint 1, keypoint 2... keypoint n, rect of the instance, 
-           polygon of the instance, 
-           then annotations of the next instance. 
-           Where the order of rect and polygon can be switched, 
-           the bbox and area of the instance will be calculated with the data behind.
-           
+           The annotations in label studio must follow the order:
+           keypoint 1, keypoint 2... keypoint n, rect of the instance,
+           polygon of the instance,
+           then annotations of the next instance.
+           Where the order of rect and polygon can be switched,
+           the bbox and area of the instance will be calculated with
+           the data behind.
+
            Only annotating one of rect and polygon is also acceptable.
         Args:
             config (str): The annotations config xml file.
-                The xml content is from Project Setting -> Label Interface -> Code.
+                The xml content is from Project Setting ->
+                Label Interface -> Code.
                 Example:
                 ```
                 <View>
                 <KeyPointLabels name="kp-1" toName="img-1">
                     <Label value="person" background="#D4380D"/>
                 </KeyPointLabels>
-                <PolygonLabels name="polygonlabel" toName="img-1"> 
+                <PolygonLabels name="polygonlabel" toName="img-1">
                     <Label value="person" background="#0DA39E"/>
                 </PolygonLabels>
-                <RectangleLabels name="label" toName="img-1"> 
+                <RectangleLabels name="label" toName="img-1">
                     <Label value="person" background="#DDA0EE"/>
                 </RectangleLabels>
                 <Image name="img-1" value="$img"/>
@@ -78,6 +81,7 @@ class LSConverter:
             input_json (str): The path of Label Studio format JSON file.
             output_json (str): The path of the output COCO JSON file.
         """
+
         def add_image(images, width, height, image_id, image_path):
             images.append({
                 'width': width,
@@ -122,14 +126,15 @@ class LSConverter:
                         break
 
                 if category_name is None:
-                    logger.warning("Unknown label type or labels are empty")
+                    logger.warning('Unknown label type or labels are empty')
                     continue
 
                 if not height or not width:
-                    if 'original_width' not in label or 'original_height' not in label:
+                    if 'original_width' not in label or \
+                            'original_height' not in label:
                         logger.debug(
-                            f'original_width or original_height not found in {image_name}'
-                        )
+                            f'original_width or original_height not found'
+                            f'in {image_name}')
                         continue
 
                     # get height and width info from annotations
@@ -150,10 +155,10 @@ class LSConverter:
                     w = label['value']['width']
                     h = label['value']['height']
 
-                    x = x * label["original_width"] / 100
-                    y = y * label["original_height"] / 100
-                    w = w * label["original_width"] / 100
-                    h = h * label["original_height"] / 100
+                    x = x * label['original_width'] / 100
+                    y = y * label['original_height'] / 100
+                    w = w * label['original_width'] / 100
+                    h = h * label['original_height'] / 100
 
                     # rect annotation should be later than keypoints
                     annotations[-1]['bbox'] = [x, y, w, h]
@@ -182,8 +187,8 @@ class LSConverter:
                     annotations[-1]['num_keypoints'] = kp_num
 
                 elif 'keypointlabels' == label['type']:
-                    x = label['value']['x'] * label["original_width"] / 100
-                    y = label['value']['y'] * label["original_height"] / 100
+                    x = label['value']['x'] * label['original_width'] / 100
+                    y = label['value']['y'] * label['original_height'] / 100
 
                     # there is no method to annotate visible in Label Studio
                     # so the keypoints' visible code will be 2 except (0,0)
