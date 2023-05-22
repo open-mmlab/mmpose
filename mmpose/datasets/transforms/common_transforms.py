@@ -649,6 +649,8 @@ class Albumentation(BaseTransform):
                     f'{obj_type} is not pixel-level transformations. '
                     'Please use with caution.')
             obj_cls = getattr(albumentations, obj_type)
+        elif isinstance(obj_type, type):
+            obj_cls = obj_type
         else:
             raise TypeError(f'type must be a str, but got {type(obj_type)}')
 

@@ -18,3 +18,14 @@ python -m torch.distributed.launch \
     $(dirname "$0")/train.py \
     $CONFIG \
     --launcher pytorch ${@:3}
+
+
+# python -m debugpy --wait-for-client --listen 5678 -m torch.distributed.launch \
+#     --nnodes=$NNODES \
+#     --node_rank=$NODE_RANK \
+#     --master_addr=$MASTER_ADDR \
+#     --nproc_per_node=$GPUS \
+#     --master_port=$PORT \
+#     $(dirname "$0")/train.py \
+#     $CONFIG \
+#     --launcher pytorch ${@:3}
