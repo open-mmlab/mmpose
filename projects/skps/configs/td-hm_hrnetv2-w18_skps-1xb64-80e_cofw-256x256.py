@@ -85,7 +85,7 @@ model = dict(
         conv_out_channels=(270, ),
         conv_kernel_sizes=(1, ),
         heatmap_loss=dict(type='AdaptiveWingLoss', use_target_weight=True),
-        offside_loss=dict(type='WingLoss', use_target_weight=True),
+        offside_loss=dict(type='AdaptiveWingLoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
