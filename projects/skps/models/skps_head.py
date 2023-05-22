@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import math
+
 from typing import Optional, Sequence, Tuple, Union
 
 import torch
@@ -61,7 +61,7 @@ class SKPSHead(BaseHead):
                  heatmap_loss: ConfigType = dict(
                      type='AdaptiveWingLoss', use_target_weight=True),
                  offside_loss: ConfigType = dict(
-                     type='SoftWingLoss', use_target_weight=True),
+                     type='AdaptiveWingLoss', use_target_weight=True),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -106,7 +106,7 @@ class SKPSHead(BaseHead):
         self.loss_module = ModuleDict(
             dict(
                 heatmap=MODELS.build(heatmap_loss),
-                displacement=MODELS.build(offside_loss),
+                offside=MODELS.build(offside_loss),
             ))
 
         # build decoder
@@ -121,11 +121,7 @@ class SKPSHead(BaseHead):
     @property
     def default_init_cfg(self):
         init_cfg = [
-            dict(
-                type='Normal',
-                layer=['Conv2d', 'ConvTranspose2d'],
-                std=0.001,
-                bias=0),
+            dict(type='Normal', layer=['Conv2d', 'ConvTranspose2d'], std=0.01),
             dict(type='Constant', layer='BatchNorm2d', val=1)
         ]
         return init_cfg
@@ -201,12 +197,20 @@ class SKPSHead(BaseHead):
         heatmap_loss = self.loss_module['heatmap'](pred_heatmaps, gt_heatmaps,
                                                    keypoint_weights)
 
-        offside_loss = self._wing_loss(
-            pred_offside, gt_offside, weight=gt_heatmaps)
+        n, c, h, w = pred_offside.size()
+        offside_loss_x = self.loss_module['offside'](pred_offside[:, :c // 2],
+                                                     gt_offside[:, :c // 2],
+                                                     gt_heatmaps)
+
+        offside_loss_y = self.loss_module['offside'](pred_offside[:, c // 2:],
+                                                     gt_offside[:, c // 2:],
+                                                     gt_heatmaps)
+
+        offside_loss = (offside_loss_x + offside_loss_y) / 2.
 
         losses.update({
             'loss/heatmap': heatmap_loss,
-            'loss/offside': offside_loss * 0.01,
+            'loss/offside': offside_loss,
         })
         # calculate accuracy
         if train_cfg.get('compute_acc', True):
@@ -219,21 +223,6 @@ class SKPSHead(BaseHead):
             losses.update(acc_pose=acc_pose)
 
         return losses
-
-    def _wing_loss(self, pre, gt, w=10.0, epsilon=2.0, weight=1.):
-
-        x = pre - gt
-        c = w * (1.0 - math.log(1.0 + w / epsilon))
-
-        deta = torch.abs(x)
-
-        losses = torch.where(
-            torch.gt(deta, w), deta - c, w * torch.log(1.0 + deta / epsilon))
-
-        weight = torch.cat([weight, weight], dim=1)
-        losses = losses * weight
-        loss = torch.sum(losses) / torch.sum(weight)
-        return loss
 
     def predict(self,
                 feats: Features,

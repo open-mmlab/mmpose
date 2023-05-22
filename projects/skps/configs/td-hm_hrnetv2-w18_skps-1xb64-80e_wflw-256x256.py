@@ -85,7 +85,7 @@ model = dict(
         conv_out_channels=(270, ),
         conv_kernel_sizes=(1, ),
         heatmap_loss=dict(type='AdaptiveWingLoss', use_target_weight=True),
-        offside_loss=dict(type='WingLoss', use_target_weight=True),
+        offside_loss=dict(type='AdaptiveWingLoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -122,9 +122,10 @@ train_pipeline = [
         ]),
     dict(
         type='RandomBBoxTransform',
-        shift_prob=0.3,
+        shift_prob=0.0,
         rotate_factor=45,
-        scale_factor=(0.75, 1.25)),
+        scale_factor=(0.75, 1.25),
+        scale_prob=1.),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
