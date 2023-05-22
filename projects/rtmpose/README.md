@@ -50,7 +50,10 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
-- May. 2023: Add [code examples](./examples/) of RTMPose. Release Hand models.
+- May. 2023:
+  - Add [code examples](./examples/) of RTMPose.
+  - Release Hand models trained on 5 datasets.
+  - Release Body models trained on 7 datasets.
 - Mar. 2023: RTMPose is released. RTMPose-m runs at 430+ FPS and achieves 75.8 mAP on COCO val set.
 
 ## 📖 Introduction [🔝](#-table-of-contents)
