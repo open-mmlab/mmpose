@@ -1,10 +1,11 @@
 ## List of examples
 
-### 1. RTMPose-Deploy (without MMDeploy)
+### 1. RTMPose-Deploy
 
-RTMPose-Deploy is a C++ code example that does not use MMDEPLOY for RTMPose localized deployment.
+RTMPose-Deploy is a C++ code example for RTMPose localized deployment.
 
-- [Original Repository](https://github.com/HW140701/RTMPose-Deploy)
+- [ONNXRuntime-CPU](https://github.com/HW140701/RTMPose-Deploy)
+- [TensorRT](https://github.com/Dominic23331/rtmpose_tensorrt)
 
 ### 2. RTMPose inference with ONNXRuntime (Python)
 
