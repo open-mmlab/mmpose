@@ -75,3 +75,11 @@ WFLW
 | Arch       | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |    ckpt    |    log    |
 | :--------- | :--------: | :------------------: | :------------------: | :--------------------------: | :-----------------------: | :------------------: | :--------------------: | :------------------------: | :--------: | :-------: |
 | [skps](/configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py) |  256x256   |         3.88         |         6.60         |             3.81             |           4.57            |         4.44         |          3.75          |            4.13            | [ckpt](https://drive.google.com/file/d/10U7f_pp0BPMhm575cO7Vg13nZVCy-PfN/view?usp=sharing) | [log](https://drive.google.com/file/d/1fBNcAyMdRr9nTN8wHqvYPnd9AFBinOk4/view?usp=sharing) |
+
+
+
+COFW
+
+| Arch                                                               | Input Size | NME  |                              ckpt                              |                              log                               |
+|:-------------------------------------------------------------------| :--------: |:----:| :------------------------------------------------------------: | :------------------------------------------------------------: |
+| [skps](/configs/td-hm_hrnetv2-w18_skps-1xb16-160e_cofw-256x256.py) |  256x256   | 3.20 | [ckpt](https://drive.google.com/file/d/1fdYQ0ajg11KAdkeLVCi_jPdSTKf9i3hP/view?usp=sharing) | [log](https://drive.google.com/file/d/1IUjIY_sLbO6YO59G7XZGUHDVC-o_k09y/view?usp=sharing) |
