@@ -76,9 +76,12 @@ class RTMDet(nn.Module):
 def parse_args():
     parser = argparse.ArgumentParser(
         description='convert rtmdet model to ONNX.')
-    parser.add_argument('--config', type=str, help='rtmdet config file path.')
     parser.add_argument(
-        '--checkpoint', type=str, help='rtmdet checkpoint path.')
+        '--config', type=str, help='rtmdet config file path from mmdetection.')
+    parser.add_argument(
+        '--checkpoint',
+        type=str,
+        help='rtmdet checkpoint path from mmdetection.')
     parser.add_argument('--output', type=str, help='output filename.')
     parser.add_argument(
         '--device',
