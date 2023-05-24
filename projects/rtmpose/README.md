@@ -320,7 +320,7 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 We provide two appoaches to try RTMPose:
 
 - MMPose demo scripts
-- Pre-compiled MMDeploy SDK (Recommended)
+- Pre-compiled MMDeploy SDK (Recommend, 6-10 times faster)
 
 ### MMPose demo scripts
 
@@ -364,6 +364,8 @@ MMDeploy provides a precompiled SDK for Pipeline reasoning on RTMPose projects, 
 
 - All models must by exported by `tools/deploy.py` before PoseTracker can be used for inference.
 - For the tutorial of exporting the SDK version model, see [SDK Reasoning](#%EF%B8%8F-step3-inference-with-sdk), and for detailed parameter settings of inference, see [Pipeline Reasoning](#-step4-pipeline-inference).
+- Exported SDK models (ONNX, TRT, ncnn, etc.) can be downloaded from [OpenMMLab Deploee](https://platform.openmmlab.com/deploee).
+- You can also convert `.pth` models into SDK [online](https://platform.openmmlab.com/deploee/task-convert-list).
 
 #### Linux
 
@@ -596,6 +598,9 @@ Please refer to [Train and Test](https://mmpose.readthedocs.io/en/latest/user_gu
 ## 🏗️ How to Deploy [🔝](#-table-of-contents)
 
 Here is a basic example of deploy RTMPose with [MMDeploy](https://github.com/open-mmlab/mmdeploy/tree/main).
+
+- Exported SDK models (ONNX, TRT, ncnn, etc.) can be downloaded from [OpenMMLab Deploee](https://platform.openmmlab.com/deploee).
+- You can also convert `.pth` models into SDK [online](https://platform.openmmlab.com/deploee/task-convert-list).
 
 ### 🧩 Step1. Install MMDeploy
 
