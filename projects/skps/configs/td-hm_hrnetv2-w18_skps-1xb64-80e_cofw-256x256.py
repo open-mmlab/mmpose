@@ -3,7 +3,7 @@ custom_imports = dict(imports=['codecs2', 'models'])
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=80, val_interval=1)
+train_cfg = dict(max_epochs=160, val_interval=1)
 
 # optimizer
 optim_wrapper = dict(
@@ -17,8 +17,8 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=80,
-        milestones=[40, 60],
+        end=160,
+        milestones=[80, 120],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -101,7 +101,7 @@ data_root = 'data/cofw/'
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
-    dict(type='GetBBoxCenterScale'),
+    dict(type='GetBBoxCenterScale',padding=1),
     dict(type='RandomFlip', direction='horizontal'),
     dict(
         type='Albumentation',
@@ -125,14 +125,14 @@ train_pipeline = [
         shift_prob=0.,
         rotate_factor=45,
         scale_factor=(0.75, 1.25),
-        scale_prob=1.),
+        scale_prob=0),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
     dict(type='LoadImage'),
-    dict(type='GetBBoxCenterScale'),
+    dict(type='GetBBoxCenterScale',padding=1),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
