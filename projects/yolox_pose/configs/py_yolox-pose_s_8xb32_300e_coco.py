@@ -1,6 +1,8 @@
 if '_base_':
     from ._base_.py_default_runtime import *
 
+from datasets import (CocoDataset, FilterDetPoseAnnotations, PackDetPoseInputs,
+                      PoseToDetConverter)
 from mmcv.ops import nms
 from mmdet.datasets.transforms import (Pad, RandomAffine, RandomFlip, Resize,
                                        YOLOXHSVRandomAug)
@@ -17,13 +19,10 @@ from mmyolo.datasets.transforms import Mosaic, YOLOXMixUp
 from mmyolo.engine.hooks import YOLOXModeSwitchHook
 from mmyolo.models import (YOLOXPAFPN, ExpMomentumEMA, YOLODetector,
                            YOLOXCSPDarknet)
+from models import (OksLoss, PoseBatchSyncRandomResize, PoseSimOTAAssigner,
+                    YOLOXPoseHead, YOLOXPoseHeadModule)
 from torch.nn import BatchNorm2d, SiLU
 from torch.optim import AdamW
-from yolox_pose.datasets import (FilterDetPoseAnnotations, PackDetPoseInputs,
-                                 PoseToDetConverter)
-from yolox_pose.models import (OksLoss, PoseBatchSyncRandomResize,
-                               PoseSimOTAAssigner, YOLOXPoseHead,
-                               YOLOXPoseHeadModule)
 
 from mmpose.datasets.transforms import LoadImage
 from mmpose.evaluation import CocoMetric
@@ -171,7 +170,7 @@ test_pipeline = [
 ]
 
 # dataset settings
-dataset_type = 'CocoDataset'
+dataset_type = CocoDataset
 data_mode = 'bottomup'
 data_root = 'data/coco/'
 
@@ -215,7 +214,8 @@ val_evaluator = dict(
     score_mode='bbox')
 test_evaluator = val_evaluator
 
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks.update(
+    dict(checkpoint=dict(save_best='coco/AP', rule='greater')))
 
 # optimizer
 base_lr = 0.004
