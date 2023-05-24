@@ -198,8 +198,10 @@ class SimCCHead(BaseHead):
         return deconv_head
 
     def forward(self, feats: Tuple[Tensor]) -> Tuple[Tensor, Tensor]:
-        """Forward the network. The input is multi scale feature maps and the
-        output is the heatmap.
+        """Forward the network.
+
+        The input is the featuremap extracted by backbone and the
+        output is the simcc representation.
 
         Args:
             feats (Tuple[Tensor]): Multi scale feature maps.

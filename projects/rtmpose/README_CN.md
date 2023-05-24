@@ -311,7 +311,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 我们提供了两种途径来让用户尝试 RTMPose 模型：
 
 - MMPose demo 脚本
-- MMDeploy SDK 预编译包 （推荐）
+- MMDeploy SDK 预编译包 （推荐，速度提升6-10倍）
 
 ### MMPose demo 脚本
 
@@ -357,6 +357,8 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推
 
 - 所有的模型必须经过 `tools/deploy.py` 导出后才能使用 PoseTracker 进行推理。
 - 导出 SDK 版模型的教程见 [SDK 推理](#%EF%B8%8F-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
+- 你可以从 [硬件模型库](https://platform.openmmlab.com/deploee) 直接下载 SDK 版模型（ONNX、 TRT、ncnn 等）。
+- 同时我们也支持 [在线模型转换](https://platform.openmmlab.com/deploee/task-convert-list)。
 
 #### Linux\\
 
@@ -587,6 +589,9 @@ example\cpp\build\Release
 ## 🏗️ 部署教程 [🔝](#-table-of-contents)
 
 本教程将展示如何通过 [MMDeploy](https://github.com/open-mmlab/mmdeploy/tree/main) 部署 RTMPose 项目。
+
+- 你可以从 [硬件模型库](https://platform.openmmlab.com/deploee) 直接下载 SDK 版模型（ONNX、 TRT、ncnn 等）。
+- 同时我们也支持 [在线模型转换](https://platform.openmmlab.com/deploee/task-convert-list)。
 
 ### 🧩 安装
 
