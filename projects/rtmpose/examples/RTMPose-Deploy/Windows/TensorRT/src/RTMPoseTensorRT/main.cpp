@@ -57,6 +57,7 @@ int main()
             break;
     }
     cv::destroyAllWindows();
+    cap.release();
 
     return 0;
 }
