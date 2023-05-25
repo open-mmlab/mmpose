@@ -100,7 +100,10 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         """
         vis_height, vis_width, _ = image.shape
 
-        pred_instances = pose_samples.pred_instances
+        if 'pred_instances' in pose_samples:
+            pred_instances = pose_samples.pred_instances
+        else:
+            pred_instances = InstanceData()
         if num_instances < 0:
             if 'keypoints' in pred_instances:
                 num_instances = len(pred_instances)
@@ -208,7 +211,6 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 if title:
                     ax.set_title(f'{title} ({idx})')
 
-        pred_instances = pose_samples.pred_instances
         if 'keypoints' in pred_instances:
             keypoints = pred_instances.get('keypoints',
                                            pred_instances.keypoints)
@@ -226,7 +228,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
             _draw_3d_instances_kpts(keypoints, scores, keypoints_visible, 1,
                                     'Prediction')
 
-        if draw_gt:
+        if draw_gt and 'gt_instances' in pose_samples:
             gt_instances = pose_samples.gt_instances
             if 'lifting_target' in gt_instances:
                 keypoints = gt_instances.get('lifting_target',
@@ -245,10 +247,14 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         fig.tight_layout()
         fig.canvas.draw()
 
-        img_w, img_h = fig.canvas.get_width_height()
+        pred_img_data = fig.canvas.tostring_rgb()
         pred_img_data = np.frombuffer(
-            fig.canvas.tostring_rgb(),
-            dtype=np.uint8).reshape(img_h, img_w, -1)
+            fig.canvas.tostring_rgb(), dtype=np.uint8)
+
+        if not pred_img_data.any():
+            pred_img_data = np.full((vis_height, vis_width, 3), 255)
+        else:
+            pred_img_data = pred_img_data.reshape(vis_height, vis_width, -1)
 
         plt.close(fig)
 

@@ -456,9 +456,6 @@ def main():
 
             video_writer.write(mmcv.rgb2bgr(frame_vis))
 
-        # if frame_idx == 30:
-        #     break  # TODO
-
     video.release()
 
     if video_writer:
