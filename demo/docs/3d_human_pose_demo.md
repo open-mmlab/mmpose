@@ -53,7 +53,7 @@ https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0
 configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py \
 https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth  \
 --input https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
---out-root  vis_results  \
+--output-root  vis_results  \
 --rebase-keypoint-height
 ```
 
@@ -68,7 +68,7 @@ https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_posetrack18_384x2
 configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py \
 https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth  \
 --input https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
---out-root  vis_results  \
+--output-root  vis_results  \
 --rebase-keypoint-height \
 --use-multi-frames  --online
 ```
