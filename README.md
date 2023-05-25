@@ -97,7 +97,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- We are excited to release **YOLOX-Pose**, a One-Stage multi-person pose estimation model based on YOLOX. Checkout our [project page](/projects/yolox-pose/) for more details.
+- We are excited to release **YOLOX-Pose**, a One-Stage multi-person pose estimation model based on YOLOX. Checkout our [project page](/projects/yolox_pose/) for more details.
 
 ![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
 
@@ -108,7 +108,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - Build individual projects with full power of MMPose but not bound up with heavy frameworks
   - Checkout new projects:
     - [RTMPose](/projects/rtmpose/)
-    - [YOLOX-Pose](/projects/yolox-pose/)
+    - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
   - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
 
@@ -116,7 +116,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-04-06: MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) is officially released, with the main updates including:
 
-  - Release of [YOLOX-Pose](/projects/yolox-pose/), a One-Stage multi-person pose estimation model based on YOLOX
+  - Release of [YOLOX-Pose](/projects/yolox_pose/), a One-Stage multi-person pose estimation model based on YOLOX
   - Development of [MMPose for AIGC](/projects/mmpose4aigc/) based on RTMPose, generating high-quality skeleton images for Pose-guided AIGC projects
   - Support for OpenPose-style skeleton visualization
   - More complete and user-friendly [documentation and tutorials](https://mmpose.readthedocs.io/en/latest/overview.html)

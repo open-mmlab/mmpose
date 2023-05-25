@@ -106,7 +106,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - 通过独立项目的形式，利用 MMPose 的强大功能，同时不被代码框架所束缚
   - 最新添加的项目包括：
     - [RTMPose](/projects/rtmpose/)
-    - [YOLOX-Pose](/projects/yolox-pose/)
+    - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
   - 从简单的 [示例项目](/projects/example_project/) 开启您的 MMPose 代码贡献者之旅吧，让我们共同打造更好用的 MMPose！
 
@@ -114,7 +114,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-04-06：MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) 正式发布了，主要更新包括:
 
-  - 发布了 [YOLOX-Pose](/projects/yolox-pose/)，一个基于 YOLOX 的 One-Stage 多人姿态估计模型
+  - 发布了 [YOLOX-Pose](/projects/yolox_pose/)，一个基于 YOLOX 的 One-Stage 多人姿态估计模型
   - 基于 RTMPose 开发的 [MMPose for AIGC](/projects/mmpose4aigc/)，生成高质量骨架图片用于 Pose-guided AIGC 项目
   - 支持 OpenPose 风格的骨架可视化
   - 更加完善、友好的 [文档和教程](https://mmpose.readthedocs.io/zh_CN/latest/overview.html)
