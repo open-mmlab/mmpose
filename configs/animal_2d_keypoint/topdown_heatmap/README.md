@@ -59,10 +59,10 @@ Results on AnimalKingdom test set
 
 |   Model   | Input Size |     class     | PCK(0.05) |                 Details and Download                  |
 | :-------: | :--------: | :-----------: | :-------: | :---------------------------------------------------: |
-| HRNet-w32 |  256x256   |      P1       |  0.6272   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
-| HRNet-w32 |  256x256   |      P2       |  0.3774   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
-| HRNet-w32 |  256x256   |  P3_mammals   |  0.5756   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
-| HRNet-w32 |  256x256   | P3_amphibians |  0.5356   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
-| HRNet-w32 |  256x256   |  P3_reptiles  |    0.5    | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
-| HRNet-w32 |  256x256   |   P3_birds    |  0.7679   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
-| HRNet-w32 |  256x256   |   P3_fishes   |   0.636   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |      P1       |  0.6323   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |      P2       |  0.3741   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |  P3_mammals   |   0.571   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   | P3_amphibians |  0.5358   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |  P3_reptiles  |   0.51    | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |   P3_birds    |  0.7671   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |   P3_fishes   |  0.6406   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
