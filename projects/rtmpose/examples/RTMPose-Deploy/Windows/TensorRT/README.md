@@ -31,7 +31,7 @@ Note that RTMDet should be the mmdetection version, and the conversion of mmyolo
 
 #### 2. RTMPose
 
-You can use mmdeploy to convert RTMPose. The mmdeploy config file should use **configs/mmpose/pose-detection_onnxruntime_static.py**.  The convert command as follow:
+You can use mmdeploy to convert RTMPose. The mmdeploy config file should use **configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py**.  The convert command as follow:
 
 ```shell
 python tools/deploy.py <deploy cfg> <model cfg> <checkpoint> <image path>
