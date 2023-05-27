@@ -60,7 +60,7 @@ class TestVideoPoseLifting(TestCase):
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
                                lifting_target_visible, camera_param)
 
-        self.assertEqual(encoded['keypoint_labels'].shape, (17 * 2, 1))
+        self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(encoded['lifting_target_label'].shape, (17, 3))
         self.assertEqual(encoded['lifting_target_weights'].shape, (17, ))
         self.assertEqual(encoded['trajectory_weights'].shape, (17, ))
@@ -71,7 +71,7 @@ class TestVideoPoseLifting(TestCase):
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
                                lifting_target_visible, camera_param)
 
-        self.assertEqual(encoded['keypoint_labels'].shape, (17 * 2, 1))
+        self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(encoded['lifting_target_label'].shape, (17, 3))
         self.assertEqual(encoded['lifting_target_weights'].shape, (17, ))
         self.assertEqual(encoded['trajectory_weights'].shape, (17, ))
@@ -85,7 +85,7 @@ class TestVideoPoseLifting(TestCase):
         self.assertTrue('target_root_removed' in encoded
                         and 'target_root_index' in encoded)
         self.assertEqual(encoded['lifting_target_weights'].shape, (16, ))
-        self.assertEqual(encoded['keypoint_labels'].shape, (17 * 2, 1))
+        self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(encoded['lifting_target_label'].shape, (16, 3))
         self.assertEqual(encoded['target_root'].shape, (3, ))
 

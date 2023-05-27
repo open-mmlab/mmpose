@@ -134,7 +134,7 @@ class PoseLifter(BasePoseEstimator):
         # pose model
         feats = self.backbone(inputs)
         if self.with_neck:
-            x = self.neck(feats)
+            feats = self.neck(feats)
 
         # trajectory model
         if self.with_traj:
@@ -145,9 +145,9 @@ class PoseLifter(BasePoseEstimator):
 
             if self.with_traj_neck:
                 traj_x = self.traj_neck(traj_x)
-            return x, traj_x
+            return feats, traj_x
         else:
-            return x
+            return feats
 
     def _forward(self,
                  inputs: Tensor,
@@ -218,8 +218,14 @@ class PoseLifter(BasePoseEstimator):
         """Predict results from a batch of inputs and data samples with post-
         processing.
 
+        Note:
+            - batch_size: B
+            - num_input_keypoints: K
+            - input_keypoint_dim: C
+            - input_sequence_len: T
+
         Args:
-            inputs (Tensor): Inputs with shape (N, K, C, T).
+            inputs (Tensor): Inputs with shape like (B, K, C, T).
             data_samples (List[:obj:`PoseDataSample`]): The batch
                 data samples
 
@@ -298,6 +304,8 @@ class PoseLifter(BasePoseEstimator):
         assert len(batch_pred_instances) == len(batch_data_samples)
         if batch_pred_fields is None:
             batch_pred_fields, batch_traj_fields = [], []
+        if batch_traj_instances is None:
+            batch_traj_instances = []
         output_keypoint_indices = self.test_cfg.get('output_keypoint_indices',
                                                     None)
 

@@ -130,6 +130,8 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
             - If ``mode='loss'``, return a dict of tensor(s) which is the loss
                 function value
         """
+        if isinstance(inputs, list):
+            inputs = torch.stack(inputs)
         if mode == 'loss':
             return self.loss(inputs, data_samples)
         elif mode == 'predict':
