@@ -163,9 +163,6 @@ class ImagePoseLifting(BaseKeypointCodec):
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
-        N = keypoint_labels.shape[0]
-        keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
-
         encoded['keypoint_labels'] = keypoint_labels
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights

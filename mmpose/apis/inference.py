@@ -223,3 +223,36 @@ def inference_bottomup(model: nn.Module, img: Union[np.ndarray, str]):
         results = model.test_step(batch)
 
     return results
+
+
+def collect_multi_frames(video, frame_id, indices, online=False):
+    """Collect multi frames from the video.
+
+    Args:
+        video (mmcv.VideoReader): A VideoReader of the input video file.
+        frame_id (int): index of the current frame
+        indices (list(int)): index offsets of the frames to collect
+        online (bool): inference mode, if set to True, can not use future
+            frame information.
+
+    Returns:
+        list(ndarray): multi frames collected from the input video file.
+    """
+    num_frames = len(video)
+    frames = []
+    # put the current frame at first
+    frames.append(video[frame_id])
+    # use multi frames for inference
+    for idx in indices:
+        # skip current frame
+        if idx == 0:
+            continue
+        support_idx = frame_id + idx
+        # online mode, can not use future frame information
+        if online:
+            support_idx = np.clip(support_idx, 0, frame_id)
+        else:
+            support_idx = np.clip(support_idx, 0, num_frames - 1)
+        frames.append(video[support_idx])
+
+    return frames

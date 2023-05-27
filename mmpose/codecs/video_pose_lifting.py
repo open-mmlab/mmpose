@@ -28,7 +28,8 @@ class VideoPoseLifting(BaseKeypointCodec):
         remove_root (bool): If true, remove the root keypoint from the pose.
             Default: ``False``.
         save_index (bool): If true, store the root position separated from the
-            original pose. Default: ``False``.
+            original pose, only takes effect if ``remove_root`` is ``True``.
+            Default: ``False``.
         normalize_camera (bool): Whether to normalize camera intrinsics.
             Default: ``False``.
     """
@@ -165,10 +166,6 @@ class VideoPoseLifting(BaseKeypointCodec):
             _camera_param['f'] = _camera_param['f'] / scale
             _camera_param['c'] = (_camera_param['c'] - center[:, None]) / scale
             encoded['camera_param'] = _camera_param
-
-        # Generate reshaped keypoint coordinates
-        N = keypoint_labels.shape[0]
-        keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
 
         encoded['keypoint_labels'] = keypoint_labels
         encoded['lifting_target_label'] = lifting_target_label
