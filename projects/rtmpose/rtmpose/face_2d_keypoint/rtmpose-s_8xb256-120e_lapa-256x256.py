@@ -1,17 +1,18 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
 # runtime
-max_epochs = 210
-stage2_num_epochs = 30
+max_epochs = 120
+stage2_num_epochs = 10
 base_lr = 4e-3
 
-train_cfg = dict(max_epochs=max_epochs, val_interval=10)
+train_cfg = dict(max_epochs=max_epochs, val_interval=1)
 randomness = dict(seed=21)
 
 # optimizer
 optim_wrapper = dict(
     type='OptimWrapper',
-    optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.05),
+    optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.),
+    clip_grad=dict(max_norm=35, norm_type=2),
     paramwise_cfg=dict(
         norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
 
@@ -26,16 +27,16 @@ param_scheduler = [
     dict(
         # use cosine lr from 150 to 300 epoch
         type='CosineAnnealingLR',
-        eta_min=base_lr * 0.05,
-        begin=max_epochs // 2,
+        eta_min=base_lr * 0.005,
+        begin=30,
         end=max_epochs,
-        T_max=max_epochs // 2,
+        T_max=max_epochs - 30,
         by_epoch=True,
         convert_to_iter_based=True),
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=256)
+auto_scale_lr = dict(base_batch_size=512)
 
 # codec settings
 codec = dict(
@@ -59,8 +60,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=0.67,
-        widen_factor=0.75,
+        deepen_factor=0.33,
+        widen_factor=0.5,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -68,13 +69,13 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             prefix='backbone.',
-            checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth'  # noqa
-        )),
+            checkpoint='https://download.openmmlab.com/mmdetection/v3.0/'
+            'rtmdet/cspnext_rsb_pretrain/cspnext-s_imagenet_600e-ea671761.pth')
+    ),
     head=dict(
         type='RTMCCHead',
-        in_channels=768,
-        out_channels=21,
+        in_channels=512,
+        out_channels=106,
         input_size=codec['input_size'],
         in_featuremap_size=tuple([s // 32 for s in codec['input_size']]),
         simcc_split_ratio=codec['simcc_split_ratio'],
@@ -97,34 +98,27 @@ model = dict(
     test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
-dataset_type = 'CocoWholeBodyHandDataset'
+dataset_type = 'LapaDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+data_root = 'data/'
 
 backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
-#     }))
 
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
-    # dict(type='RandomHalfBody'),
-    dict(
-        type='RandomBBoxTransform', scale_factor=[0.5, 1.5],
-        rotate_factor=180),
     dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomHalfBody'),
+    dict(
+        type='RandomBBoxTransform', scale_factor=[0.5, 1.5], rotate_factor=80),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(
         type='Albumentation',
         transforms=[
-            dict(type='Blur', p=0.1),
-            dict(type='MedianBlur', p=0.1),
+            dict(type='Blur', p=0.2),
+            dict(type='MedianBlur', p=0.2),
             dict(
                 type='CoarseDropout',
                 max_holes=1,
@@ -148,13 +142,13 @@ val_pipeline = [
 train_pipeline_stage2 = [
     dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
-    # dict(type='RandomHalfBody'),
+    dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomHalfBody'),
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.,
         scale_factor=[0.75, 1.25],
-        rotate_factor=180),
-    dict(type='RandomFlip', direction='horizontal'),
+        rotate_factor=60),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(
@@ -178,7 +172,7 @@ train_pipeline_stage2 = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=256,
     num_workers=10,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -186,13 +180,13 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_train_v1.0.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='annotations/lapa_trainval.json',
+        data_prefix=dict(img='LaPa/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
     batch_size=32,
-    num_workers=10,
+    num_workers=4,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
@@ -200,16 +194,31 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/coco_wholebody_val_v1.0.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file='annotations/lapa_test.json',
+        data_prefix=dict(img='LaPa/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
-test_dataloader = val_dataloader
+test_dataloader = dict(
+    batch_size=32,
+    num_workers=4,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=dict(
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file='annotations/lapa_test.json',
+        data_prefix=dict(img='LaPa/'),
+        test_mode=True,
+        pipeline=val_pipeline,
+    ))
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='AUC', rule='greater', max_keep_ckpts=1))
+    checkpoint=dict(
+        save_best='NME', rule='less', max_keep_ckpts=3, interval=1))
 
 custom_hooks = [
     dict(
@@ -225,9 +234,8 @@ custom_hooks = [
 ]
 
 # evaluators
-val_evaluator = [
-    dict(type='PCKAccuracy', thr=0.2),
-    dict(type='AUC'),
-    dict(type='EPE')
-]
+val_evaluator = dict(
+    type='NME',
+    norm_mode='keypoint_distance',
+)
 test_evaluator = val_evaluator

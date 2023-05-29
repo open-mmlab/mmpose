@@ -48,8 +48,7 @@ ______________________________________________________________________
 
 - 2023 年 5 月：
   - 添加 [代码示例](./examples/)
-  - 发布混合数据集训练的 Hand 模型。
-  - 发布混合数据集训练的 Body 模型。
+  - 发布混合数据集训练的 Hand, Face, Body 模型。
 - 2023 年 3 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 430+ FPS 。
 
 ## 📖 简介 [🔝](#-table-of-contents)
@@ -219,12 +218,27 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 ### 脸部 2d 关键点 (106 Keypoints)
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/233819275-0523118b-e6c2-41f7-8b72-324969310480.gif" width=450 height=250/>
+<img src="https://github.com/open-mmlab/mmpose/assets/13503330/38aa345e-4ceb-4e73-bc37-5e082735e336" width=450 height=350/>
 </div>
 
-|                       Config                        | Input Size | NME<sup><br>(LaPa) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |  Download   |
-| :-------------------------------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :---------: |
-| [RTMPose-m (试用)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |         -         |                      -                      |                         -                          | Coming soon |
+<details open>
+<summary><b>Face6</b></summary>
+
+- `Face6` and `*` 代表模型在 6 个开源数据集上训练得到：
+  - [COCO-Wholebody-Face](https://github.com/jin-s13/COCO-WholeBody/)
+  - [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
+  - [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
+  - [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
+  - [Halpe](https://github.com/Fang-Haoshu/Halpe-FullBody/)
+  - [LaPa](https://github.com/JDAI-CV/lapa-dataset)
+
+|             Config             | Input Size | NME<sup><br>(LaPa) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download             |
+| :----------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :------------------------------: |
+| [RTMPose-t\*](./rtmpose/face_2d_keypoint/rtmpose-t_8xb256-120e_lapa-256x256.py) |  256x256   |        1.67        |         -         |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-face6_pt-in1k_120e-256x256-df79d9a5_20230529.pth) |
+| [RTMPose-s\*](./rtmpose/face_2d_keypoint/rtmpose-m_8xb256-120e_lapa-256x256.py) |  256x256   |        1.59        |         -         |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-face6_pt-in1k_120e-256x256-d779fdef_20230529.pth) |
+| [RTMPose-m\*](./rtmpose/face_2d_keypoint/rtmpose-m_8xb256-120e_lapa-256x256.py) |  256x256   |        1.44        |         -         |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth) |
+
+</details>
 
 ### 手部 2d 关键点 (21 Keypoints)
 
