@@ -30,6 +30,10 @@ class VideoPoseLifting(BaseKeypointCodec):
         save_index (bool): If true, store the root position separated from the
             original pose, only takes effect if ``remove_root`` is ``True``.
             Default: ``False``.
+        reshape_keypoints (bool): If true, reshape the keypoints into shape
+            (-1, N). Default: ``True``.
+        concat_vis (bool): If true, concat the visibility item of keypoints.
+            Default: ``False``.
         normalize_camera (bool): Whether to normalize camera intrinsics.
             Default: ``False``.
     """
@@ -44,6 +48,8 @@ class VideoPoseLifting(BaseKeypointCodec):
                  root_index: int = 0,
                  remove_root: bool = False,
                  save_index: bool = False,
+                 reshape_keypoints: bool = True,
+                 concat_vis: bool = False,
                  normalize_camera: bool = False):
         super().__init__()
 
@@ -52,6 +58,8 @@ class VideoPoseLifting(BaseKeypointCodec):
         self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
+        self.reshape_keypoints = reshape_keypoints
+        self.concat_vis = concat_vis
         self.normalize_camera = normalize_camera
 
     def encode(self,
@@ -167,7 +175,19 @@ class VideoPoseLifting(BaseKeypointCodec):
             _camera_param['c'] = (_camera_param['c'] - center[:, None]) / scale
             encoded['camera_param'] = _camera_param
 
+        if self.concat_vis:
+            keypoints_visible_ = keypoints_visible
+            if keypoints_visible.ndim == 2:
+                keypoints_visible_ = keypoints_visible[..., None]
+            keypoint_labels = np.concatenate(
+                (keypoint_labels, keypoints_visible_), axis=2)
+
+        if self.reshape_keypoints:
+            N = keypoint_labels.shape[0]
+            keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
+
         encoded['keypoint_labels'] = keypoint_labels
+        encoded['keypoints_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights
         encoded['trajectory_weights'] = trajectory_weights

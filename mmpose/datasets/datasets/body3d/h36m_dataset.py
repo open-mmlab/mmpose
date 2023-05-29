@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import itertools
 import os.path as osp
 from collections import defaultdict
 from typing import Callable, List, Optional, Sequence, Tuple, Union
@@ -45,6 +46,8 @@ class Human36mDataset(BaseMocapDataset):
         seq_len (int): Number of frames in a sequence. Default: 1.
         seq_step (int): The interval for extracting frames from the video.
             Default: 1.
+        merge_seq (int): If larger than 0, merge every ``merge_seq`` sequence
+            together. Default: 0.
         pad_video_seq (bool): Whether to pad the video so that poses will be
             predicted for every frame in the video. Default: ``False``.
         causal (bool): If set to ``True``, the rightmost input frame will be
@@ -104,6 +107,7 @@ class Human36mDataset(BaseMocapDataset):
                  ann_file: str = '',
                  seq_len: int = 1,
                  seq_step: int = 1,
+                 merge_seq: int = 0,
                  pad_video_seq: bool = False,
                  causal: bool = True,
                  subset_frac: float = 1.0,
@@ -141,6 +145,7 @@ class Human36mDataset(BaseMocapDataset):
         super().__init__(
             ann_file=ann_file,
             seq_len=seq_len,
+            merge_seq=merge_seq,
             causal=causal,
             subset_frac=subset_frac,
             camera_param_file=camera_param_file,
@@ -205,7 +210,20 @@ class Human36mDataset(BaseMocapDataset):
         start = np.random.randint(0, len(sequence_indices) - subset_size + 1)
         end = start + subset_size
 
-        return sequence_indices[start:end]
+        sequence_indices = sequence_indices[start:end]
+
+        if self.merge_seq > 0:
+            sequence_indices_merged = []
+            for i in range(0, len(sequence_indices), self.merge_seq):
+                if i + self.merge_seq > len(sequence_indices):
+                    break
+                sequence_indices_merged.append(
+                    list(
+                        itertools.chain.from_iterable(
+                            sequence_indices[i:i + self.merge_seq])))
+            sequence_indices = sequence_indices_merged
+
+        return sequence_indices
 
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         instance_list, image_list = super()._load_annotations()

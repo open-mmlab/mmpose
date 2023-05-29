@@ -30,7 +30,11 @@ class TestImagePoseLifting(TestCase):
             encoded_wo_sigma=encoded_wo_sigma)
 
     def build_pose_lifting_label(self, **kwargs):
-        cfg = dict(type='ImagePoseLifting', num_keypoints=17, root_index=0)
+        cfg = dict(
+            type='ImagePoseLifting',
+            num_keypoints=17,
+            root_index=0,
+            reshape_keypoints=False)
         cfg.update(kwargs)
         return KEYPOINT_CODECS.build(cfg)
 

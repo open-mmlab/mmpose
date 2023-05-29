@@ -51,8 +51,6 @@ def keypoints_to_tensor(keypoints: Union[np.ndarray, Sequence[np.ndarray]]
     """
     if isinstance(keypoints, np.ndarray):
         keypoints = np.ascontiguousarray(keypoints)
-        N = keypoints.shape[0]
-        keypoints = keypoints.transpose(1, 2, 0).reshape(-1, N)
         tensor = torch.from_numpy(keypoints).contiguous()
     else:
         assert is_seq_of(keypoints, np.ndarray)

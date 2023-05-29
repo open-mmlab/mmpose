@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import itertools
 import os.path as osp
 from copy import deepcopy
 from itertools import filterfalse, groupby
@@ -21,6 +22,8 @@ class BaseMocapDataset(BaseDataset):
     Args:
         ann_file (str): Annotation file path. Default: ''.
         seq_len (int): Number of frames in a sequence. Default: 1.
+        merge_seq (int): If larger than 0, merge every ``merge_seq`` sequence
+            together. Default: 0.
         causal (bool): If set to ``True``, the rightmost input frame will be
             the target frame. Otherwise, the middle input frame will be the
             target frame. Default: ``True``.
@@ -63,6 +66,7 @@ class BaseMocapDataset(BaseDataset):
     def __init__(self,
                  ann_file: str = '',
                  seq_len: int = 1,
+                 merge_seq: int = 0,
                  causal: bool = True,
                  subset_frac: float = 1.0,
                  camera_param_file: Optional[str] = None,
@@ -101,6 +105,8 @@ class BaseMocapDataset(BaseDataset):
 
         self.seq_len = seq_len
         self.causal = causal
+
+        self.merge_seq = merge_seq
 
         assert 0 < subset_frac <= 1, (
             f'Unsupported `subset_frac` {subset_frac}. Supported range '
@@ -241,6 +247,17 @@ class BaseMocapDataset(BaseDataset):
             sequence_indices = [[idx] for idx in range(num_imgs)]
         else:
             raise NotImplementedError('Multi-frame data sample unsupported!')
+
+        if self.merge_seq > 0:
+            sequence_indices_merged = []
+            for i in range(0, len(sequence_indices), self.merge_seq):
+                if i + self.merge_seq > len(sequence_indices):
+                    break
+                sequence_indices_merged.append(
+                    list(
+                        itertools.chain.from_iterable(
+                            sequence_indices[i:i + self.merge_seq])))
+            sequence_indices = sequence_indices_merged
         return sequence_indices
 
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
@@ -274,7 +291,9 @@ class BaseMocapDataset(BaseDataset):
         image_list = []
 
         for idx, frame_ids in enumerate(self.sequence_indices):
-            assert len(frame_ids) == self.seq_len
+            assert len(frame_ids) == (
+                self.merge_seq if self.merge_seq *
+                self.seq_len else self.seq_len)
 
             _img_names = img_names[frame_ids]
 

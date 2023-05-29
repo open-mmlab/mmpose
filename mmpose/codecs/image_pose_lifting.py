@@ -25,6 +25,10 @@ class ImagePoseLifting(BaseKeypointCodec):
             Default: ``False``.
         save_index (bool): If true, store the root position separated from the
             original pose. Default: ``False``.
+        reshape_keypoints (bool): If true, reshape the keypoints into shape
+            (-1, N). Default: ``True``.
+        concat_vis (bool): If true, concat the visibility item of keypoints.
+            Default: ``False``.
         keypoints_mean (np.ndarray, optional): Mean values of keypoints
             coordinates in shape (K, D).
         keypoints_std (np.ndarray, optional): Std values of keypoints
@@ -42,6 +46,8 @@ class ImagePoseLifting(BaseKeypointCodec):
                  root_index: int,
                  remove_root: bool = False,
                  save_index: bool = False,
+                 reshape_keypoints: bool = True,
+                 concat_vis: bool = False,
                  keypoints_mean: Optional[np.ndarray] = None,
                  keypoints_std: Optional[np.ndarray] = None,
                  target_mean: Optional[np.ndarray] = None,
@@ -52,6 +58,8 @@ class ImagePoseLifting(BaseKeypointCodec):
         self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
+        self.reshape_keypoints = reshape_keypoints
+        self.concat_vis = concat_vis
         if keypoints_mean is not None and keypoints_std is not None:
             assert keypoints_mean.shape == keypoints_std.shape
         if target_mean is not None and target_std is not None:
@@ -163,7 +171,19 @@ class ImagePoseLifting(BaseKeypointCodec):
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
+        if self.concat_vis:
+            keypoints_visible_ = keypoints_visible
+            if keypoints_visible.ndim == 2:
+                keypoints_visible_ = keypoints_visible[..., None]
+            keypoint_labels = np.concatenate(
+                (keypoint_labels, keypoints_visible_), axis=2)
+
+        if self.reshape_keypoints:
+            N = keypoint_labels.shape[0]
+            keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
+
         encoded['keypoint_labels'] = keypoint_labels
+        encoded['keypoints_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights
         encoded['trajectory_weights'] = trajectory_weights

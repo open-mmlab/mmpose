@@ -19,7 +19,8 @@ class TestVideoPoseLifting(TestCase):
         return camera_param[(subj, camera)]
 
     def build_pose_lifting_label(self, **kwargs):
-        cfg = dict(type='VideoPoseLifting', num_keypoints=17)
+        cfg = dict(
+            type='VideoPoseLifting', num_keypoints=17, reshape_keypoints=False)
         cfg.update(kwargs)
         return KEYPOINT_CODECS.build(cfg)
 
@@ -72,6 +73,16 @@ class TestVideoPoseLifting(TestCase):
                                lifting_target_visible, camera_param)
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
+        self.assertEqual(encoded['lifting_target_label'].shape, (17, 3))
+        self.assertEqual(encoded['lifting_target_weights'].shape, (17, ))
+        self.assertEqual(encoded['trajectory_weights'].shape, (17, ))
+
+        # test reshape_keypoints
+        codec = self.build_pose_lifting_label(reshape_keypoints=True)
+        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
+                               lifting_target_visible, camera_param)
+
+        self.assertEqual(encoded['keypoint_labels'].shape, (34, 1))
         self.assertEqual(encoded['lifting_target_label'].shape, (17, 3))
         self.assertEqual(encoded['lifting_target_weights'].shape, (17, ))
         self.assertEqual(encoded['trajectory_weights'].shape, (17, ))

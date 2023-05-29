@@ -95,8 +95,7 @@ class AttentionBlock(BaseModule):
                  drop=0.,
                  attn_drop=0.,
                  drop_path=0.,
-                 st_mode='st',
-                 att_fuse=False):
+                 st_mode='st'):
         super().__init__()
 
         self.st_mode = st_mode
@@ -129,14 +128,10 @@ class AttentionBlock(BaseModule):
         mlp_out_dim = int(dim * mlp_out_ratio)
         self.mlp_s = nn.Sequential(
             nn.Linear(dim, mlp_hidden_dim), nn.GELU(),
-            nn.Linear(mlp_hidden_dim, mlp_out_dim), nn.Dropout(0))
+            nn.Linear(mlp_hidden_dim, mlp_out_dim), nn.Dropout(drop))
         self.mlp_t = nn.Sequential(
             nn.Linear(dim, mlp_hidden_dim), nn.GELU(),
-            nn.Linear(mlp_hidden_dim, mlp_out_dim), nn.Dropout(0))
-
-        self.att_fuse = att_fuse
-        if self.att_fuse:
-            self.attn_regress = nn.Linear(dim * 2, dim * 2)
+            nn.Linear(mlp_hidden_dim, mlp_out_dim), nn.Dropout(drop))
 
     def forward(self, x, seq_len=1):
         if self.st_mode == 'st':
