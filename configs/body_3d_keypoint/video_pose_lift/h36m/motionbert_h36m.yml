@@ -1,0 +1,21 @@
+Collections:
+- Name: MotionBERT
+  Paper:
+    Title: "Learning Human Motion Representations: A Unified Perspective"
+    URL: https://arxiv.org/abs/2210.06551
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/motionbert.md
+Models:
+- Config: configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py
+  In Collection: MotionBERT
+  Metadata:
+    Architecture: &id001
+    - MotionBERT
+    Training Data: Human3.6M
+  Name: vid_pl_motionbert_8xb32-120e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE:
+      P-MPJPE:
+    Task: Body 3D Keypoint
+  Weights:
