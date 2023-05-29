@@ -33,7 +33,7 @@ We also provide some documentation listed below to help you get started:
 - **[:zap:RTMPose](./rtmpose)**: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
   <div align="center">
-  <img src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png" width=800 height=200 />
+  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/5b637d76-41dd-4376-9a7f-854cd120799d" width=800 height=200 />
   </div><br/>
 
 - **[:art:MMPose4AIGC](./mmpose4aigc)**: Guide AI image generation with MMPose
