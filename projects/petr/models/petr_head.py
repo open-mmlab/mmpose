@@ -4,6 +4,8 @@ from typing import List, Tuple
 
 import torch
 import torch.nn as nn
+from mmengine.model import bias_init_with_prob, constant_init, normal_init
+
 from mmcv.cnn import Linear
 from mmdet.models import inverse_sigmoid
 from mmdet.models.dense_heads import DeformableDETRHead
@@ -77,6 +79,20 @@ class PETRHead(DeformableDETRHead):
             ])
 
         self.heatmap_fc = Linear(self.embed_dims, self.num_keypoints)
+
+    def init_weights(self) -> None:
+        """Initialize weights of the Deformable DETR head."""
+        if self.loss_cls.use_sigmoid:
+            bias_init = bias_init_with_prob(0.01)
+            for m in self.cls_branches:
+                nn.init.constant_(m.bias, bias_init)
+        for m in self.reg_branches:
+            constant_init(m[-1], 0, bias=0)
+        for m in self.kpt_branches:
+            constant_init(m[-1], 0, bias=0)
+        # initialize bias for heatmap prediction
+        bias_init = bias_init_with_prob(0.1)
+        normal_init(self.heatmap_fc, std=0.01, bias=bias_init)
 
     def forward(self, hidden_states: Tensor,
                 references: List[Tensor]) -> Tuple[Tensor]:

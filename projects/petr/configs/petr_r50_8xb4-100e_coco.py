@@ -204,6 +204,7 @@ train_pipeline = [
                     keep_ratio=True)
             ]
         ]),
+    dict(type='FilterDetPoseAnnotations', keep_empty=False),
     dict(type='GenerateHeatmap'),
     dict(
         type='PackDetPoseInputs',

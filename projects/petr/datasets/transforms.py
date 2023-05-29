@@ -7,6 +7,8 @@ from mmdet.datasets.transforms import PackDetInputs
 from mmdet.registry import TRANSFORMS
 from mmdet.structures.bbox.box_type import autocast_box_type
 from mmengine.structures import PixelData
+from mmdet.datasets.transforms import FilterAnnotations as FilterDetAnnotations
+
 
 from mmpose.codecs.utils import generate_gaussian_heatmaps
 from .bbox_keypoint_structure import BBoxKeypoints
@@ -85,13 +87,6 @@ class PackDetPoseInputs(PackDetInputs):
 
                 gt_fields.set_field(results[key], packed_key)
 
-        # Ensure all keys in `self.meta_keys` are in the `results` dictionary,
-        # which is necessary for `PackDetInputs` but not guaranteed during
-        # inference with an inferencer
-        for key in self.meta_keys:
-            if key not in results:
-                results[key] = None
-
         results = super().transform(results)
         if gt_fields:
             results['data_samples'].gt_fields = gt_fields.to_tensor()
@@ -143,7 +138,7 @@ class GenerateHeatmap(BaseTransform):
             sq3 = np.sqrt(b3**2 - 4 * a3 * c3)
             r3 = (b3 + sq3) / 2
 
-            sigmas[i] = min(r1, r2, r3, 3) / 3
+            sigmas[i] = min(r1, r2, r3) / 3
 
         return sigmas
 
@@ -172,5 +167,56 @@ class GenerateHeatmap(BaseTransform):
                                            keypoints_visible, sigmas)
 
         results['gt_heatmaps'] = hm
+
+        return results
+
+
+@TRANSFORMS.register_module()
+class FilterDetPoseAnnotations(FilterDetAnnotations):
+    """Filter invalid annotations.
+
+    In addition to the conditions checked by ``FilterDetAnnotations``, this
+    filter adds a new condition requiring instances to have at least one
+    visible keypoints.
+    """
+
+    @autocast_box_type()
+    def transform(self, results: dict) -> Union[dict, None]:
+        """Transform function to filter annotations.
+
+        Args:
+            results (dict): Result dict.
+
+        Returns:
+            dict: Updated result dict.
+        """
+        assert 'gt_bboxes' in results
+        gt_bboxes = results['gt_bboxes']
+        if gt_bboxes.shape[0] == 0:
+            return results
+
+        tests = []
+        if self.by_box:
+            tests.append(((gt_bboxes.widths > self.min_gt_bbox_wh[0]) &
+                          (gt_bboxes.heights > self.min_gt_bbox_wh[1]) &
+                          (gt_bboxes.num_keypoints > 0)).numpy())
+
+        if self.by_mask:
+            assert 'gt_masks' in results
+            gt_masks = results['gt_masks']
+            tests.append(gt_masks.areas >= self.min_gt_mask_area)
+
+        keep = tests[0]
+        for t in tests[1:]:
+            keep = keep & t
+
+        if not keep.any():
+            if self.keep_empty:
+                return None
+
+        keys = ('gt_bboxes', 'gt_bboxes_labels', 'gt_masks', 'gt_ignore_flags')
+        for key in keys:
+            if key in results:
+                results[key] = results[key][keep]
 
         return results

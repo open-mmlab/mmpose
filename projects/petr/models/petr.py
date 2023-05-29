@@ -13,10 +13,10 @@ from mmdet.models.layers.transformer.utils import inverse_sigmoid
 from mmdet.registry import MODELS
 from mmdet.structures import OptSampleList, SampleList
 from mmengine.model import xavier_init
-from torch import Tensor, nn
+from torch import Tensor, nnat 
 from torch.nn.init import normal_
 
-from .transformers import PetrTransformerDecoder
+from .transformers import PetrTransformerDecoder, MultiScaleDeformablePoseAttention
 
 
 @MODELS.register_module()
@@ -77,12 +77,16 @@ class PETR(DeformableDETR):
         for m in self.modules():
             if isinstance(m, MultiScaleDeformableAttention):
                 m.init_weights()
+        for m in self.modules():
+            if isinstance(m, MultiScaleDeformablePoseAttention):
+                m.init_weights()
         if self.as_two_stage:
             nn.init.xavier_uniform_(self.memory_trans_fc.weight)
         else:
             xavier_init(
                 self.reference_points_fc, distribution='uniform', bias=0.)
         normal_(self.level_embed)
+        normal_(self.kpt_query_embedding.weight)
 
     def forward_transformer(self,
                             img_feats: Tuple[Tensor],
