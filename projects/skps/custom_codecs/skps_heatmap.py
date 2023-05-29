@@ -12,8 +12,8 @@ from mmpose.registry import KEYPOINT_CODECS
 
 @KEYPOINT_CODECS.register_module()
 class SKPSHeatmap(BaseKeypointCodec):
-    """Generate heatmap the same with MSRAHeatmap, and produce offside within x
-    and y directions.
+    """Generate heatmap the same with MSRAHeatmap, and produce offset map
+        within x and y directions.
 
     Note:
 
@@ -22,13 +22,14 @@ class SKPSHeatmap(BaseKeypointCodec):
         - keypoint dimension: D
         - image size: [w, h]
         - heatmap size: [W, H]
+        - offset_map size: [W, H]
 
     Encoded:
 
         - heatmaps (np.ndarray): The generated heatmap in shape (K, H, W)
             where [W, H] is the `heatmap_size`
-        - offside (np.ndarray): The generated offside in x andy direction
-            in shape (2K, H, W) where [W, H] is the `heatmap_size`
+        - offset_maps (np.ndarray): The generated offset map in x andy direction
+            in shape (2K, H, W) where [W, H] is the `offset_map_size`
         - keypoint_weights (np.ndarray): The target weights in shape (N, K)
 
     Args:
@@ -66,9 +67,9 @@ class SKPSHeatmap(BaseKeypointCodec):
             dict:
             - heatmaps (np.ndarray): The generated heatmap in shape
                 (K, H, W) where [W, H] is the `heatmap_size`
-            - offside (np.ndarray): The generated offside in x and y
+            - offset_maps (np.ndarray): The generated offset maps in x and y
                 directions in shape (2*K, H, W) where [W, H] is the
-                `heatmap_size`
+                `offset_map_size`
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
@@ -86,7 +87,7 @@ class SKPSHeatmap(BaseKeypointCodec):
             keypoints_visible=keypoints_visible,
             sigma=self.sigma)
 
-        offside_heatmap = self.generate_offside_heatmap(
+        offset_maps = self.generate_offset_map(
             heatmap_size=self.heatmap_size,
             keypoints=keypoints / self.scale_factor,
         )
@@ -94,18 +95,16 @@ class SKPSHeatmap(BaseKeypointCodec):
         encoded = dict(
             heatmaps=heatmaps,
             keypoint_weights=keypoint_weights[0],
-            displacements=offside_heatmap)
+            displacements=offset_maps)
 
         return encoded
 
-    def generate_offside_heatmap(
-        self,
-        heatmap_size: Tuple[int, int],
-        keypoints: np.ndarray,
-    ):
+    def generate_offset_map(
+            self,
+            heatmap_size: Tuple[int, int],
+            keypoints: np.ndarray):
 
         N, K, _ = keypoints.shape
-        W, H = heatmap_size
 
         # batchsize 1
         keypoints = keypoints[0]
@@ -113,17 +112,17 @@ class SKPSHeatmap(BaseKeypointCodec):
         # caution: there will be a broadcast which produce
         # offside_x and offside_y with shape 64x64x98
 
-        offside_x = keypoints[:, 0] - np.expand_dims(self.x_range, axis=-1)
-        offside_y = keypoints[:, 1] - np.expand_dims(self.y_range, axis=-1)
+        offset_x = keypoints[:, 0] - np.expand_dims(self.x_range, axis=-1)
+        offset_y = keypoints[:, 1] - np.expand_dims(self.y_range, axis=-1)
 
-        offside_map = np.concatenate([offside_x, offside_y], axis=-1)
+        offset_map = np.concatenate([offset_x, offset_y], axis=-1)
 
-        offside_map = np.transpose(offside_map, axes=[2, 0, 1])
+        offset_map = np.transpose(offset_map, axes=[2, 0, 1])
 
-        return offside_map
+        return offset_map
 
     def decode(self, encoded: np.ndarray,
-               offside: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+               offset_maps: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from heatmaps. The decoded keypoint
         coordinates are in the input image space.
 
@@ -139,14 +138,14 @@ class SKPSHeatmap(BaseKeypointCodec):
         """
         heatmaps = encoded.copy()
 
-        offside = offside.copy()
+        offset_maps = offset_maps.copy()
 
         K, H, W = heatmaps.shape
 
         keypoints, scores = get_heatmap_maximum(heatmaps)
 
-        offside_x = offside[:K, ...]
-        offside_y = offside[K:, ...]
+        offset_x = offset_maps[:K, ...]
+        offset_y = offset_maps[K:, ...]
 
         keypoints_interger = keypoints.astype(np.int32)
         keypoints_decimal = np.zeros_like(keypoints)
@@ -156,9 +155,9 @@ class SKPSHeatmap(BaseKeypointCodec):
             if x < 0 or y < 0:
                 x = y = 0
 
-            # caution: torhc tensor shape is nchw, so indx should be i,y,x
-            keypoints_decimal[i][0] = x + offside_x[i, y, x]
-            keypoints_decimal[i][1] = y + offside_y[i, y, x]
+            # caution: torch tensor shape is nchw, so index should be i,y,x
+            keypoints_decimal[i][0] = x + offset_x[i, y, x]
+            keypoints_decimal[i][1] = y + offset_y[i, y, x]
 
         # Restore the keypoint scale
         keypoints_decimal = keypoints_decimal * self.scale_factor
