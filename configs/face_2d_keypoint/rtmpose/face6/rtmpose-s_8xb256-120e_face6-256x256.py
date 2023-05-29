@@ -27,7 +27,6 @@ param_scheduler = [
         begin=0,
         end=1000),
     dict(
-        # use cosine lr from 150 to 300 epoch
         type='CosineAnnealingLR',
         eta_min=base_lr * 0.005,
         begin=30,
@@ -550,7 +549,7 @@ dataset_halpe = dict(
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=256,
     num_workers=10,
     pin_memory=True,
     persistent_workers=True,
