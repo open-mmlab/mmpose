@@ -1,4 +1,4 @@
-custom_imports = dict(imports=['codecs2', 'models'])
+custom_imports = dict(imports=['custom_codecs', 'models'])
 
 _base_ = ['mmpose::_base_/default_runtime.py']
 

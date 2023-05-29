@@ -13,7 +13,7 @@ from mmpose.registry import KEYPOINT_CODECS
 @KEYPOINT_CODECS.register_module()
 class SKPSHeatmap(BaseKeypointCodec):
     """Generate heatmap the same with MSRAHeatmap, and produce offset map
-        within x and y directions.
+    within x and y directions.
 
     Note:
 
@@ -28,8 +28,9 @@ class SKPSHeatmap(BaseKeypointCodec):
 
         - heatmaps (np.ndarray): The generated heatmap in shape (K, H, W)
             where [W, H] is the `heatmap_size`
-        - offset_maps (np.ndarray): The generated offset map in x andy direction
-            in shape (2K, H, W) where [W, H] is the `offset_map_size`
+        - offset_maps (np.ndarray): The generated offset map in x and y
+            direction in shape (2K, H, W) where [W, H] is the
+            `offset_map_size`
         - keypoint_weights (np.ndarray): The target weights in shape (N, K)
 
     Args:
@@ -99,10 +100,8 @@ class SKPSHeatmap(BaseKeypointCodec):
 
         return encoded
 
-    def generate_offset_map(
-            self,
-            heatmap_size: Tuple[int, int],
-            keypoints: np.ndarray):
+    def generate_offset_map(self, heatmap_size: Tuple[int, int],
+                            keypoints: np.ndarray):
 
         N, K, _ = keypoints.shape
 
