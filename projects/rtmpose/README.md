@@ -52,8 +52,7 @@ ______________________________________________________________________
 
 - May. 2023:
   - Add [code examples](./examples/) of RTMPose.
-  - Release Hand models trained on 5 datasets.
-  - Release Body models trained on 7 datasets.
+  - Release Hand, Face, Body models trained on combined datasets.
 - Mar. 2023: RTMPose is released. RTMPose-m runs at 430+ FPS and achieves 75.8 mAP on COCO val set.
 
 ## 📖 Introduction [🔝](#-table-of-contents)
@@ -63,7 +62,7 @@ ______________________________________________________________________
 </div>
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/221125768-8e0d6754-e66d-4941-ac53-ded8db9b60f9.gif" width=450 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=450 height=300/>
+<img src="https://github.com/open-mmlab/mmpose/assets/13503330/38aa345e-4ceb-4e73-bc37-5e082735e336" width=450 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=450 height=300/>
 </div>
 <div align=center>
 <img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=300 height=350/><img src="https://user-images.githubusercontent.com/13503330/221138017-10431ab4-e515-4c32-8fa7-8748e2d17a58.gif" width=600 height=350/>
@@ -227,13 +226,24 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 
 ### Face 2d (106 Keypoints)
 
-<div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/233819275-0523118b-e6c2-41f7-8b72-324969310480.gif" width=450 height=250/>
-</div>
+<details open>
+<summary><b>Face6</b></summary>
 
-|                       Config                        | Input Size | NME<sup><br>(LaPa) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |  Download   |
-| :-------------------------------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :---------: |
-| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |         -         |                      -                      |                         -                          | Coming soon |
+- `Face6` and `*` denote model trained on 6 public datasets:
+  - [COCO-Wholebody-Face](https://github.com/jin-s13/COCO-WholeBody/)
+  - [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
+  - [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
+  - [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
+  - [Halpe](https://github.com/Fang-Haoshu/Halpe-FullBody/)
+  - [LaPa](https://github.com/JDAI-CV/lapa-dataset)
+
+|             Config             | Input Size | NME<sup><br>(LaPa) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download             |
+| :----------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :------------------------------: |
+| [RTMPose-t\*](./rtmpose/face_2d_keypoint/rtmpose-t_8xb256-120e_lapa-256x256.py) |  256x256   |        1.67        |       0.652       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-face6_pt-in1k_120e-256x256-df79d9a5_20230529.pth) |
+| [RTMPose-s\*](./rtmpose/face_2d_keypoint/rtmpose-m_8xb256-120e_lapa-256x256.py) |  256x256   |        1.59        |       1.119       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-face6_pt-in1k_120e-256x256-d779fdef_20230529.pth) |
+| [RTMPose-m\*](./rtmpose/face_2d_keypoint/rtmpose-m_8xb256-120e_lapa-256x256.py) |  256x256   |        1.44        |       2.852       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth) |
+
+</details>
 
 ### Hand 2d (21 Keypoints)
 
@@ -249,7 +259,7 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
   - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
   - [FreiHand2d](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
   - [RHD2d](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)
-  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+  - [Halpe](https://github.com/Fang-Haoshu/Halpe-FullBody/)
 
 |                                                        Config                                                         | Input Size | PCK@0.2<sup><br>(COCO-Wholebody-Hand) | PCK@0.2<sup><br>(Hand5) | AUC<sup><br>(Hand5) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |                                                                 Download                                                                 |
 | :-------------------------------------------------------------------------------------------------------------------: | :--------: | :-----------------------------------: | :---------------------: | :-----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: |
