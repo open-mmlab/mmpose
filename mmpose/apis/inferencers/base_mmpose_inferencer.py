@@ -321,22 +321,31 @@ class BaseMMPoseInferencer(BaseInferencer):
 
             if vis_out_dir:
                 out_img = mmcv.rgb2bgr(visualization)
+                _, file_extension = os.path.splitext(vis_out_dir)
+                if file_extension:
+                    dir_name = os.path.dirname(vis_out_dir)
+                    file_name = os.path.basename(vis_out_dir)
+                else:
+                    dir_name = vis_out_dir
+                    file_name = None
+                mkdir_or_exist(dir_name)
 
                 if self._video_input:
 
                     if self.video_info['writer'] is None:
                         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                        mkdir_or_exist(vis_out_dir)
-                        out_file = join_path(
-                            vis_out_dir,
-                            os.path.basename(self.video_info['name']))
+                        if file_name is None:
+                            file_name = os.path.basename(
+                                self.video_info['name'])
+                        out_file = join_path(dir_name, file_name)
                         self.video_info['writer'] = cv2.VideoWriter(
                             out_file, fourcc, self.video_info['fps'],
                             (visualization.shape[1], visualization.shape[0]))
                     self.video_info['writer'].write(out_img)
 
                 else:
-                    out_file = join_path(vis_out_dir, img_name)
+                    file_name = file_name if file_name else img_name
+                    out_file = join_path(dir_name, file_name)
                     mmcv.imwrite(out_img, out_file)
 
         if return_vis:
