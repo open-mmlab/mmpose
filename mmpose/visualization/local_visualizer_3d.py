@@ -124,7 +124,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
         plt.ioff()
         fig = plt.figure(
-            figsize=(vis_width * 0.01, vis_height * num_instances * 0.01))
+            figsize=(vis_width * num_instances * 0.01, vis_height * 0.01))
 
         def _draw_3d_instances_kpts(keypoints,
                                     scores,
@@ -135,21 +135,13 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
             for idx, (kpts, score, visible) in enumerate(
                     zip(keypoints, scores, keypoints_visible)):
 
-                valid = score >= kpt_thr
+                valid = np.logical_and(score >= kpt_thr,
+                                       np.any(~np.isnan(kpts), axis=-1))
 
                 ax = fig.add_subplot(
                     1, num_fig, fig_idx * (idx + 1), projection='3d')
                 ax.view_init(elev=axis_elev, azim=axis_azimuth)
-
-                x_c = np.mean(kpts[valid, 0]) if valid.any() else 0
-                y_c = np.mean(kpts[valid, 1]) if valid.any() else 0
-
-                ax.set_xlim3d([x_c - axis_limit / 2, x_c + axis_limit / 2])
-                ax.set_ylim3d([y_c - axis_limit / 2, y_c + axis_limit / 2])
                 ax.set_zlim3d([0, axis_limit])
-                ax.set_xlabel('x')
-                ax.set_ylabel('y')
-                ax.set_zlabel('z')
                 ax.set_aspect('auto')
                 ax.set_xticks([])
                 ax.set_yticks([])
@@ -157,9 +149,16 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_zticklabels([])
+                ax.scatter([0], [0], [0], marker='o', color='red')
+                if title:
+                    ax.set_title(f'{title} ({idx})')
                 ax.dist = axis_dist
 
-                ax.scatter([0], [0], [0], marker='o', color='red')
+                x_c = np.mean(kpts[valid, 0]) if valid.any() else 0
+                y_c = np.mean(kpts[valid, 1]) if valid.any() else 0
+
+                ax.set_xlim3d([x_c - axis_limit / 2, x_c + axis_limit / 2])
+                ax.set_ylim3d([y_c - axis_limit / 2, y_c + axis_limit / 2])
 
                 kpts = np.array(kpts, copy=False)
 
@@ -208,9 +207,6 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                             ax.plot(
                                 xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
 
-                if title:
-                    ax.set_title(f'{title} ({idx})')
-
         if 'keypoints' in pred_instances:
             keypoints = pred_instances.get('keypoints',
                                            pred_instances.keypoints)
@@ -254,7 +250,9 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         if not pred_img_data.any():
             pred_img_data = np.full((vis_height, vis_width, 3), 255)
         else:
-            pred_img_data = pred_img_data.reshape(vis_height, vis_width, -1)
+            pred_img_data = pred_img_data.reshape(vis_height,
+                                                  vis_width * num_instances,
+                                                  -1)
 
         plt.close(fig)
 
