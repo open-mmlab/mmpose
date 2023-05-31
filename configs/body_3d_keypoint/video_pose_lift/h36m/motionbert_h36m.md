@@ -38,6 +38,6 @@ year = {2014}
 
 Testing results on Human3.6M dataset with ground truth 2D detections
 
-| Arch                                                                                              | MPJPE | P-MPJPE |    ckpt    |    log    |
-| :------------------------------------------------------------------------------------------------ | :---: | :-----: | :--------: | :-------: |
-| [MotionBERT](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py) |       |         | [ckpt](<>) | [log](<>) |
+| Arch                                                                                              | MPJPE | P-MPJPE | N-MPJPE |    ckpt    |    log    |
+| :------------------------------------------------------------------------------------------------ | :---: | :-----: | :-----: | :--------: | :-------: |
+| [MotionBERT](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py) | 34.87 |  14.95  |  34.02  | [ckpt](<>) | [log](<>) |

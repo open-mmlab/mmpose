@@ -97,6 +97,7 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = [
     dict(type='MPJPE', mode='mpjpe'),
-    dict(type='MPJPE', mode='p-mpjpe')
+    dict(type='MPJPE', mode='p-mpjpe'),
+    dict(type='MPJPE', mode='n-mpjpe')
 ]
 test_evaluator = val_evaluator

@@ -126,6 +126,7 @@ class MPJPE(BaseMetric):
 
         for action_category, indices in action_category_indices.items():
             metrics[f'{error_name}_{action_category}'] = keypoint_mpjpe(
-                pred_coords[indices], gt_coords[indices], mask[indices])
+                pred_coords[indices], gt_coords[indices], mask[indices],
+                self.ALIGNMENT[self.mode])
 
         return metrics

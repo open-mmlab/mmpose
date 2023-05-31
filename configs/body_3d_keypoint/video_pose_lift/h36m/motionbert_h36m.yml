@@ -15,7 +15,8 @@ Models:
   Results:
   - Dataset: Human3.6M
     Metrics:
-      MPJPE:
-      P-MPJPE:
+      MPJPE: 34.87
+      P-MPJPE: 14.95
+      N-MPJPE: 34.02
     Task: Body 3D Keypoint
   Weights:
