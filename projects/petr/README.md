@@ -1,4 +1,4 @@
-# YOLOX-Pose
+# PETR
 
 This project implements PETR (Pose Estimation with TRansformers), an end-to-end multi-person pose estimation framework introduced in the CVPR 2022 paper **End-to-End Multi-Person Pose Estimation with Transformers**. PETR is a novel, end-to-end multi-person pose estimation method that treats pose estimation as a hierarchical set prediction problem. By leveraging attention mechanisms, PETR can adaptively focus on features most relevant to target keypoints, thereby overcoming feature misalignment issues in pose estimation.
 
@@ -23,7 +23,7 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 
 ### Inference
 
-Users can apply YOLOX-Pose models to estimate human poses using the inferencer found in the MMPose core package. Use the command below:
+Users can apply PETR models to estimate human poses using the inferencer found in the MMPose core package. Use the command below:
 
 ```shell
 python demo/inferencer_demo.py $INPUTS \
