@@ -134,8 +134,8 @@ model = dict(
             gamma=2.0,
             alpha=0.25,
             loss_weight=2.0),
-        loss_reg=dict(type='L1Loss', loss_weight=40.0),
-        loss_reg_aux=dict(type='L1Loss', loss_weight=35.0),
+        loss_reg=dict(type='L1Loss', loss_weight=80.0),
+        loss_reg_aux=dict(type='L1Loss', loss_weight=70.0),
         loss_oks=dict(
             type='OksLoss',
             metainfo='configs/_base_/datasets/coco.py',
@@ -227,7 +227,7 @@ data_root = 'data/coco/'
 
 train_dataloader = dict(
     batch_size=4,
-    num_workers=2,
+    num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     batch_sampler=dict(type='AspectRatioBatchSampler'),

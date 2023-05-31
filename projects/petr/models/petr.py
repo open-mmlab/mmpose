@@ -13,10 +13,11 @@ from mmdet.models.layers.transformer.utils import inverse_sigmoid
 from mmdet.registry import MODELS
 from mmdet.structures import OptSampleList, SampleList
 from mmengine.model import xavier_init
-from torch import Tensor, nnat 
+from torch import Tensor, nn
 from torch.nn.init import normal_
 
-from .transformers import PetrTransformerDecoder, MultiScaleDeformablePoseAttention
+from .transformers import (MultiScaleDeformablePoseAttention,
+                           PetrTransformerDecoder)
 
 
 @MODELS.register_module()
@@ -689,7 +690,7 @@ class PETR(DeformableDETR):
         The hook will be automatically registered during initialization.
         """
         return
-        
+
         if 'mmengine_version' in local_meta:
             return
 

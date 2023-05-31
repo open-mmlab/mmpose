@@ -48,7 +48,7 @@ class OksLoss(nn.Module):
                 target_weights: Tensor,
                 bboxes: Optional[Tensor] = None) -> Tensor:
         oks = self.compute_oks(output, target, target_weights, bboxes)
-        loss = 1 - oks
+        loss = -torch.log(oks.clamp(min=1e-6))
         return loss.mean() * self.loss_weight
 
     def compute_oks(self,
@@ -79,11 +79,10 @@ class OksLoss(nn.Module):
             sigmas = self.sigmas.reshape(*((1, ) * (dist.ndim - 1)), -1)
             if sigmas.device != dist.device:
                 sigmas = sigmas.to(dist.device)
-            dist = dist / sigmas
+            dist = dist / (sigmas * 2)
         if bboxes is not None:
-            area = torch.prod(
-                bboxes[..., 2:] - bboxes[..., :2], dim=-1).pow(0.5)
-            dist = dist / area.clip(min=1e-8).unsqueeze(-1)
+            area = torch.prod(bboxes[..., 2:] - bboxes[..., :2], dim=-1) * 0.53
+            dist = dist / area.pow(0.5).clip(min=1e-8).unsqueeze(-1)
 
         return (torch.exp(-dist.pow(2) / 2) * target_weights).sum(
             dim=-1) / target_weights.sum(dim=-1).clip(min=1e-8)
