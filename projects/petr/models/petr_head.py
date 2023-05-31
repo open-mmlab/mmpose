@@ -4,8 +4,6 @@ from typing import List, Tuple
 
 import torch
 import torch.nn as nn
-from mmengine.model import bias_init_with_prob, constant_init, normal_init
-
 from mmcv.cnn import Linear
 from mmdet.models import inverse_sigmoid
 from mmdet.models.dense_heads import DeformableDETRHead
@@ -13,12 +11,37 @@ from mmdet.models.utils import multi_apply
 from mmdet.registry import MODELS
 from mmdet.structures import SampleList
 from mmdet.utils import InstanceList, reduce_mean
+from mmengine.model import bias_init_with_prob, constant_init, normal_init
 from mmengine.structures import InstanceData
 from torch import Tensor
 
 
 @MODELS.register_module()
 class PETRHead(DeformableDETRHead):
+    r"""Head of PETR: End-to-End Multi-Person Pose Estimation
+    with Transformers.
+
+    Code is modified from the `official github repo
+    <https://github.com/hikvision-research/opera>`_.
+
+    More details can be found in the `paper
+    <https://openaccess.thecvf.com/content/CVPR2022/papers/Shi_End-to-End_
+    Multi-Person_Pose_Estimation_With_Transformers_CVPR_2022_paper.pdf>`_ .
+
+    Args:
+        num_keypoints (int): Number of keypoints. Defaults to 17.
+        num_pred_kpt_layer (int): The number of the keypoint refine decoder
+            layers. Defaults to 2.
+        loss_reg (dict): The configuration dict of regression loss for
+            outputs of refine decoders.
+        loss_reg_aux (dict): The configuration dict of regression loss for
+            outputs of decoders.
+        loss_oks (dict): The configuration dict of oks loss for outputs
+            of refine decoders.
+        loss_oks_aux (dict): The configuration dict of oks loss for
+            outputs of decoders.
+        loss_hm (dict): The configuration dict of heatmap loss.
+    """
 
     def __init__(self,
                  num_keypoints: int = 17,
@@ -81,7 +104,7 @@ class PETRHead(DeformableDETRHead):
         self.heatmap_fc = Linear(self.embed_dims, self.num_keypoints)
 
     def init_weights(self) -> None:
-        """Initialize weights of the Deformable DETR head."""
+        """Initialize weights of the PETR head."""
         if self.loss_cls.use_sigmoid:
             bias_init = bias_init_with_prob(0.01)
             for m in self.cls_branches:
@@ -96,33 +119,7 @@ class PETRHead(DeformableDETRHead):
 
     def forward(self, hidden_states: Tensor,
                 references: List[Tensor]) -> Tuple[Tensor]:
-        """Forward function.
-
-        Args:
-            hidden_states (Tensor): Hidden states output from each decoder
-                layer, has shape (num_decoder_layers, bs, num_queries, dim).
-            references (list[Tensor]): List of the reference from the decoder.
-                The first reference is the `init_reference` (initial) and the
-                other num_decoder_layers(6) references are `inter_references`
-                (intermediate). The `init_reference` has shape (bs,
-                num_queries, 4) when `as_two_stage` of the detector is `True`,
-                otherwise (bs, num_queries, 2). Each `inter_reference` has
-                shape (bs, num_queries, 4) when `with_box_refine` of the
-                detector is `True`, otherwise (bs, num_queries, 2). The
-                coordinates are arranged as (cx, cy) when the last dimension is
-                2, and (cx, cy, w, h) when it is 4.
-
-        Returns:
-            tuple[Tensor]: results of head containing the following tensor.
-
-            - all_layers_outputs_classes (Tensor): Outputs from the
-              classification head, has shape (num_decoder_layers, bs,
-              num_queries, cls_out_channels).
-            - all_layers_outputs_coords (Tensor): Sigmoid outputs from the
-              regression head with normalized coordinate format (cx, cy, w,
-              h), has shape (num_decoder_layers, bs, num_queries, 4) with the
-              last dimension arranged as (cx, cy, w, h).
-        """
+        """Forward function."""
         all_layers_outputs_classes = []
         all_layers_outputs_coords = []
 
@@ -159,31 +156,7 @@ class PETRHead(DeformableDETRHead):
                 batch_data_samples: SampleList,
                 rescale: bool = True) -> InstanceList:
         """Perform forward propagation and loss calculation of the detection
-        head on the queries of the upstream network.
-
-        Args:
-            hidden_states (Tensor): Hidden states output from each decoder
-                layer, has shape (num_decoder_layers, num_queries, bs, dim).
-            references (list[Tensor]): List of the reference from the decoder.
-                The first reference is the `init_reference` (initial) and the
-                other num_decoder_layers(6) references are `inter_references`
-                (intermediate). The `init_reference` has shape (bs,
-                num_queries, 4) when `as_two_stage` of the detector is `True`,
-                otherwise (bs, num_queries, 2). Each `inter_reference` has
-                shape (bs, num_queries, 4) when `with_box_refine` of the
-                detector is `True`, otherwise (bs, num_queries, 2). The
-                coordinates are arranged as (cx, cy) when the last dimension is
-                2, and (cx, cy, w, h) when it is 4.
-            batch_data_samples (list[:obj:`DetDataSample`]): The Data
-                Samples. It usually includes information such as
-                `gt_instance`, `gt_panoptic_seg` and `gt_sem_seg`.
-            rescale (bool, optional): If `True`, return boxes in original
-                image space. Defaults to `True`.
-
-        Returns:
-            list[obj:`InstanceData`]: Detection results of each image
-            after the post process.
-        """
+        head on the queries of the upstream network."""
         batch_img_metas = [
             data_samples.metainfo for data_samples in batch_data_samples
         ]
@@ -244,43 +217,7 @@ class PETRHead(DeformableDETRHead):
              hm_memory: Tensor, hm_mask: Tensor, dec_outputs_coord: Tensor,
              batch_data_samples: SampleList) -> dict:
         """Perform forward propagation and loss calculation of the detection
-        head on the queries of the upstream network.
-
-        Args:
-            hidden_states (Tensor): Hidden states output from each decoder
-                layer, has shape (num_decoder_layers, num_queries, bs, dim).
-            references (list[Tensor]): List of the reference from the decoder.
-                The first reference is the `init_reference` (initial) and the
-                other num_decoder_layers(6) references are `inter_references`
-                (intermediate). The `init_reference` has shape (bs,
-                num_queries, 4) when `as_two_stage` of the detector is `True`,
-                otherwise (bs, num_queries, 2). Each `inter_reference` has
-                shape (bs, num_queries, 4) when `with_box_refine` of the
-                detector is `True`, otherwise (bs, num_queries, 2). The
-                coordinates are arranged as (cx, cy) when the last dimension is
-                2, and (cx, cy, w, h) when it is 4.
-            enc_outputs_class (Tensor): The score of each point on encode
-                feature map, has shape (bs, num_feat_points, cls_out_channels).
-                Only when `as_two_stage` is `True` it would be passed in,
-                otherwise it would be `None`.
-            enc_outputs_coord (Tensor): The proposal generate from the encode
-                feature map, has shape (bs, num_feat_points, 4) with the last
-                dimension arranged as (cx, cy, w, h). Only when `as_two_stage`
-                is `True` it would be passed in, otherwise it would be `None`.
-            batch_data_samples (list[:obj:`DetDataSample`]): The Data
-                Samples. It usually includes information such as
-                `gt_instance`, `gt_panoptic_seg` and `gt_sem_seg`.
-
-        Returns:
-            dict: A dictionary of loss components.
-        """
-        # enc_outputs_class:  [bs, mlv_shape, 1]
-        # enc_outputs_coord:  [bs, mlv_shape, 2*num_keypoints]
-        # all_layers_classes  [3, bs, num_queries, 1]
-        # all_layers_coords   [3, bs, num_queries, 2*num_keypoints]
-        # hm_memory:          [bs, lv0_h, lv0_w, 256]
-        # hm_mask:            [bs, lv0_h, lv0_w]
-        # dec_outputs_coord:  [2, max_inst, num_keypoints, 2]
+        head on the queries of the upstream network."""
 
         batch_gt_instances = []
         batch_img_metas = []
@@ -352,24 +289,8 @@ class PETRHead(DeformableDETRHead):
                             batch_img_metas: List[dict],
                             compute_oks_loss: bool = True) -> Tuple[Tensor]:
         """Loss function for outputs from a single decoder layer of a single
-        feature level.
+        feature level."""
 
-        Args:
-            cls_scores (Tensor): Box score logits from a single decoder layer
-                for all images, has shape (bs, num_queries, cls_out_channels).
-            kpt_preds (Tensor): Sigmoid outputs from a single decoder layer
-                for all images, with normalized coordinate (cx, cy, w, h) and
-                shape (bs, num_queries, 4).
-            batch_gt_instances (list[:obj:`InstanceData`]): Batch of
-                gt_instance. It usually includes ``bboxes`` and ``labels``
-                attributes.
-            batch_img_metas (list[dict]): Meta information of each image, e.g.,
-                image size, scaling factor, etc.
-
-        Returns:
-            Tuple[Tensor]: A tuple including `loss_cls`, `loss_box` and
-            `loss_iou`.
-        """
         # cls_scores    [bs, num_queries, 1]
         # kpt_preds     [bs, num_queries, 2*num_keypoitns]
 
@@ -446,24 +367,8 @@ class PETRHead(DeformableDETRHead):
     def loss_refined_kpts(self, kpt_preds: Tensor,
                           batch_img_metas: List[dict]) -> Tuple[Tensor]:
         """Loss function for outputs from a single decoder layer of a single
-        feature level.
+        feature level."""
 
-        Args:
-            cls_scores (Tensor): Box score logits from a single decoder layer
-                for all images, has shape (bs, num_queries, cls_out_channels).
-            kpt_preds (Tensor): Sigmoid outputs from a single decoder layer
-                for all images, with normalized coordinate (cx, cy, w, h) and
-                shape (bs, num_queries, 4).
-            batch_gt_instances (list[:obj:`InstanceData`]): Batch of
-                gt_instance. It usually includes ``bboxes`` and ``labels``
-                attributes.
-            batch_img_metas (list[dict]): Meta information of each image, e.g.,
-                image size, scaling factor, etc.
-
-        Returns:
-            Tuple[Tensor]: A tuple including `loss_cls`, `loss_box` and
-            `loss_iou`.
-        """
         # kpt_preds     [num_selected, num_keypoints, 2]
         bbox_targets_list = self._target_buffer['bbox_targets_list']
         kpt_targets_list = self._target_buffer['kpt_targets_list']
@@ -519,6 +424,7 @@ class PETRHead(DeformableDETRHead):
         return loss_kpt, loss_oks
 
     def loss_heatmap(self, hm_memory, hm_mask, batch_gt_fields):
+        """Heatmap loss function for outputs from the heatmap encoder."""
 
         # compute heatmap predition
         pred_heatmaps = self.heatmap_fc(hm_memory)
@@ -568,7 +474,8 @@ class PETRHead(DeformableDETRHead):
             - labels_list (list[Tensor]): Labels for all images.
             - label_weights_list (list[Tensor]): Label weights for all images.
             - bbox_targets_list (list[Tensor]): BBox targets for all images.
-            - bbox_weights_list (list[Tensor]): BBox weights for all images.
+            - kpt_targets_list (list[Tensor]): Keypoint targets for all images.
+            - kpt_weights_list (list[Tensor]): Keypoint weights for all images.
             - num_total_pos (int): Number of positive samples in all images.
             - num_total_neg (int): Number of negative samples in all images.
         """
@@ -617,7 +524,8 @@ class PETRHead(DeformableDETRHead):
             - labels (Tensor): Labels of each image.
             - label_weights (Tensor]): Label weights of each image.
             - bbox_targets (Tensor): BBox targets of each image.
-            - bbox_weights (Tensor): BBox weights of each image.
+            - kpt_targets (Tensor): Keypoint targets of each image.
+            - kpt_weights (Tensor): Keypoint weights of each image.
             - pos_inds (Tensor): Sampled positive indices for each image.
             - neg_inds (Tensor): Sampled negative indices for each image.
         """

@@ -22,6 +22,22 @@ from .transformers import (MultiScaleDeformablePoseAttention,
 
 @MODELS.register_module()
 class PETR(DeformableDETR):
+    r"""Implementation of `End-to-End Multi-Person Pose Estimation with
+    Transformers <https://openaccess.thecvf.com/content/CVPR2022/papers/
+    Shi_End-to-End_Multi-Person_Pose_Estimation_With_Transformers_CVPR_
+    2022_paper.pdf>`_
+
+    Code is modified from the `official github repo
+    <https://github.com/hikvision-research/opera>`_.
+
+    Args:
+        num_keypoints (int): Numbder of Keypoints. Defaults to 17.
+        hm_encoder (:obj:`ConfigDict` or dict, optional): Config of the
+            heatmap encoder. Defaults to None.
+        kpt_decoder (:obj:`ConfigDict` or dict, optional): Config for the
+            keypoint refine decoder. Defaults to None.
+    """
+    _version = 2
 
     def __init__(self,
                  num_keypoints: int = 17,
@@ -93,37 +109,58 @@ class PETR(DeformableDETR):
                             img_feats: Tuple[Tensor],
                             batch_data_samples: OptSampleList = None,
                             test_mode: bool = True) -> Dict:
-        """Forward process of Transformer, which includes four steps:
-        'pre_transformer' -> 'encoder' -> 'pre_decoder' -> 'decoder'. We
-        summarized the parameters flow of the existing DETR-like detector,
-        which can be illustrated as follow:
+        """Forward process of Transformer in PETR.
+
+        This function consists of seven stages: 'pre_transformer',
+        'forward_encoder', 'pre_decoder', 'forward_decoder',
+        'pre_kpt_decoder', 'forward_kpt_decoder', and 'forward_kpt_head'.
+        It takes image features (img_feats) and batch data samples
+        (batch_data_samples) as inputs and performs transformations at
+        each stage. The output is a dictionary of inputs to be used for the
+        bounding box head function (bbox_head).
 
         .. code:: text
 
-                 img_feats & batch_data_samples
-                               |
-                               V
-                      +-----------------+
-                      | pre_transformer |
-                      +-----------------+
-                          |          |
-                          |          V
-                          |    +-----------------+
-                          |    | forward_encoder |
-                          |    +-----------------+
-                          |             |
-                          |             V
-                          |     +---------------+
-                          |     |  pre_decoder  |
-                          |     +---------------+
-                          |         |       |
-                          V         V       |
-                      +-----------------+   |
-                      | forward_decoder |   |
-                      +-----------------+   |
-                                |           |
-                                V           V
-                               head_inputs_dict
+        img_feats & batch_data_samples
+                           |
+                           V
+                  +-----------------+
+                  | pre_transformer |
+                  +-----------------+
+                      |          |
+                      |          V
+                      |    +-----------------+
+                      |    | forward_encoder |
+                      |    +-----------------+
+                      |             |
+                      |             V
+                      |     +---------------+
+                      |     |  pre_decoder  |
+                      |     +---------------+
+                      |         |       |
+                      V         V       |
+                  +-----------------+   |
+                  | forward_decoder |   |
+                  +-----------------+   |
+                            |           |
+                            V           V
+                   +-----------------+  |
+                   | pre_kpt_decoder |  |
+                   +-----------------+  |
+                            |           |
+                            V           V
+                +--------------------+  |
+                | forward_kpt_decoder|  |
+                +--------------------+  |
+                            |           |
+                            V           V
+                   +----------------+   |
+                   |forward_kpt_head|   |
+                   +----------------+   |
+                           |            |
+                           V            V
+                          head_inputs_dict
+
 
         Args:
             img_feats (tuple[Tensor]): Tuple of feature maps from neck. Each
@@ -132,96 +169,44 @@ class PETR(DeformableDETR):
                 batch data samples. It usually includes information such
                 as `gt_instance` or `gt_panoptic_seg` or `gt_sem_seg`.
                 Defaults to None.
+            test_mode (bool, optional): If True, the function operates in test
+                mode. Defaults to True.
 
         Returns:
-            dict: The dictionary of bbox_head function inputs, which always
-            includes the `hidden_states` of the decoder output and may contain
-            `references` including the initial and intermediate references.
+            head_inputs_dict (dict): The dictionary of bbox_head function
+            inputs. Always includes 'hidden_states' from the decoder output
+            and may contain 'references' including the initial and
+            intermediate references. The specific contents of this dict
+            differ based on whether the function is operating in test_mode
+            or not. In test_mode, 'det_labels' and 'det_scores' are
+            included. In training mode, it includes additional elements
+            such as 'enc_outputs_class', 'enc_outputs_coord',
+            'all_layers_classes', 'all_layers_coords', 'hm_memory',
+            and 'hm_mask'.
         """
         encoder_inputs_dict, decoder_inputs_dict = self.pre_transformer(
             img_feats, batch_data_samples)
-        # encoder_inputs_dict
-        #   |-  feat:               [bs, mlv_shape, 256]
-        #   |-  feat_mask:          [bs, mlv_shape]
-        #   |-  feat_pos:           [bs, mlv_shape, 256]
-        #   |-  spatial_shapes:     [4, 2]
-        #   |-  level_start_index:  [4]
-        #   |-  valid_ratios:       [bs, 4, 2]
-        # decoder_inputs_dict
-        #   |-  memory_mask:        [bs, mlv_shape]
-        #   |-  spatial_shapes      [4, 2]
-        #   |-  level_start_index   [4]
-        #   |-  valid_ratios        [bs, 4, 2]
 
         encoder_outputs_dict, heatmap_dict = self.forward_encoder(
             **encoder_inputs_dict, test_mode=test_mode)
-        # encoder_outputs_dict
-        #   |-  memory:             [bs, mlv_shape, 256]
-        #   |-  memory_mask:        [bs, mlv_shape] (feat_mask)
-        #   |-  spatial_shapes:     [4, 2]
-        # heatmap_dict
-        #   |-  hm_memory:          [bs, lv0_h, lv0_w, 256]
-        #   |-  hm_mask:            [bs, lv0_h, lv0_w]
 
         tmp_dec_in, head_inputs_dict = self.pre_decoder(**encoder_outputs_dict)
-        # tmp_dec_in
-        #   |-  query:              [bs, num_queries, 256]
-        #   |-  query_pos:          [bs, num_queries, 256]
-        #   |-  memory:             [bs, mlv_shape, 256] (memory)
-        #   |-  reference_points:   [bs, num_queries, 2*num_keypoints]
-        # head_inputs_dict (train only)
-        #   |-  enc_outputs_class:  [bs, mlv_shape, 1]
-        #   |-  enc_outputs_coord:  [bs, mlv_shape, 34]
 
         decoder_inputs_dict.update(tmp_dec_in)
-        # decoder_inputs_dict
-        #   |-  query:              [bs, num_queries, 256]
-        #   |-  query_pos:          [bs, num_queries, 256]
-        #   |-  memory:             [bs, mlv_shape, 256] (memory)
-        #   |-  memory_mask:        [bs, mlv_shape]
-        #   |-  spatial_shapes      [4, 2]
-        #   |-  level_start_index   [4]
-        #   |-  valid_ratios        [bs, 4, 2]
 
         decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict)
-        # decoder_outputs_dict
-        #   |-  hidden_states       [3, bs, num_queries, 256]
-        #   |-  references          [1, 300, 34] * 4
-        #   |-  all_layers_classes  [3, bs, num_queries, 1]
-        #   |-  all_layers_coords   [3, bs, num_queries, 2*num_keypoints]
 
         kpt_decoder_inputs_dict = self.pre_kpt_decoder(
             **decoder_outputs_dict,
             batch_data_samples=batch_data_samples,
             test_mode=test_mode)
-        # kpt_decoder_inputs_dict
-        #   |-  pos_kpt_coords:     [max_inst, 2*num_keypoints]
-        #   |-  pos_img_inds:       [max_inst]
-        #   |-  det_labels:         [max_inst] (test only)
-        #   |-  det_scores:         [max_inst] (test only)
 
         kpt_decoder_inputs_dict.update(decoder_inputs_dict)
-        # kpt_decoder_inputs_dict
-        #   |-  pos_kpt_coords:     [max_inst, 2*num_keypoints]
-        #   |-  pos_img_inds:       [max_inst]
-        #   |-  det_labels:         [max_inst]
-        #   |-  query:              [bs, num_queries, 256]
-        #   |-  query_pos:          [bs, num_queries, 256]
-        #   |-  memory:             [bs, mlv_shape, 256] (memory)
-        #   |-  memory_mask:        [bs, mlv_shape]
-        #   |-  spatial_shapes      [4, 2]
-        #   |-  level_start_index   [4]
-        #   |-  valid_ratios        [bs, 4, 2]
 
         kpt_decoder_outputs_dict = self.forward_kpt_decoder(
             **kpt_decoder_inputs_dict)
-        # kpt_decoder_outputs_dict (test)
-        #   |-  inter_states:       [2, max_inst, num_keypoints, 256]
-        #   |-  reference_points:   [max_inst, num_keypoints, 2]
-        #   |-  inter_references:   [2, max_inst, num_keypoints, 2]
 
         dec_outputs_coord = self.forward_kpt_head(**kpt_decoder_outputs_dict)
-        # dec_outputs_coord:        [2, max_inst, num_keypoints, 2]
 
         head_inputs_dict['dec_outputs_coord'] = dec_outputs_coord
         if test_mode:
@@ -235,16 +220,6 @@ class PETR(DeformableDETR):
                 'all_layers_classes']
             head_inputs_dict['all_layers_coords'] = decoder_outputs_dict[
                 'all_layers_coords']
-        # head_inputs_dict
-        #   |-  enc_outputs_class:  [bs, mlv_shape, 1] (train only)
-        #   |-  enc_outputs_coord:  [bs, mlv_shape, 34] (train only)
-        #   |-  all_layers_classes  [3, bs, num_queries, 1] (train only)
-        #   |-  all_layers_coords   [3, bs, num_queries, 2*num_keypoints] (to)
-        #   |-  hm_memory:          [bs, lv0_h, lv0_w, 256] (train only)
-        #   |-  hm_mask:            [bs, lv0_h, lv0_w] (train only)
-        #   |-  dec_outputs_coord:  [2, max_inst, num_keypoints, 2]
-        #   |-  det_labels:         [max_inst] (test only)
-        #   |-  det_scores:         [max_inst] (test only)
 
         return head_inputs_dict
 
@@ -262,23 +237,10 @@ class PETR(DeformableDETR):
         Returns:
             dict: A dictionary of loss components
         """
-        # torch.save(dict(
-        #     batch_inputs=batch_inputs.cpu(),
-        #     batch_data_samples=batch_data_samples
-        # ), 'notebooks/train_proc_tensors/img+ds.pth')
-        # exit(0)
 
         img_feats = self.extract_feat(batch_inputs)
         head_inputs_dict = self.forward_transformer(
             img_feats, batch_data_samples, test_mode=False)
-        # head_inputs_dict
-        #   |-  enc_outputs_class:  [bs, mlv_shape, 1]
-        #   |-  enc_outputs_coord:  [bs, mlv_shape, 34]
-        #   |-  all_layers_classes  [3, bs, num_queries, 1]
-        #   |-  all_layers_coords   [3, bs, num_queries, 2*num_keypoints]
-        #   |-  hm_memory:          [bs, lv0_h, lv0_w, 256]
-        #   |-  hm_mask:            [bs, lv0_h, lv0_w]
-        #   |-  dec_outputs_coord:  [2, max_inst, num_keypoints, 2]
 
         losses = self.bbox_head.loss(
             **head_inputs_dict, batch_data_samples=batch_data_samples)
@@ -316,10 +278,6 @@ class PETR(DeformableDETR):
         img_feats = self.extract_feat(batch_inputs)
         head_inputs_dict = self.forward_transformer(
             img_feats, batch_data_samples, test_mode=True)
-        # head_inputs_dict
-        #   |-  dec_outputs_coord:  [2, max_inst, num_keypoints, 2]
-        #   |-  det_labels:         [max_inst]
-        #   |-  det_scores:         [max_inst]
 
         results_list = self.bbox_head.predict(
             **head_inputs_dict,
@@ -339,11 +297,6 @@ class PETR(DeformableDETR):
                         test_mode: bool = True) -> Dict:
         """Forward with Transformer encoder.
 
-        The forward procedure of the transformer is defined as:
-        'pre_transformer' -> 'encoder' -> 'pre_decoder' -> 'decoder'
-        More details can be found at `TransformerDetector.forward_transformer`
-        in `mmdet/detector/base_detr.py`.
-
         Args:
             feat (Tensor): Sequential features, has shape (bs, num_feat_points,
                 dim).
@@ -359,6 +312,8 @@ class PETR(DeformableDETR):
             valid_ratios (Tensor): The ratios of the valid width and the valid
                 height relative to the width and the height of features in all
                 levels, has shape (bs, num_levels, 2).
+            test_mode (bool, optional): If True, the function operates in test
+                mode. Defaults to True.
 
         Returns:
             dict: The dictionary of encoder outputs, which includes the
@@ -407,11 +362,6 @@ class PETR(DeformableDETR):
         """Prepare intermediate variables before entering Transformer decoder,
         such as `query`, `query_pos`, and `reference_points`.
 
-        The forward procedure of the transformer is defined as:
-        'pre_transformer' -> 'encoder' -> 'pre_decoder' -> 'decoder'
-        More details can be found at `TransformerDetector.forward_transformer`
-        in `mmdet/detector/base_detr.py`.
-
         Args:
             memory (Tensor): The output embeddings of the Transformer encoder,
                 has shape (bs, num_feat_points, dim).
@@ -456,14 +406,6 @@ class PETR(DeformableDETR):
             enc_outputs_coord_unact[..., 0::2] += output_proposals[..., 0:1]
             enc_outputs_coord_unact[..., 1::2] += output_proposals[..., 1:2]
             enc_outputs_coord = enc_outputs_coord_unact.sigmoid()
-            # We only use the first channel in enc_outputs_class as foreground,
-            # the other (num_classes - 1) channels are actually not used.
-            # Its targets are set to be 0s, which indicates the first
-            # class (foreground) because we use [0, num_classes - 1] to
-            # indicate class labels, background class is indicated by
-            # num_classes (similar convention in RPN).
-            # See https://github.com/open-mmlab/mmdetection/blob/master/mmdet/models/dense_heads/deformable_detr_head.py#L241 # noqa
-            # This follows the official implementation of Deformable DETR.
             topk_proposals = torch.topk(
                 enc_outputs_class[..., 0], self.num_queries, dim=1)[1]
             topk_coords_unact = torch.gather(
@@ -555,7 +497,15 @@ class PETR(DeformableDETR):
                         batch_data_samples,
                         test_mode=False,
                         **kwargs):
+        """Prepares the inputs for the keypoint decoder.
 
+        Args:
+            all_layers_classes (Tensor): Classification scores of all layers
+            all_layers_coords (Tensor): Coordinates of keypoints of all layers
+            batch_data_samples (list): List of samples in a batch
+            test_mode (bool, optional): If True, the function will run in test
+                mode. Defaults to False.
+        """
         cls_scores = all_layers_classes[-1]
         kpt_coords = all_layers_coords[-1]
 
@@ -629,6 +579,18 @@ class PETR(DeformableDETR):
     def forward_kpt_decoder(self, memory, memory_mask, pos_kpt_coords,
                             pos_img_inds, spatial_shapes, level_start_index,
                             valid_ratios, **kwargs):
+        """Runs the keypoint decoder forward pass.
+
+        Args:
+            memory (Tensor): The output embeddings from the Transformer
+                encoder.
+            memory_mask (Tensor): The mask of the memory.
+            pos_kpt_coords (Tensor): Positive keypoint coordinates.
+            pos_img_inds (Tensor): Image indices of positive keypoints.
+            spatial_shapes (Tensor): Spatial shapes of features.
+            level_start_index (Tensor): Start index of each level.
+            valid_ratios (Tensor): Valid ratios of all images.
+        """
 
         kpt_query_embedding = self.kpt_query_embedding.weight
         query_pos, query = torch.split(
@@ -666,6 +628,17 @@ class PETR(DeformableDETR):
 
     def forward_kpt_head(self, inter_states, reference_points,
                          inter_references):
+        """Runs the keypoint head forward pass.
+
+        Args:
+            inter_states (Tensor): Intermediate states from the keypoint
+                decoder.
+            reference_points (Tensor): Reference points from the keypoint
+                decoder.
+            inter_references (Tensor): Intermediate reference points from
+                the keypoint decoder.
+        """
+
         outputs_kpts = []
         for lvl in range(inter_states.shape[0]):
             if lvl == 0:
@@ -689,12 +662,8 @@ class PETR(DeformableDETR):
 
         The hook will be automatically registered during initialization.
         """
-        return
 
-        if 'mmengine_version' in local_meta:
-            return
-
-        if local_meta.get('mmdet_verion', '0') > '3':
+        if local_meta.get('version', self._version) >= self._version:
             return
 
         mappings = OrderedDict()

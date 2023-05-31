@@ -3,12 +3,11 @@ from typing import Union
 
 import numpy as np
 from mmcv.transforms import BaseTransform
+from mmdet.datasets.transforms import FilterAnnotations as FilterDetAnnotations
 from mmdet.datasets.transforms import PackDetInputs
 from mmdet.registry import TRANSFORMS
 from mmdet.structures.bbox.box_type import autocast_box_type
 from mmengine.structures import PixelData
-from mmdet.datasets.transforms import FilterAnnotations as FilterDetAnnotations
-
 
 from mmpose.codecs.utils import generate_gaussian_heatmaps
 from .bbox_keypoint_structure import BBoxKeypoints
@@ -94,17 +93,26 @@ class PackDetPoseInputs(PackDetInputs):
         return results
 
 
-@TRANSFORMS.register_module(force=True)
+@TRANSFORMS.register_module()
 class GenerateHeatmap(BaseTransform):
+    """This class is responsible for creating a heatmap based on bounding boxes
+    and keypoints.
+
+    It generates a Gaussian heatmap for each instance in the image, given the
+    bounding box and keypoints.
+    """
 
     def _get_instance_wise_sigmas(self,
                                   bbox: np.ndarray,
                                   heatmap_min_overlap: float = 0.9
                                   ) -> np.ndarray:
-        """Get sigma values for each instance according to their size.
+        """Compute sigma values for each instance based on their bounding box
+        size.
 
         Args:
             bbox (np.ndarray): Bounding box in shape (N, 4, 2)
+            heatmap_min_overlap (float, optional): Minimum overlap for
+                the heatmap. Defaults to 0.9.
 
         Returns:
             np.ndarray: Array containing the sigma values for each instance.
@@ -144,14 +152,12 @@ class GenerateHeatmap(BaseTransform):
 
     @autocast_box_type()
     def transform(self, results: dict) -> Union[dict, None]:
-        """Transform function to filter annotations.
+        """Apply the transformation to filter annotations.
 
-        Args:
-            results (dict): Result dict.
-
-        Returns:
-            dict: Updated result dict.
+        This function rescales bounding boxes and keypoints, and generates a
+        Gaussian heatmap for each instance.
         """
+
         assert 'gt_bboxes' in results
 
         bbox = results['gt_bboxes'].tensor.numpy() / 8

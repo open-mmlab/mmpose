@@ -11,7 +11,8 @@ from mmpose.datasets import CocoDataset as MMPoseCocoDataset
 class CocoDataset(MMPoseCocoDataset):
 
     def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
-        """Parse raw COCO annotation of an instance.
+        """Parse raw COCO annotation of an instance. Compared with original
+        implementation, this method add image width and height in `data_info`
 
         Args:
             raw_data_info (dict): Raw data information loaded from
@@ -57,6 +58,7 @@ class CocoDataset(MMPoseCocoDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img['img_path'],
+            # Addition: add image width and height
             'width': img_w,
             'height': img_h,
             'bbox': bbox,

@@ -12,9 +12,8 @@ from mmpose.datasets.datasets.utils import parse_pose_metainfo
 @MODELS.register_module(force=True)
 class OksLoss(nn.Module):
     """A PyTorch implementation of the Object Keypoint Similarity (OKS) loss as
-    described in the paper "YOLO-Pose: Enhancing YOLO for Multi Person Pose
-    Estimation Using Object Keypoint Similarity Loss" by Debapriya et al.
-    (2022).
+    described in the paper "End-to-End Multi-Person Pose Estimation with
+    Transformers" by Shi et al. (2022).
 
     The OKS loss is used for keypoint-based object recognition and consists
     of a measure of the similarity between predicted and ground truth
@@ -56,7 +55,7 @@ class OksLoss(nn.Module):
                     target: Tensor,
                     target_weights: Tensor,
                     bboxes: Optional[Tensor] = None) -> Tensor:
-        """Calculates the OKS loss.
+        """Calculates the OKS metric.
 
         Args:
             output (Tensor): Predicted keypoints in shape N x k x 2, where N
@@ -70,7 +69,7 @@ class OksLoss(nn.Module):
                 where 4 are the xyxy coordinates.
 
         Returns:
-            Tensor: The calculated OKS loss.
+            Tensor: The calculated OKS.
         """
 
         dist = torch.norm(output - target, dim=-1)

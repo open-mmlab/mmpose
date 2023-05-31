@@ -18,8 +18,6 @@ param_scheduler = [
 ]
 
 # NOTE: `auto_scale_lr` is for automatically scaling LR,
-# USER SHOULD NOT CHANGE ITS VALUES.
-# base_batch_size = (16 GPUs) x (2 samples per GPU)
 auto_scale_lr = dict(base_batch_size=32)
 
 # optimizer
@@ -164,7 +162,7 @@ model = dict(
     ))
 
 train_pipeline = [
-    dict(type='LoadImageFromFile', file_client_args=_base_.file_client_args),
+    dict(type='mmpose.LoadImage', backend_args=_base_.backend_args),
     dict(type='PoseToDetConverter'),
     dict(type='PhotoMetricDistortion'),
     dict(
@@ -212,7 +210,7 @@ train_pipeline = [
 ]
 
 test_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='mmpose.LoadImage', backend_args=_base_.backend_args),
     dict(type='PoseToDetConverter'),
     dict(type='Resize', scale=(1333, 800), keep_ratio=True),
     dict(

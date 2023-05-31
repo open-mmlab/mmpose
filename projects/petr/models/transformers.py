@@ -131,6 +131,7 @@ class MultiScaleDeformablePoseAttention(MultiScaleDeformableAttention):
 
 
 class PetrTransformerDecoderLayer(DeformableDetrTransformerDecoderLayer):
+    """Decoder layer of PETR."""
 
     def _init_layers(self) -> None:
         """Initialize self_attn, cross-attn, ffn, and norms."""
@@ -147,6 +148,7 @@ class PetrTransformerDecoderLayer(DeformableDetrTransformerDecoderLayer):
 
 
 class PetrTransformerDecoder(DeformableDetrTransformerDecoder):
+    """Transformer Decoder of PETR."""
 
     def __init__(self, num_keypoints: int, *args, **kwargs):
         self.num_keypoints = num_keypoints
