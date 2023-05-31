@@ -180,7 +180,7 @@ def inference_pose_lifter_model(model,
     init_default_scope(model.cfg.get('default_scope', 'mmpose'))
     pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
 
-    causal = model.causal
+    causal = model.cfg.test_dataloader.dataset.get('causal', False)
     target_idx = -1 if causal else len(pose_results_2d) // 2
 
     dataset_info = model.dataset_meta
@@ -193,18 +193,21 @@ def inference_pose_lifter_model(model,
             bbox_scale = None
 
     for i, pose_res in enumerate(pose_results_2d):
-        keypoints = []
         for j, data_sample in enumerate(pose_res):
-            keypoint = np.squeeze(data_sample.pred_instances.keypoints, axis=0)
-            if norm_pose_2d:
-                bbox = np.squeeze(data_sample.pred_instances.bboxes)
-                center = np.array([[(bbox[0] + bbox[2]) / 2,
-                                    (bbox[1] + bbox[3]) / 2]])
-                scale = max(bbox[2] - bbox[0], bbox[3] - bbox[1])
-                keypoints.append((keypoint[:, :2] - center) / scale *
-                                 bbox_scale + bbox_center)
-            else:
-                keypoints.append(keypoint[:, :2])
+            kpts = data_sample.pred_instances.keypoints
+            bboxes = data_sample.pred_instances.bboxes
+            keypoints = []
+            for k in range(len(kpts)):
+                kpt = kpts[k]
+                if norm_pose_2d:
+                    bbox = bboxes[k]
+                    center = np.array([[(bbox[0] + bbox[2]) / 2,
+                                        (bbox[1] + bbox[3]) / 2]])
+                    scale = max(bbox[2] - bbox[0], bbox[3] - bbox[1])
+                    keypoints.append((kpt[:, :2] - center) / scale *
+                                     bbox_scale + bbox_center)
+                else:
+                    keypoints.append(kpt[:, :2])
             pose_results_2d[i][j].pred_instances.keypoints = np.array(
                 keypoints)
 
