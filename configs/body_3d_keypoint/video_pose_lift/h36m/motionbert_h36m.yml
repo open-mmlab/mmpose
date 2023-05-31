@@ -20,3 +20,17 @@ Models:
       N-MPJPE: 34.02
     Task: Body 3D Keypoint
   Weights:
+- Config: configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py
+  In Collection: MotionBERT
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: vid_pl_motionbert-finetuned_8xb32-120e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 34.97
+      P-MPJPE: 14.94
+      N-MPJPE: 34.11
+    Task: Body 3D Keypoint
+  Weights:
