@@ -386,7 +386,7 @@ def main():
         pose_results_2d = extract_pose_sequence(
             pose_est_results_list,
             frame_idx=frame_idx,
-            causal=pose_lifter.causal,
+            causal=pose_lift_dataset.get('causal', False),
             seq_len=pose_lift_dataset.get('seq_len', 1),
             step=pose_lift_dataset.get('seq_step', 1))
 
