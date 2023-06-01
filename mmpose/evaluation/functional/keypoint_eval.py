@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 import numpy as np
 
 from mmpose.codecs.utils import get_heatmap_maximum, get_simcc_maximum
+from .mesh_eval import compute_similarity_transform
 
 
 def _calc_distances(preds: np.ndarray, gts: np.ndarray, mask: np.ndarray,
@@ -318,3 +319,57 @@ def multilabel_classification_accuracy(pred: np.ndarray,
         # only if it's correct for all labels.
         acc = (((pred - thr) * (gt - thr)) > 0).all(axis=1).mean()
     return acc
+
+
+def keypoint_mpjpe(pred: np.ndarray,
+                   gt: np.ndarray,
+                   mask: np.ndarray,
+                   alignment: str = 'none'):
+    """Calculate the mean per-joint position error (MPJPE) and the error after
+    rigid alignment with the ground truth (P-MPJPE).
+
+    Note:
+        - batch_size: N
+        - num_keypoints: K
+        - keypoint_dims: C
+
+    Args:
+        pred (np.ndarray): Predicted keypoint location with shape [N, K, C].
+        gt (np.ndarray): Groundtruth keypoint location with shape [N, K, C].
+        mask (np.ndarray): Visibility of the target with shape [N, K].
+            False for invisible joints, and True for visible.
+            Invisible joints will be ignored for accuracy calculation.
+        alignment (str, optional): method to align the prediction with the
+            groundtruth. Supported options are:
+
+                - ``'none'``: no alignment will be applied
+                - ``'scale'``: align in the least-square sense in scale
+                - ``'procrustes'``: align in the least-square sense in
+                    scale, rotation and translation.
+
+    Returns:
+        tuple: A tuple containing joint position errors
+
+        - (float | np.ndarray): mean per-joint position error (mpjpe).
+        - (float | np.ndarray): mpjpe after rigid alignment with the
+            ground truth (p-mpjpe).
+    """
+    assert mask.any()
+
+    if alignment == 'none':
+        pass
+    elif alignment == 'procrustes':
+        pred = np.stack([
+            compute_similarity_transform(pred_i, gt_i)
+            for pred_i, gt_i in zip(pred, gt)
+        ])
+    elif alignment == 'scale':
+        pred_dot_pred = np.einsum('nkc,nkc->n', pred, pred)
+        pred_dot_gt = np.einsum('nkc,nkc->n', pred, gt)
+        scale_factor = pred_dot_gt / pred_dot_pred
+        pred = pred * scale_factor[:, None, None]
+    else:
+        raise ValueError(f'Invalid value for alignment: {alignment}')
+    error = np.linalg.norm(pred - gt, ord=2, axis=-1)[mask].mean()
+
+    return error
