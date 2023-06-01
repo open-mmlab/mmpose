@@ -223,7 +223,7 @@ def inference_pose_lifter_model(model,
 
         keypoints_2d = pose_seq.pred_instances.keypoints
         keypoints_2d = np.squeeze(
-            keypoints_2d) if keypoints_2d.ndim == 4 else keypoints_2d
+            keypoints_2d, axis=0) if keypoints_2d.ndim == 4 else keypoints_2d
 
         T, K, C = keypoints_2d.shape
 

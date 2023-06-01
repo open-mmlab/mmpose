@@ -54,10 +54,12 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                  line_width: Union[int, float] = 1,
                  radius: Union[int, float] = 3,
                  show_keypoint_weight: bool = False,
+                 backend: str = 'opencv',
                  alpha: float = 0.8):
         super().__init__(name, image, vis_backends, save_dir, bbox_color,
                          kpt_color, link_color, text_color, skeleton,
-                         line_width, radius, show_keypoint_weight, alpha)
+                         line_width, radius, show_keypoint_weight, backend,
+                         alpha)
 
     def _draw_3d_data_samples(
         self,
