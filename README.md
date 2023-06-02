@@ -139,18 +139,18 @@ MMPose v1.0.0 is a major update, including many API and config file changes. Cur
 | HigherHRNet (CVPR 2020)           |             |
 | DeepPose (CVPR 2014)              |    done     |
 | RLE (ICCV 2021)                   |    done     |
-| SoftWingloss (TIP 2021)           |             |
-| VideoPose3D (CVPR 2019)           | in progress |
+| SoftWingloss (TIP 2021)           |    done     |
+| VideoPose3D (CVPR 2019)           |    done     |
 | Hourglass (ECCV 2016)             |    done     |
 | LiteHRNet (CVPR 2021)             |    done     |
 | AdaptiveWingloss (ICCV 2019)      |    done     |
 | SimpleBaseline2D (ECCV 2018)      |    done     |
 | PoseWarper (NeurIPS 2019)         |             |
-| SimpleBaseline3D (ICCV 2017)      | in progress |
+| SimpleBaseline3D (ICCV 2017)      |    done     |
 | HMR (CVPR 2018)                   |             |
 | UDP (CVPR 2020)                   |    done     |
 | VIPNAS (CVPR 2021)                |    done     |
-| Wingloss (CVPR 2018)              |             |
+| Wingloss (CVPR 2018)              |    done     |
 | DarkPose (CVPR 2020)              |    done     |
 | Associative Embedding (NIPS 2017) | in progress |
 | VoxelPose (ECCV 2020)             |             |
