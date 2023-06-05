@@ -74,7 +74,7 @@ class MotionRegressionHead(BaseHead):
         Returns:
             Tensor: Output coordinates (and sigmas[optional]).
         """
-        x = feats[-1]  # (B, F, K, in_channels)
+        x = feats  # (B, F, K, in_channels)
         x = self.pre_logits(x)  # (B, F, K, embedding_size)
         x = self.fc(x)  # (B, F, K, out_channels)
 
@@ -107,8 +107,9 @@ class MotionRegressionHead(BaseHead):
         else:
             target_root = torch.stack([
                 torch.empty((0), dtype=torch.float32)
-                for _ in batch_data_samples[0].metainfo
+                for _ in batch_data_samples
             ])
+        target_root = target_root[..., None, :]
 
         preds = self.decode((batch_coords, target_root))
 

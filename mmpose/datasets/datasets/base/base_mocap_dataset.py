@@ -107,6 +107,8 @@ class BaseMocapDataset(BaseDataset):
         self.causal = causal
 
         self.merge_seq = merge_seq
+        if self.merge_seq:
+            assert (self.seq_len == 1)
 
         assert 0 < subset_frac <= 1, (
             f'Unsupported `subset_frac` {subset_frac}. Supported range '
@@ -292,8 +294,8 @@ class BaseMocapDataset(BaseDataset):
 
         for idx, frame_ids in enumerate(self.sequence_indices):
             assert len(frame_ids) == (
-                self.merge_seq if self.merge_seq *
-                self.seq_len else self.seq_len)
+                self.merge_seq *
+                self.seq_len if self.merge_seq else self.seq_len)
 
             _img_names = img_names[frame_ids]
 
@@ -305,7 +307,9 @@ class BaseMocapDataset(BaseDataset):
             keypoints_3d = _keypoints_3d[..., :3]
             keypoints_3d_visible = _keypoints_3d[..., 3]
 
-            target_idx = -1 if self.causal else int(self.seq_len) // 2
+            target_idx = [-1] if self.causal else [int(self.seq_len) // 2]
+            if self.merge_seq:
+                target_idx = list(range(self.merge_seq))
 
             instance_info = {
                 'num_keypoints': num_keypoints,

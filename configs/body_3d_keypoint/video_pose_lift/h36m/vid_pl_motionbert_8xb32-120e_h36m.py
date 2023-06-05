@@ -75,8 +75,6 @@ val_pipeline = [
 val_dataloader = dict(
     batch_size=32,
     num_workers=2,
-    prefetch_factor=4,
-    pin_memory=True,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
@@ -97,7 +95,6 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = [
     dict(type='MPJPE', mode='mpjpe'),
-    dict(type='MPJPE', mode='p-mpjpe'),
-    dict(type='MPJPE', mode='n-mpjpe')
+    # dict(type='MPJPE', mode='p-mpjpe')
 ]
 test_evaluator = val_evaluator

@@ -75,9 +75,9 @@ class VideoPoseLifting(BaseKeypointCodec):
             keypoints_visible (np.ndarray, optional): Keypoint visibilities in
                 shape (N, K).
             lifting_target (np.ndarray, optional): 3d target coordinate in
-                shape (K, C).
+                shape (T, K, C).
             lifting_target_visible (np.ndarray, optional): Target coordinate in
-                shape (K, ).
+                shape (T, K, ).
             camera_param (dict, optional): The camera parameter dictionary.
 
         Returns:
@@ -109,7 +109,7 @@ class VideoPoseLifting(BaseKeypointCodec):
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if lifting_target is None:
-            lifting_target = keypoints[0]
+            lifting_target = [keypoints[0]]
 
         # set initial value for `lifting_target_weights`
         # and `trajectory_weights`
@@ -136,7 +136,7 @@ class VideoPoseLifting(BaseKeypointCodec):
                 f'Got invalid joint shape {lifting_target.shape}'
 
             root = lifting_target[..., self.root_index, :]
-            lifting_target_label = lifting_target_label - root
+            lifting_target_label = lifting_target_label - root[:, None]
             encoded['target_root'] = root
 
             if self.remove_root:
@@ -213,7 +213,7 @@ class VideoPoseLifting(BaseKeypointCodec):
         keypoints = encoded.copy()
 
         if target_root.size > 0:
-            keypoints = keypoints + np.expand_dims(target_root, axis=0)
+            keypoints = keypoints + target_root
             if self.remove_root:
                 keypoints = np.insert(
                     keypoints, self.root_index, target_root, axis=1)

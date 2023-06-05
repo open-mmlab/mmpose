@@ -67,16 +67,18 @@ class MPJPE(BaseMetric):
                 the model.
         """
         for data_sample in data_samples:
-            # predicted keypoints coordinates, [1, K, D]
+            # predicted keypoints coordinates, [1, T, K, D]
             pred_coords = data_sample['pred_instances']['keypoints']
+            if pred_coords.ndim == 4:
+                pred_coords = np.squeeze(pred_coords, axis=0)
             # ground truth data_info
             gt = data_sample['gt_instances']
-            # ground truth keypoints coordinates, [1, K, D]
+            # ground truth keypoints coordinates, [T, K, D]
             gt_coords = gt['lifting_target']
-            # ground truth keypoints_visible, [1, K, 1]
+            # ground truth keypoints_visible, [T, K, 1]
             mask = gt['lifting_target_visible'].astype(bool).reshape(1, -1)
             # instance action
-            img_path = data_sample['target_img_path']
+            img_path = data_sample['target_img_path'][0]
             _, rest = osp.basename(img_path).split('_', 1)
             action, _ = rest.split('.', 1)
 
@@ -104,10 +106,8 @@ class MPJPE(BaseMetric):
         # pred_coords: [N, K, D]
         pred_coords = np.concatenate(
             [result['pred_coords'] for result in results])
-        if pred_coords.ndim == 4 and pred_coords.shape[1] == 1:
-            pred_coords = np.squeeze(pred_coords, axis=1)
         # gt_coords: [N, K, D]
-        gt_coords = np.stack([result['gt_coords'] for result in results])
+        gt_coords = np.concatenate([result['gt_coords'] for result in results])
         # mask: [N, K]
         mask = np.concatenate([result['mask'] for result in results])
         # action_category_indices: Dict[List[int]]

@@ -282,9 +282,9 @@ class DSTFormer(BaseBackbone):
                 x = x_st * alpha[:, :, 0:1] + x_ts * alpha[:, :, 1:2]
             else:
                 x = (x_st + x_ts) * 0.5
-        x = self.norm(x)
-        x = x.reshape(B, F, K, -1)  # (B, F, K, feat_size)
-        return tuple(x)
+        x = self.norm(x)  # (BF, K, feat_size)
+        x = x.reshape(B, F, K, -1)
+        return x
 
     def init_weights(self):
         """Initialize the weights in backbone."""
