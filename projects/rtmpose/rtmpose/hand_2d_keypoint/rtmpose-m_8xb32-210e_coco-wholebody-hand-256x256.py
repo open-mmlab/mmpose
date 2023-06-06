@@ -1,9 +1,15 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
+# common setting
+num_keypoints = 21
+input_size = (256, 256)
+
 # runtime
 max_epochs = 210
 stage2_num_epochs = 30
 base_lr = 4e-3
+train_batch_size = 32
+val_batch_size = 32
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)
@@ -12,6 +18,7 @@ randomness = dict(seed=21)
 optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.05),
+    clip_grad=dict(max_norm=35, norm_type=2),
     paramwise_cfg=dict(
         norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
 
@@ -39,7 +46,7 @@ auto_scale_lr = dict(base_batch_size=256)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(256, 256),
+    input_size=input_size,
     sigma=(5.66, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
@@ -73,7 +80,7 @@ model = dict(
     head=dict(
         type='RTMCCHead',
         in_channels=768,
-        out_channels=21,
+        out_channels=num_keypoints,
         input_size=codec['input_size'],
         in_featuremap_size=tuple([s // 32 for s in codec['input_size']]),
         simcc_split_ratio=codec['simcc_split_ratio'],
@@ -101,12 +108,6 @@ data_mode = 'topdown'
 data_root = 'data/coco/'
 
 backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
-#     }))
 
 # pipelines
 train_pipeline = [
@@ -177,7 +178,7 @@ train_pipeline_stage2 = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=train_batch_size,
     num_workers=10,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -190,7 +191,7 @@ train_dataloader = dict(
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=val_batch_size,
     num_workers=10,
     persistent_workers=True,
     drop_last=False,

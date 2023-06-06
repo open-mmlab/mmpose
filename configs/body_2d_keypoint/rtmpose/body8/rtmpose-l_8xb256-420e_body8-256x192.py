@@ -1,8 +1,8 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-max_epochs = 210
-stage2_num_epochs = 30
+max_epochs = 420
+stage2_num_epochs = 20
 base_lr = 4e-3
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
@@ -40,8 +40,8 @@ auto_scale_lr = dict(base_batch_size=1024)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(288, 384),
-    sigma=(6., 6.93),
+    input_size=(192, 256),
+    sigma=(4.9, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -69,7 +69,7 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth'  # noqa
+            'rtmposev1/cspnext-l_udp-body7_210e-256x192-5e9558ef_20230504.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
