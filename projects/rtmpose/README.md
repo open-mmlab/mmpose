@@ -50,6 +50,8 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Jun. 2023:
+  - Release 26-keypoint Body models trained on combined datasets.
 - May. 2023:
   - Add [code examples](./examples/) of RTMPose.
   - Release Hand, Face, Body models trained on combined datasets.
