@@ -62,6 +62,7 @@ def merge_args(cfg, args):
     """Merge CLI arguments to config."""
 
     cfg.launcher = args.launcher
+    cfg.load_from = args.checkpoint
 
     # -------------------- work directory --------------------
     # work_dir is determined in this priority: CLI > segment in file > filename
@@ -110,8 +111,6 @@ def main():
     # load config
     cfg = Config.fromfile(args.config)
     cfg = merge_args(cfg, args)
-
-    cfg.load_from = args.checkpoint
 
     # build the runner from config
     runner = Runner.from_cfg(cfg)
