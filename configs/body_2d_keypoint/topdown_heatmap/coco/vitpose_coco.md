@@ -1,7 +1,7 @@
 To utilize ViTPose, you'll need to have [MMClassification](https://github.com/open-mmlab/mmclassification). To install the required version, run the following command:
 
 ```shell
-mim install 'mmcls>=1.0.0rc5'
+mim install 'mmcls>=1.0.0rc6'
 ```
 
 <!-- [BACKBONE] -->
