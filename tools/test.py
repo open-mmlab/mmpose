@@ -60,6 +60,19 @@ def parse_args():
 
 def merge_args(cfg, args):
     """Merge CLI arguments to config."""
+
+    cfg.launcher = args.launcher
+
+    # -------------------- work directory --------------------
+    # work_dir is determined in this priority: CLI > segment in file > filename
+    if args.work_dir is not None:
+        # update configs according to CLI args if args.work_dir is not None
+        cfg.work_dir = args.work_dir
+    elif cfg.get('work_dir', None) is None:
+        # use config filename as default work_dir if cfg.work_dir is None
+        cfg.work_dir = osp.join('./work_dirs',
+                                osp.splitext(osp.basename(args.config))[0])
+
     # -------------------- visualization --------------------
     if args.show or (args.show_dir is not None):
         assert 'visualization' in cfg.default_hooks, \
@@ -80,9 +93,13 @@ def merge_args(cfg, args):
             'The dump file must be a pkl file.'
         dump_metric = dict(type='DumpResults', out_file_path=args.dump)
         if isinstance(cfg.test_evaluator, (list, tuple)):
-            cfg.test_evaluator = list(cfg.test_evaluator).append(dump_metric)
+            cfg.test_evaluator = [*cfg.test_evaluator, dump_metric]
         else:
             cfg.test_evaluator = [cfg.test_evaluator, dump_metric]
+
+    # -------------------- Other arguments --------------------
+    if args.cfg_options is not None:
+        cfg.merge_from_dict(args.cfg_options)
 
     return cfg
 
@@ -93,18 +110,6 @@ def main():
     # load config
     cfg = Config.fromfile(args.config)
     cfg = merge_args(cfg, args)
-    cfg.launcher = args.launcher
-    if args.cfg_options is not None:
-        cfg.merge_from_dict(args.cfg_options)
-
-    # work_dir is determined in this priority: CLI > segment in file > filename
-    if args.work_dir is not None:
-        # update configs according to CLI args if args.work_dir is not None
-        cfg.work_dir = args.work_dir
-    elif cfg.get('work_dir', None) is None:
-        # use config filename as default work_dir if cfg.work_dir is None
-        cfg.work_dir = osp.join('./work_dirs',
-                                osp.splitext(osp.basename(args.config))[0])
 
     cfg.load_from = args.checkpoint
 

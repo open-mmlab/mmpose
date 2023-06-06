@@ -115,7 +115,7 @@ def merge_args(cfg, args):
     if args.auto_scale_lr:
         cfg.auto_scale_lr.enable = True
 
-    # visualization-
+    # visualization
     if args.show or (args.show_dir is not None):
         assert 'visualization' in cfg.default_hooks, \
             'PoseVisualizationHook is not set in the ' \
