@@ -200,6 +200,18 @@ Feel free to join our community group for more help:
 
 </details>
 
+#### 26 Keypoints
+
+|                              Config                              | Input Size | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params(M) | FLOPS(G) |                              Download                               |
+| :--------------------------------------------------------------: | :--------: | :---------------------: | :-----------------: | :-------: | :------: | :-----------------------------------------------------------------: |
+| [RTMPose-t\*](./rtmpose/body_2d_keypoint/rtmpose-t_8xb1024-700e_body8-halpe26-256x192.py) |  256x192   |          91.89          |        66.35        |   3.51    |   0.37   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-body7_pt-body7-halpe26_700e-256x192-6020f8a6_20230605.pth) |
+| [RTMPose-s\*](./rtmpose/body_2d_keypoint/rtmpose-s_8xb1024-700e_body8-halpe26-256x192.py) |  256x192   |          93.01          |        68.62        |   5.70    |   0.70   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-body7_pt-body7-halpe26_700e-256x192-7f134165_20230605.pth) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb512-700e_body8-halpe26-256x192.py) |  256x192   |          94.75          |        71.91        |   13.93   |   1.95   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-256x192-4d3e73dd_20230605.pth) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb512-700e_body8-halpe26-256x192.py) |  256x192   |          95.37          |        73.19        |   28.11   |   4.19   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7-halpe26_700e-256x192-2abb7558_20230605.pth) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb512-700e_body8-halpe26-384x288.py) |  384x288   |          95.15          |        73.56        |   14.06   |   4.37   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-384x288-89e6428b_20230605.pth) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb512-700e_body8-halpe26-384x288.py) |  384x288   |          95.56          |        74.38        |   28.24   |   9.40   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7-halpe26_700e-384x288-734182ce_20230605.pth) |
+| [RTMPose-x\*](./rtmpose/body_2d_keypoint/rtmpose-x_8xb256-700e_body8-halpe26-384x288.py) |  384x288   |          95.74          |        74.82        |   50.00   |  17.29   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-x_simcc-body7_pt-body7-halpe26_700e-384x288-7fb6e239_20230606.pth) |
+
 #### Model Pruning
 
 **Notes**
