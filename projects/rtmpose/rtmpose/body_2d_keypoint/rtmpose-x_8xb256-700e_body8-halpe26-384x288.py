@@ -1,4 +1,4 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['mmpose::_base_/default_runtime.py']
 
 # common setting
 num_keypoints = 26
@@ -6,9 +6,9 @@ input_size = (288, 384)
 
 # runtime
 max_epochs = 700
-stage2_num_epochs = 30
+stage2_num_epochs = 20
 base_lr = 4e-3
-train_batch_size = 512
+train_batch_size = 256
 val_batch_size = 64
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
@@ -65,8 +65,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=1.,
-        widen_factor=1.,
+        deepen_factor=1.33,
+        widen_factor=1.25,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -75,11 +75,11 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth'  # noqa
+            'rtmposev1/cspnext-x_udp-body7_210e-384x288-d28b58e6_20230529.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
-        in_channels=1024,
+        in_channels=1280,
         out_channels=num_keypoints,
         input_size=input_size,
         in_featuremap_size=tuple([s // 32 for s in input_size]),

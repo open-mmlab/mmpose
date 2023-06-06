@@ -8,6 +8,8 @@ input_size = (192, 256)
 max_epochs = 700
 stage2_num_epochs = 30
 base_lr = 4e-3
+train_batch_size = 512
+val_batch_size = 64
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)
@@ -343,7 +345,7 @@ dataset_posetrack = dict(
 
 # data loaders
 train_dataloader = dict(
-    batch_size=512,
+    batch_size=train_batch_size,
     num_workers=10,
     pin_memory=True,
     persistent_workers=True,
@@ -481,7 +483,7 @@ val_posetrack = dict(
 )
 
 val_dataloader = dict(
-    batch_size=64,
+    batch_size=val_batch_size,
     num_workers=10,
     persistent_workers=True,
     drop_last=False,

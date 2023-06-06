@@ -1,8 +1,8 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['mmpose::_base_/default_runtime.py']
 
 # common setting
 num_keypoints = 26
-input_size = (288, 384)
+input_size = (192, 256)
 
 # runtime
 max_epochs = 700
@@ -47,7 +47,7 @@ auto_scale_lr = dict(base_batch_size=1024)
 codec = dict(
     type='SimCCLabel',
     input_size=input_size,
-    sigma=(6., 6.93),
+    sigma=(4.9, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -65,8 +65,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=1.,
-        widen_factor=1.,
+        deepen_factor=0.67,
+        widen_factor=0.75,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -75,11 +75,11 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth'  # noqa
+            'rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-256x192-e48f03d0_20230504.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
-        in_channels=1024,
+        in_channels=768,
         out_channels=num_keypoints,
         input_size=input_size,
         in_featuremap_size=tuple([s // 32 for s in input_size]),
@@ -134,10 +134,7 @@ train_pipeline = [
                 min_width=0.2,
                 p=1.0),
         ]),
-    dict(
-        type='GenerateTarget',
-        encoder=codec,
-        use_dataset_keypoint_weights=True),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
@@ -173,10 +170,7 @@ train_pipeline_stage2 = [
                 min_width=0.2,
                 p=0.5),
         ]),
-    dict(
-        type='GenerateTarget',
-        encoder=codec,
-        use_dataset_keypoint_weights=True),
+    dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 

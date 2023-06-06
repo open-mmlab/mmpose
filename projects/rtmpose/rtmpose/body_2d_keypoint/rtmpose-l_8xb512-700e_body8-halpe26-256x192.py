@@ -1,8 +1,8 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['mmpose::_base_/default_runtime.py']
 
 # common setting
 num_keypoints = 26
-input_size = (288, 384)
+input_size = (192, 256)
 
 # runtime
 max_epochs = 700
@@ -47,7 +47,7 @@ auto_scale_lr = dict(base_batch_size=1024)
 codec = dict(
     type='SimCCLabel',
     input_size=input_size,
-    sigma=(6., 6.93),
+    sigma=(4.9, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -75,7 +75,7 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth'  # noqa
+            'rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-256x192-4dba18fc_20230504.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
@@ -352,7 +352,7 @@ dataset_posetrack = dict(
 # data loaders
 train_dataloader = dict(
     batch_size=train_batch_size,
-    num_workers=10,
+    num_workers=5,
     pin_memory=True,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -490,7 +490,7 @@ val_posetrack = dict(
 
 val_dataloader = dict(
     batch_size=val_batch_size,
-    num_workers=10,
+    num_workers=5,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
