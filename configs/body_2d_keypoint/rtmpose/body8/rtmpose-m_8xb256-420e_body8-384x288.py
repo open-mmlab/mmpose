@@ -1,8 +1,8 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-max_epochs = 210
-stage2_num_epochs = 30
+max_epochs = 420
+stage2_num_epochs = 20
 base_lr = 4e-3
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
@@ -11,7 +11,7 @@ randomness = dict(seed=21)
 # optimizer
 optim_wrapper = dict(
     type='OptimWrapper',
-    optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.),
+    optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.05),
     paramwise_cfg=dict(
         norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
 
@@ -40,8 +40,8 @@ auto_scale_lr = dict(base_batch_size=1024)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(192, 256),
-    sigma=(4.9, 5.66),
+    input_size=(288, 384),
+    sigma=(6., 6.93),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -59,8 +59,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=0.167,
-        widen_factor=0.375,
+        deepen_factor=0.67,
+        widen_factor=0.75,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -69,11 +69,11 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/cspnext-tiny_udp-body7_210e-256x192-a3775292_20230504.pth'  # noqa
+            'rtmposev1/cspnext-m_udp-body7_210e-384x288-b9bc2b57_20230504.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
-        in_channels=384,
+        in_channels=768,
         out_channels=17,
         input_size=codec['input_size'],
         in_featuremap_size=tuple([s // 32 for s in codec['input_size']]),
@@ -83,8 +83,8 @@ model = dict(
             hidden_dims=256,
             s=128,
             expansion_factor=2,
-            dropout_rate=0.,
-            drop_path=0.,
+            dropout_rate=0.0,
+            drop_path=0.0,
             act_fn='SiLU',
             use_rel_bias=False,
             pos_enc=False),
@@ -94,7 +94,7 @@ model = dict(
             beta=10.,
             label_softmax=True),
         decoder=codec),
-    test_cfg=dict(flip_test=True))
+    test_cfg=dict(flip_test=True, ))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -110,7 +110,7 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(
-        type='RandomBBoxTransform', scale_factor=[0.6, 1.4], rotate_factor=80),
+        type='RandomBBoxTransform', scale_factor=[0.5, 1.5], rotate_factor=90),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(type='PhotometricDistortion'),
@@ -147,8 +147,8 @@ train_pipeline_stage2 = [
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.,
-        scale_factor=[0.75, 1.25],
-        rotate_factor=60),
+        scale_factor=[0.5, 1.5],
+        rotate_factor=90),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='mmdet.YOLOXHSVRandomAug'),
     dict(
@@ -530,12 +530,12 @@ default_hooks = dict(
 #     checkpoint=dict(save_best='AUC', rule='greater', max_keep_ckpts=1))
 
 custom_hooks = [
-    # dict(
-    #     type='EMAHook',
-    #     ema_type='ExpMomentumEMA',
-    #     momentum=0.0002,
-    #     update_buffers=True,
-    #     priority=49),
+    dict(
+        type='EMAHook',
+        ema_type='ExpMomentumEMA',
+        momentum=0.0002,
+        update_buffers=True,
+        priority=49),
     dict(
         type='mmdet.PipelineSwitchHook',
         switch_epoch=max_epochs - stage2_num_epochs,
@@ -546,7 +546,6 @@ custom_hooks = [
 val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'coco/annotations/person_keypoints_val2017.json')
-
 test_evaluator = [
     dict(type='PCKAccuracy', thr=0.1),
     dict(type='AUC'),

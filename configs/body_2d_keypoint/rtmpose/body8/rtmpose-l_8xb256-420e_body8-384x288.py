@@ -1,8 +1,8 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-max_epochs = 210
-stage2_num_epochs = 30
+max_epochs = 420
+stage2_num_epochs = 20
 base_lr = 4e-3
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
@@ -40,8 +40,8 @@ auto_scale_lr = dict(base_batch_size=1024)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(192, 256),
-    sigma=(4.9, 5.66),
+    input_size=(288, 384),
+    sigma=(6., 6.93),
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
@@ -59,8 +59,8 @@ model = dict(
         type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=0.67,
-        widen_factor=0.75,
+        deepen_factor=1.,
+        widen_factor=1.,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),
@@ -69,11 +69,11 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/cspnext-m_udp-body7_210e-256x192-e0c9327b_20230504.pth'  # noqa
+            'rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
-        in_channels=768,
+        in_channels=1024,
         out_channels=17,
         input_size=codec['input_size'],
         in_featuremap_size=tuple([s // 32 for s in codec['input_size']]),
@@ -83,8 +83,8 @@ model = dict(
             hidden_dims=256,
             s=128,
             expansion_factor=2,
-            dropout_rate=0.0,
-            drop_path=0.0,
+            dropout_rate=0.,
+            drop_path=0.,
             act_fn='SiLU',
             use_rel_bias=False,
             pos_enc=False),
@@ -94,7 +94,7 @@ model = dict(
             beta=10.,
             label_softmax=True),
         decoder=codec),
-    test_cfg=dict(flip_test=True, ))
+    test_cfg=dict(flip_test=True))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -549,5 +549,5 @@ val_evaluator = dict(
 test_evaluator = [
     dict(type='PCKAccuracy', thr=0.1),
     dict(type='AUC'),
-    dict(type='EPE')
+    dict(type='EPE'),
 ]
