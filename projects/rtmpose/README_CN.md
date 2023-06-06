@@ -195,6 +195,9 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 #### 26 Keypoints
 
+- 26 关键点的定义遵循 [Halpe26](https://github.com/Fang-Haoshu/Halpe-FullBody/)，详情见 [meta info](/configs/_base_/datasets/halpe26.py)。
+- 模型在 `Body8` 上进行训练和评估。
+
 |                                          Config                                           | Input Size | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params(M) | FLOPS(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                    |
 | :---------------------------------------------------------------------------------------: | :--------: | :---------------------: | :-----------------: | :-------: | :------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------: |
 | [RTMPose-t\*](./rtmpose/body_2d_keypoint/rtmpose-t_8xb1024-700e_body8-halpe26-256x192.py) |  256x192   |          91.89          |        66.35        |   3.51    |   0.37   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-body7_pt-body7-halpe26_700e-256x192-6020f8a6_20230605.pth) |
