@@ -6,7 +6,7 @@
 
 We provide a video demo to illustrate the pose tracking results.
 
-Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
+Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) **with version 2.x**.
 
 ```shell
 python demo/top_down_pose_tracking_demo_with_mmdet.py \

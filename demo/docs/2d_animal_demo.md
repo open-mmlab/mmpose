@@ -73,7 +73,7 @@ python demo/top_down_video_demo_full_frame_without_det.py \
 
 #### Using MMDetection to detect animals
 
-Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
+Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) **with version 2.x**.
 
 **COCO-animals**
 

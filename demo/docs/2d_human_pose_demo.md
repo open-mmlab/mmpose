@@ -42,7 +42,7 @@ python demo/top_down_img_demo.py \
 
 We provide a demo script to run mmdet for human detection, and mmpose for pose estimation.
 
-Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
+Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) **with version 2.x**.
 
 ```shell
 python demo/top_down_img_demo_with_mmdet.py \

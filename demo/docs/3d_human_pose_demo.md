@@ -41,7 +41,7 @@ python demo/body3d_two_stage_img_demo.py \
 
 #### Using mmdet for human bounding box detection and top-down model for the 1st stage (2D pose detection), and inference the 2nd stage (2D-to-3D lifting)
 
-Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
+Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection) **with version 2.x**.
 
 ```shell
 python demo/body3d_two_stage_video_demo.py \
