@@ -7,8 +7,7 @@ mim install 'mmcls>=1.0.0rc6'
 <!-- [BACKBONE] -->
 
 <details>
-
-<summary  align="right"><a  href="https://arxiv.org/abs/2204.12484">ViTPose (NeurIPS'2022)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/2204.12484">ViTPose (NeurIPS'2022)</a></summary>
 
 ```bibtex
 @inproceedings{
