@@ -1,0 +1,35 @@
+coco2017:
+  dataset: COCO_2017
+  download_root: data
+  data_root: data/coco
+  script: tools/dataset_converters/preprocess_coco2017.sh
+
+mpii:
+  dataset: MPII_Human_Pose
+  download_root: data
+  data_root: data/mpii
+  script: tools/dataset_converters/preprocess_mpii.sh
+
+aic:
+  dataset: AI_Challenger
+  download_root: data
+  data_root: data/aic
+  script: tools/dataset_converters/preprocess_aic.sh
+
+crowdpose:
+  dataset: CrowdPose
+  download_root: data
+  data_root: data/crowdpose
+  script: tools/dataset_converters/preprocess_crowdpose.sh
+
+lapa:
+  dataset: LaPa
+  download_root: data
+  data_root: data/lapa
+  script: tools/dataset_converters/preprocess_lapa.sh
+
+freihand:
+  dataset: FreiHAND
+  download_root: data
+  data_root: data/freihand
+  script: tools/dataset_converters/preprocess_freihand.sh
