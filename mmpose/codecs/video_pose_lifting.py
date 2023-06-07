@@ -142,8 +142,8 @@ class VideoPoseLifting(BaseKeypointCodec):
             if self.remove_root:
                 lifting_target_label = np.delete(
                     lifting_target_label, self.root_index, axis=-2)
-                assert lifting_target_weights.ndim in {1, 2}
-                axis_to_remove = -2 if lifting_target_weights.ndim == 2 else -1
+                assert lifting_target_weights.ndim in {2, 3}
+                axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
                 lifting_target_weights = np.delete(
                     lifting_target_weights,
                     self.root_index,
@@ -212,7 +212,7 @@ class VideoPoseLifting(BaseKeypointCodec):
         """
         keypoints = encoded.copy()
 
-        if target_root.size > 0:
+        if target_root is not None and target_root.size > 0:
             keypoints = keypoints + target_root
             if self.remove_root:
                 keypoints = np.insert(

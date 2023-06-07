@@ -99,8 +99,8 @@ class AttentionBlock(BaseModule):
         super().__init__()
 
         self.st_mode = st_mode
-        self.norm1_s = nn.LayerNorm(dim)
-        self.norm1_t = nn.LayerNorm(dim)
+        self.norm1_s = nn.LayerNorm(dim, eps=1e-06)
+        self.norm1_t = nn.LayerNorm(dim, eps=1e-06)
 
         self.attn_s = Attention(
             dim,
@@ -121,8 +121,8 @@ class AttentionBlock(BaseModule):
 
         self.drop_path = DropPath(
             drop_path) if drop_path > 0. else nn.Identity()
-        self.norm2_s = nn.LayerNorm(dim)
-        self.norm2_t = nn.LayerNorm(dim)
+        self.norm2_s = nn.LayerNorm(dim, eps=1e-06)
+        self.norm2_t = nn.LayerNorm(dim, eps=1e-06)
 
         mlp_hidden_dim = int(dim * mlp_ratio)
         mlp_out_dim = int(dim * mlp_out_ratio)
@@ -237,7 +237,7 @@ class DSTFormer(BaseBackbone):
                 st_mode='ts') for i in range(depth)
         ])
 
-        self.norm = nn.LayerNorm(feat_size)
+        self.norm = nn.LayerNorm(feat_size, eps=1e-06)
 
         self.temp_embed = nn.Parameter(torch.zeros(1, seq_len, 1, feat_size))
         self.spat_embed = nn.Parameter(
