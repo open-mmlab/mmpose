@@ -63,7 +63,7 @@ ______________________________________________________________________
 <img src="https://github.com/open-mmlab/mmpose/assets/13503330/38aa345e-4ceb-4e73-bc37-5e082735e336" width=450 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=450 height=300/>
 </div>
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=300 height=350/><img src="https://user-images.githubusercontent.com/13503330/221138017-10431ab4-e515-4c32-8fa7-8748e2d17a58.gif" width=600 height=350/>
+<img src="https://github.com/open-mmlab/mmpose/assets/13503330/2ecbf9f4-6963-4a14-9801-da10c0a65dac" width=300 height=350/><img src="https://user-images.githubusercontent.com/13503330/221138017-10431ab4-e515-4c32-8fa7-8748e2d17a58.gif" width=600 height=350/>
 </div>
 
 ### ✨ 主要特性
