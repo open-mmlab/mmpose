@@ -34,8 +34,38 @@ lapa:
   data_root: data/lapa
   script: tools/dataset_converters/scripts/preprocess_lapa.sh
 
+300w:
+  dataset: 300w
+  download_root: data
+  data_root: data/300w
+  script: tools/dataset_converters/scripts/preprocess_300w.sh
+
+wflw:
+  dataset: WFLW
+  download_root: data
+  data_root: data/wflw
+  script: tools/dataset_converters/scripts/preprocess_wflw.sh
+
+onehand10k:
+  dataset: OneHand10K
+  download_root: data
+  data_root: data/onehand10k
+  script: tools/dataset_converters/scripts/preprocess_onehand10k.sh
+
 freihand:
   dataset: FreiHAND
   download_root: data
   data_root: data/freihand
   script: tools/dataset_converters/scripts/preprocess_freihand.sh
+
+ap10k:
+  dataset: AP-10K
+  download_root: data
+  data_root: data/ap10k
+  script: tools/dataset_converters/scripts/preprocess_ap10k.sh
+
+hagrid:
+  dataset: HaGRID
+  download_root: data
+  data_root: data/hagrid
+  script: tools/dataset_converters/scripts/preprocess_hagrid.sh
