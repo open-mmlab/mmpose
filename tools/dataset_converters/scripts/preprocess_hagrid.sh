@@ -5,4 +5,4 @@ DATA_ROOT=$2
 
 cat $DOWNLOAD_DIR/HaGRID/raw/*.tar.gz.*  | tar -xvz -C $DATA_ROOT/..
 tar -xvf $DATA_ROOT/HaGRID.tar -C $DATA_ROOT/..
-rm $DATA_ROOT/HaGRID
+rm -rf $DOWNLOAD_DIR/HaGRID
