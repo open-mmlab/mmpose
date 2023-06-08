@@ -22,6 +22,12 @@ crowdpose:
   data_root: data/crowdpose
   script: tools/dataset_converters/scripts/preprocess_crowdpose.sh
 
+halpe:
+  dataset: Halpe
+  download_root: data
+  data_root: data/halpe
+  script: tools/dataset_converters/scripts/preprocess_halpe.sh
+
 lapa:
   dataset: LaPa
   download_root: data
