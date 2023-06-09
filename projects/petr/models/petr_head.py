@@ -304,14 +304,14 @@ class PETRHead(DeformableDETRHead):
         cls_reg_targets = self.get_targets(cls_scores_list, kpt_preds_list,
                                            batch_gt_instances, batch_img_metas)
         (labels_list, label_weights_list, bbox_targets_list, kpt_targets_list,
-         kpt_weights_list, num_total_pos, num_total_neg) = cls_reg_targets
+         kpt_weights_list, area_targets_list, num_total_pos,
+         num_total_neg) = cls_reg_targets
         labels = torch.cat(labels_list, 0)  # [bs*300]
         label_weights = torch.cat(label_weights_list, 0)  # [bs*300] (all 1)
-        bbox_targets = torch.cat(bbox_targets_list,
-                                 0)  # [bs*300, 4] (normalized)
         kpt_targets = torch.cat(kpt_targets_list,
                                 0)  # [bs*300, 17, 2] (normalized)
         kpt_weights = torch.cat(kpt_weights_list, 0)  # [bs*300, 17]
+        area_targets = torch.cat(area_targets_list, 0)  # [bs*300]
 
         # keypoint regression loss
         kpt_preds = kpt_preds.reshape(-1, self.num_keypoints, 2)
@@ -354,11 +354,10 @@ class PETRHead(DeformableDETRHead):
             pos_kpt_preds = kpt_preds[pos_mask] * factors
             pos_kpt_targets = kpt_targets[pos_mask] * factors
             pos_kpt_weights = kpt_weights[pos_mask]
-            pos_bbox_targets = (bbox_targets[pos_mask].reshape(-1, 2, 2) *
-                                factors).flatten(-2)
+            pos_area_targets = area_targets[pos_mask]
 
             loss_oks = self.loss_oks_aux(pos_kpt_preds, pos_kpt_targets,
-                                         pos_kpt_weights, pos_bbox_targets)
+                                         pos_kpt_weights, pos_area_targets)
         else:
             loss_oks = torch.zeros_like(loss_kpt)
 
@@ -370,16 +369,15 @@ class PETRHead(DeformableDETRHead):
         feature level."""
 
         # kpt_preds     [num_selected, num_keypoints, 2]
-        bbox_targets_list = self._target_buffer['bbox_targets_list']
         kpt_targets_list = self._target_buffer['kpt_targets_list']
         kpt_weights_list = self._target_buffer['kpt_weights_list']
+        area_targets_list = self._target_buffer['area_targets_list']
         num_queries = len(kpt_targets_list[0])
-        bbox_targets = torch.cat(bbox_targets_list,
-                                 0).contiguous()  # [bs*300, 4] (normalized)
         kpt_targets = torch.cat(kpt_targets_list,
                                 0).contiguous()  # [bs*300, 17, 2] (normalized)
         kpt_weights = torch.cat(kpt_weights_list,
                                 0).contiguous()  # [bs*300, 17]
+        area_targets = torch.cat(area_targets_list, 0).contiguous()  # [bs*300]
 
         pos_mask = (kpt_weights.sum(-1) > 0).contiguous()
         pos_inds = (pos_mask.nonzero()).div(
@@ -413,11 +411,12 @@ class PETRHead(DeformableDETRHead):
 
             pos_kpt_targets = pos_kpt_targets * factors
             pos_kpt_weights = kpt_weights[pos_mask]
-            pos_bbox_targets = (bbox_targets[pos_mask].reshape(-1, 2, 2) *
-                                factors).flatten(-2)
+            # pos_bbox_targets = (bbox_targets[pos_mask].reshape(-1, 2, 2) *
+            #                     factors).flatten(-2)
+            pos_area_targets = area_targets[pos_mask]
 
             loss_oks = self.loss_oks_aux(pos_kpt_preds, pos_kpt_targets,
-                                         pos_kpt_weights, pos_bbox_targets)
+                                         pos_kpt_weights, pos_area_targets)
         else:
             loss_oks = torch.zeros_like(loss_kpt)
 
@@ -480,7 +479,7 @@ class PETRHead(DeformableDETRHead):
             - num_total_neg (int): Number of negative samples in all images.
         """
         (labels_list, label_weights_list, bbox_targets_list, kpt_targets_list,
-         kpt_weights_list, pos_inds_list,
+         kpt_weights_list, area_targets_list, pos_inds_list,
          neg_inds_list) = multi_apply(self._get_targets_single,
                                       cls_scores_list, kpt_preds_list,
                                       batch_gt_instances, batch_img_metas)
@@ -493,12 +492,13 @@ class PETRHead(DeformableDETRHead):
             self._target_buffer['bbox_targets_list'] = bbox_targets_list
             self._target_buffer['kpt_targets_list'] = kpt_targets_list
             self._target_buffer['kpt_weights_list'] = kpt_weights_list
+            self._target_buffer['area_targets_list'] = area_targets_list
             self._target_buffer['num_total_pos'] = num_total_pos
             self._target_buffer['num_total_neg'] = num_total_neg
 
         return (labels_list, label_weights_list, bbox_targets_list,
-                kpt_targets_list, kpt_weights_list, num_total_pos,
-                num_total_neg)
+                kpt_targets_list, kpt_weights_list, area_targets_list,
+                num_total_pos, num_total_neg)
 
     def _get_targets_single(self, cls_score: Tensor, kpt_pred: Tensor,
                             gt_instances: InstanceData,
@@ -545,6 +545,7 @@ class PETRHead(DeformableDETRHead):
         gt_keypoints_visible = gt_instances.keypoints_visible
         gt_labels = gt_instances.labels
         gt_bboxes = gt_instances.bboxes
+        gt_areas = gt_instances.area
         pos_inds = torch.nonzero(
             assign_result.gt_inds > 0, as_tuple=False).squeeze(-1).unique()
         neg_inds = torch.nonzero(
@@ -573,6 +574,8 @@ class PETRHead(DeformableDETRHead):
         bbox_targets[pos_inds] = pos_gt_bboxes.reshape(
             *pos_gt_bboxes.shape[:-1], 2, 2) / factor
         bbox_targets = bbox_targets.flatten(-2)
+        area_targets = kpt_pred.new_zeros(kpt_pred.shape[0])
+        area_targets[pos_inds] = gt_areas[pos_assigned_gt_inds.long()].float()
 
         return (labels, label_weights, bbox_targets, kpt_targets, kpt_weights,
-                pos_inds, neg_inds)
+                area_targets, pos_inds, neg_inds)

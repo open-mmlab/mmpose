@@ -91,20 +91,11 @@ class OksCost(BaseMatchCost, OksLoss):
         """
 
         # Extract keypoints and bounding boxes
-        pred_keypoints = pred_instances.keypoints
-        gt_keypoints = gt_instances.keypoints
-        gt_bboxes = gt_instances.bboxes
+        pred_keypoints = pred_instances.keypoints.unsqueeze(1)
+        gt_keypoints = gt_instances.keypoints.unsqueeze(0)
         gt_keypoints_visible = gt_instances.keypoints_visible
-
-        # Normalize keypoints and bounding boxes based on image shape
-        img_h, img_w = img_meta['img_shape']
-        factor = gt_keypoints.new_tensor([img_w, img_h]).reshape(1, 1, 2)
-        gt_keypoints = (gt_keypoints / factor).unsqueeze(0)
-        pred_keypoints = (pred_keypoints / factor).unsqueeze(1)
-        gt_bboxes = (gt_bboxes.reshape(-1, 2, 2) / factor).reshape(1, -1, 4)
-
+        gt_areas = gt_instances.area.reshape(1, gt_keypoints.size(1))
         # Calculate OKS cost
         kpt_cost = self.compute_oks(pred_keypoints, gt_keypoints,
-                                    gt_keypoints_visible, gt_bboxes)
-        kpt_cost = -kpt_cost
+                                    gt_keypoints_visible, gt_areas)
         return kpt_cost * self.weight

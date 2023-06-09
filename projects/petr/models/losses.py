@@ -54,7 +54,7 @@ class OksLoss(nn.Module):
                     output: Tensor,
                     target: Tensor,
                     target_weights: Tensor,
-                    bboxes: Optional[Tensor] = None) -> Tensor:
+                    area: Optional[Tensor] = None) -> Tensor:
         """Calculates the OKS metric.
 
         Args:
@@ -79,8 +79,7 @@ class OksLoss(nn.Module):
             if sigmas.device != dist.device:
                 sigmas = sigmas.to(dist.device)
             dist = dist / (sigmas * 2)
-        if bboxes is not None:
-            area = torch.prod(bboxes[..., 2:] - bboxes[..., :2], dim=-1) * 0.53
+        if area is not None:
             dist = dist / area.pow(0.5).clip(min=1e-8).unsqueeze(-1)
 
         return (torch.exp(-dist.pow(2) / 2) * target_weights).sum(

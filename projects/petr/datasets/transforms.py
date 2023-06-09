@@ -1,10 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import random
 from typing import Union
 
 import numpy as np
 from mmcv.transforms import BaseTransform
+from mmcv.transforms.utils import cache_randomness
 from mmdet.datasets.transforms import FilterAnnotations as FilterDetAnnotations
 from mmdet.datasets.transforms import PackDetInputs
+from mmdet.datasets.transforms import RandomAffine as MMDET_RandomAffine
 from mmdet.registry import TRANSFORMS
 from mmdet.structures.bbox.box_type import autocast_box_type
 from mmengine.structures import PixelData
@@ -32,12 +35,14 @@ class PoseToDetConverter(BaseTransform):
                 (0, len(results['flip_indices']), 2), dtype=np.float32)
             results['keypoints_visible'] = np.empty(
                 (0, len(results['flip_indices'])), dtype=np.int32)
+            results['area'] = np.empty((0, ), dtype=np.int32)
             results['category_id'] = []
 
         results['gt_bboxes'] = BBoxKeypoints(
             data=results['bbox'],
             keypoints=results['keypoints'],
             keypoints_visible=results['keypoints_visible'],
+            area=results['area'],
             flip_indices=results['flip_indices'],
         )
 
@@ -54,7 +59,8 @@ class PackDetPoseInputs(PackDetInputs):
         'gt_bboxes_labels': 'labels',
         'gt_masks': 'masks',
         'gt_keypoints': 'keypoints',
-        'gt_keypoints_visible': 'keypoints_visible'
+        'gt_keypoints_visible': 'keypoints_visible',
+        'gt_area': 'area'
     }
     field_mapping_table = {
         'gt_heatmaps': 'gt_heatmaps',
@@ -71,6 +77,7 @@ class PackDetPoseInputs(PackDetInputs):
         results['gt_keypoints'] = results['gt_bboxes'].keypoints
         results['gt_keypoints_visible'] = results[
             'gt_bboxes'].keypoints_visible
+        results['gt_area'] = results['gt_bboxes'].area
 
         # pack fields
         gt_fields = None
@@ -226,3 +233,44 @@ class FilterDetPoseAnnotations(FilterDetAnnotations):
                 results[key] = results[key][keep]
 
         return results
+
+
+@TRANSFORMS.register_module(force=True)
+class RandomAffine(MMDET_RandomAffine):
+
+    @cache_randomness
+    def _get_random_homography_matrix(self, height, width):
+
+        # Center
+        center_matrix = np.eye(3, dtype=np.float32)
+        center_matrix[0, 2] = -width / 2  # x translation (pixels)
+        center_matrix[1, 2] = -height / 2  # y translation (pixels)
+
+        # Rotation
+        rotation_degree = random.uniform(-self.max_rotate_degree,
+                                         self.max_rotate_degree)
+        rotation_matrix = self._get_rotation_matrix(rotation_degree)
+
+        # Scaling
+        scaling_ratio = random.uniform(self.scaling_ratio_range[0],
+                                       self.scaling_ratio_range[1])
+        scaling_matrix = self._get_scaling_matrix(scaling_ratio)
+
+        # Shear
+        x_degree = random.uniform(-self.max_shear_degree,
+                                  self.max_shear_degree)
+        y_degree = random.uniform(-self.max_shear_degree,
+                                  self.max_shear_degree)
+        shear_matrix = self._get_shear_matrix(x_degree, y_degree)
+
+        # Translation
+        trans_x = random.uniform(0.5 - self.max_translate_ratio,
+                                 0.5 + self.max_translate_ratio) * width
+        trans_y = random.uniform(0.5 - self.max_translate_ratio,
+                                 0.5 + self.max_translate_ratio) * height
+        translate_matrix = self._get_translation_matrix(trans_x, trans_y)
+
+        warp_matrix = (
+            translate_matrix @ shear_matrix @ rotation_matrix @ scaling_matrix
+            @ center_matrix)
+        return warp_matrix

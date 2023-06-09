@@ -43,6 +43,7 @@ class BBoxKeypoints(HorizontalBoxes):
                  data: Union[Tensor, np.ndarray],
                  keypoints: Union[Tensor, np.ndarray],
                  keypoints_visible: Union[Tensor, np.ndarray],
+                 area: Union[Tensor, np.ndarray],
                  dtype: Optional[torch.dtype] = None,
                  device: Optional[DeviceType] = None,
                  clone: bool = True,
@@ -58,23 +59,28 @@ class BBoxKeypoints(HorizontalBoxes):
 
         assert len(data) == len(keypoints)
         assert len(data) == len(keypoints_visible)
+        assert len(data) == len(area)
 
         assert keypoints.ndim == 3
         assert keypoints_visible.ndim == 2
 
         keypoints = torch.as_tensor(keypoints)
         keypoints_visible = torch.as_tensor(keypoints_visible)
+        area = torch.as_tensor(area)
 
         if device is not None:
             keypoints = keypoints.to(device=device)
             keypoints_visible = keypoints_visible.to(device=device)
+            area = area.to(device=device)
 
         if clone:
             keypoints = keypoints.clone()
             keypoints_visible = keypoints_visible.clone()
+            area = area.clone()
 
         self.keypoints = keypoints
         self.keypoints_visible = keypoints_visible
+        self.area = area
         self.flip_indices = flip_indices
 
     def flip_(self,
@@ -122,6 +128,7 @@ class BBoxKeypoints(HorizontalBoxes):
         boxes = self.tensor
         assert len(scale_factor) == 2
 
+        self.area = self.area * scale_factor[0] * scale_factor[1]
         self.tensor = boxes * boxes.new_tensor(scale_factor).repeat(2)
         scale_factor = self.keypoints.new_tensor(scale_factor).reshape(1, 1, 2)
         self.keypoints = self.keypoints * scale_factor
@@ -152,6 +159,7 @@ class BBoxKeypoints(HorizontalBoxes):
             homography_matrix (Tensor or np.ndarray): A 3x3 tensor or ndarray
                 representing the homography matrix for the transformation.
         """
+
         boxes = self.tensor
         if isinstance(homography_matrix, np.ndarray):
             homography_matrix = boxes.new_tensor(homography_matrix)
@@ -214,11 +222,13 @@ class BBoxKeypoints(HorizontalBoxes):
                                 dim=dim)
         th_kpt_vis_list = torch.cat(
             [boxes.keypoints_visible for boxes in box_list], dim=dim)
+        th_area_list = torch.cat([boxes.area for boxes in box_list], dim=dim)
         flip_indices = box_list[0].flip_indices
         return cls(
             th_box_list,
             th_kpt_list,
             th_kpt_vis_list,
+            th_area_list,
             clone=False,
             flip_indices=flip_indices)
 
@@ -239,14 +249,17 @@ class BBoxKeypoints(HorizontalBoxes):
         boxes = boxes[index]
         keypoints = self.keypoints[index]
         keypoints_visible = self.keypoints_visible[index]
+        area = self.area[index]
         if boxes.dim() == 1:
             boxes = boxes.reshape(1, -1)
             keypoints = keypoints.reshape(1, -1, 2)
             keypoints_visible = keypoints_visible.reshape(1, -1)
+            area = area.reshape(1, )
         return type(self)(
             boxes,
             keypoints,
             keypoints_visible,
+            area,
             flip_indices=self.flip_indices,
             clone=False)
 
@@ -263,6 +276,7 @@ class BBoxKeypoints(HorizontalBoxes):
         other.tensor = self.tensor.clone()
         other.keypoints = self.keypoints.clone()
         other.keypoints_visible = self.keypoints_visible.clone()
+        other.area = self.area.clone()
         other.flip_indices = deepcopy(self.flip_indices)
         return other
 
@@ -272,6 +286,7 @@ class BBoxKeypoints(HorizontalBoxes):
             self.tensor,
             self.keypoints,
             self.keypoints_visible,
+            self.area,
             flip_indices=self.flip_indices,
             clone=True)
 
@@ -281,5 +296,6 @@ class BBoxKeypoints(HorizontalBoxes):
             self.tensor.to(*args, **kwargs),
             self.keypoints.to(*args, **kwargs),
             self.keypoints_visible.to(*args, **kwargs),
+            self.area.to(*args, **kwargs),
             flip_indices=self.flip_indices,
             clone=False)
