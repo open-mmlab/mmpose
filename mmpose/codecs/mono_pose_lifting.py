@@ -7,6 +7,7 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
+from .utils import camera_to_image_coord
 
 
 @KEYPOINT_CODECS.register_module()
@@ -76,26 +77,28 @@ class MonoPoseLifting(BaseKeypointCodec):
             encoded (dict): Contains the following items:
 
                 - keypoint_labels (np.ndarray): The processed keypoints in
-                  shape (K * D, N) where D is 2 for 2d coordinates.
+                  shape like (N, K, D).
+                - keypoint_labels_visible (np.ndarray): The processed
+                  keypoints' weights in shape (N, K, ) or (N-1, K, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
                   shape (K, ) or (K-1, ).
                 - trajectory_weights (np.ndarray): The trajectory weights in
                   shape (K, ).
+                - factor (np.ndarray): The factor mapping camera and image
+                  coordinate.
 
                 In addition, there are some optional items it may contain:
 
                 - target_root (np.ndarray): The root coordinate of target in
-                  shape (C, ). Exists if ``self.zero_center`` is ``True``.
+                  shape (C, ). Exists if ``zero_center`` is ``True``.
                 - target_root_removed (bool): Indicate whether the root of
-                  pose-lifitng target is removed. Exists if
-                  ``self.remove_root`` is ``True``.
+                  pose-lifitng target is removed. Exists if ``remove_root`` is
+                  ``True``.
                 - target_root_index (int): An integer indicating the index of
-                  root. Exists if ``self.remove_root`` and ``self.save_index``
-                  are ``True``.
-                - camera_param (dict): The updated camera parameter dictionary.
-                  Exists if ``self.normalize_camera`` is ``True``.
+                  root. Exists if ``remove_root`` and ``save_index`` are
+                  ``True``.
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
@@ -121,6 +124,12 @@ class MonoPoseLifting(BaseKeypointCodec):
         encoded = dict()
 
         lifting_target_label = lifting_target.copy()
+        keypoint_labels = keypoints.copy()
+
+        assert keypoint_labels.ndim in {2, 3}
+        if keypoint_labels.ndim == 2:
+            keypoint_labels = keypoint_labels[None, ...]
+
         # Zero-center the target pose around a given root keypoint
         if self.zero_center:
             assert (lifting_target.ndim >= 2 and
@@ -134,6 +143,8 @@ class MonoPoseLifting(BaseKeypointCodec):
             if self.remove_root:
                 lifting_target_label = np.delete(
                     lifting_target_label, self.root_index, axis=-2)
+                lifting_target_visible = np.delete(
+                    lifting_target_visible, self.root_index, axis=-2)
                 assert lifting_target_weights.ndim == 2
                 lifting_target_weights = np.delete(
                     lifting_target_weights, self.root_index, axis=-1)
@@ -149,15 +160,15 @@ class MonoPoseLifting(BaseKeypointCodec):
         _camera_param = deepcopy(camera_param)
         assert 'w' in _camera_param and 'h' in _camera_param
         w, h = _camera_param['w'], _camera_param['h']
-        keypoint_labels = keypoints.copy()
-        keypoint_labels[:, :, :2] = keypoint_labels[:, :, :2] / w * 2 - [
-            1, h / w
-        ]
-        keypoint_labels[:, :, 2:] = keypoint_labels[:, :, 2:] / w * 2
+        keypoint_labels[
+            ..., :2] = keypoint_labels[..., :2] / w * 2 - [1, h / w]
 
-        assert keypoint_labels.ndim in {2, 3}
-        if keypoint_labels.ndim == 2:
-            keypoint_labels = keypoint_labels[None, ...]
+        # convert target to image coordinate
+        lifting_target_label, factor = camera_to_image_coord(
+            self.root_index, lifting_target_label, _camera_param)
+        lifting_target_label[
+            ..., :2] = lifting_target_label[..., :2] / w * 2 - [1, h / w]
+        lifting_target_label[..., 2:] = lifting_target_label[..., 2:] / w * 2
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
@@ -167,10 +178,13 @@ class MonoPoseLifting(BaseKeypointCodec):
                 (keypoint_labels, keypoints_visible_), axis=2)
 
         encoded['keypoint_labels'] = keypoint_labels
-        encoded['keypoints_visible'] = keypoints_visible
+        encoded['keypoint_labels_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights
+        encoded['lifting_target'] = lifting_target_label
+        encoded['lifting_target_visible'] = lifting_target_visible
         encoded['trajectory_weights'] = trajectory_weights
+        encoded['factor'] = factor
 
         return encoded
 

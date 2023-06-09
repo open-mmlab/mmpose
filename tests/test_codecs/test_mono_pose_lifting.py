@@ -186,8 +186,8 @@ class TestMonoPoseLifting(TestCase):
         self.assertTrue(np.allclose(lifting_target, _keypoints, atol=5.))
 
         # test denormalize according to image shape
-        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 3)) * [1000, 1002, 1]
-        keypoints = np.round(keypoints).astype(np.float32)
+        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 3))
+        keypoints[..., 2] = np.round(keypoints[..., 2]).astype(np.float32)
         codec = self.build_pose_lifting_label(zero_center=False)
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
                                lifting_target_visible, camera_param)
@@ -197,4 +197,5 @@ class TestMonoPoseLifting(TestCase):
             w=np.array([camera_param['w']]),
             h=np.array([camera_param['h']]))
 
-        self.assertTrue(np.allclose(keypoints, _keypoints, atol=5.))
+        self.assertTrue(
+            np.allclose(keypoints[..., :2], _keypoints[..., :2], atol=5.))

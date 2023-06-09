@@ -84,7 +84,9 @@ class VideoPoseLifting(BaseKeypointCodec):
             encoded (dict): Contains the following items:
 
                 - keypoint_labels (np.ndarray): The processed keypoints in
-                  shape (K * D, N) where D is 2 for 2d coordinates.
+                  shape like (N, K, D) or (K * D, N).
+                - keypoint_labels_visible (np.ndarray): The processed
+                  keypoints' weights in shape (N, K, ) or (N-1, K, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
@@ -95,15 +97,15 @@ class VideoPoseLifting(BaseKeypointCodec):
                 In addition, there are some optional items it may contain:
 
                 - target_root (np.ndarray): The root coordinate of target in
-                  shape (C, ). Exists if ``self.zero_center`` is ``True``.
+                  shape (C, ). Exists if ``zero_center`` is ``True``.
                 - target_root_removed (bool): Indicate whether the root of
                   pose-lifitng target is removed. Exists if
-                  ``self.remove_root`` is ``True``.
+                  ``remove_root`` is ``True``.
                 - target_root_index (int): An integer indicating the index of
-                  root. Exists if ``self.remove_root`` and ``self.save_index``
+                  root. Exists if ``remove_root`` and ``save_index``
                   are ``True``.
                 - camera_param (dict): The updated camera parameter dictionary.
-                  Exists if ``self.normalize_camera`` is ``True``.
+                  Exists if ``normalize_camera`` is ``True``.
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
@@ -142,6 +144,8 @@ class VideoPoseLifting(BaseKeypointCodec):
             if self.remove_root:
                 lifting_target_label = np.delete(
                     lifting_target_label, self.root_index, axis=-2)
+                lifting_target_visible = np.delete(
+                    lifting_target_visible, self.root_index, axis=-2)
                 assert lifting_target_weights.ndim in {2, 3}
                 axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
                 lifting_target_weights = np.delete(

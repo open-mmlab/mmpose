@@ -67,7 +67,7 @@ class MPJPE(BaseMetric):
                 the model.
         """
         for data_sample in data_samples:
-            # predicted keypoints coordinates, [1, T, K, D]
+            # predicted keypoints coordinates, [T, K, D]
             pred_coords = data_sample['pred_instances']['keypoints']
             if pred_coords.ndim == 4:
                 pred_coords = np.squeeze(pred_coords, axis=0)

@@ -27,12 +27,9 @@ default_hooks = dict(
 
 # codec settings
 codec = dict(
-    type='VideoPoseLifting',
+    type='MonoPoseLifting',
     num_keypoints=17,
-    zero_center=True,
-    root_index=0,
-    remove_root=False,
-    reshape_keypoints=False,
+    zero_center=False,
     concat_vis=True)
 
 # model settings
@@ -68,7 +65,7 @@ val_pipeline = [
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
-                   'target_root'))
+                   'target_root', 'camera_param'))
 ]
 
 # data loaders
@@ -82,7 +79,6 @@ val_dataloader = dict(
         ann_file='annotation_body3d/fps50/h36m_test.npz',
         seq_len=1,
         seq_step=1,
-        merge_seq=243,
         pad_video_seq=True,
         camera_param_file='annotation_body3d/cameras.pkl',
         data_root=data_root,

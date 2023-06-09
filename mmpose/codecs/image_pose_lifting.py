@@ -89,7 +89,9 @@ class ImagePoseLifting(BaseKeypointCodec):
             encoded (dict): Contains the following items:
 
                 - keypoint_labels (np.ndarray): The processed keypoints in
-                  shape (K * D, N) where D is 2 for 2d coordinates.
+                  shape like (N, K, D) or (K * D, N).
+                - keypoint_labels_visible (np.ndarray): The processed
+                  keypoints' weights in shape (N, K, ) or (N-1, K, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
@@ -101,11 +103,13 @@ class ImagePoseLifting(BaseKeypointCodec):
 
                 In addition, there are some optional items it may contain:
 
+                - target_root (np.ndarray): The root coordinate of target in
+                  shape (C, ). Exists if ``zero_center`` is ``True``.
                 - target_root_removed (bool): Indicate whether the root of
-                  pose lifting target is removed. Added if ``self.remove_root``
-                  is ``True``.
+                  pose-lifitng target is removed. Exists if
+                  ``remove_root`` is ``True``.
                 - target_root_index (int): An integer indicating the index of
-                  root. Added if ``self.remove_root`` and ``self.save_index``
+                  root. Exists if ``remove_root`` and ``save_index``
                   are ``True``.
         """
         if keypoints_visible is None:
@@ -139,6 +143,8 @@ class ImagePoseLifting(BaseKeypointCodec):
         if self.remove_root:
             lifting_target_label = np.delete(
                 lifting_target_label, self.root_index, axis=-2)
+            lifting_target_visible = np.delete(
+                lifting_target_visible, self.root_index, axis=-2)
             assert lifting_target_weights.ndim in {2, 3}
             axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
             lifting_target_weights = np.delete(
@@ -160,6 +166,9 @@ class ImagePoseLifting(BaseKeypointCodec):
             keypoint_labels = (keypoint_labels -
                                self.keypoints_mean) / self.keypoints_std
         if self.target_mean is not None and self.target_std is not None:
+            assert self.target_mean.ndim in {2, 3}
+            if self.target_mean.ndim == 2:
+                self.target_mean = self.target_mean[None, :]
             target_shape = lifting_target_label.shape
             assert self.target_mean.shape == target_shape
 
@@ -183,7 +192,7 @@ class ImagePoseLifting(BaseKeypointCodec):
             keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
 
         encoded['keypoint_labels'] = keypoint_labels
-        encoded['keypoints_visible'] = keypoints_visible
+        encoded['keypoint_labels_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights
         encoded['trajectory_weights'] = trajectory_weights

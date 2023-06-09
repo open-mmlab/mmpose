@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from .camera_image_projection import camera_to_image_coord, camera_to_pixel
 from .gaussian_heatmap import (generate_gaussian_heatmaps,
                                generate_udp_gaussian_heatmaps,
                                generate_unbiased_gaussian_heatmaps)
@@ -19,5 +20,6 @@ __all__ = [
     'batch_heatmap_nms', 'refine_keypoints', 'refine_keypoints_dark',
     'refine_keypoints_dark_udp', 'generate_displacement_heatmap',
     'refine_simcc_dark', 'gaussian_blur1d', 'get_diagonal_lengths',
-    'get_instance_root', 'get_instance_bbox', 'get_simcc_normalized'
+    'get_instance_root', 'get_instance_bbox', 'get_simcc_normalized',
+    'camera_to_image_coord', 'camera_to_pixel'
 ]
