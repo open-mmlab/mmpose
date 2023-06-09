@@ -108,6 +108,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             pose2d_model if pose2d_model else 'human', pose2d_weights, device,
             scope, det_model, det_weights, det_cat_ids)
 
+        # helper functions
         self._keypoint_converter = partial(
             convert_keypoint_definition,
             pose_det_dataset=self.pose2d_model.cfg.test_dataloader.
@@ -125,17 +126,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         self._buffer = defaultdict(list)
 
     def _inputs_to_list(self, inputs: InputsType) -> Iterable:
-        """Preprocess the inputs to a list.
-
-        Preprocess inputs to a list according to its type:
-
-        - list or tuple: return inputs
-        - str:
-            - Directory path: return all files in the directory
-            - other cases: return a list containing the string. The string
-              could be a path to file, a url or other types of string
-              according to the task.
-
+        """Preprocess the inputs to a listaccording to its type
         Args:
             inputs (InputsType): Inputs for the inferencer.
 
@@ -176,15 +167,28 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         """Process a single input into a model-feedable format.
 
         Args:
-            input (InputType): Input given by user.
-            index (int): index of the input
-            bbox_thr (float): threshold for bounding box detection.
+            input (InputType): The input provided by the user.
+            index (int): The index of the input.
+            bbox_thr (float, optional): The threshold for bounding box
+                detection. Defaults to 0.3.
+            nms_thr (float, optional): The Intersection over Union (IoU)
+                threshold for bounding box Non-Maximum Suppression (NMS).
                 Defaults to 0.3.
-            nms_thr (float): IoU threshold for bounding box NMS.
+            bboxes (Union[List[List], List[np.ndarray], np.ndarray]):
+                The bounding boxes to use. Defaults to [].
+            use_oks_tracking (bool, optional): A flag that indicates
+                whether OKS-based tracking should be used. Defaults to False.
+            tracking_thr (float, optional): The threshold for tracking.
                 Defaults to 0.3.
+            norm_pose_2d (bool, optional): A flag that indicates whether 2D
+                pose normalization should be used. Defaults to False.
 
         Yields:
-            Any: Data processed by the ``pipeline`` and ``collate_fn``.
+            Any: The data processed by the pipeline and collate_fn.
+
+        This method first calculates 2D keypoints using the provided
+        pose2d_model. The method also performs instance matching, which
+        can use either OKS-based tracking or IOU-based tracking.
         """
 
         # calculate 2d keypoints
@@ -270,7 +274,6 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
         data_list = []
         for i, pose_seq in enumerate(pose_sequences_2d):
-            # data_info = dict(img_path=f'{index}.jpg'.rjust(10, '0'))
             data_info = dict()
 
             keypoints_2d = pose_seq.pred_instances.keypoints
@@ -301,23 +304,34 @@ class Pose3DInferencer(BaseMMPoseInferencer):
     def forward(self,
                 inputs: Union[dict, tuple],
                 rebase_keypoint_height: bool = False):
+        """Perform forward pass through the model and process the results.
+
+        Args:
+            inputs (Union[dict, tuple]): The inputs for the model.
+            rebase_keypoint_height (bool, optional): Flag to rebase the
+                height of the keypoints (z-axis). Defaults to False.
+
+        Returns:
+            list: A list of data samples, each containing the model's output
+                results.
+        """
 
         pose_lift_results = self.model.test_step(inputs)
 
-        # Pose processing
+        # Post-processing of pose estimation results
         pose_est_results_converted = self._buffer['pose_est_results_list'][-1]
         for idx, pose_lift_res in enumerate(pose_lift_results):
-
+            # Update track_id from the pose estimation results
             pose_lift_res.track_id = pose_est_results_converted[idx].get(
                 'track_id', 1e4)
 
+            # Invert x and z values of the keypoints
             keypoints = pose_lift_res.pred_instances.keypoints
-
             keypoints = keypoints[..., [0, 2, 1]]
             keypoints[..., 0] = -keypoints[..., 0]
             keypoints[..., 2] = -keypoints[..., 2]
 
-            # rebase height (z-axis)
+            # If rebase_keypoint_height is True, adjust z-axis values
             if rebase_keypoint_height:
                 keypoints[..., 2] -= np.min(
                     keypoints[..., 2], axis=-1, keepdims=True)

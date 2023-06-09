@@ -91,6 +91,8 @@ def parse_args():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
+        '--tracking-thr', type=float, default=0.3, help='Tracking threshold')
+    parser.add_argument(
         '--use-oks-tracking',
         action='store_true',
         help='Whether to use OKS as similarity in tracking')
