@@ -326,12 +326,6 @@ def inference_pose_lifter_model(model,
         data_info.update(model.dataset_meta)
         data_list.append(pipeline(data_info))
 
-    # while True:
-    #     c = input('print:\n')
-    #     try:
-    #         print(eval(c))
-    #     except Exception as e:
-    #         print(e)
     if data_list:
         # collate data list into a batch, which is a dict with following keys:
         # batch['inputs']: a list of input images
