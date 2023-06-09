@@ -74,3 +74,20 @@ https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_
 --rebase-keypoint-height \
 --use-multi-frames  --online
 ```
+
+### 3D Human Pose Demo with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. 3D Inferencer only supports video path or webcam as input currently. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py {VIDEO_PATH} \
+    --pose3d human3d --vis-out-dir vis_results/human3d
+```
+
+This command infers the video and saves the visualization results in the `vis_results/human3d` directory.
+
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/f130b211-4d2e-4a45-b0ae-7c61b3247643" alt="Image 1" height="300"/>
+
+The input video can be downloaded from [Google Drive](https://drive.google.com/file/d/10qEKW15P3-F8xOlAMav5se6fUQTShuT0/view?usp=sharing).
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html#inferencer-a-unified-inference-interface).
