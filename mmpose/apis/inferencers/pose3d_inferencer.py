@@ -12,7 +12,7 @@ import mmcv
 import numpy as np
 import torch
 from mmengine.config import Config, ConfigDict
-from mmengine.fileio import isdir, join_path
+from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
 from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
@@ -135,7 +135,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         """
         self._video_input = False
 
-        if isinstance(inputs, str) and not isdir(inputs) and \
+        if isinstance(inputs, str) and not os.path.isdir(inputs) and \
                 mimetypes.guess_type(inputs)[0].split('/')[0] == 'video':
 
             self._video_input = True
