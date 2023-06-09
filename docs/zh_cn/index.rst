@@ -51,6 +51,7 @@ You can change the documentation language at the lower-left corner of the page.
 
    model_zoo.txt
    model_zoo/body_2d_keypoint.md
+   model_zoo/body_3d_keypoint.md
    model_zoo/face_2d_keypoint.md
    model_zoo/hand_2d_keypoint.md
    model_zoo/wholebody_2d_keypoint.md

@@ -21,12 +21,14 @@ ${MMPOSE_CHECKPOINT_FILE_3D} \
 [--rebase-keypoint-height] \
 [--norm-pose-2d] \
 [--output-root ${OUT_VIDEO_ROOT}] \
+[--save-predictions] \
 [--device ${GPU_ID  or  CPU}] \
 [--det-cat-id DET_CAT_ID] \
 [--bbox-thr BBOX_THR] \
 [--kpt-thr KPT_THR] \
 [--use-oks-tracking] \
 [--tracking-thr TRACKING_THR] \
+[--show-interval INTERVAL] \
 [--thickness THICKNESS] \
 [--radius RADIUS] \
 [--use-multi-frames] [--online]
@@ -54,7 +56,7 @@ configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv-cpn
 https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth  \
 --input https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
 --output-root  vis_results  \
---rebase-keypoint-height
+--rebase-keypoint-height --save-predictions
 ```
 
 During 2D pose detection, for multi-frame inference that rely on extra frames to get the final results of the current frame, try this:

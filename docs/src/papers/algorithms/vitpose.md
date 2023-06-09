@@ -8,7 +8,7 @@
 ```bibtex
 @inproceedings{
   xu2022vitpose,
-  title={Vi{TP}ose: Simple Vision Transformer Baselines for Human Pose Estimation},
+  title={ViTPose: Simple Vision Transformer Baselines for Human Pose Estimation},
   author={Yufei Xu and Jing Zhang and Qiming Zhang and Dacheng Tao},
   booktitle={Advances in Neural Information Processing Systems},
   year={2022},
