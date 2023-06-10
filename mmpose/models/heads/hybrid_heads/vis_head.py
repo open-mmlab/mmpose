@@ -168,6 +168,15 @@ class VisPredictHead(BaseHead):
 
         return self.integrate(batch_vis, batch_pose)
 
+    def vis_accuracy(self, vis_pred_outputs, vis_labels):
+        probabilities = torch.sigmoid(torch.flatten(vis_pred_outputs))
+        threshold = 0.5
+        predictions = (probabilities >= threshold).int()
+        labels = torch.flatten(vis_labels)
+        correct = torch.sum(predictions == labels).item()
+        accuracy = correct / len(labels)
+        return torch.tensor(accuracy)
+
     def loss(self,
              feats: Tuple[Tensor],
              batch_data_samples: OptSampleList,
@@ -198,6 +207,10 @@ class VisPredictHead(BaseHead):
                                     keypoint_weights)
 
         losses.update(loss_vis=loss_vis)
+
+        # calculate vis accuracy
+        acc_vis = self.vis_accuracy(vis_pred_outputs, vis_labels)
+        losses.update(acc_vis=acc_vis)
 
         # calculate keypoints losses
         loss_kpt = self.pose_head.loss(feats, batch_data_samples)
