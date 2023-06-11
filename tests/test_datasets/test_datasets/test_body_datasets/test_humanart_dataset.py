@@ -74,7 +74,7 @@ class TestHumanartDataset(TestCase):
         dataset = self.build_humanart_dataset()
         self.check_metainfo_keys(dataset.metainfo)
         # test dataset_name
-        self.assertEqual(dataset.metainfo['dataset_name'], 'humanart')
+        self.assertEqual(dataset.metainfo['dataset_name'], 'Human-Art')
 
         # test number of keypoints
         num_keypoints = 17
@@ -94,13 +94,13 @@ class TestHumanartDataset(TestCase):
     def test_topdown(self):
         # test topdown training
         dataset = self.build_humanart_dataset(data_mode='topdown')
-        self.assertEqual(len(dataset), 12)
+        self.assertEqual(len(dataset), 4)
         self.check_data_info_keys(dataset[0], data_mode='topdown')
 
         # test topdown testing
         dataset = self.build_humanart_dataset(
             data_mode='topdown', test_mode=True)
-        self.assertEqual(len(dataset), 12)
+        self.assertEqual(len(dataset), 4)
         self.check_data_info_keys(dataset[0], data_mode='topdown')
 
         # test topdown testing with bbox file
@@ -108,7 +108,7 @@ class TestHumanartDataset(TestCase):
             data_mode='topdown',
             test_mode=True,
             bbox_file='tests/data/humanart/test_humanart_det_AP_H_56.json')
-        self.assertEqual(len(dataset), 118)
+        self.assertEqual(len(dataset), 13)
         self.check_data_info_keys(dataset[0], data_mode='topdown')
 
         # test topdown testing with filter config
@@ -117,18 +117,18 @@ class TestHumanartDataset(TestCase):
             test_mode=True,
             bbox_file='tests/data/humanart/test_humanart_det_AP_H_56.json',
             filter_cfg=dict(bbox_score_thr=0.3))
-        self.assertEqual(len(dataset), 33)
+        self.assertEqual(len(dataset), 8)
 
     def test_bottomup(self):
         # test bottomup training
         dataset = self.build_humanart_dataset(data_mode='bottomup')
-        self.assertEqual(len(dataset), 4)
+        self.assertEqual(len(dataset), 3)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
         # test bottomup testing
         dataset = self.build_humanart_dataset(
             data_mode='bottomup', test_mode=True)
-        self.assertEqual(len(dataset), 4)
+        self.assertEqual(len(dataset), 3)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
     def test_exceptions_and_warnings(self):
