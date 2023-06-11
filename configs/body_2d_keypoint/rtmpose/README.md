@@ -37,3 +37,21 @@ Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTor
 |   Model   | Input Size |  AP   |  AR   |                   Details and Download                   |
 | :-------: | :--------: | :---: | :---: | :------------------------------------------------------: |
 | RTMPose-m |  256x192   | 0.706 | 0.788 | [rtmpose_crowdpose.md](./crowdpose/rtmpose_crowdpose.md) |
+
+### Human-Art Dataset
+
+Results on Human-Art validation dataset with detector having human AP of 56.2 on Human-Art validation dataset
+
+|   Model   | Input Size |  AP   |  AR   |                 Details and Download                  |
+| :-------: | :--------: | :---: | :---: | :---------------------------------------------------: |
+| RTMPose-s |  256x192   | 0.311 | 0.381 | [rtmpose_humanart.md](./humanart/rtmpose_humanart.md) |
+| RTMPose-m |  256x192   | 0.355 | 0.417 | [rtmpose_humanart.md](./humanart/rtmpose_humanart.md) |
+| RTMPose-l |  256x192   | 0.378 | 0.442 | [rtmpose_humanart.md](./humanart/rtmpose_humanart.md) |
+
+Results on Human-Art validation dataset with ground-truth bounding-box
+
+|   Model   | Input Size |  AP   |  AR   |                 Details and Download                  |
+| :-------: | :--------: | :---: | :---: | :---------------------------------------------------: |
+| RTMPose-s |  256x192   | 0.698 | 0.732 | [rtmpose_humanart.md](./humanart/rtmpose_humanart.md) |
+| RTMPose-m |  256x192   | 0.728 | 0.759 | [rtmpose_humanart.md](./humanart/rtmpose_humanart.md) |
+| RTMPose-l |  256x192   | 0.753 | 0.783 | [rtmpose_humanart.md](./humanart/rtmpose_humanart.md) |

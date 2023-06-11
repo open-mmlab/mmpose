@@ -200,8 +200,8 @@ val_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='HumanArt/annotations/validation_humanart.json',
-        # bbox_file=f'{data_root}person_detection_results/'
-        # 'COCO_val2017_detections_AP_H_56_person.json',
+        # bbox_file=f'{data_root}HumanArt/person_detection_results/'
+        # 'HumanArt_validation_detections_AP_H_56_person.json',
         data_prefix=dict(img=''),
         test_mode=True,
         pipeline=val_pipeline,
