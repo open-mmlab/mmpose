@@ -30,7 +30,7 @@ class VisPredictHead(BaseHead):
     def __init__(self,
                  pose_cfg: ConfigType,
                  loss: ConfigType = dict(
-                     type='BCEWithLogitsLoss', use_target_weight=True),
+                     type='BCEWithLogitsLoss', use_target_weight=False),
                  use_sigmoid: bool = False,
                  init_cfg: OptConfigType = None):
 
@@ -52,6 +52,8 @@ class VisPredictHead(BaseHead):
 
         self.pose_head = MODELS.build(pose_cfg)
         self.pose_cfg = pose_cfg
+
+        self.use_sigmoid = use_sigmoid
 
         modules = [
             nn.AdaptiveAvgPool2d(1),
@@ -96,7 +98,10 @@ class VisPredictHead(BaseHead):
 
     def integrate(self, batch_vis: Tensor,
                   pose_preds: Union[Tuple, Predictions]) -> InstanceList:
-        """Add keypoints visibility prediction to pose prediction."""
+        """Add keypoints visibility prediction to pose prediction.
+
+        Overwrite the original keypoint_scores.
+        """
         if isinstance(pose_preds, tuple):
             pose_pred_instances, pose_pred_fields = pose_preds
         else:
@@ -106,9 +111,8 @@ class VisPredictHead(BaseHead):
         batch_vis_np = to_numpy(batch_vis, unzip=True)
 
         assert len(pose_pred_instances) == len(batch_vis_np)
-        for index in range(len(pose_pred_instances)):
-            pose_pred_instances[index].keypoint_visibility = batch_vis_np[
-                index]
+        for index, _ in enumerate(pose_pred_instances):
+            pose_pred_instances[index].keypoint_scores = batch_vis_np[index]
 
         return pose_pred_instances, pose_pred_fields
 
@@ -163,12 +167,16 @@ class VisPredictHead(BaseHead):
 
         batch_vis.unsqueeze_(dim=1)  # (B, N, K, D)
 
+        if not self.use_sigmoid:
+            batch_vis = torch.sigmoid(batch_vis)
+
         batch_pose = self.pose_head.predict(feats, batch_data_samples,
                                             test_cfg)
 
         return self.integrate(batch_vis, batch_pose)
 
     def vis_accuracy(self, vis_pred_outputs, vis_labels):
+        """Calculate visibility prediction accuracy."""
         probabilities = torch.sigmoid(torch.flatten(vis_pred_outputs))
         threshold = 0.5
         predictions = (probabilities >= threshold).int()
@@ -195,16 +203,12 @@ class VisPredictHead(BaseHead):
         """
         vis_pred_outputs = self.vis_forward(feats)
         vis_labels = torch.cat([
-            d.gt_instance_labels.keypoints_visible for d in batch_data_samples
-        ])
-        keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
 
         # calculate vis losses
         losses = dict()
-        loss_vis = self.loss_module(vis_pred_outputs, vis_labels,
-                                    keypoint_weights)
+        loss_vis = self.loss_module(vis_pred_outputs, vis_labels)
 
         losses.update(loss_vis=loss_vis)
 
