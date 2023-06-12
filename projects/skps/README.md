@@ -74,7 +74,7 @@ WFLW
 
 | Arch       | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |    ckpt    |    log    |
 | :--------- | :--------: | :------------------: | :------------------: | :--------------------------: | :-----------------------: | :------------------: | :--------------------: | :------------------------: | :--------: | :-------: |
-| [skps](/configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py) |  256x256   |         3.88         |         6.60         |             3.81             |           4.57            |         4.44         |          3.75          |            4.13            | [ckpt](https://drive.google.com/file/d/10U7f_pp0BPMhm575cO7Vg13nZVCy-PfN/view?usp=sharing) | [log](https://drive.google.com/file/d/1fBNcAyMdRr9nTN8wHqvYPnd9AFBinOk4/view?usp=sharing) |
+| [skps](./configs/td-hm_hrnetv2-w18_skps-1xb64-80e_wflw-256x256.py) |  256x256   |         3.88         |         6.60         |             3.81             |           4.57            |         4.44         |          3.75          |            4.13            | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/skps/best_NME_epoch_80.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/skps/20230522_142437.log) |
 
 COFW
 
