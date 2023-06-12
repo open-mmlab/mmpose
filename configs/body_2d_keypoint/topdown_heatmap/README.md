@@ -115,3 +115,19 @@ Results on PoseTrack2018 val with ground-truth bounding boxes.
 | HRNet-w48 |  256x192   | 84.6 |  [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md)  |
 | HRNet-w32 |  256x192   | 83.4 |  [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md)  |
 | ResNet-50 |  256x192   | 81.2 | [resnet_posetrack18.md](./posetrack18/resnet_posetrack18.md) |
+
+### Human-Art Dataset
+
+Results on Human-Art validation dataset with detector having human AP of 56.2 on Human-Art validation dataset
+
+|   Model   | Input Size |  AP   |  AR   |                 Details and Download                  |
+| :-------: | :--------: | :---: | :---: | :---------------------------------------------------: |
+| ViTPose-s |  256x192   | 0.381 | 0.448 | [vitpose_humanart.md](./humanart/vitpose_humanart.md) |
+| ViTPose-b |  256x192   | 0.410 | 0.475 | [vitpose_humanart.md](./humanart/vitpose_humanart.md) |
+
+Results on Human-Art validation dataset with ground-truth bounding-box
+
+|   Model   | Input Size |  AP   |  AR   |                 Details and Download                  |
+| :-------: | :--------: | :---: | :---: | :---------------------------------------------------: |
+| ViTPose-s |  256x192   | 0.738 | 0.768 | [vitpose_humanart.md](./humanart/vitpose_humanart.md) |
+| ViTPose-b |  256x192   | 0.759 | 0.790 | [vitpose_humanart.md](./humanart/vitpose_humanart.md) |
