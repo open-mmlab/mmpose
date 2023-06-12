@@ -16,6 +16,7 @@ from mmengine.dataset import Compose
 from mmengine.fileio import (get_file_backend, isdir, join_path,
                              list_dir_or_file)
 from mmengine.infer.infer import BaseInferencer
+from mmengine.registry import init_default_scope
 from mmengine.runner.checkpoint import _load_checkpoint_to_model
 from mmengine.structures import InstanceData
 from mmengine.utils import mkdir_or_exist
@@ -184,8 +185,22 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         # Set video input flag and metadata.
         self._video_input = True
+        (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+        if int(major_ver) < 3:
+            fps = vcap.get(cv2.cv.CV_CAP_PROP_FPS)
+            width = vcap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+            height = vcap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+        else:
+            fps = vcap.get(cv2.CAP_PROP_FPS)
+            width = vcap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            height = vcap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.video_info = dict(
-            fps=10, name='webcam.mp4', writer=None, predictions=[])
+            fps=fps,
+            name='webcam.mp4',
+            writer=None,
+            width=width,
+            height=height,
+            predictions=[])
 
         def _webcam_reader() -> Generator:
             while True:
@@ -215,6 +230,7 @@ class BaseMMPoseInferencer(BaseInferencer):
             ``np.ndarray``. The returned pipeline will be used to process
             a single data.
         """
+        init_default_scope(cfg.get('default_scope', 'mmpose'))
         return Compose(cfg.test_dataloader.dataset.pipeline)
 
     def preprocess(self,
@@ -234,7 +250,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
 
         for i, input in enumerate(inputs):
-            bbox = bboxes[i] if bboxes is not None else []
+            bbox = bboxes[i] if bboxes else []
             data_infos = self.preprocess_single(
                 input, index=i, bboxes=bbox, **kwargs)
             # only supports inference with batch size 1
@@ -402,8 +418,16 @@ class BaseMMPoseInferencer(BaseInferencer):
         if pred_out_dir != '':
             for pred, data_sample in zip(result_dict['predictions'], preds):
                 if self._video_input:
+                    # For video or webcam input, predictions for each frame
+                    # are gathered in the 'predictions' key of 'video_info'
+                    # dictionary. All frame predictions are then stored into
+                    # a single file after processing all frames.
                     self.video_info['predictions'].append(pred)
                 else:
+                    # For non-video inputs, predictions are stored in separate
+                    # JSON files. The filename is determined by the basename
+                    # of the input image path with a '.json' extension. The
+                    # predictions are then dumped into this file.
                     fname = os.path.splitext(
                         os.path.basename(
                             data_sample.metainfo['img_path']))[0] + '.json'

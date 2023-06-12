@@ -8,6 +8,90 @@ from mmengine.structures import InstanceData
 from mmpose.structures import PoseDataSample
 
 
+def convert_keypoint_definition(keypoints, pose_det_dataset,
+                                pose_lift_dataset):
+    """Convert pose det dataset keypoints definition to pose lifter dataset
+    keypoints definition, so that they are compatible with the definitions
+    required for 3D pose lifting.
+
+    Args:
+        keypoints (ndarray[N, K, 2 or 3]): 2D keypoints to be transformed.
+        pose_det_dataset, (str): Name of the dataset for 2D pose detector.
+        pose_lift_dataset (str): Name of the dataset for pose lifter model.
+
+    Returns:
+        ndarray[K, 2 or 3]: the transformed 2D keypoints.
+    """
+    assert pose_lift_dataset in [
+        'Human36mDataset'], '`pose_lift_dataset` should be ' \
+        f'`Human36mDataset`, but got {pose_lift_dataset}.'
+
+    coco_style_datasets = [
+        'CocoDataset', 'PoseTrack18VideoDataset', 'PoseTrack18Dataset'
+    ]
+    keypoints_new = np.zeros((keypoints.shape[0], 17, keypoints.shape[2]),
+                             dtype=keypoints.dtype)
+    if pose_lift_dataset == 'Human36mDataset':
+        if pose_det_dataset in ['Human36mDataset']:
+            keypoints_new = keypoints
+        elif pose_det_dataset in coco_style_datasets:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[:, 0] = (keypoints[:, 11] + keypoints[:, 12]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[:, 8] = (keypoints[:, 5] + keypoints[:, 6]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[:,
+                          7] = (keypoints_new[:, 0] + keypoints_new[:, 8]) / 2
+            # in COCO, head is in the middle of l_eye and r_eye
+            # in PoseTrack18, head is in the middle of head_bottom and head_top
+            keypoints_new[:, 10] = (keypoints[:, 1] + keypoints[:, 2]) / 2
+            # rearrange other keypoints
+            keypoints_new[:, [1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[:, [12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
+        elif pose_det_dataset in ['AicDataset']:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[:, 0] = (keypoints[:, 9] + keypoints[:, 6]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[:, 8] = (keypoints[:, 3] + keypoints[:, 0]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[:,
+                          7] = (keypoints_new[:, 0] + keypoints_new[:, 8]) / 2
+            # neck base (top end of neck) is 1/4 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[:, 9] = (3 * keypoints[:, 13] + keypoints[:, 12]) / 4
+            # head (spherical centre of head) is 7/12 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[:, 10] = (5 * keypoints[:, 13] +
+                                    7 * keypoints[:, 12]) / 12
+
+            keypoints_new[:, [1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[:, [6, 7, 8, 9, 10, 11, 3, 4, 5, 0, 1, 2]]
+        elif pose_det_dataset in ['CrowdPoseDataset']:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[:, 0] = (keypoints[:, 6] + keypoints[:, 7]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[:, 8] = (keypoints[:, 0] + keypoints[:, 1]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[:,
+                          7] = (keypoints_new[:, 0] + keypoints_new[:, 8]) / 2
+            # neck base (top end of neck) is 1/4 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[:, 9] = (3 * keypoints[:, 13] + keypoints[:, 12]) / 4
+            # head (spherical centre of head) is 7/12 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[:, 10] = (5 * keypoints[:, 13] +
+                                    7 * keypoints[:, 12]) / 12
+
+            keypoints_new[:, [1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[:, [7, 9, 11, 6, 8, 10, 0, 2, 4, 1, 3, 5]]
+        else:
+            raise NotImplementedError(
+                f'unsupported conversion between {pose_lift_dataset} and '
+                f'{pose_det_dataset}')
+
+    return keypoints_new
+
+
 def extract_pose_sequence(pose_results, frame_idx, causal, seq_len, step=1):
     """Extract the target frame from 2D pose results, and pad the sequence to a
     fixed length.
@@ -45,9 +129,9 @@ def extract_pose_sequence(pose_results, frame_idx, causal, seq_len, step=1):
     return pose_results_seq
 
 
-def _collate_pose_sequence(pose_results_2d,
-                           with_track_id=True,
-                           target_frame=-1):
+def collate_pose_sequence(pose_results_2d,
+                          with_track_id=True,
+                          target_frame=-1):
     """Reorganize multi-frame pose detection results into individual pose
     sequences.
 
@@ -211,8 +295,8 @@ def inference_pose_lifter_model(model,
             pose_results_2d[i][j].pred_instances.keypoints = np.array(
                 keypoints)
 
-    pose_sequences_2d = _collate_pose_sequence(pose_results_2d, with_track_id,
-                                               target_idx)
+    pose_sequences_2d = collate_pose_sequence(pose_results_2d, with_track_id,
+                                              target_idx)
 
     if not pose_sequences_2d:
         return []

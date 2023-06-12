@@ -196,7 +196,7 @@ The inferencer is designed to handle both visualization and saving of prediction
 
 ### Model Alias
 
-MMPose provides a set of pre-defined aliases for commonly used models. These aliases can be used as shorthand when initializing the `MMPoseInferencer` instead of specifying the full model configuration name. Below is a list of the available model aliases and their corresponding configuration names:
+The MMPose library has predefined aliases for several frequently used models. These aliases can be utilized as a shortcut when initializing the `MMPoseInferencer`, as an alternative to providing the full model configuration name. Here are the available 2D model aliases and their corresponding configuration names:
 
 | Alias     | Configuration Name                                 | Task                            | Pose Estimator | Detector            |
 | --------- | -------------------------------------------------- | ------------------------------- | -------------- | ------------------- |
@@ -210,6 +210,12 @@ MMPose provides a set of pre-defined aliases for commonly used models. These ali
 | vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base   | RTMDet-m            |
 | vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large  | RTMDet-m            |
 | vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge   | RTMDet-m            |
+
+The following table lists the available 3D model aliases and their corresponding configuration names:
+
+| Alias   | Configuration Name                                     | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | ------------------------------------------------------ | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 
