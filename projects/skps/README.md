@@ -80,4 +80,4 @@ COFW
 
 | Arch                                                           | Input Size | NME  |                              ckpt                              |                              log                               |
 | :------------------------------------------------------------- | :--------: | :--: | :------------------------------------------------------------: | :------------------------------------------------------------: |
-| [skps](/configs/td-hm_hrnetv2-w18_skps-1xb16-160e_cofw-256x256.py) |  256x256   | 3.20 | [ckpt](https://drive.google.com/file/d/1fdYQ0ajg11KAdkeLVCi_jPdSTKf9i3hP/view?usp=sharing) | [log](https://drive.google.com/file/d/1IUjIY_sLbO6YO59G7XZGUHDVC-o_k09y/view?usp=sharing) |
+| [skps](./configs/td-hm_hrnetv2-w18_skps-1xb16-160e_cofw-256x256.py) |  256x256   | 3.20 | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/skps/best_NME_epoch_113.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/skps/20230524_074949.log) |
