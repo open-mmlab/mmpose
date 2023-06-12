@@ -150,7 +150,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 #### 17 Keypoints
 
 - 关键点骨架定义遵循 [COCO](http://cocodataset.org/). 详情见 [meta info](/configs/_base_/datasets/coco.py).
-  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/2417e4f7-2203-468f-bad0-e7a6a6bf8251" height="300px">
+- <img src="https://github.com/open-mmlab/mmpose/assets/13503330/2417e4f7-2203-468f-bad0-e7a6a6bf8251" height="300px">
 
 <details close>
 <summary><b>AIC+COCO</b></summary>
@@ -193,7 +193,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 #### 26 Keypoints
 
 - 关键点骨架定义遵循 [Halpe26](https://github.com/Fang-Haoshu/Halpe-FullBody/)，详情见 [meta info](/configs/_base_/datasets/halpe26.py)。
-  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/f28ab3ba-833d-4ca7-8739-f97e6cafbab7" height="300px">
+- <img src="https://github.com/open-mmlab/mmpose/assets/13503330/f28ab3ba-833d-4ca7-8739-f97e6cafbab7" height="300px">
 - 模型在 `Body8` 上进行训练和评估。
 
 |                                          Config                                           | Input Size | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params(M) | FLOPS(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                    |
@@ -221,7 +221,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 ### 人体全身 2d 关键点 (133 Keypoints)
 
 - 关键点骨架定义遵循 [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)，详情见 [meta info](/configs/_base_/datasets/coco_wholebody.py)。
-  <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
+- <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
 
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
@@ -232,7 +232,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 ### 动物 2d 关键点 (17 Keypoints)
 
 - 关键点骨架定义遵循 [AP-10K](https://github.com/AlexTheBad/AP-10K/)，详情见 [meta info](/configs/_base_/datasets/ap10k.py)。
-  <img src="https://user-images.githubusercontent.com/100993824/227797151-091dc21a-d944-49c9-8b62-cc47fa89e69f.png" height="300px">
+- <img src="https://user-images.githubusercontent.com/100993824/227797151-091dc21a-d944-49c9-8b62-cc47fa89e69f.png" height="300px">
 
 |             Config             | Input Size | AP<sup><br>(AP10K) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download             |
 | :----------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :------------------------------: |
@@ -241,7 +241,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 ### 脸部 2d 关键点 (106 Keypoints)
 
 - 关键点骨架定义遵循 [LaPa](https://github.com/JDAI-CV/lapa-dataset)，详情见 [meta info](/configs/_base_/datasets/lapa.py)。
-  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/30fa583e-500c-4356-ac5a-7e9d7d18381a" height="300px">
+- <img src="https://github.com/open-mmlab/mmpose/assets/13503330/30fa583e-500c-4356-ac5a-7e9d7d18381a" height="300px">
 
 <details open>
 <summary><b>Face6</b></summary>
@@ -265,7 +265,7 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 ### 手部 2d 关键点 (21 Keypoints)
 
 - 关键点骨架定义遵循 [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)，详情见 [meta info](/configs/_base_/datasets/coco_wholebody_hand.py)。
-  <img src="https://user-images.githubusercontent.com/100993824/227771101-03a27bd8-ccc0-4eb9-a111-660f191a7a16.png" height="300px">
+- <img src="https://user-images.githubusercontent.com/100993824/227771101-03a27bd8-ccc0-4eb9-a111-660f191a7a16.png" height="300px">
 
 |       Detection Config        | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |        Download        |
 | :---------------------------: | :--------: | :---------------------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :--------------------: |
