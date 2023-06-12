@@ -26,11 +26,7 @@ default_hooks = dict(
 )
 
 # codec settings
-codec = dict(
-    type='MonoPoseLifting',
-    num_keypoints=17,
-    zero_center=False,
-    concat_vis=True)
+codec = dict(type='MonoPoseLifting', num_keypoints=17, concat_vis=True)
 
 # model settings
 model = dict(

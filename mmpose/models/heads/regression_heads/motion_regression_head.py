@@ -98,20 +98,27 @@ class MotionRegressionHead(BaseHead):
         batch_coords = self.forward(feats)  # (B, K, D)
 
         # Restore global position with target_root
-        target_root = batch_data_samples[0].metainfo.get('target_root', None)
-        if target_root is not None:
-            target_root = torch.stack([
-                torch.from_numpy(b.metainfo['target_root'])
+        camera_param = batch_data_samples[0].metainfo.get('camera_param', None)
+        if camera_param is not None:
+            w = torch.stack([
+                torch.from_numpy(np.array([b.metainfo['camera_param']['w']]))
+                for b in batch_data_samples
+            ])
+            h = torch.stack([
+                torch.from_numpy(np.array([b.metainfo['camera_param']['h']]))
                 for b in batch_data_samples
             ])
         else:
-            target_root = torch.stack([
+            w = torch.stack([
                 torch.empty((0), dtype=torch.float32)
                 for _ in batch_data_samples
             ])
-        target_root = target_root[..., None, :]
+            h = torch.stack([
+                torch.empty((0), dtype=torch.float32)
+                for _ in batch_data_samples
+            ])
 
-        preds = self.decode((batch_coords, target_root))
+        preds = self.decode((batch_coords, w, h))
 
         return preds
 

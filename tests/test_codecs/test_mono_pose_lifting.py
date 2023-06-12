@@ -74,41 +74,6 @@ class TestMonoPoseLifting(TestCase):
             1,
             17,
         ))
-        self.assertEqual(encoded['target_root'].shape, (
-            1,
-            3,
-        ))
-
-        # test not zero-centering
-        codec = self.build_pose_lifting_label(zero_center=False)
-        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
-                               lifting_target_visible, camera_param)
-
-        self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
-        self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))
-        self.assertEqual(encoded['lifting_target_weights'].shape, (
-            1,
-            17,
-        ))
-        self.assertEqual(encoded['trajectory_weights'].shape, (
-            1,
-            17,
-        ))
-
-        # test removing root
-        codec = self.build_pose_lifting_label(
-            remove_root=True, save_index=True)
-        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
-                               lifting_target_visible, camera_param)
-
-        self.assertTrue('target_root_removed' in encoded
-                        and 'target_root_index' in encoded)
-        self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
-        self.assertEqual(encoded['lifting_target_label'].shape, (1, 16, 3))
-        self.assertEqual(encoded['target_root'].shape, (
-            1,
-            3,
-        ))
 
         # test concatenating visibility
         codec = self.build_pose_lifting_label(concat_vis=True)
@@ -117,36 +82,21 @@ class TestMonoPoseLifting(TestCase):
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 3))
         self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))
-        self.assertEqual(encoded['target_root'].shape, (
-            1,
-            3,
-        ))
 
     def test_decode(self):
-        lifting_target = self.data['lifting_target']
         encoded_wo_sigma = self.data['encoded_wo_sigma']
         camera_param = self.data['camera_param']
 
         # test default settings
         codec = self.build_pose_lifting_label()
 
-        decoded, scores = codec.decode(
-            encoded_wo_sigma, target_root=lifting_target[..., 0, :])
+        decoded, scores = codec.decode(encoded_wo_sigma)
 
         self.assertEqual(decoded.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
 
-        # test `remove_root=True`
-        codec = self.build_pose_lifting_label(remove_root=True)
-
-        decoded, scores = codec.decode(
-            encoded_wo_sigma, target_root=lifting_target[..., 0, :])
-
-        self.assertEqual(decoded.shape, (1, 18, 3))
-        self.assertEqual(scores.shape, (1, 18))
-
         # test denormalize according to image shape
-        codec = self.build_pose_lifting_label(zero_center=False)
+        codec = self.build_pose_lifting_label()
 
         decoded, scores = codec.decode(
             encoded_wo_sigma,
@@ -163,32 +113,10 @@ class TestMonoPoseLifting(TestCase):
         lifting_target_visible = self.data['lifting_target_visible']
         camera_param = self.data['camera_param']
 
-        # test default settings
-        codec = self.build_pose_lifting_label()
-        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
-                               lifting_target_visible, camera_param)
-
-        _keypoints, _ = codec.decode(
-            encoded['lifting_target_label'],
-            target_root=lifting_target[..., 0, :])
-
-        self.assertTrue(np.allclose(lifting_target, _keypoints, atol=5.))
-
-        # test removing root
-        codec = self.build_pose_lifting_label(remove_root=True)
-        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
-                               lifting_target_visible, camera_param)
-
-        _keypoints, _ = codec.decode(
-            encoded['lifting_target_label'],
-            target_root=lifting_target[..., 0, :])
-
-        self.assertTrue(np.allclose(lifting_target, _keypoints, atol=5.))
-
         # test denormalize according to image shape
         keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 3))
         keypoints[..., 2] = np.round(keypoints[..., 2]).astype(np.float32)
-        codec = self.build_pose_lifting_label(zero_center=False)
+        codec = self.build_pose_lifting_label()
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
                                lifting_target_visible, camera_param)
 
