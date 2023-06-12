@@ -158,6 +158,9 @@ Feel free to join our community group for more help:
 
 #### 17 Keypoints
 
+- Keypoints are defined as [COCO](http://cocodataset.org/). For details please refer to the [meta info](/configs/_base_/datasets/coco.py).
+  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/2417e4f7-2203-468f-bad0-e7a6a6bf8251" height="300px">
+
 <details close>
 <summary><b>AIC+COCO</b></summary>
 
@@ -199,6 +202,7 @@ Feel free to join our community group for more help:
 #### 26 Keypoints
 
 - Keypoints are defined as [Halpe26](https://github.com/Fang-Haoshu/Halpe-FullBody/). For details please refer to the [meta info](/configs/_base_/datasets/halpe26.py).
+  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/f28ab3ba-833d-4ca7-8739-f97e6cafbab7" height="300px">
 - Models are trained and evaluated on `Body8`.
 
 |                                          Config                                           | Input Size | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params(M) | FLOPS(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                    |
@@ -225,6 +229,9 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 
 ### WholeBody 2d (133 Keypoints)
 
+- Keypoints are defined as [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/). For details please refer to the [meta info](/configs/_base_/datasets/coco_wholebody.py).
+  <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
+
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
 | [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   58.2   |   67.4   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
@@ -233,11 +240,17 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 
 ### Animal 2d (17 Keypoints)
 
+- Keypoints are defined as [AP-10K](https://github.com/AlexTheBad/AP-10K/). For details please refer to the [meta info](/configs/_base_/datasets/ap10k.py).
+  <img src="https://user-images.githubusercontent.com/100993824/227797151-091dc21a-d944-49c9-8b62-cc47fa89e69f.png" height="300px">
+
 |             Config             | Input Size | AP<sup><br>(AP10K) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download             |
 | :----------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :------------------------------: |
 | [RTMPose-m](./rtmpose/animal_2d_keypoint/rtmpose-m_8xb64-210e_ap10k-256x256.py) |  256x256   |        72.2        |       2.57        |                   14.157                    |                       2.404                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth) |
 
 ### Face 2d (106 Keypoints)
+
+- Keypoints are defined as [LaPa](https://github.com/JDAI-CV/lapa-dataset). For details please refer to the [meta info](/configs/_base_/datasets/lapa.py).
+  <img src="https://github.com/open-mmlab/mmpose/assets/13503330/30fa583e-500c-4356-ac5a-7e9d7d18381a" height="300px">
 
 <details open>
 <summary><b>Face6</b></summary>
@@ -259,6 +272,9 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 </details>
 
 ### Hand 2d (21 Keypoints)
+
+- Keypoints are defined as [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/). For details please refer to the [meta info](/configs/_base_/datasets/coco_wholebody_hand.py).
+  <img src="https://user-images.githubusercontent.com/100993824/227771101-03a27bd8-ccc0-4eb9-a111-660f191a7a16.png" height="300px">
 
 |       Detection Config        | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |        Download        |
 | :---------------------------: | :--------: | :---------------------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :--------------------: |
