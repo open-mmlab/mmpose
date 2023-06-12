@@ -8,12 +8,6 @@
 
 <div align="center">
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
-
-</div>
-
-<div align="center">
-
 [English](README.md) | 简体中文
 
 </div>
@@ -22,7 +16,7 @@ ______________________________________________________________________
 
 ## Abstract
 
-近年来，2D 姿态估计的研究在公开数据集上取得了出色的成绩，但是它在工业界的应用仍然受到笨重的模型参数和高推理延迟的影响。为了让前沿姿态估计算法在工业界落地，我们通过实验研究了多人姿态估计算法的五个方面：范式、骨干网络、定位算法、训练策略和部署推理，基于 MMPose 提出了一个高性能的实时多人姿态估计框架 **RTMPose**。我们的 RTMPose-m 模型在 COCO 上取得 **75.8％AP**，在 Intel i7-11700 CPU 上达到 **90+FPS**，在 NVIDIA GTX 1660 Ti GPU 上达到 **430+FPS**，RTMPose-l 在 COCO-WholeBody 上达到 **67.0％AP**，**130+FPS**。我们同样验证了在算力有限的设备上做实时姿态估计，RTMPose-s 在移动端骁龙865芯片上可以达到 **COCO 72.2%AP**，**70+FPS**。在 MMDeploy 的帮助下，我们的项目支持 CPU、GPU、Jetson、移动端等多种部署环境。
+近年来，2D 姿态估计的研究在公开数据集上取得了出色的成绩，但是它在工业界的应用仍然受到笨重的模型参数和高推理延迟的影响。为了让前沿姿态估计算法在工业界落地，我们通过实验研究了多人姿态估计算法的五个方面：范式、骨干网络、定位算法、训练策略和部署推理，基于 MMPose 提出了一个高性能的实时多人姿态估计框架 **RTMPose**。我们的 RTMPose-m 模型在 COCO 上取得 **75.8％AP**，在 Intel i7-11700 CPU 上达到 **90+FPS**，在 NVIDIA GTX 1660 Ti GPU 上达到 **430+FPS**。我们同样验证了在算力有限的设备上做实时姿态估计，RTMPose-s 在移动端骁龙865芯片上可以达到 **COCO 72.2%AP**，**70+FPS**。在 MMDeploy 的帮助下，我们的项目支持 CPU、GPU、Jetson、移动端等多种部署环境。
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
@@ -224,9 +218,9 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
-| [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   60.4   |   66.7   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
-| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   63.2   |   69.4   |       4.52        |                    23.41                    |                        5.67                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
-| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   67.0   |   72.3   |       10.07       |                    44.58                    |                        7.68                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
+| [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   58.2   |   67.4   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   61.1   |   70.0   |       4.52        |                    23.41                    |                        5.67                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   64.8   |   73.0   |       10.07       |                    44.58                    |                        7.68                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
 
 ### 动物 2d 关键点 (17 Keypoints)
 

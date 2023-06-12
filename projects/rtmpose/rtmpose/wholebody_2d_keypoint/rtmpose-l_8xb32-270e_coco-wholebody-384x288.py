@@ -202,6 +202,8 @@ val_dataloader = dict(
         ann_file='annotations/coco_wholebody_val_v1.0.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
+        bbox_file='data/coco/person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
         pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader

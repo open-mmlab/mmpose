@@ -13,6 +13,6 @@ Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO
 
 |   Model   | Input Size | Whole AP | Whole AR |                          Details and Download                           |
 | :-------: | :--------: | :------: | :------: | :---------------------------------------------------------------------: |
-| RTMPose-m |  256x192   |  0.604   |  0.667   | [rtmpose_coco-wholebody.md](./coco-wholebody/rtmpose_coco-wholebody.md) |
-| RTMPose-l |  256x192   |  0.632   |  0.694   | [rtmpose_coco-wholebody.md](./coco-wholebody/rtmpose_coco-wholebody.md) |
-| RTMPose-l |  384x288   |  0.670   |  0.723   | [rtmpose_coco-wholebody.md](./coco-wholebody/rtmpose_coco-wholebody.md) |
+| RTMPose-m |  256x192   |  0.582   |  0.674   | [rtmpose_coco-wholebody.md](./coco-wholebody/rtmpose_coco-wholebody.md) |
+| RTMPose-l |  256x192   |  0.611   |  0.700   | [rtmpose_coco-wholebody.md](./coco-wholebody/rtmpose_coco-wholebody.md) |
+| RTMPose-l |  384x288   |  0.648   |  0.730   | [rtmpose_coco-wholebody.md](./coco-wholebody/rtmpose_coco-wholebody.md) |
