@@ -44,7 +44,7 @@ Results on COCO val2017
 | [PETR-R101](/configs/petr_r101_8xb4-100e_coco.py)\* | 70.0 |      88.5       |      77.5       | 77.0 |      92.6       | [Google Drive](https://drive.google.com/file/d/1O261Jrt4JRGlIKTmLtPy3AUruwX1hsDf/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1D5wqNP53KNOKKE5NnO2Dnw?pwd=keyn) |                       /                        |
 | [PETR-Swin](/configs/petr_swin-l_8xb2-100e_coco.py)\* | 73.0 |      90.7       |      80.9       | 80.1 |      94.5       | [Google Drive](https://drive.google.com/file/d/1ujL0Gm5tPjweT0-gdDGkTc7xXrEt6gBP/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1X5Cdq75GosRCKqbHZTSpJQ?pwd=t9ea) |                       /                        |
 
-\* Indicates that the checkpoints are from the official repository. The training accuracy is still not up to the results reported in the paper. We will continue to update this project after aligning the training accuracy.
+\* Indicates that the checkpoints are sourced from the official repository. The training accuracy is still not up to the results reported in the paper. We will continue to update this project after aligning the training accuracy.
 
 ## Citation
 
