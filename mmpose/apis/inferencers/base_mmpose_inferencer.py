@@ -216,9 +216,6 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         return _webcam_reader()
 
-    def _visualization_window_on_close(self, event):
-        self._window_closing = True
-
     def _init_pipeline(self, cfg: ConfigType) -> Callable:
         """Initialize the test pipeline.
 
@@ -232,6 +229,12 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
         init_default_scope(cfg.get('default_scope', 'mmpose'))
         return Compose(cfg.test_dataloader.dataset.pipeline)
+
+    def update_model_visualizer_settings(self, **kwargs):
+        """Update the settings of models and visualizer according to inference
+        arguments."""
+
+        pass
 
     def preprocess(self,
                    inputs: InputsType,
@@ -268,8 +271,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                   kpt_thr: float = 0.3,
                   vis_out_dir: str = '',
                   window_name: str = '',
-                  window_close_event_handler: Optional[Callable] = None
-                  ) -> List[np.ndarray]:
+                  **kwargs) -> List[np.ndarray]:
         """Visualize predictions.
 
         Args:
@@ -289,7 +291,6 @@ class BaseMMPoseInferencer(BaseInferencer):
                 results w/o predictions. If left as empty, no file will
                 be saved. Defaults to ''.
             window_name (str, optional): Title of display window.
-            window_close_event_handler (callable, optional):
 
         Returns:
             List[np.ndarray]: Visualization results.
@@ -329,10 +330,10 @@ class BaseMMPoseInferencer(BaseInferencer):
                 pred,
                 draw_gt=False,
                 draw_bbox=draw_bbox,
-                draw_heatmap=True,
                 show=show,
                 wait_time=wait_time,
-                kpt_thr=kpt_thr)
+                kpt_thr=kpt_thr,
+                **kwargs)
             results.append(visualization)
 
             if vis_out_dir:

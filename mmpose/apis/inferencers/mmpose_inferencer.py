@@ -60,14 +60,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
     }
     forward_kwargs: set = {'rebase_keypoint_height'}
     visualize_kwargs: set = {
-        'return_vis',
-        'show',
-        'wait_time',
-        'draw_bbox',
-        'radius',
-        'thickness',
-        'kpt_thr',
-        'vis_out_dir',
+        'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
+        'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap'
     }
     postprocess_kwargs: set = {'pred_out_dir'}
 
@@ -80,8 +74,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
                  scope: str = 'mmpose',
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
-                 det_cat_ids: Optional[Union[int, List]] = None,
-                 output_heatmaps: Optional[bool] = None) -> None:
+                 det_cat_ids: Optional[Union[int, List]] = None) -> None:
 
         self.visualizer = None
         if pose3d is not None:
@@ -92,7 +85,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         elif pose2d is not None:
             self.inferencer = Pose2DInferencer(pose2d, pose2d_weights, device,
                                                scope, det_model, det_weights,
-                                               det_cat_ids, output_heatmaps)
+                                               det_cat_ids)
         else:
             raise ValueError('Either 2d or 3d pose estimation algorithm '
                              'should be provided.')
@@ -177,6 +170,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             postprocess_kwargs,
         ) = self._dispatch_kwargs(**kwargs)
 
+        self.inferencer.update_model_visualizer_settings(**kwargs)
+
         # preprocessing
         if isinstance(inputs, str) and inputs.startswith('webcam'):
             inputs = self.inferencer._get_webcam_inputs(inputs)
@@ -240,8 +235,4 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             window_name = self.inferencer.video_info['name']
 
         return self.inferencer.visualize(
-            inputs,
-            preds,
-            window_name=window_name,
-            window_close_event_handler=self._visualization_window_on_close,
-            **kwargs)
+            inputs, preds, window_name=window_name, **kwargs)

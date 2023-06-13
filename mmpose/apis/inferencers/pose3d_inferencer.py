@@ -384,6 +384,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             postprocess_kwargs,
         ) = self._dispatch_kwargs(**kwargs)
 
+        self.update_model_visualizer_settings(**kwargs)
+
         # preprocessing
         if isinstance(inputs, str) and inputs.startswith('webcam'):
             inputs = self._get_webcam_inputs(inputs)
