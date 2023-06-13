@@ -98,4 +98,4 @@ class OksCost(BaseMatchCost, OksLoss):
         # Calculate OKS cost
         kpt_cost = self.compute_oks(pred_keypoints, gt_keypoints,
                                     gt_keypoints_visible, gt_areas)
-        return kpt_cost * self.weight
+        return -kpt_cost * self.weight

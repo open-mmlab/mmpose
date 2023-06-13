@@ -1,7 +1,12 @@
 _base_ = ['petr_r50_8xb4-100e_coco.py']
 
 # model
+
+checkpoint = 'https://download.openmmlab.com/mmpose/mmdet_pretrained/' \
+    'deformable_detr_twostage_refine_swin_16x1_50e_coco-95953bd1_20230613.pth'
+
 model = dict(
+    init_cfg=dict(checkpoint=checkpoint),
     backbone=dict(
         _delete_=True,
         type='SwinTransformer',
@@ -21,4 +26,6 @@ model = dict(
         convert_weights=True),
     neck=dict(in_channels=[384, 768, 1536]))
 
+auto_scale_lr = dict(base_batch_size=16)
+train_dataloader = dict(batch_size=2)
 optim_wrapper = dict(optimizer=dict(lr=0.0001))
