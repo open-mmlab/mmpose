@@ -97,7 +97,7 @@ class MotionRegressionHead(BaseHead):
 
         batch_coords = self.forward(feats)  # (B, K, D)
 
-        # Restore global position with target_root
+        # Restore global position with camera_param and factor
         camera_param = batch_data_samples[0].metainfo.get('camera_param', None)
         if camera_param is not None:
             w = torch.stack([
@@ -118,7 +118,19 @@ class MotionRegressionHead(BaseHead):
                 for _ in batch_data_samples
             ])
 
-        preds = self.decode((batch_coords, w, h))
+        factor = batch_data_samples[0].metainfo.get('factor', None)
+        if factor is not None:
+            factor = torch.stack([
+                torch.from_numpy(np.array([b.metainfo['factor']]))
+                for b in batch_data_samples
+            ])
+        else:
+            factor = torch.stack([
+                torch.empty((0), dtype=torch.float32)
+                for _ in batch_data_samples
+            ])
+
+        preds = self.decode((batch_coords, w, h, factor))
 
         return preds
 

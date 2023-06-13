@@ -127,6 +127,7 @@ class MonoPoseLifting(BaseKeypointCodec):
             self.root_index, lifting_target_label, _camera_param)
         lifting_target_label[..., :, :] = lifting_target_label[
             ..., :, :] - lifting_target_label[..., self.root_index, :]
+        lifting_target_label *= 1000 / factor
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
@@ -142,7 +143,7 @@ class MonoPoseLifting(BaseKeypointCodec):
         encoded['lifting_target'] = lifting_target_label
         encoded['lifting_target_visible'] = lifting_target_visible
         encoded['trajectory_weights'] = trajectory_weights
-        encoded['factor'] = factor
+        encoded['factor'] = np.array([factor])
 
         return encoded
 
@@ -151,6 +152,7 @@ class MonoPoseLifting(BaseKeypointCodec):
         encoded: np.ndarray,
         w: Optional[np.ndarray] = None,
         h: Optional[np.ndarray] = None,
+        factor: Optional[np.ndarray] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
         space.
@@ -161,6 +163,8 @@ class MonoPoseLifting(BaseKeypointCodec):
                 Default: ``None``.
             h (np.ndarray, optional): The image heights in shape (N, ).
                 Default: ``None``.
+            factor (np.ndarray, optional): The factor for projection in shape
+                (N, ). Default: ``None``.
 
         Returns:
             keypoints (np.ndarray): Decoded coordinates in shape (N, K, C).
@@ -180,6 +184,11 @@ class MonoPoseLifting(BaseKeypointCodec):
                 np.ones((w.shape[0], 1)), h / w, axis=1)[:, None, :]
             keypoints[..., :2] = (keypoints[..., :2] + trans) * w[:, None] / 2
             keypoints[..., 2:] = keypoints[..., 2:] * w[:, None] / 2
+        if factor is not None and factor.size > 0:
+            assert factor.shape[0] == keypoints.shape[0]
+            if factor.ndim == 1:
+                factor = factor[:, None]
+            keypoints[..., :, :] /= factor[..., :]
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[
             ..., self.root_index, :]
         return keypoints, scores

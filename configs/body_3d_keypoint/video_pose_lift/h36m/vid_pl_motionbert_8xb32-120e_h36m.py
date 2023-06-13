@@ -61,7 +61,7 @@ val_pipeline = [
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
-                   'target_root', 'camera_param'))
+                   'factor', 'camera_param'))
 ]
 
 # data loaders

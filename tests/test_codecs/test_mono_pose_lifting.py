@@ -106,6 +106,15 @@ class TestMonoPoseLifting(TestCase):
         self.assertEqual(decoded.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
 
+        # test with factor
+        codec = self.build_pose_lifting_label()
+
+        decoded, scores = codec.decode(
+            encoded_wo_sigma, factor=np.array([0.23]))
+
+        self.assertEqual(decoded.shape, (1, 17, 3))
+        self.assertEqual(scores.shape, (1, 17))
+
     def test_cicular_verification(self):
         keypoints_visible = self.data['keypoints_visible']
         lifting_target = self.data['lifting_target']
@@ -123,6 +132,23 @@ class TestMonoPoseLifting(TestCase):
             w=np.array([camera_param['w']]),
             h=np.array([camera_param['h']]))
 
+        keypoints[..., :, :] = keypoints[..., :, :] - keypoints[..., 0, :]
+
+        self.assertTrue(np.allclose(keypoints[..., :2], _keypoints[..., :2]))
+
+        # test with factor
+        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 3))
+        codec = self.build_pose_lifting_label()
+        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
+                               lifting_target_visible, camera_param)
+
+        _keypoints, _ = codec.decode(
+            encoded['keypoint_labels'],
+            w=np.array([camera_param['w']]),
+            h=np.array([camera_param['h']]),
+            factor=encoded['factor'])
+
+        keypoints /= encoded['factor'][0]
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[..., 0, :]
 
         self.assertTrue(np.allclose(keypoints[..., :2], _keypoints[..., :2]))
