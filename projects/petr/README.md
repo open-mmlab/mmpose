@@ -37,13 +37,14 @@ For more information on using the inferencer, please see [this document](https:/
 
 Results on COCO val2017
 
-| Model | Backbone | Lr schd | mAP  | AP<sup>50</sup> | AP<sup>75</sup> |  AR  | AR<sup>50</sup> |                      Config                      |                                    Download                                     |
-| :---: | :------: | :-----: | :--: | :-------------: | :-------------: | :--: | :-------------: | :----------------------------------------------: | :-----------------------------------------------------------------------------: |
-| PETR  |   R-50   |  100e   | 68.7 |      87.5       |      76.2       | 75.9 |      92.1       |  [config](/configs/petr_r50_8xb4-100e_coco.py)   | [Google Drive](https://drive.google.com/file/d/1HcwraqWdZ3CaGMQOJHY8exNem7UnFkfS/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1C0HbQWV7K-GHQE7q34nUZw?pwd=u798) |
-| PETR  |  R-101   |  100e   | 70.0 |      88.5       |      77.5       | 77.0 |      92.6       |  [config](/configs/petr_r101_8xb4-100e_coco.py)  | [Google Drive](https://drive.google.com/file/d/1O261Jrt4JRGlIKTmLtPy3AUruwX1hsDf/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1D5wqNP53KNOKKE5NnO2Dnw?pwd=keyn) |
-| PETR  |  Swin-L  |  100e   | 73.0 |      90.7       |      80.9       | 80.1 |      94.5       | [config](/configs/petr_swin-l_8xb4-100e_coco.py) | [Google Drive](https://drive.google.com/file/d/1ujL0Gm5tPjweT0-gdDGkTc7xXrEt6gBP/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1X5Cdq75GosRCKqbHZTSpJQ?pwd=t9ea) |
+|                      Model                       | mAP  | AP<sup>50</sup> | AP<sup>75</sup> |  AR  | AR<sup>50</sup> |                      Checkpoint                       |                      Log                       |
+| :----------------------------------------------: | :--: | :-------------: | :-------------: | :--: | :-------------: | :---------------------------------------------------: | :--------------------------------------------: |
+| [PETR-R50](/configs/petr_r50_8xb3-100e_coco.py)  | 68.7 |      86.2       |      76.0       | 76.5 |      91.5       | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/petr/petr_r50_8xb3-100e_coco-520803d9_20230613.pth) | [log](https://download.openmmlab.com/mmpose/v1/projects/petr/petr_r50_8xb3-100e_coco-20230613.json) |
+| [PETR-R50](/configs/petr_r50_8xb4-100e_coco.py)\* | 68.7 |      87.5       |      76.2       | 75.9 |      92.1       | [Google Drive](https://drive.google.com/file/d/1HcwraqWdZ3CaGMQOJHY8exNem7UnFkfS/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1C0HbQWV7K-GHQE7q34nUZw?pwd=u798) |                       /                        |
+| [PETR-R101](/configs/petr_r101_8xb4-100e_coco.py)\* | 70.0 |      88.5       |      77.5       | 77.0 |      92.6       | [Google Drive](https://drive.google.com/file/d/1O261Jrt4JRGlIKTmLtPy3AUruwX1hsDf/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1D5wqNP53KNOKKE5NnO2Dnw?pwd=keyn) |                       /                        |
+| [PETR-Swin](/configs/petr_swin-l_8xb2-100e_coco.py)\* | 73.0 |      90.7       |      80.9       | 80.1 |      94.5       | [Google Drive](https://drive.google.com/file/d/1ujL0Gm5tPjweT0-gdDGkTc7xXrEt6gBP/view?usp=sharing) \| [BaiduYun](https://pan.baidu.com/s/1X5Cdq75GosRCKqbHZTSpJQ?pwd=t9ea) |                       /                        |
 
-Currently, the PETR implemented in this project supports inference using the official checkpoint. However, the training accuracy is still not up to the results reported in the paper. We will continue to update this project after aligning the training accuracy.
+\* Indicates that the checkpoints are from the official repository. The training accuracy is still not up to the results reported in the paper. We will continue to update this project after aligning the training accuracy.
 
 ## Citation
 
