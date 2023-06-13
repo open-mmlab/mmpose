@@ -121,6 +121,12 @@ def parse_args():
         default=1,
         help='Link thickness for visualization.')
     parser.add_argument(
+        '--skeleton-style',
+        default='mmpose',
+        type=str,
+        choices=['mmpose', 'openpose'],
+        help='Skeleton style selection')
+    parser.add_argument(
         '--vis-out-dir',
         type=str,
         default='',
@@ -142,7 +148,6 @@ def parse_args():
         'det_weights', 'det_cat_ids', 'pose3d', 'pose3d_weights'
     ]
     init_args = {}
-    init_args['output_heatmaps'] = call_args.pop('draw_heatmap')
     for init_kw in init_kws:
         init_args[init_kw] = call_args.pop(init_kw)
 

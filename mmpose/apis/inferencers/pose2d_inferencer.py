@@ -60,9 +60,6 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             model. Defaults to None.
         det_cat_ids (int or list[int], optional): Category id for
             detection model. Defaults to None.
-        output_heatmaps (bool, optional): Flag to visualize predicted
-            heatmaps. If set to None, the default setting from the model
-            config will be used. Default is None.
     """
 
     preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
@@ -76,6 +73,8 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         'thickness',
         'kpt_thr',
         'vis_out_dir',
+        'skeleton_style',
+        'draw_heatmap',
     }
     postprocess_kwargs: set = {'pred_out_dir'}
 
@@ -86,15 +85,12 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                  scope: Optional[str] = 'mmpose',
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
-                 det_cat_ids: Optional[Union[int, Tuple]] = None,
-                 output_heatmaps: Optional[bool] = None) -> None:
+                 det_cat_ids: Optional[Union[int, Tuple]] = None) -> None:
 
         init_default_scope(scope)
         super().__init__(
             model=model, weights=weights, device=device, scope=scope)
         self.model = revert_sync_batchnorm(self.model)
-        if output_heatmaps is not None:
-            self.model.test_cfg['output_heatmaps'] = output_heatmaps
 
         # assign dataset metainfo to self.visualizer
         self.visualizer.set_dataset_meta(self.model.dataset_meta)
@@ -133,6 +129,30 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                     self.det_cat_ids = (det_cat_ids, )
 
         self._video_input = False
+
+    def update_model_visualizer_settings(self,
+                                         draw_heatmap: bool = False,
+                                         skeleton_style: str = 'mmpose',
+                                         **kwargs) -> None:
+        """Update the settings of models and visualizer according to inference
+        arguments.
+
+        Args:
+            draw_heatmaps (bool, optional): Flag to visualize predicted
+                heatmaps. If not provided, it defaults to False.
+            skeleton_style (str, optional): Skeleton style selection. Valid
+                options are 'mmpose' and 'openpose'. Defaults to 'mmpose'.
+        """
+        self.model.test_cfg['output_heatmaps'] = draw_heatmap
+
+        if skeleton_style not in ['mmpose', 'openpose']:
+            raise ValueError('`skeleton_style` must be either \'mmpose\' '
+                             'or \'openpose\'')
+
+        if skeleton_style == 'openpose':
+            self.visualizer.set_dataset_meta(self.model.dataset_meta,
+                                             skeleton_style)
+            self.visualizer.backend = 'matplotlib'
 
     def preprocess_single(self,
                           input: InputType,
@@ -273,6 +293,8 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             visualize_kwargs,
             postprocess_kwargs,
         ) = self._dispatch_kwargs(**kwargs)
+
+        self.update_model_visualizer_settings(**kwargs)
 
         # preprocessing
         if isinstance(inputs, str) and inputs.startswith('webcam'):
