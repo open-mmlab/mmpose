@@ -125,6 +125,8 @@ class MonoPoseLifting(BaseKeypointCodec):
         # convert target to image coordinate
         lifting_target_label, factor = camera_to_image_coord(
             self.root_index, lifting_target_label, _camera_param)
+        lifting_target_label[..., :, :] = lifting_target_label[
+            ..., :, :] - lifting_target_label[..., self.root_index, :]
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
@@ -178,4 +180,6 @@ class MonoPoseLifting(BaseKeypointCodec):
                 np.ones((w.shape[0], 1)), h / w, axis=1)[:, None, :]
             keypoints[..., :2] = (keypoints[..., :2] + trans) * w[:, None] / 2
             keypoints[..., 2:] = keypoints[..., 2:] * w[:, None] / 2
+        keypoints[..., :, :] = keypoints[..., :, :] - keypoints[
+            ..., self.root_index, :]
         return keypoints, scores

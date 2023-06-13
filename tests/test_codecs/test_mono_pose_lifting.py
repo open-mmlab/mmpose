@@ -107,7 +107,6 @@ class TestMonoPoseLifting(TestCase):
         self.assertEqual(scores.shape, (1, 17))
 
     def test_cicular_verification(self):
-        keypoints = self.data['keypoints']
         keypoints_visible = self.data['keypoints_visible']
         lifting_target = self.data['lifting_target']
         lifting_target_visible = self.data['lifting_target_visible']
@@ -115,7 +114,6 @@ class TestMonoPoseLifting(TestCase):
 
         # test denormalize according to image shape
         keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 3))
-        keypoints[..., 2] = np.round(keypoints[..., 2]).astype(np.float32)
         codec = self.build_pose_lifting_label()
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
                                lifting_target_visible, camera_param)
@@ -125,5 +123,6 @@ class TestMonoPoseLifting(TestCase):
             w=np.array([camera_param['w']]),
             h=np.array([camera_param['h']]))
 
-        self.assertTrue(
-            np.allclose(keypoints[..., :2], _keypoints[..., :2], atol=5.))
+        keypoints[..., :, :] = keypoints[..., :, :] - keypoints[..., 0, :]
+
+        self.assertTrue(np.allclose(keypoints[..., :2], _keypoints[..., :2]))
