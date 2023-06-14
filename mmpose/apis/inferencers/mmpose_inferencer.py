@@ -61,7 +61,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
     forward_kwargs: set = {'rebase_keypoint_height'}
     visualize_kwargs: set = {
         'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
-        'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap'
+        'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap',
+        'black_background'
     }
     postprocess_kwargs: set = {'pred_out_dir'}
 

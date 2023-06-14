@@ -127,6 +127,10 @@ def parse_args():
         choices=['mmpose', 'openpose'],
         help='Skeleton style selection')
     parser.add_argument(
+        '--black-background',
+        action='store_true',
+        help='Plot predictions on a black image')
+    parser.add_argument(
         '--vis-out-dir',
         type=str,
         default='',
