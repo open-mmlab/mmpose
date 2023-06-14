@@ -125,6 +125,8 @@ class BaseMMPoseInferencer(BaseInferencer):
                         fps=video.fps,
                         name=os.path.basename(inputs),
                         writer=None,
+                        width=video.width,
+                        height=video.height,
                         predictions=[])
                     inputs = video
                 elif input_type == 'image':
