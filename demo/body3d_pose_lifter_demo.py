@@ -203,7 +203,7 @@ def get_pose_est_results(args, pose_estimator, frame, bboxes,
 
 
 def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
-                          frame, frame_idx, img_size, pose_est_results):
+                          frame, frame_idx, pose_est_results):
     pose_lift_dataset = pose_lifter.cfg.test_dataloader.dataset
     # extract and pad input pose2d sequence
     pose_seq_2d = extract_pose_sequence(
@@ -214,10 +214,11 @@ def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
         step=pose_lift_dataset.get('seq_step', 1))
 
     # 2D-to-3D pose lifting
+    width, height = frame.shape[:2]
     pose_lift_results = inference_pose_lifter_model(
         pose_lifter,
         pose_seq_2d,
-        image_size=img_size,
+        image_size=(width, height),
         norm_pose_2d=args.norm_pose_2d)
 
     # Pose processing
@@ -359,7 +360,6 @@ def main():
     pred_instances_list = []
     if input_type == 'image':
         frame = mmcv.imread(args.input, channel_order='rgb')
-        width, height = frame.shape[:2]
 
         # First stage: 2D pose detection
         bboxes = get_bbox(args, detector, frame)
@@ -368,7 +368,7 @@ def main():
         pose_est_results_list.append(pose_est_results_converted.copy())
         pred_3d_pred = get_pose_lift_results(args, visualizer, pose_lifter,
                                              pose_est_results_list, frame, 0,
-                                             (width, height), pose_est_results)
+                                             pose_est_results)
 
         if args.save_predictions:
             # save prediction results
@@ -390,12 +390,8 @@ def main():
         (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
         if int(major_ver) < 3:
             fps = video.get(cv2.cv.CV_CAP_PROP_FPS)
-            width = video.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
-            height = video.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
         else:
             fps = video.get(cv2.CAP_PROP_FPS)
-            width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
-            height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
         video_writer = None
         frame_idx = 0
@@ -426,8 +422,7 @@ def main():
             pred_3d_pred = get_pose_lift_results(args, visualizer, pose_lifter,
                                                  pose_est_results_list,
                                                  mmcv.bgr2rgb(frame),
-                                                 frame_idx, (width, height),
-                                                 pose_est_results)
+                                                 frame_idx, pose_est_results)
 
             if args.save_predictions:
                 # save prediction results
