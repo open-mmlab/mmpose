@@ -11,6 +11,7 @@ import mmcv
 import torch
 
 from mmpose.apis.inferencers import Pose2DInferencer, Pose3DInferencer
+from mmpose.structures import PoseDataSample
 
 
 class TestPose3DInferencer(TestCase):
@@ -95,18 +96,40 @@ class TestPose3DInferencer(TestCase):
 
         # `inputs` is path to an image
         inputs = img_path
-        with self.assertRaises(ValueError):
-            results = next(inferencer(inputs, return_vis=True))
+        results1 = next(inferencer(inputs, return_vis=True))
+        self.assertIn('visualization', results1)
+        self.assertIn('predictions', results1)
+        self.assertIn('keypoints', results1['predictions'][0][0])
+        self.assertEqual(len(results1['predictions'][0][0]['keypoints']), 17)
 
         # `inputs` is an image array
         inputs = img
-        with self.assertRaises(ValueError):
-            results = next(inferencer(inputs))
+        results2 = next(inferencer(inputs))
+        self.assertEqual(
+            len(results1['predictions'][0]), len(results2['predictions'][0]))
+        self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
+                                 results2['predictions'][0][0]['keypoints'])
+        results2 = next(inferencer(inputs, return_datasample=True))
+        self.assertIsInstance(results2['predictions'][0], PoseDataSample)
 
         # `inputs` is path to a directory
         inputs = osp.dirname(img_path)
-        with self.assertRaises(ValueError):
-            results = next(inferencer(inputs))
+
+        with TemporaryDirectory() as tmp_dir:
+            # only save visualizations
+            for res in inferencer(inputs, vis_out_dir=tmp_dir):
+                pass
+            self.assertEqual(len(os.listdir(tmp_dir)), 4)
+            # save both visualizations and predictions
+            results3 = defaultdict(list)
+            for res in inferencer(inputs, out_dir=tmp_dir):
+                for key in res:
+                    results3[key].extend(res[key])
+            self.assertEqual(len(os.listdir(f'{tmp_dir}/visualizations')), 4)
+            self.assertEqual(len(os.listdir(f'{tmp_dir}/predictions')), 4)
+        self.assertEqual(len(results3['predictions']), 4)
+        self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
+                                 results3['predictions'][3][0]['keypoints'])
 
         # `inputs` is path to a video
         inputs = 'https://user-images.githubusercontent.com/87690686/' \
