@@ -75,6 +75,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         'vis_out_dir',
         'skeleton_style',
         'draw_heatmap',
+        'black_background',
     }
     postprocess_kwargs: set = {'pred_out_dir'}
 
@@ -152,7 +153,6 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         if skeleton_style == 'openpose':
             self.visualizer.set_dataset_meta(self.model.dataset_meta,
                                              skeleton_style)
-            self.visualizer.backend = 'matplotlib'
 
     def preprocess_single(self,
                           input: InputType,

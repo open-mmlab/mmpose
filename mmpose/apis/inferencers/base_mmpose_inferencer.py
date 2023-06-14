@@ -39,14 +39,8 @@ class BaseMMPoseInferencer(BaseInferencer):
     preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
-        'return_vis',
-        'show',
-        'wait_time',
-        'draw_bbox',
-        'radius',
-        'thickness',
-        'kpt_thr',
-        'vis_out_dir',
+        'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
+        'kpt_thr', 'vis_out_dir', 'black_background'
     }
     postprocess_kwargs: set = {'pred_out_dir'}
 
@@ -271,6 +265,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                   kpt_thr: float = 0.3,
                   vis_out_dir: str = '',
                   window_name: str = '',
+                  black_background: bool = False,
                   **kwargs) -> List[np.ndarray]:
         """Visualize predictions.
 
@@ -291,6 +286,8 @@ class BaseMMPoseInferencer(BaseInferencer):
                 results w/o predictions. If left as empty, no file will
                 be saved. Defaults to ''.
             window_name (str, optional): Title of display window.
+            black_background (bool, optional): Whether to plot keypoints on a
+                black image instead of the input image. Defaults to False.
 
         Returns:
             List[np.ndarray]: Visualization results.
@@ -315,6 +312,8 @@ class BaseMMPoseInferencer(BaseInferencer):
             else:
                 raise ValueError('Unsupported input type: '
                                  f'{type(single_input)}')
+            if black_background:
+                img = img * 0
 
             img_name = os.path.basename(pred.metainfo['img_path'])
             window_name = window_name if window_name else img_name
