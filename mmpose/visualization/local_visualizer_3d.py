@@ -38,6 +38,12 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         show_keypoint_weight (bool): Whether to adjust the transparency
             of keypoints according to their score. Defaults to ``False``
         alpha (int, float): The transparency of bboxes. Defaults to ``0.8``
+        det_kpt_color (str, tuple(tuple(int)), optional): Keypoints color
+             info for detection. Defaults to ``None``
+        det_dataset_skeleton (list): Skeleton info for detection. Defaults to
+            ``None``
+        det_dataset_link_color (list): Link color for detection. Defaults to
+            ``None``
     """
 
     def __init__(
