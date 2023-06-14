@@ -40,26 +40,33 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         alpha (int, float): The transparency of bboxes. Defaults to ``0.8``
     """
 
-    def __init__(self,
-                 name: str = 'visualizer',
-                 image: Optional[np.ndarray] = None,
-                 vis_backends: Optional[Dict] = None,
-                 save_dir: Optional[str] = None,
-                 bbox_color: Optional[Union[str, Tuple[int]]] = 'green',
-                 kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = 'red',
-                 link_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
-                 text_color: Optional[Union[str,
-                                            Tuple[int]]] = (255, 255, 255),
-                 skeleton: Optional[Union[List, Tuple]] = None,
-                 line_width: Union[int, float] = 1,
-                 radius: Union[int, float] = 3,
-                 show_keypoint_weight: bool = False,
-                 backend: str = 'opencv',
-                 alpha: float = 0.8):
+    def __init__(
+            self,
+            name: str = 'visualizer',
+            image: Optional[np.ndarray] = None,
+            vis_backends: Optional[Dict] = None,
+            save_dir: Optional[str] = None,
+            bbox_color: Optional[Union[str, Tuple[int]]] = 'green',
+            kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = 'red',
+            link_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
+            text_color: Optional[Union[str, Tuple[int]]] = (255, 255, 255),
+            skeleton: Optional[Union[List, Tuple]] = None,
+            line_width: Union[int, float] = 1,
+            radius: Union[int, float] = 3,
+            show_keypoint_weight: bool = False,
+            backend: str = 'opencv',
+            alpha: float = 0.8,
+            det_kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
+            det_dataset_skeleton: Optional[Union[str,
+                                                 Tuple[Tuple[int]]]] = None,
+            det_dataset_link_color: Optional[np.ndarray] = None):
         super().__init__(name, image, vis_backends, save_dir, bbox_color,
                          kpt_color, link_color, text_color, skeleton,
                          line_width, radius, show_keypoint_weight, backend,
                          alpha)
+        self.det_kpt_color = det_kpt_color
+        self.det_dataset_skeleton = det_dataset_skeleton
+        self.det_dataset_link_color = det_dataset_link_color
 
     def _draw_3d_data_samples(
         self,
@@ -260,16 +267,12 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
         return pred_img_data
 
-    def _draw_instances_kpts(
-            self,
-            image: np.ndarray,
-            instances: InstanceData,
-            kpt_thr: float = 0.3,
-            show_kpt_idx: bool = False,
-            skeleton_style: str = 'mmpose',
-            det_kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
-            det_dataset_skeleton: Optional[List] = None,
-            det_dataset_link_color: Optional[np.ndarray] = None):
+    def _draw_instances_kpts(self,
+                             image: np.ndarray,
+                             instances: InstanceData,
+                             kpt_thr: float = 0.3,
+                             show_kpt_idx: bool = False,
+                             skeleton_style: str = 'mmpose'):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
         Args:
@@ -282,12 +285,6 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 Defaults to ``False``
             skeleton_style (str): Skeleton style selection. Defaults to
                 ``'mmpose'``
-            det_kpt_color (str, tuple(tuple(int)), optional): Keypoints
-                color info for detection. Defaults to ``None``
-            det_dataset_skeleton (list): Skeleton info for detection. Defaults
-                to ``None``
-            det_dataset_link_color (list): Link color for detection. Defaults
-                to ``None``
 
         Returns:
             np.ndarray: the drawn image which channel is RGB.
@@ -338,8 +335,8 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                     ..., :2], keypoints_info[..., 2], keypoints_info[..., 3]
 
             kpt_color = self.kpt_color
-            if det_kpt_color is not None:
-                kpt_color = det_kpt_color
+            if self.det_kpt_color is not None:
+                kpt_color = self.det_kpt_color
 
             for kpts, score, visible in zip(keypoints, scores,
                                             keypoints_visible):
@@ -385,11 +382,11 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
                 # draw links
                 skeleton = self.skeleton
-                if det_dataset_skeleton is not None:
-                    skeleton = det_dataset_skeleton
+                if self.det_dataset_skeleton is not None:
+                    skeleton = self.det_dataset_skeleton
                 link_color = self.link_color
-                if det_dataset_link_color is not None:
-                    link_color = det_dataset_link_color
+                if self.det_dataset_link_color is not None:
+                    link_color = self.det_dataset_link_color
                 if skeleton is not None and link_color is not None:
                     if link_color is None or isinstance(link_color, str):
                         link_color = [link_color] * len(skeleton)
@@ -450,27 +447,22 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         return self.get_image()
 
     @master_only
-    def add_datasample(
-            self,
-            name: str,
-            image: np.ndarray,
-            data_sample: PoseDataSample,
-            det_data_sample: Optional[PoseDataSample] = None,
-            draw_gt: bool = True,
-            draw_pred: bool = True,
-            draw_2d: bool = True,
-            det_kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
-            det_dataset_skeleton: Optional[Union[str,
-                                                 Tuple[Tuple[int]]]] = None,
-            det_dataset_link_color: Optional[np.ndarray] = None,
-            draw_bbox: bool = False,
-            show_kpt_idx: bool = False,
-            skeleton_style: str = 'mmpose',
-            show: bool = False,
-            wait_time: float = 0,
-            out_file: Optional[str] = None,
-            kpt_thr: float = 0.3,
-            step: int = 0) -> None:
+    def add_datasample(self,
+                       name: str,
+                       image: np.ndarray,
+                       data_sample: PoseDataSample,
+                       det_data_sample: Optional[PoseDataSample] = None,
+                       draw_gt: bool = True,
+                       draw_pred: bool = True,
+                       draw_2d: bool = True,
+                       draw_bbox: bool = False,
+                       show_kpt_idx: bool = False,
+                       skeleton_style: str = 'mmpose',
+                       show: bool = False,
+                       wait_time: float = 0,
+                       out_file: Optional[str] = None,
+                       kpt_thr: float = 0.3,
+                       step: int = 0) -> None:
         """Draw datasample and save to all backends.
 
         - If GT and prediction are plotted at the same time, they are
@@ -495,12 +487,6 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 Defaults to ``True``
             draw_2d (bool): Whether to draw 2d detection results. Defaults to
                 ``True``
-            det_kpt_color (str, tuple(tuple(int)), optional): Keypoints color
-                info for detection. Defaults to ``None``
-            det_dataset_skeleton (np.ndarray, optional): The skeleton link info
-                for detection data. Default to ``None``
-            det_dataset_link_color (str, tuple(tuple(int)), optional): Link
-                color for detection. Defaults to ``None``
             draw_bbox (bool): Whether to draw bounding boxes. Default to
                 ``False``
             show_kpt_idx (bool): Whether to show the index of keypoints.
@@ -526,8 +512,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
             if 'pred_instances' in det_data_sample:
                 det_img_data = self._draw_instances_kpts(
                     det_img_data, det_data_sample.pred_instances, kpt_thr,
-                    show_kpt_idx, skeleton_style, det_kpt_color,
-                    det_dataset_skeleton, det_dataset_link_color)
+                    show_kpt_idx, skeleton_style)
                 if draw_bbox:
                     det_img_data = self._draw_instances_bbox(
                         det_img_data, det_data_sample.pred_instances)
