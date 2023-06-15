@@ -361,3 +361,38 @@ For example,
 ```shell
 python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotations/mpii_val.json pred.json
 ```
+
+## Label Studio
+
+<details>
+<summary align="right"><a href="https://github.com/heartexlabs/label-studio/">Label Studio</a></summary>
+
+```bibtex
+@misc{Label Studio,
+  title={{Label Studio}: Data labeling software},
+  url={https://github.com/heartexlabs/label-studio},
+  note={Open source software available from https://github.com/heartexlabs/label-studio},
+  author={
+    Maxim Tkachenko and
+    Mikhail Malyuk and
+    Andrey Holmanyuk and
+    Nikolai Liubimov},
+  year={2020-2022},
+}
+```
+
+</details>
+
+For users of [Label Studio](https://github.com/heartexlabs/label-studio/), please follow the instructions in the [Label Studio to COCO document](./label_studio.md) to annotate and export the results as a Label Studio `.json` file. And save the `Code` from the `Labeling Interface` as an `.xml` file.
+
+We provide a script to convert Label Studio `.json` annotation file to COCO `.json` format file. It can be used by running the following command:
+
+```shell
+python tools/dataset_converters/labelstudio2coco.py ${LS_JSON_FILE} ${LS_XML_FILE} ${OUTPUT_COCO_JSON_FILE}
+```
+
+For example,
+
+```shell
+python tools/dataset_converters/labelstudio2coco.py config.xml project-1-at-2023-05-13-09-22-91b53efa.json output/result.json
+```

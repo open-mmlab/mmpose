@@ -376,3 +376,38 @@ python tools/dataset_converters/mat2json ${PRED_MAT_FILE} ${GT_JSON_FILE} ${OUTP
 ```shell
 python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotations/mpii_val.json pred.json
 ```
+
+## Label Studio 数据集
+
+<details>
+<summary align="right"><a href="https://github.com/heartexlabs/label-studio/">Label Studio</a></summary>
+
+```bibtex
+@misc{Label Studio,
+  title={{Label Studio}: Data labeling software},
+  url={https://github.com/heartexlabs/label-studio},
+  note={Open source software available from https://github.com/heartexlabs/label-studio},
+  author={
+    Maxim Tkachenko and
+    Mikhail Malyuk and
+    Andrey Holmanyuk and
+    Nikolai Liubimov},
+  year={2020-2022},
+}
+```
+
+</details>
+
+对于 [Label Studio](https://github.com/heartexlabs/label-studio/) 用户，请依照 [Label Studio 转换工具文档](./label_studio.md) 中的方法进行标注，并将结果导出为 Label Studio 标准的 `.json` 文件，将 `Labeling Interface` 中的 `Code` 保存为 `.xml` 文件。
+
+我们提供了一个脚本来将 Label Studio 标准的 `.json` 格式标注文件转换为 COCO 标准的 `.json` 格式。这可以通过运行以下命令完成：
+
+```shell
+python tools/dataset_converters/labelstudio2coco.py ${LS_JSON_FILE} ${LS_XML_FILE} ${OUTPUT_COCO_JSON_FILE}
+```
+
+例如：
+
+```shell
+python tools/dataset_converters/labelstudio2coco.py config.xml project-1-at-2023-05-13-09-22-91b53efa.json output/result.json
+```
