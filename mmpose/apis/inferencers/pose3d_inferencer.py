@@ -447,6 +447,12 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
         self.visualizer.radius = radius
         self.visualizer.line_width = thickness
+        det_kpt_color = self.pose2d_model.visualizer.kpt_color
+        det_dataset_skeleton = self.pose2d_model.visualizer.skeleton
+        det_dataset_link_color = self.pose2d_model.visualizer.link_color
+        self.visualizer.det_kpt_color = det_kpt_color
+        self.visualizer.det_dataset_skeleton = det_dataset_skeleton
+        self.visualizer.det_dataset_link_color = det_dataset_link_color
 
         results = []
 
@@ -470,9 +476,6 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 data_sample=pred,
                 det_data_sample=self._buffer['pose2d_results'],
                 draw_gt=False,
-                det_kpt_color=self.pose2d_model.visualizer.kpt_color,
-                det_dataset_skeleton=self.pose2d_model.visualizer.skeleton,
-                det_dataset_link_color=self.pose2d_model.visualizer.link_color,
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
