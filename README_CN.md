@@ -282,8 +282,8 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 - [x] [InterHand2.6M](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#interhand2-6m-eccv-2020) \[[主页](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
 - [x] [AP-10K](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ap-10k-neurips-2021) \[[主页](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
 - [x] [Horse-10](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#horse-10-wacv-2021) \[[主页](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
-- [x] [Human-Art](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#human-art-dataset) \[[homepage](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
-- [x] [LaPa](https://mmpose.readthedocs.io/en/dev-1.x/model_zoo/face_2d_keypoint.html#lapa-dataset) \[[homepage](https://github.com/JDAI-CV/lapa-dataset)\] (AAAI'2020)
+- [x] [Human-Art](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#human-art-cvpr-2023) \[[主页](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
+- [x] [LaPa](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#lapa-aaai-2020) \[[主页](https://github.com/JDAI-CV/lapa-dataset)\] (AAAI'2020)
 
 </details>
 
