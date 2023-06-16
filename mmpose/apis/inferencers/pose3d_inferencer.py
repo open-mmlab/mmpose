@@ -1,11 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import mimetypes
 import os
 import warnings
 from collections import defaultdict
 from functools import partial
-from typing import (Callable, Dict, Iterable, List, Optional, Sequence, Tuple,
-                    Union)
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import cv2
 import mmcv
@@ -125,35 +123,6 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         self._video_input = False
         self._buffer = defaultdict(list)
 
-    def _inputs_to_list(self, inputs: InputsType) -> Iterable:
-        """Preprocess the inputs to a listaccording to its type
-        Args:
-            inputs (InputsType): Inputs for the inferencer.
-
-        Returns:
-            list: List of input for the :meth:`preprocess`.
-        """
-        self._video_input = False
-
-        if isinstance(inputs, str) and not os.path.isdir(inputs) and \
-                mimetypes.guess_type(inputs)[0].split('/')[0] == 'video':
-
-            self._video_input = True
-            video = mmcv.VideoReader(inputs)
-            self.video_info = dict(
-                fps=video.fps,
-                name=os.path.basename(inputs),
-                writer=None,
-                width=video.width,
-                height=video.height,
-                predictions=[])
-            inputs = video
-        else:
-            raise ValueError(f'Pose 3d inferencer expects input to be a '
-                             f'video path, but received {inputs}.')
-
-        return inputs
-
     def preprocess_single(self,
                           input: InputType,
                           index: int,
@@ -206,6 +175,18 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 (ds.pred_instances.bboxes[..., 2:] -
                  ds.pred_instances.bboxes[..., :2]).prod(-1), 'areas')
 
+        if not self._video_input:
+            height, width = results_pose2d[0].metainfo['ori_shape']
+
+            # Clear the buffer if inputs are individual images to prevent
+            # carryover effects from previous images
+            self._buffer.clear()
+
+        else:
+            height = self.video_info['height']
+            width = self.video_info['width']
+        img_path = results_pose2d[0].metainfo['img_path']
+
         # instance matching
         if use_oks_tracking:
             _track = partial(_track_by_oks)
@@ -241,7 +222,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
         # extract and pad input pose2d sequence
         pose_results_2d = self._pose_seq_extractor(
-            self._buffer['pose_est_results_list'], frame_idx=index)
+            self._buffer['pose_est_results_list'],
+            frame_idx=index if self._video_input else 0)
         causal = self.cfg.test_dataloader.dataset.get('causal', False)
         target_idx = -1 if causal else len(pose_results_2d) // 2
 
@@ -292,11 +274,13 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             data_info['lifting_target'] = np.zeros((K, 3), dtype=np.float32)
             data_info['lifting_target_visible'] = np.ones((K, 1),
                                                           dtype=np.float32)
-            data_info['camera_param'] = dict(
-                w=self.video_info['width'], h=self.video_info['height'])
+            data_info['camera_param'] = dict(w=width, h=height)
 
             data_info.update(self.model.dataset_meta)
-            data_list.append(self.pipeline(data_info))
+            data_info = self.pipeline(data_info)
+            data_info['data_samples'].set_field(
+                img_path, 'img_path', field_type='metainfo')
+            data_list.append(data_info)
 
         return data_list
 
@@ -520,7 +504,10 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                     self.video_info['writer'].write(out_img)
 
                 else:
-                    assert False
+                    img_name = os.path.basename(pred.metainfo['img_path'])
+                    file_name = file_name if file_name else img_name
+                    out_file = join_path(dir_name, file_name)
+                    mmcv.imwrite(out_img, out_file)
 
         if return_vis:
             return results

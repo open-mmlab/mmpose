@@ -31,9 +31,44 @@ result = next(result_generator)
 
 ![inferencer_result_coco](https://user-images.githubusercontent.com/26127467/220008302-4a57fd44-0978-408e-8351-600e5513316a.jpg)
 
-在上述示例中，变量`result`是一个字典，包含两个键，分别是`visualization`和`predictions`。`visualization`用于存储可视化结果，但由于没有设定参数`return_vis`，因此该列表为空。但是`predictions`保存了每个检测到的实例的、估计得到的关键点列表。
+`result` 变量是一个包含两个键值 `'visualization'` 和 `'predictions'` 的字典。
 
-还可以使用用于用于推断的**命令行界面工具**（CLI, command-line interface）:`demo/inferencer_demo.py`。这个工具允许用户使用以下命令使用相同的模型和输入执行推理：
+- `'visualization'` 键对应的值是一个列表，该列表：
+  - 包含可视化结果，例如输入图像、估计姿态的标记，以及可选的预测热图。
+  - 如果没有指定 `return_vis` 参数，该列表将保持为空。
+- `'predictions'` 键对应的值是：
+  - 一个包含每个检测实例的预估关键点的列表。
+
+`result` 字典的结构如下所示：
+
+```python
+result = {
+    'visualization': [
+        # 元素数量：batch_size（默认为1）
+        vis_image_1,
+        ...
+    ],
+    'predictions': [
+        # 每张图像的姿态估计结果
+        # 元素数量：batch_size（默认为1）
+        [
+            # 每个检测到的实例的姿态信息
+            # 元素数量：检测到的实例数
+            {'keypoints': ...,  # 实例 1
+            'keypoint_scores': ...,
+            ...
+            },
+            {'keypoints': ...,  # 实例 2
+            'keypoint_scores': ...,
+            ...
+            },
+        ]
+    ...
+    ]
+}
+```
+
+还可以使用用于用于推断的**命令行界面工具**（CLI, command-line interface）: `demo/inferencer_demo.py`。这个工具允许用户使用以下命令使用相同的模型和输入执行推理：
 
 ```python
 python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' \
@@ -163,28 +198,38 @@ result = next(result_generator)
 
 `MMPoseInferencer`提供了各种自定义姿态估计、可视化和保存预测结果的参数。下面是<mark>初始化</mark>推断器时可用的参数列表及对这些参数的描述：
 
-| Argument         | Description                                                |
-| ---------------- | ---------------------------------------------------------- |
-| `pose2d`         | 指定2D姿态估计模型的模型别名、配置文件名称或配置文件路径。 |
-| `pose2d_weights` | 指定2D姿态估计模型权重文件的URL或本地路径。                |
-| `det_model`      | 指定对象检测模型的模型别名、配置文件名或配置文件路径。     |
-| `det_weights`    | 指定对象检测模型权重文件的URL或本地路径。                  |
-| `det_cat_ids`    | 指定与要检测的对象类对应的类别id列表。                     |
-| `device`         | 执行推理的设备。如果为`None`，推理器将选择最合适的一个。   |
-| `scope`          | 定义模型模块的名称空间                                     |
+| Argument         | Description                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `pose2d`         | 指定 2D 姿态估计模型的模型别名、配置文件名称或配置文件路径。 |
+| `pose2d_weights` | 指定 2D 姿态估计模型权重文件的URL或本地路径。                |
+| `pose3d`         | 指定 3D 姿态估计模型的模型别名、配置文件名称或配置文件路径。 |
+| `pose3d_weights` | 指定 3D 姿态估计模型权重文件的URL或本地路径。                |
+| `det_model`      | 指定对象检测模型的模型别名、配置文件名或配置文件路径。       |
+| `det_weights`    | 指定对象检测模型权重文件的 URL 或本地路径。                  |
+| `det_cat_ids`    | 指定与要检测的对象类对应的类别 id 列表。                     |
+| `device`         | 执行推理的设备。如果为 `None`，推理器将选择最合适的一个。    |
+| `scope`          | 定义模型模块的名称空间                                       |
 
-推理器设计用于处理预测的可视化和保存。下面是使用`MMPoseInferencer`<mark>执行推理</mark>时可用的参数列表：
+推理器被设计用于可视化和保存预测。以下表格列出了在使用 `MMPoseInferencer` <mark>进行推断</mark>时可用的参数列表，以及它们与 2D 和 3D 推理器的兼容性：
 
-| Argument            | Description                                                                                                                                                                   |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `show`              | 确定图像或视频的预测结果是否应在弹出窗口中显示。                                                                                                                              |
-| `radius`            | 设置关键点半径。                                                                                                                                                              |
-| `thickness`         | 设置骨架（线条）粗细。                                                                                                                                                        |
-| `return_vis`        | 确定返回结果`result`中是否应包括可视化结果列表`visualization`。                                                                                                               |
-| `vis_out_dir`       | 指定保存可视化图像的文件夹路径。如果未设置，将不会保存可视化图像。                                                                                                            |
-| `return_datasample` | 确定是否以`PoseDataSample`的形式返回预测。                                                                                                                                    |
-| `pred_out_dir`      | 指定保存预测结果`predictions`的文件夹路径。如果不设置，预测结果将不会被保存。                                                                                                 |
-| `out_dir`           | 如果指定了输出路径参数`out_dir`，但未设置`vis_out_dir`或`pred_out_dir`，则分别将`vis_out_dir`或`pred_out_dir`设置为`f'{out_dir}/visualization'`或` f'{out_dir}/ forecasts'`。 |
+| 参数                | 描述                                                                                                                       | 2D  | 3D  |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| `show`              | 控制是否在弹出窗口中显示图像或视频。                                                                                       | ✔️  | ✔️  |
+| `radius`            | 设置可视化关键点的半径。                                                                                                   | ✔️  | ✔️  |
+| `thickness`         | 确定可视化链接的厚度。                                                                                                     | ✔️  | ✔️  |
+| `kpt_thr`           | 设置关键点分数阈值。分数超过此阈值的关键点将被显示。                                                                       | ✔️  | ✔️  |
+| `draw_bbox`         | 决定是否显示实例的边界框。                                                                                                 | ✔️  | ✔️  |
+| `draw_heatmap`      | 决定是否绘制预测的热图。                                                                                                   | ✔️  | ❌  |
+| `black_background`  | 决定是否在黑色背景上显示预估的姿势。                                                                                       | ✔️  | ❌  |
+| `skeleton_style`    | 设置骨架样式。可选项包括 'mmpose'（默认）和 'openpose'。                                                                   | ✔️  | ❌  |
+| `use_oks_tracking`  | 决定是否在追踪中使用OKS作为相似度测量。                                                                                    | ❌  | ✔️  |
+| `tracking_thr`      | 设置追踪的相似度阈值。                                                                                                     | ❌  | ✔️  |
+| `norm_pose_2d`      | 决定是否将边界框缩放至数据集的平均边界框尺寸，并将边界框移至数据集的平均边界框中心。                                       | ❌  | ✔️  |
+| `return_vis`        | 决定是否在结果中包含可视化图像。                                                                                           | ✔️  | ✔️  |
+| `vis_out_dir`       | 定义保存可视化图像的文件夹路径。如果未设置，将不保存可视化图像。                                                           | ✔️  | ✔️  |
+| `return_datasample` | 决定是否以 `PoseDataSample` 格式返回预测。                                                                                 | ✔️  | ✔️  |
+| `pred_out_dir`      | 指定保存预测的文件夹路径。如果未设置，将不保存预测。                                                                       | ✔️  | ✔️  |
+| `out_dir`           | 如果 `vis_out_dir` 或 `pred_out_dir` 未设置，它们将分别设置为 `f'{out_dir}/visualization'` 或 `f'{out_dir}/predictions'`。 | ✔️  | ✔️  |
 
 ### 模型别名
 
