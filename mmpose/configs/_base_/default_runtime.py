@@ -46,7 +46,7 @@ load_from = None
 resume = False
 
 # file I/O backend
-file_client_args = dict(backend='disk')
+backend_args = dict(backend='local')
 
 # training/validation/testing progress
 train_cfg = dict(by_epoch=True)

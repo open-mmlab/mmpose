@@ -223,7 +223,9 @@ class BaseMMPoseInferencer(BaseInferencer):
             ``np.ndarray``. The returned pipeline will be used to process
             a single data.
         """
-        init_default_scope(cfg.get('default_scope', 'mmpose'))
+        scope = cfg.get('default_scope', 'mmpose')
+        if scope is not None:
+            init_default_scope(scope)
         return Compose(cfg.test_dataloader.dataset.pipeline)
 
     def update_model_visualizer_settings(self, **kwargs):
