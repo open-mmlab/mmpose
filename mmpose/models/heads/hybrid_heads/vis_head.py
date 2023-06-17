@@ -21,7 +21,7 @@ class VisPredictHead(BaseHead):
     Args:
         pose_cfg (Config): Config to construct keypoints prediction head
         loss (Config): Config for visibility loss. Defaults to use
-            :class:`BCEWithLogitsLoss`
+            :class:`BCELoss`
         use_sigmoid (bool): Whether to use sigmoid activation function
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
@@ -30,7 +30,8 @@ class VisPredictHead(BaseHead):
     def __init__(self,
                  pose_cfg: ConfigType,
                  loss: ConfigType = dict(
-                     type='BCEWithLogitsLoss', use_target_weight=False),
+                     type='BCELoss', use_target_weight=False,
+                     with_logits=True),
                  use_sigmoid: bool = False,
                  init_cfg: OptConfigType = None):
 
