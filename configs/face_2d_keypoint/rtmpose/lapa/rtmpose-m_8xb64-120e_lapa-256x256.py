@@ -100,13 +100,13 @@ dataset_type = 'LapaDataset'
 data_mode = 'topdown'
 data_root = 'data/LaPa/'
 
-backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/',
-#         f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/'
-#     }))
+# backend_args = dict(backend='local')
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/',
+        f'{data_root}': 's3://openmmlab/datasets/pose/LaPa/'
+    }))
 
 # pipelines
 train_pipeline = [

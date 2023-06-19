@@ -100,13 +100,13 @@ dataset_type = 'WFLWDataset'
 data_mode = 'topdown'
 data_root = 'data/wflw/'
 
-backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/pose/WFLW/',
-#         f'{data_root}': 's3://openmmlab/datasets/pose/WFLW/'
-#     }))
+# backend_args = dict(backend='local')
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/pose/WFLW/',
+        f'{data_root}': 's3://openmmlab/datasets/pose/WFLW/'
+    }))
 
 # pipelines
 train_pipeline = [

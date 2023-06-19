@@ -105,11 +105,19 @@ model = dict(
 dataset_type = 'CocoDataset'
 data_mode = 'bottomup'
 data_root = 'data/coco/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        '.data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/',
+        'data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/'
+    }))
 
 # pipelines
 train_pipeline = []
 val_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],

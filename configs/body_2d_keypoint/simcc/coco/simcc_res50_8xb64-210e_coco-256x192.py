@@ -52,10 +52,18 @@ model = dict(
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = 'data/coco/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        '.data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/',
+        'data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/'
+    }))
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -65,7 +73,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')

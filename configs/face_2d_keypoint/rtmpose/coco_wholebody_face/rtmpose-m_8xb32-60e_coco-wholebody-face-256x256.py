@@ -100,13 +100,13 @@ dataset_type = 'CocoWholeBodyFaceDataset'
 data_mode = 'topdown'
 data_root = 'data/coco/'
 
-backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
-#         f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
-#     }))
+# backend_args = dict(backend='local')
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/detection/coco/',
+        f'{data_root}': 's3://openmmlab/datasets/detection/coco/'
+    }))
 
 # pipelines
 train_pipeline = [

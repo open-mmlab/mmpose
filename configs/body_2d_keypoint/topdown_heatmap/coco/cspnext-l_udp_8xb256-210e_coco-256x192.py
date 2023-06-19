@@ -82,6 +82,14 @@ model = dict(
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = 'data/coco/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        '.data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/',
+        'data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/'
+    }))
 
 backend_args = dict(backend='local')
 # backend_args = dict(

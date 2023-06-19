@@ -63,9 +63,17 @@ dataset_type = 'AP10KDataset'
 data_mode = 'topdown'
 data_root = 'data/ap10k/'
 
+# backend_args = dict(backend='local')
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/',
+        f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/'
+    }))
+
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -75,7 +83,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')

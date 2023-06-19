@@ -120,10 +120,18 @@ find_unused_parameters = True
 dataset_type = 'CocoDataset'
 data_mode = 'bottomup'
 data_root = 'data/coco/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        '.data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/',
+        'data/coco/':
+        'openmmlab:s3://openmmlab/datasets/detection/coco/'
+    }))
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='BottomupRandomAffine', input_size=codec['input_size']),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='GenerateTarget', encoder=codec),
@@ -131,7 +139,7 @@ train_pipeline = [
     dict(type='PackPoseInputs'),
 ]
 val_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],

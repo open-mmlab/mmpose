@@ -101,13 +101,13 @@ dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = 'data/'
 
-backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/',
-#         f'{data_root}': 's3://openmmlab/datasets/'
-#     }))
+# backend_args = dict(backend='local')
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/',
+        f'{data_root}': 's3://openmmlab/datasets/'
+    }))
 
 # pipelines
 train_pipeline = [

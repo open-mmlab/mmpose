@@ -100,13 +100,13 @@ dataset_type = 'AP10KDataset'
 data_mode = 'topdown'
 data_root = 'data/ap10k/'
 
-backend_args = dict(backend='local')
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/',
-#         f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/'
-#     }))
+# backend_args = dict(backend='local')
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/',
+        f'{data_root}': 's3://openmmlab/datasets/pose/ap10k/'
+    }))
 
 # pipelines
 train_pipeline = [

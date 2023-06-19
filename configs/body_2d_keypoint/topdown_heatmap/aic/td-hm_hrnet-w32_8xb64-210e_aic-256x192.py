@@ -91,10 +91,18 @@ model = dict(
 dataset_type = 'AicDataset'
 data_mode = 'topdown'
 data_root = 'data/aic/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}':
+        's3://openmmlab/datasets/pose/ai_challenge/',
+        f'{data_root}':
+        's3://openmmlab/datasets/pose/ai_challenge/'
+    }))
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -104,7 +112,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')

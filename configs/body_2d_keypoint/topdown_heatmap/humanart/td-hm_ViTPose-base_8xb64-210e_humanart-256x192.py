@@ -91,10 +91,17 @@ model = dict(
 data_root = 'data/'
 dataset_type = 'HumanArtDataset'
 data_mode = 'topdown'
-
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        '.data/humanart/':
+        'openmmlab:s3://openmmlab/datasets/pose/HumanArt/',
+        'data/humanart/':
+        'openmmlab:s3://openmmlab/datasets/pose/HumanArt/'
+    }))
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -104,7 +111,7 @@ train_pipeline = [
     dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', backend_args=backend_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size'], use_udp=True),
     dict(type='PackPoseInputs')

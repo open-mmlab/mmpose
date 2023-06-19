@@ -81,6 +81,12 @@ model = dict(
 dataset_type = 'MpiiDataset'
 data_mode = 'topdown'
 data_root = 'data/mpii/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        f'{data_root}': 's3://openmmlab/datasets/pose/MPI/',
+        f'{data_root}': 's3://openmmlab/datasets/pose/MPI/'
+    }))
 
 backend_args = dict(backend='local')
 # backend_args = dict(
