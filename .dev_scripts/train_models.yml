@@ -42,19 +42,19 @@ cases:
     metrics:
       AP: 0.768
 
-- name: vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m
-  params:
-    checkpoint: videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
-    checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
-    config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m.py
-    cpus_per_node: 4
-    gpus: 8
-    gpus_per_node: 8
-  results:
-    dataset: Human3.6M
-    eval: MPJPE
-    metrics:
-      MPJPE: 52.9
+# - name: vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m
+#   params:
+#     checkpoint: videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 52.9
 
 
 # s集群：s1或者s2, s1就是填，s2就填2
