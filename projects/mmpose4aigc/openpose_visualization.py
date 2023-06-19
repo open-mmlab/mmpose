@@ -43,7 +43,9 @@ def mmpose_to_openpose_visualization(args, img_path, detector, pose_estimator):
     """Visualize predicted keypoints of one image in openpose format."""
 
     # predict bbox
-    init_default_scope(detector.cfg.get('default_scope', 'mmdet'))
+    scope = detector.cfg.get('default_scope', 'mmdet')
+    if scope is not None:
+        init_default_scope(scope)
     det_result = inference_detector(detector, img_path)
     pred_instance = det_result.pred_instances.cpu().numpy()
     bboxes = np.concatenate(

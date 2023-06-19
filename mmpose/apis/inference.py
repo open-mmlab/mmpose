@@ -96,7 +96,9 @@ def init_model(config: Union[str, Path, Config],
     config.model.train_cfg = None
 
     # register all modules in mmpose into the registries
-    init_default_scope(config.get('default_scope', 'mmpose'))
+    scope = config.get('default_scope', 'mmpose')
+    if scope is not None:
+        init_default_scope(scope)
 
     model = build_pose_estimator(config.model)
     model = revert_sync_batchnorm(model)
@@ -149,7 +151,9 @@ def inference_topdown(model: nn.Module,
         ``data_sample.pred_instances.keypoints`` and
         ``data_sample.pred_instances.keypoint_scores``.
     """
-    init_default_scope(model.cfg.get('default_scope', 'mmpose'))
+    scope = model.cfg.get('default_scope', 'mmpose')
+    if scope is not None:
+        init_default_scope(scope)
     pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
 
     if bboxes is None:
