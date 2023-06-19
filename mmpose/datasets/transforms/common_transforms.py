@@ -1031,6 +1031,16 @@ class GenerateTarget(BaseTransform):
 
         results.update(encoded)
 
+        if results.get('keypoint_weights', None) is not None:
+            results['transformed_keypoints_visible'] = results[
+                'keypoint_weights']
+        elif results.get('keypoints', None) is not None:
+            results['transformed_keypoints_visible'] = results[
+                'keypoints_visible']
+        else:
+            raise ValueError('GenerateTarget requires \'keypoint_weights\' or'
+                             ' \'keypoints_visible\' in the results.')
+
         return results
 
     def __repr__(self) -> str:
