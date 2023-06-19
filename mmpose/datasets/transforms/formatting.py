@@ -210,7 +210,8 @@ class PackPoseInputs(BaseTransform):
             if key in results:
                 # For pose-lifting, store only target-related fields
                 if 'lifting_target_label' in results and key in {
-                        'keypoint_labels', 'keypoint_weights'
+                        'keypoint_labels', 'keypoint_weights',
+                        'transformed_keypoints_visible'
                 }:
                     continue
                 if isinstance(results[key], list):
