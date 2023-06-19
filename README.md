@@ -22,7 +22,7 @@
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/latest/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
 [![PyPI](https://img.shields.io/pypi/v/mmpose)](https://pypi.org/project/mmpose/)
-[![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/master/LICENSE)
+[![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/main/LICENSE)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
@@ -63,7 +63,7 @@ English | [简体中文](README_CN.md)
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
-The master branch works with **PyTorch 1.8+**.
+The main branch works with **PyTorch 1.8+**.
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
