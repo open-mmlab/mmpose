@@ -34,7 +34,7 @@ class MonoPoseLifting(BaseKeypointCodec):
     """
 
     auxiliary_encode_keys = {
-        'lifting_target', 'lifting_target_visible', 'camera_param'
+        'lifting_target', 'lifting_target_visible', 'camera_param', 'factor'
     }
 
     def __init__(self,
@@ -42,7 +42,8 @@ class MonoPoseLifting(BaseKeypointCodec):
                  root_index: int = 0,
                  remove_root: bool = False,
                  save_index: bool = False,
-                 concat_vis: bool = False):
+                 concat_vis: bool = False,
+                 rootrel: bool = False):
         super().__init__()
 
         self.num_keypoints = num_keypoints
@@ -50,13 +51,15 @@ class MonoPoseLifting(BaseKeypointCodec):
         self.remove_root = remove_root
         self.save_index = save_index
         self.concat_vis = concat_vis
+        self.rootrel = rootrel
 
     def encode(self,
                keypoints: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None,
                lifting_target: Optional[np.ndarray] = None,
                lifting_target_visible: Optional[np.ndarray] = None,
-               camera_param: Optional[dict] = None) -> dict:
+               camera_param: Optional[dict] = None,
+               factor: Optional[np.ndarray] = None) -> dict:
         """Encoding keypoints from input image space to normalized space.
 
         Args:
@@ -83,13 +86,13 @@ class MonoPoseLifting(BaseKeypointCodec):
                 - trajectory_weights (np.ndarray): The trajectory weights in
                   shape (K, ).
                 - factor (np.ndarray): The factor mapping camera and image
-                  coordinate.
+                  coordinate in shape (N, 1).
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if lifting_target is None:
-            lifting_target = [keypoints[0]]
+            lifting_target = [keypoints[..., 0, :, :]]
 
         # set initial value for `lifting_target_weights`
         # and `trajectory_weights`
@@ -123,11 +126,17 @@ class MonoPoseLifting(BaseKeypointCodec):
             ..., :2] = keypoint_labels[..., :2] / w * 2 - [1, h / w]
 
         # convert target to image coordinate
-        lifting_target_label, factor = camera_to_image_coord(
+        lifting_target_label, factor_ = camera_to_image_coord(
             self.root_index, lifting_target_label, _camera_param)
         lifting_target_label[..., :, :] = lifting_target_label[
-            ..., :, :] - lifting_target_label[..., self.root_index, :]
-        lifting_target_label *= 1000 / factor
+            ..., :, :] - lifting_target_label[...,
+                                              self.root_index:self.root_index +
+                                              1, :]
+        if factor is None:
+            factor = factor_
+        if factor.ndim == 1:
+            factor = factor[:, None]
+        lifting_target_label *= 1000 * factor[..., None]
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
@@ -143,7 +152,7 @@ class MonoPoseLifting(BaseKeypointCodec):
         encoded['lifting_target'] = lifting_target_label
         encoded['lifting_target_visible'] = lifting_target_visible
         encoded['trajectory_weights'] = trajectory_weights
-        encoded['factor'] = np.array([factor])
+        encoded['factor'] = factor
 
         return encoded
 
@@ -173,6 +182,9 @@ class MonoPoseLifting(BaseKeypointCodec):
         keypoints = encoded.copy()
         scores = np.ones(keypoints.shape[:-1], dtype=np.float32)
 
+        if self.rootrel:
+            keypoints[..., 0, :] = 0
+
         if w is not None and w.size > 0:
             assert w.shape == h.shape
             assert w.shape[0] == keypoints.shape[0]
@@ -186,9 +198,7 @@ class MonoPoseLifting(BaseKeypointCodec):
             keypoints[..., 2:] = keypoints[..., 2:] * w[:, None] / 2
         if factor is not None and factor.size > 0:
             assert factor.shape[0] == keypoints.shape[0]
-            if factor.ndim == 1:
-                factor = factor[:, None]
-            keypoints[..., :, :] /= factor[..., :]
+            keypoints *= factor[..., None]
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[
-            ..., self.root_index, :]
+            ..., self.root_index:self.root_index + 1, :]
         return keypoints, scores

@@ -121,7 +121,7 @@ class MotionRegressionHead(BaseHead):
         factor = batch_data_samples[0].metainfo.get('factor', None)
         if factor is not None:
             factor = torch.stack([
-                torch.from_numpy(np.array([b.metainfo['factor']]))
+                torch.from_numpy(b.metainfo['factor'])
                 for b in batch_data_samples
             ])
         else:

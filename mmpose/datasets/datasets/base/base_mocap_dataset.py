@@ -293,9 +293,8 @@ class BaseMocapDataset(BaseDataset):
         image_list = []
 
         for idx, frame_ids in enumerate(self.sequence_indices):
-            assert len(frame_ids) == (
-                self.merge_seq *
-                self.seq_len if self.merge_seq else self.seq_len)
+            assert len(frame_ids) == (self.merge_seq if self.merge_seq else
+                                      self.seq_len), f'{len(frame_ids)}'
 
             _img_names = img_names[frame_ids]
 

@@ -15,9 +15,8 @@ Models:
   Results:
   - Dataset: Human3.6M
     Metrics:
-      MPJPE: 34.87
-      P-MPJPE: 14.95
-      N-MPJPE: 34.02
+      MPJPE: 35.3
+      P-MPJPE: 27.7
     Task: Body 3D Keypoint
   Weights:
 - Config: configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py
@@ -29,8 +28,7 @@ Models:
   Results:
   - Dataset: Human3.6M
     Metrics:
-      MPJPE: 34.97
-      P-MPJPE: 14.94
-      N-MPJPE: 34.11
+      MPJPE: 27.5
+      P-MPJPE: 21.6
     Task: Body 3D Keypoint
   Weights:

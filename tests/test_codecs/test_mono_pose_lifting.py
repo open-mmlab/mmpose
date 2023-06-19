@@ -148,7 +148,7 @@ class TestMonoPoseLifting(TestCase):
             h=np.array([camera_param['h']]),
             factor=encoded['factor'])
 
-        keypoints /= encoded['factor'][0]
+        keypoints *= encoded['factor']
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[..., 0, :]
 
         self.assertTrue(np.allclose(keypoints[..., :2], _keypoints[..., :2]))
