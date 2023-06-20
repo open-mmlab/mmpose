@@ -241,6 +241,8 @@ def _inference_single_pose_model(model,
                                                                58], [76, 82],
                       [77, 81], [78, 80], [87, 83], [86, 84], [88, 92],
                       [89, 91], [95, 93], [96, 97]]
+    elif dataset in 'LiftedForkDataset3KP':
+        flip_pairs = [[0, 1]]
     elif dataset in 'TopDownForkliftDataset':
         flip_pairs = [[0, 1], [2, 3], [4, 5]]
     elif dataset in 'TopDownForkliftDataset4KP':
@@ -547,6 +549,17 @@ def vis_pose_result(model,
             16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0
         ]]
 
+    elif dataset in ("BottomUpForkliftDataset4KP"):
+        # show the results
+        skeleton = [[1, 2], [2, 4], [4, 3], [3, 1]]
+
+        pose_limb_color = palette[[
+            0, 7, 9, 16
+        ]]
+        pose_kpt_color = palette[[
+            16, 12, 9, 0
+        ]]
+
     elif dataset == 'TopDownCocoWholeBodyDataset':
         # show the results
         skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
@@ -691,6 +704,15 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[19] * 4]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'LiftedForkDataset3KP':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 3]
         radius = 3
         kpt_score_thr = 0
 

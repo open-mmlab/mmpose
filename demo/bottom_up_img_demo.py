@@ -44,7 +44,7 @@ def main():
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
 
     dataset = pose_model.cfg.data['test']['type']
-    assert (dataset == 'BottomUpCocoDataset')
+    #assert (dataset == 'BottomUpCocoDataset')
 
     img_keys = list(coco.imgs.keys())
 
