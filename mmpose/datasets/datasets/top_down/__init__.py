@@ -10,11 +10,12 @@ from .topdown_ochuman_dataset import TopDownOCHumanDataset
 from .topdown_posetrack18_dataset import TopDownPoseTrack18Dataset
 from .topdown_forklift_dataset import TopDownForkliftDataset
 from .topdown_forklift_dataset4kp import TopDownForkliftDataset4KP
+from .topdown_lifted_fork_dataset_3kp import LiftedForkDataset3KP
 
 __all__ = [
     'TopDownAicDataset', 'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset',
     'TopDownCrowdPoseDataset', 'TopDownMpiiDataset', 'TopDownMpiiTrbDataset',
     'TopDownOCHumanDataset', 'TopDownPoseTrack18Dataset',
     'TopDownJhmdbDataset', 'TopDownMhpDataset', 'TopDownForkliftDataset',
-    'TopDownForkliftDataset4KP'
+    'TopDownForkliftDataset4KP', 'LiftedForkDataset3KP',
 ]
