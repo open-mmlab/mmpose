@@ -90,8 +90,15 @@ model = dict(
 # base dataset settings
 dataset_type = 'AnimalKingdomDataset'
 data_mode = 'topdown'
-data_root = 'data/ak/'
-
+data_root = 'data/AnimalKingdom/'
+backend_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        '.data/AnimalKingdom/':
+        'myself:s3://openmmlab/datasets/pose/AnimalKingdom/',
+        'data/AnimalKingdom/':
+        'myself:s3://openmmlab/datasets/pose/AnimalKingdom/'
+    }))
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
@@ -121,7 +128,7 @@ train_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/ak_P2/train.json',
-        data_prefix=dict(img='images/'),
+        data_prefix=dict(img='dataset/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -135,7 +142,7 @@ val_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/ak_P2/test.json',
-        data_prefix=dict(img='images/'),
+        data_prefix=dict(img='dataset/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))

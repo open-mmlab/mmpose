@@ -952,6 +952,132 @@ cases:
     metrics:
       NME: 0.0129
 
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256-08bf96cb_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256-08bf96cb_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.6323
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256-2396cc58_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256-2396cc58_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.3741
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256-845085f9_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256-845085f9_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.5358
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256-566feff5_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256-566feff5_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.7671
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256-76c3999f_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256-76c3999f_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.6406
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256-e8aadf02_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256-e8aadf02_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.571
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256-e8440c16_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256-e8440c16_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.51
+
+- name: td-hm_ViTPose-small_8xb64-210e_humanart-256x192
+  params:
+    checkpoint: td-hm_ViTPose-small_8xb64-210e_humanart-256x192-5cbe2bfc_20230611.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-small_8xb64-210e_humanart-256x192-5cbe2bfc_20230611.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-small_8xb64-210e_humanart-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: Human-Art
+    eval: AP
+    metrics:
+      AP: 0.381
+
+- name: td-hm_ViTPose-base_8xb64-210e_humanart-256x192
+  params:
+    checkpoint: td-hm_ViTPose-base_8xb64-210e_humanart-256x192-b417f546_20230611.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-base_8xb64-210e_humanart-256x192-b417f546_20230611.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-base_8xb64-210e_humanart-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: Human-Art
+    eval: AP
+    metrics:
+      AP: 0.410
+
 # s集群：s1或者s2, s1就是填，s2就填2
 cluster_num: '2'
 # 默认的结果允许的浮动值

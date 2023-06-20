@@ -99,10 +99,10 @@ data_mode = 'topdown'
 backend_args = dict(
     backend='petrel',
     path_mapping=dict({
-        '.data/humanart/':
-        'openmmlab:s3://openmmlab/datasets/pose/HumanArt/',
-        'data/humanart/':
-        'openmmlab:s3://openmmlab/datasets/pose/HumanArt/'
+        '.data/HumanArt/':
+        'myself:s3://openmmlab/datasets/pose/HumanArt/',
+        'data/HumanArt/':
+        'myself:s3://openmmlab/datasets/pose/HumanArt/'
     }))
 # pipelines
 train_pipeline = [
