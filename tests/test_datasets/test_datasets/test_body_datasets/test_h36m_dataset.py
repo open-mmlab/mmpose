@@ -120,11 +120,11 @@ class TestH36MDataset(TestCase):
             data_mode='topdown',
             seq_len=1,
             seq_step=1,
-            merge_seq=2,
+            multiple_target=1,
             causal=False,
             pad_video_seq=True,
             camera_param_file='cameras.pkl')
-        self.assertEqual(len(dataset), 2)
+        self.assertEqual(len(dataset), 4)
         self.check_data_info_keys(dataset[0])
 
         # test topdown testing with 2d keypoint detection file and

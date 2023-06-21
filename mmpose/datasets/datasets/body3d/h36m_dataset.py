@@ -45,8 +45,8 @@ class Human36mDataset(BaseMocapDataset):
         seq_len (int): Number of frames in a sequence. Default: 1.
         seq_step (int): The interval for extracting frames from the video.
             Default: 1.
-        merge_seq (int): If larger than 0, merge every ``merge_seq`` sequence
-            together. Default: 0.
+        multiple_target (int): If larger than 0, merge every
+            ``multiple_target`` sequence together. Default: 0.
         pad_video_seq (bool): Whether to pad the video so that poses will be
             predicted for every frame in the video. Default: ``False``.
         causal (bool): If set to ``True``, the rightmost input frame will be
@@ -109,7 +109,7 @@ class Human36mDataset(BaseMocapDataset):
                  ann_file: str = '',
                  seq_len: int = 1,
                  seq_step: int = 1,
-                 merge_seq: int = 0,
+                 multiple_target: int = 0,
                  pad_video_seq: bool = False,
                  causal: bool = True,
                  subset_frac: float = 1.0,
@@ -154,7 +154,7 @@ class Human36mDataset(BaseMocapDataset):
         super().__init__(
             ann_file=ann_file,
             seq_len=seq_len,
-            merge_seq=merge_seq,
+            multiple_target=multiple_target,
             causal=causal,
             subset_frac=subset_frac,
             camera_param_file=camera_param_file,
@@ -186,13 +186,13 @@ class Human36mDataset(BaseMocapDataset):
         _len = (self.seq_len - 1) * self.seq_step + 1
         _step = self.seq_step
 
-        if self.merge_seq:
+        if self.multiple_target:
             for _, _indices in sorted(video_frames.items()):
                 n_frame = len(_indices)
                 seqs_from_video = [
-                    _indices[i:(i + self.merge_seq):_step]
-                    for i in range(0, n_frame, self.merge_seq)
-                ][:n_frame // self.merge_seq]
+                    _indices[i:(i + self.multiple_target):_step]
+                    for i in range(0, n_frame, self.multiple_target)
+                ][:n_frame // self.multiple_target]
                 sequence_indices.extend(seqs_from_video)
 
         else:

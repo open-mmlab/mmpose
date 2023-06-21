@@ -38,14 +38,14 @@ year = {2014}
 
 Testing results on Human3.6M dataset with ground truth 2D detections
 
-| Arch                                                                                                        | MPJPE | P-MPJPE |    ckpt    |
-| :---------------------------------------------------------------------------------------------------------- | :---: | :-----: | :--------: |
-| [MotionBERT](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py)           | 35.3  |  27.7   | [ckpt](<>) |
-| [MotionBERT-finetuned](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py) | 27.5  |  21.6   | [ckpt](<>) |
+| Arch                                                                                                               | MPJPE | average MPJPE | P-MPJPE |    ckpt    |
+| :----------------------------------------------------------------------------------------------------------------- | :---: | :-----------: | :-----: | :--------: |
+| [MotionBERT](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert-243frm_8xb32-120e_h36m.py)           | 35.3  |     35.3      |  27.7   | [ckpt](<>) |
+| [MotionBERT-finetuned](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert-243frm_8xb32-120e_h36m.py) | 27.5  |     27.4      |  21.6   | [ckpt](<>) |
 
 Testing results on Human3.6M dataset from the [official repo](https://github.com/Walter0807/MotionBERT) with ground truth 2D detections
 
-| Arch                                                                                                        | MPJPE | P-MPJPE |    ckpt    |
-| :---------------------------------------------------------------------------------------------------------- | :---: | :-----: | :--------: |
-| [MotionBERT](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py)           | 40.5  |  34.1   | [ckpt](<>) |
-| [MotionBERT-finetuned](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert_8xb32-120e_h36m.py) | 38.2  |  32.6   | [ckpt](<>) |
+| Arch                                                                                                               | MPJPE | average MPJPE | P-MPJPE |    ckpt    |
+| :----------------------------------------------------------------------------------------------------------------- | :---: | :-----------: | :-----: | :--------: |
+| [MotionBERT](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert-243frm_8xb32-120e_h36m.py)           | 40.5  |     39.9      |  34.1   | [ckpt](<>) |
+| [MotionBERT-finetuned](/configs/body_3d_keypoint/video_pose_lift/h36m/vid_pl_motionbert-243frm_8xb32-120e_h36m.py) | 38.2  |     37.7      |  32.6   | [ckpt](<>) |
