@@ -126,9 +126,11 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 num_instances = 0
         else:
             if len(pred_instances) > num_instances:
+                pred_instances_ = InstanceData()
                 for k in pred_instances.keys():
-                    new_val = pred_instances.k[:num_instances]
-                    pose_samples.pred_instances.k = new_val
+                    new_val = pred_instances[k][:num_instances]
+                    pred_instances_.set_field(new_val, k)
+                pred_instances = pred_instances_
             elif num_instances < len(pred_instances):
                 num_instances = len(pred_instances)
 
@@ -464,6 +466,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                        draw_bbox: bool = False,
                        show_kpt_idx: bool = False,
                        skeleton_style: str = 'mmpose',
+                       num_instances: int = -1,
                        show: bool = False,
                        wait_time: float = 0,
                        out_file: Optional[str] = None,
@@ -499,6 +502,10 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 Defaults to ``False``
             skeleton_style (str): Skeleton style selection. Defaults to
                 ``'mmpose'``
+            num_instances (int): Number of instances to be shown in 3D. If
+                smaller than 0, all the instances in the pose_result will be
+                shown. Otherwise, pad or truncate the pose_result to a length
+                of num_instances. Defaults to -1
             show (bool): Whether to display the drawn image. Default to
                 ``False``
             wait_time (float): The interval of show (s). Defaults to 0
@@ -524,7 +531,10 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                         det_img_data, det_data_sample.pred_instances)
 
         pred_img_data = self._draw_3d_data_samples(
-            image.copy(), data_sample, draw_gt=draw_gt)
+            image.copy(),
+            data_sample,
+            draw_gt=draw_gt,
+            num_instances=num_instances)
 
         # merge visualization results
         if det_img_data is not None and gt_img_data is not None:

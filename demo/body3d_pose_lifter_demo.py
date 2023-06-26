@@ -71,6 +71,13 @@ def parse_args():
         'the average bbox center of the dataset. This is useful when bbox '
         'is small, especially in multi-person scenarios.')
     parser.add_argument(
+        '--num-instances',
+        type=int,
+        default=-1,
+        help='The number of 3D poses to be visualized in every frame. If '
+        'less than 0, it will be set to the number of pose results in the '
+        'first frame.')
+    parser.add_argument(
         '--output-root',
         type=str,
         default='',
@@ -253,6 +260,10 @@ def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
     pred_3d_data_samples = merge_data_samples(pose_lift_results)
     det_data_sample = merge_data_samples(pose_est_results)
 
+    num_instances = args.num_instances
+    if num_instances < 0:
+        num_instances = len(pose_lift_results)
+
     # Visualization
     if visualizer is not None:
         visualizer.add_datasample(
@@ -264,6 +275,7 @@ def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
             show=args.show,
             draw_bbox=True,
             kpt_thr=args.kpt_thr,
+            num_instances=num_instances,
             wait_time=args.show_interval)
 
     return pred_3d_data_samples.get('pred_instances', None)
