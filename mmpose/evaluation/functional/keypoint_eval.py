@@ -99,7 +99,7 @@ def keypoint_pck_accuracy(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray,
     acc = np.array([_distance_acc(d, thr) for d in distances])
     valid_acc = acc[acc >= 0]
     cnt = len(valid_acc)
-    avg_acc = valid_acc.mean() if cnt > 0 else 0
+    avg_acc = valid_acc.mean() if cnt > 0 else 0.0
     return acc, avg_acc, cnt
 
 
