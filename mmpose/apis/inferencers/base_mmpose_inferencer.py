@@ -16,6 +16,7 @@ from mmengine.dataset import Compose
 from mmengine.fileio import (get_file_backend, isdir, join_path,
                              list_dir_or_file)
 from mmengine.infer.infer import BaseInferencer
+from mmengine.registry import init_default_scope
 from mmengine.runner.checkpoint import _load_checkpoint_to_model
 from mmengine.structures import InstanceData
 from mmengine.utils import mkdir_or_exist
@@ -38,14 +39,8 @@ class BaseMMPoseInferencer(BaseInferencer):
     preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
     forward_kwargs: set = set()
     visualize_kwargs: set = {
-        'return_vis',
-        'show',
-        'wait_time',
-        'draw_bbox',
-        'radius',
-        'thickness',
-        'kpt_thr',
-        'vis_out_dir',
+        'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
+        'kpt_thr', 'vis_out_dir', 'black_background'
     }
     postprocess_kwargs: set = {'pred_out_dir'}
 
@@ -130,6 +125,8 @@ class BaseMMPoseInferencer(BaseInferencer):
                         fps=video.fps,
                         name=os.path.basename(inputs),
                         writer=None,
+                        width=video.width,
+                        height=video.height,
                         predictions=[])
                     inputs = video
                 elif input_type == 'image':
@@ -159,9 +156,6 @@ class BaseMMPoseInferencer(BaseInferencer):
         Raises:
             ValueError: If the inputs string is not in the expected format.
         """
-        assert getattr(self.visualizer, 'backend', None) == 'opencv', \
-            'Visualizer must utilize the OpenCV backend in order to ' \
-            'support webcam inputs.'
 
         # Ensure the inputs string is in the expected format.
         inputs = inputs.lower()
@@ -187,8 +181,22 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         # Set video input flag and metadata.
         self._video_input = True
+        (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+        if int(major_ver) < 3:
+            fps = vcap.get(cv2.cv.CV_CAP_PROP_FPS)
+            width = vcap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+            height = vcap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+        else:
+            fps = vcap.get(cv2.CAP_PROP_FPS)
+            width = vcap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            height = vcap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.video_info = dict(
-            fps=10, name='webcam.mp4', writer=None, predictions=[])
+            fps=fps,
+            name='webcam.mp4',
+            writer=None,
+            width=width,
+            height=height,
+            predictions=[])
 
         def _webcam_reader() -> Generator:
             while True:
@@ -204,9 +212,6 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         return _webcam_reader()
 
-    def _visualization_window_on_close(self, event):
-        self._window_closing = True
-
     def _init_pipeline(self, cfg: ConfigType) -> Callable:
         """Initialize the test pipeline.
 
@@ -218,7 +223,16 @@ class BaseMMPoseInferencer(BaseInferencer):
             ``np.ndarray``. The returned pipeline will be used to process
             a single data.
         """
+        scope = cfg.get('default_scope', 'mmpose')
+        if scope is not None:
+            init_default_scope(scope)
         return Compose(cfg.test_dataloader.dataset.pipeline)
+
+    def update_model_visualizer_settings(self, **kwargs):
+        """Update the settings of models and visualizer according to inference
+        arguments."""
+
+        pass
 
     def preprocess(self,
                    inputs: InputsType,
@@ -237,7 +251,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         """
 
         for i, input in enumerate(inputs):
-            bbox = bboxes[i] if bboxes is not None else []
+            bbox = bboxes[i] if bboxes else []
             data_infos = self.preprocess_single(
                 input, index=i, bboxes=bbox, **kwargs)
             # only supports inference with batch size 1
@@ -255,8 +269,8 @@ class BaseMMPoseInferencer(BaseInferencer):
                   kpt_thr: float = 0.3,
                   vis_out_dir: str = '',
                   window_name: str = '',
-                  window_close_event_handler: Optional[Callable] = None
-                  ) -> List[np.ndarray]:
+                  black_background: bool = False,
+                  **kwargs) -> List[np.ndarray]:
         """Visualize predictions.
 
         Args:
@@ -276,7 +290,8 @@ class BaseMMPoseInferencer(BaseInferencer):
                 results w/o predictions. If left as empty, no file will
                 be saved. Defaults to ''.
             window_name (str, optional): Title of display window.
-            window_close_event_handler (callable, optional):
+            black_background (bool, optional): Whether to plot keypoints on a
+                black image instead of the input image. Defaults to False.
 
         Returns:
             List[np.ndarray]: Visualization results.
@@ -301,6 +316,8 @@ class BaseMMPoseInferencer(BaseInferencer):
             else:
                 raise ValueError('Unsupported input type: '
                                  f'{type(single_input)}')
+            if black_background:
+                img = img * 0
 
             img_name = os.path.basename(pred.metainfo['img_path'])
             window_name = window_name if window_name else img_name
@@ -316,30 +333,39 @@ class BaseMMPoseInferencer(BaseInferencer):
                 pred,
                 draw_gt=False,
                 draw_bbox=draw_bbox,
-                draw_heatmap=True,
                 show=show,
                 wait_time=wait_time,
-                kpt_thr=kpt_thr)
+                kpt_thr=kpt_thr,
+                **kwargs)
             results.append(visualization)
 
             if vis_out_dir:
                 out_img = mmcv.rgb2bgr(visualization)
+                _, file_extension = os.path.splitext(vis_out_dir)
+                if file_extension:
+                    dir_name = os.path.dirname(vis_out_dir)
+                    file_name = os.path.basename(vis_out_dir)
+                else:
+                    dir_name = vis_out_dir
+                    file_name = None
+                mkdir_or_exist(dir_name)
 
                 if self._video_input:
 
                     if self.video_info['writer'] is None:
                         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                        mkdir_or_exist(vis_out_dir)
-                        out_file = join_path(
-                            vis_out_dir,
-                            os.path.basename(self.video_info['name']))
+                        if file_name is None:
+                            file_name = os.path.basename(
+                                self.video_info['name'])
+                        out_file = join_path(dir_name, file_name)
                         self.video_info['writer'] = cv2.VideoWriter(
                             out_file, fourcc, self.video_info['fps'],
                             (visualization.shape[1], visualization.shape[0]))
                     self.video_info['writer'].write(out_img)
 
                 else:
-                    out_file = join_path(vis_out_dir, img_name)
+                    file_name = file_name if file_name else img_name
+                    out_file = join_path(dir_name, file_name)
                     mmcv.imwrite(out_img, out_file)
 
         if return_vis:
@@ -396,8 +422,16 @@ class BaseMMPoseInferencer(BaseInferencer):
         if pred_out_dir != '':
             for pred, data_sample in zip(result_dict['predictions'], preds):
                 if self._video_input:
+                    # For video or webcam input, predictions for each frame
+                    # are gathered in the 'predictions' key of 'video_info'
+                    # dictionary. All frame predictions are then stored into
+                    # a single file after processing all frames.
                     self.video_info['predictions'].append(pred)
                 else:
+                    # For non-video inputs, predictions are stored in separate
+                    # JSON files. The filename is determined by the basename
+                    # of the input image path with a '.json' extension. The
+                    # predictions are then dumped into this file.
                     fname = os.path.splitext(
                         os.path.basename(
                             data_sample.metainfo['img_path']))[0] + '.json'

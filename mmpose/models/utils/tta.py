@@ -114,6 +114,21 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int],
     return coords
 
 
+def flip_visibility(vis: Tensor, flip_indices: List[int]):
+    """Flip keypoints visibility for test-time augmentation.
+
+    Args:
+        vis (Tensor): The keypoints visibility to flip. Should be a tensor
+            in shape [B, K]
+        flip_indices (List[int]): The indices of each keypoint's symmetric
+            keypoint
+    """
+    assert vis.ndim == 2
+
+    vis = vis[:, flip_indices]
+    return vis
+
+
 def aggregate_heatmaps(heatmaps: List[Tensor],
                        size: Optional[Tuple[int, int]],
                        align_corners: bool = False,

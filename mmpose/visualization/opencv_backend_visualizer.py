@@ -26,6 +26,7 @@ class OpencvBackendVisualizer(Visualizer):
             Defaults to empty dict.
         backend (str): Backend used to draw elements on the image and display
             the image. Defaults to 'matplotlib'.
+        alpha (int, float): The transparency of bboxes. Defaults to ``1.0``
     """
 
     def __init__(self,
@@ -87,6 +88,7 @@ class OpencvBackendVisualizer(Visualizer):
                      radius: Union[np.ndarray, torch.Tensor],
                      face_colors: Union[str, tuple, List[str],
                                         List[tuple]] = 'none',
+                     alpha: float = 1.0,
                      **kwargs) -> 'Visualizer':
         """Draw single or multiple circles.
 
@@ -123,13 +125,22 @@ class OpencvBackendVisualizer(Visualizer):
                 center=center,
                 radius=radius,
                 face_colors=face_colors,
+                alpha=alpha,
                 **kwargs)
         elif self.backend == 'opencv':
             if isinstance(face_colors, str):
                 face_colors = mmcv.color_val(face_colors)
-            self._image = cv2.circle(self._image,
-                                     (int(center[0]), int(center[1])),
-                                     int(radius), face_colors, -1)
+
+            if alpha == 1.0:
+                self._image = cv2.circle(self._image,
+                                         (int(center[0]), int(center[1])),
+                                         int(radius), face_colors, -1)
+            else:
+                img = cv2.circle(self._image.copy(),
+                                 (int(center[0]), int(center[1])), int(radius),
+                                 face_colors, -1)
+                self._image = cv2.addWeighted(self._image, 1 - alpha, img,
+                                              alpha, 0)
         else:
             raise ValueError(f'got unsupported backend {self.backend}')
 
@@ -362,6 +373,7 @@ class OpencvBackendVisualizer(Visualizer):
                                       List[Union[np.ndarray, torch.Tensor]]],
                       edge_colors: Union[str, tuple, List[str],
                                          List[tuple]] = 'g',
+                      alpha: float = 1.0,
                       **kwargs) -> 'Visualizer':
         """Draw single or multiple bboxes.
 
@@ -394,12 +406,20 @@ class OpencvBackendVisualizer(Visualizer):
         """
         if self.backend == 'matplotlib':
             super().draw_polygons(
-                polygons=polygons, edge_colors=edge_colors, **kwargs)
+                polygons=polygons,
+                edge_colors=edge_colors,
+                alpha=alpha,
+                **kwargs)
 
         elif self.backend == 'opencv':
-
-            self._image = cv2.fillConvexPoly(self._image, polygons,
-                                             edge_colors)
+            if alpha == 1.0:
+                self._image = cv2.fillConvexPoly(self._image, polygons,
+                                                 edge_colors)
+            else:
+                img = cv2.fillConvexPoly(self._image.copy(), polygons,
+                                         edge_colors)
+                self._image = cv2.addWeighted(self._image, 1 - alpha, img,
+                                              alpha, 0)
         else:
             raise ValueError(f'got unsupported backend {self.backend}')
 

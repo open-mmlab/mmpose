@@ -22,7 +22,7 @@
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/latest/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
 [![PyPI](https://img.shields.io/pypi/v/mmpose)](https://pypi.org/project/mmpose/)
-[![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/master/LICENSE)
+[![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/main/LICENSE)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
@@ -63,7 +63,7 @@ English | [简体中文](README_CN.md)
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
-The master branch works with **PyTorch 1.8+**.
+The main branch works with **PyTorch 1.8+**.
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
@@ -97,7 +97,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- We are excited to release **YOLOX-Pose**, a One-Stage multi-person pose estimation model based on YOLOX. Checkout our [project page](/projects/yolox-pose/) for more details.
+- We are excited to release **YOLOX-Pose**, a One-Stage multi-person pose estimation model based on YOLOX. Checkout our [project page](/projects/yolox_pose/) for more details.
 
 ![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
 
@@ -108,7 +108,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - Build individual projects with full power of MMPose but not bound up with heavy frameworks
   - Checkout new projects:
     - [RTMPose](/projects/rtmpose/)
-    - [YOLOX-Pose](/projects/yolox-pose/)
+    - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
   - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
 
@@ -116,7 +116,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-04-06: MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) is officially released, with the main updates including:
 
-  - Release of [YOLOX-Pose](/projects/yolox-pose/), a One-Stage multi-person pose estimation model based on YOLOX
+  - Release of [YOLOX-Pose](/projects/yolox_pose/), a One-Stage multi-person pose estimation model based on YOLOX
   - Development of [MMPose for AIGC](/projects/mmpose4aigc/) based on RTMPose, generating high-quality skeleton images for Pose-guided AIGC projects
   - Support for OpenPose-style skeleton visualization
   - More complete and user-friendly [documentation and tutorials](https://mmpose.readthedocs.io/en/latest/overview.html)
@@ -139,18 +139,18 @@ MMPose v1.0.0 is a major update, including many API and config file changes. Cur
 | HigherHRNet (CVPR 2020)           |             |
 | DeepPose (CVPR 2014)              |    done     |
 | RLE (ICCV 2021)                   |    done     |
-| SoftWingloss (TIP 2021)           |             |
-| VideoPose3D (CVPR 2019)           | in progress |
+| SoftWingloss (TIP 2021)           |    done     |
+| VideoPose3D (CVPR 2019)           |    done     |
 | Hourglass (ECCV 2016)             |    done     |
 | LiteHRNet (CVPR 2021)             |    done     |
 | AdaptiveWingloss (ICCV 2019)      |    done     |
 | SimpleBaseline2D (ECCV 2018)      |    done     |
 | PoseWarper (NeurIPS 2019)         |             |
-| SimpleBaseline3D (ICCV 2017)      | in progress |
+| SimpleBaseline3D (ICCV 2017)      |    done     |
 | HMR (CVPR 2018)                   |             |
 | UDP (CVPR 2020)                   |    done     |
 | VIPNAS (CVPR 2021)                |    done     |
-| Wingloss (CVPR 2018)              |             |
+| Wingloss (CVPR 2018)              |    done     |
 | DarkPose (CVPR 2020)              |    done     |
 | Associative Embedding (NIPS 2017) | in progress |
 | VoxelPose (ECCV 2020)             |             |
@@ -214,13 +214,13 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [DeepPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
 - [x] [CPM](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#cpm-cvpr-2016) (CVPR'2016)
 - [x] [Hourglass](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#hourglass-eccv-2016) (ECCV'2016)
-- [ ] [SimpleBaseline3D](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#simplebaseline3d-iccv-2017) (ICCV'2017)
+- [x] [SimpleBaseline3D](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#simplebaseline3d-iccv-2017) (ICCV'2017)
 - [ ] [Associative Embedding](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#associative-embedding-nips-2017) (NeurIPS'2017)
 - [x] [SimpleBaseline2D](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#simplebaseline2d-eccv-2018) (ECCV'2018)
 - [x] [DSNT](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#dsnt-2018) (ArXiv'2021)
 - [x] [HRNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#hrnet-cvpr-2019) (CVPR'2019)
 - [x] [IPR](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#ipr-eccv-2018) (ECCV'2018)
-- [ ] [VideoPose3D](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
+- [x] [VideoPose3D](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
 - [x] [HRNetv2](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
 - [x] [MSPN](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#mspn-arxiv-2019) (ArXiv'2019)
 - [x] [SCNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
@@ -238,14 +238,14 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 <details close>
 <summary><b>Supported techniques:</b></summary>
 
-- [ ] [FPN](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
-- [ ] [FP16](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
-- [ ] [Wingloss](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
-- [ ] [AdaptiveWingloss](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
+- [x] [FPN](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
+- [x] [FP16](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
+- [x] [Wingloss](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
+- [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
 - [x] [DarkPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#darkpose-cvpr-2020) (CVPR'2020)
 - [x] [UDP](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
-- [ ] [Albumentations](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#albumentations-information-2020) (Information'2020)
-- [ ] [SoftWingloss](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
+- [x] [Albumentations](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#albumentations-information-2020) (Information'2020)
+- [x] [SoftWingloss](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 - [x] [RLE](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/techniques.html#rle-iccv-2021) (ICCV'2021)
 
 </details>
@@ -284,7 +284,8 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [InterHand2.6M](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#interhand2-6m-eccv-2020) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
 - [x] [AP-10K](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ap-10k-neurips-2021) \[[homepage](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
 - [x] [Horse-10](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#horse-10-wacv-2021) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
-- [x] [Human-Art](#todo) \[[homepage](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
+- [x] [Human-Art](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#human-art-cvpr-2023) \[[homepage](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
+- [x] [LaPa](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#lapa-aaai-2020) \[[homepage](https://github.com/JDAI-CV/lapa-dataset)\] (AAAI'2020)
 
 </details>
 
@@ -310,7 +311,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 
 ### Model Request
 
-We will keep up with the latest progress of the community, and support more popular algorithms and frameworks. If you have any feature requests, please feel free to leave a comment in [MMPose Roadmap](https://github.com/open-mmlab/mmpose/issues/9).
+We will keep up with the latest progress of the community, and support more popular algorithms and frameworks. If you have any feature requests, please feel free to leave a comment in [MMPose Roadmap](https://github.com/open-mmlab/mmpose/issues/2258).
 
 ## Contributing
 
@@ -343,21 +344,20 @@ This project is released under the [Apache 2.0 license](LICENSE).
 
 - [MMEngine](https://github.com/open-mmlab/mmengine): OpenMMLab foundational library for training deep learning models.
 - [MMCV](https://github.com/open-mmlab/mmcv): OpenMMLab foundational library for computer vision.
-- [MIM](https://github.com/open-mmlab/mim): MIM installs OpenMMLab packages.
-- [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab image classification toolbox and benchmark.
+- [MMPreTrain](https://github.com/open-mmlab/mmpretrain): OpenMMLab pre-training toolbox and benchmark.
+- [MMagic](https://github.com/open-mmlab/mmagic): Open**MM**Lab **A**dvanced, **G**enerative and **I**ntelligent **C**reation toolbox.
 - [MMDetection](https://github.com/open-mmlab/mmdetection): OpenMMLab detection toolbox and benchmark.
 - [MMDetection3D](https://github.com/open-mmlab/mmdetection3d): OpenMMLab's next-generation platform for general 3D object detection.
 - [MMRotate](https://github.com/open-mmlab/mmrotate): OpenMMLab rotated object detection toolbox and benchmark.
+- [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab video perception toolbox and benchmark.
 - [MMSegmentation](https://github.com/open-mmlab/mmsegmentation): OpenMMLab semantic segmentation toolbox and benchmark.
 - [MMOCR](https://github.com/open-mmlab/mmocr): OpenMMLab text detection, recognition, and understanding toolbox.
 - [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab pose estimation toolbox and benchmark.
 - [MMHuman3D](https://github.com/open-mmlab/mmhuman3d): OpenMMLab 3D human parametric model toolbox and benchmark.
-- [MMSelfSup](https://github.com/open-mmlab/mmselfsup): OpenMMLab self-supervised learning toolbox and benchmark.
-- [MMRazor](https://github.com/open-mmlab/mmrazor): OpenMMLab model compression toolbox and benchmark.
 - [MMFewShot](https://github.com/open-mmlab/mmfewshot): OpenMMLab fewshot learning toolbox and benchmark.
 - [MMAction2](https://github.com/open-mmlab/mmaction2): OpenMMLab's next-generation action understanding toolbox and benchmark.
-- [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab video perception toolbox and benchmark.
 - [MMFlow](https://github.com/open-mmlab/mmflow): OpenMMLab optical flow toolbox and benchmark.
-- [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab image and video editing toolbox.
-- [MMGeneration](https://github.com/open-mmlab/mmgeneration): OpenMMLab image and video generative models toolbox.
 - [MMDeploy](https://github.com/open-mmlab/mmdeploy): OpenMMLab Model Deployment Framework.
+- [MMRazor](https://github.com/open-mmlab/mmrazor): OpenMMLab model compression toolbox and benchmark.
+- [MIM](https://github.com/open-mmlab/mim): MIM installs OpenMMLab packages.
+- [Playground](https://github.com/open-mmlab/playground): A central hub for gathering and showcasing amazing projects built upon OpenMMLab.

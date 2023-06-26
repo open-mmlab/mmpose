@@ -106,7 +106,7 @@ class KeypointMSELoss(nn.Module):
 
         # Mask by ``skip_empty_channel``
         if self.skip_empty_channel:
-            _mask = (target != 0).flatten(2).any()
+            _mask = (target != 0).flatten(2).any(dim=2)
             ndim_pad = target.ndim - _mask.ndim
             _mask = _mask.view(_mask.shape + (1, ) * ndim_pad)
 

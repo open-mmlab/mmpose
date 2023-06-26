@@ -367,6 +367,7 @@ mmpose
         │   │-- lapa_train.json
         │   |-- lapa_val.json
         │   |-- lapa_test.json
+        |   |-- lapa_trainval.json
         │-- train
         │   │-- images
         │   │-- labels

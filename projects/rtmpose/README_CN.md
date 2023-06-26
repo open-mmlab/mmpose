@@ -1,16 +1,10 @@
 <div align="center">
-  <img width="100%" src="https://user-images.githubusercontent.com/15977946/225229448-36ff568d-a723-4248-bb19-2df4044ff8e8.png"/>
+  <img width="100%" src="https://github.com/open-mmlab/mmpose/assets/13503330/5b637d76-41dd-4376-9a7f-854cd120799d"/>
 </div>
 
 # RTMPose: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
 
 > [RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose](https://arxiv.org/abs/2303.07399)
-
-<div align="center">
-
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/rtmpose-real-time-multi-person-pose/2d-human-pose-estimation-on-coco-wholebody-1)](https://paperswithcode.com/sota/2d-human-pose-estimation-on-coco-wholebody-1?p=rtmpose-real-time-multi-person-pose)
-
-</div>
 
 <div align="center">
 
@@ -22,7 +16,7 @@ ______________________________________________________________________
 
 ## Abstract
 
-近年来，2D 姿态估计的研究在公开数据集上取得了出色的成绩，但是它在工业界的应用仍然受到笨重的模型参数和高推理延迟的影响。为了让前沿姿态估计算法在工业界落地，我们通过实验研究了多人姿态估计算法的五个方面：范式、骨干网络、定位算法、训练策略和部署推理，基于 MMPose 提出了一个高性能的实时多人姿态估计框架 **RTMPose**。我们的 RTMPose-m 模型在 COCO 上取得 **75.8％AP**，在 Intel i7-11700 CPU 上达到 **90+FPS**，在 NVIDIA GTX 1660 Ti GPU 上达到 **430+FPS**，RTMPose-l 在 COCO-WholeBody 上达到 **67.0％AP**，**130+FPS**。我们同样验证了在算力有限的设备上做实时姿态估计，RTMPose-s 在移动端骁龙865芯片上可以达到 **COCO 72.2%AP**，**70+FPS**。在 MMDeploy 的帮助下，我们的项目支持 CPU、GPU、Jetson、移动端等多种部署环境。
+近年来，2D 姿态估计的研究在公开数据集上取得了出色的成绩，但是它在工业界的应用仍然受到笨重的模型参数和高推理延迟的影响。为了让前沿姿态估计算法在工业界落地，我们通过实验研究了多人姿态估计算法的五个方面：范式、骨干网络、定位算法、训练策略和部署推理，基于 MMPose 提出了一个高性能的实时多人姿态估计框架 **RTMPose**。我们的 RTMPose-m 模型在 COCO 上取得 **75.8％AP**，在 Intel i7-11700 CPU 上达到 **90+FPS**，在 NVIDIA GTX 1660 Ti GPU 上达到 **430+FPS**。我们同样验证了在算力有限的设备上做实时姿态估计，RTMPose-s 在移动端骁龙865芯片上可以达到 **COCO 72.2%AP**，**70+FPS**。在 MMDeploy 的帮助下，我们的项目支持 CPU、GPU、Jetson、移动端等多种部署环境。
 
 ![rtmpose_intro](https://user-images.githubusercontent.com/13503330/219269619-935499e5-bdd9-49ea-8104-3c7796dbd862.png)
 
@@ -46,6 +40,11 @@ ______________________________________________________________________
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
+- 2023 年 6 月：
+  - 发布混合数据集训练的 26 点 Body 模型。
+- 2023 年 5 月：
+  - 添加 [代码示例](./examples/)
+  - 发布混合数据集训练的 Hand, Face, Body 模型。
 - 2023 年 3 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 430+ FPS 。
 
 ## 📖 简介 [🔝](#-table-of-contents)
@@ -55,10 +54,10 @@ ______________________________________________________________________
 </div>
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/221125768-8e0d6754-e66d-4941-ac53-ded8db9b60f9.gif" width=450 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=450 height=300/>
+<img src="https://github.com/open-mmlab/mmpose/assets/13503330/38aa345e-4ceb-4e73-bc37-5e082735e336" width=450 height=300/><img src="https://user-images.githubusercontent.com/13503330/221125888-15c20faf-0ad5-4afb-828b-a71ccb064582.gif" width=450 height=300/>
 </div>
 <div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/221124560-af84b291-4300-4027-87ae-8c3a201c3f67.gif" width=300 height=350/><img src="https://user-images.githubusercontent.com/13503330/221138017-10431ab4-e515-4c32-8fa7-8748e2d17a58.gif" width=600 height=350/>
+<img src="https://github.com/open-mmlab/mmpose/assets/13503330/2ecbf9f4-6963-4a14-9801-da10c0a65dac" width=300 height=350/><img src="https://user-images.githubusercontent.com/13503330/221138017-10431ab4-e515-4c32-8fa7-8748e2d17a58.gif" width=600 height=350/>
 </div>
 
 ### ✨ 主要特性
@@ -146,16 +145,66 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 - RTMPose 在更多硬件平台上的推理速度可以前往 [Benchmark](./benchmark/README_CN.md) 查看。
 - 如果你有希望我们支持的数据集，欢迎[联系我们](https://uua478.fanqier.cn/f/xxmynrki)/[Google Questionnaire](https://docs.google.com/forms/d/e/1FAIpQLSfzwWr3eNlDzhU98qzk2Eph44Zio6hi5r0iSwfO9wSARkHdWg/viewform?usp=sf_link)！
 
-### 人体 2d 关键点 (17 Keypoints)
+### 人体 2d 关键点
 
-|      Config      | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |      Download       |
-| :--------------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :-----------------: |
-| [RTMPose-t](./rtmpose/body_2d_keypoint/rtmpose-t_8xb256-420e_coco-256x192.py) |  256x192   |       68.5        |   3.34    |   0.36   |                3.20                |                   1.06                    |                      9.02                      | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth) |
-| [RTMPose-s](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |       72.2        |   5.47    |   0.68   |                4.48                |                   1.39                    |                     13.89                      | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth) |
-| [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |       75.8        |   13.59   |   1.93   |               11.06                |                   2.29                    |                     26.44                      | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth) |
-| [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |       76.5        |   27.66   |   4.16   |               18.85                |                   3.46                    |                     45.37                      | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth) |
-| [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       77.0        |   13.72   |   4.33   |               24.78                |                   3.66                    |                       -                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth) |
-| [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       77.3        |   27.79   |   9.35   |                 -                  |                   6.05                    |                       -                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth) |
+#### 17 Keypoints
+
+- 关键点骨架定义遵循 [COCO](http://cocodataset.org/). 详情见 [meta info](/configs/_base_/datasets/coco.py).
+- <img src="https://github.com/open-mmlab/mmpose/assets/13503330/2417e4f7-2203-468f-bad0-e7a6a6bf8251" height="300px">
+
+<details close>
+<summary><b>AIC+COCO</b></summary>
+
+|                                    Config                                     | Input Size | AP<sup><br>(COCO) | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params<sup><br>(M) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                     |
+| :---------------------------------------------------------------------------: | :--------: | :---------------: | :---------------------: | :-----------------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-t](./rtmpose/body_2d_keypoint/rtmpose-t_8xb256-420e_coco-256x192.py) |  256x192   |       68.5        |          91.28          |        63.38        |        3.34        |       0.36        |                    3.20                     |                        1.06                        |                          9.02                           | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth) |
+| [RTMPose-s](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |       72.2        |          92.95          |        66.19        |        5.47        |       0.68        |                    4.48                     |                        1.39                        |                          13.89                          |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth)   |
+| [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |       75.8        |          94.13          |        68.53        |       13.59        |       1.93        |                    11.06                    |                        2.29                        |                          26.44                          |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth)   |
+| [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |       76.5        |          94.35          |        68.98        |       27.66        |       4.16        |                    18.85                    |                        3.46                        |                          45.37                          |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth)   |
+| [RTMPose-m](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       77.0        |          94.32          |        69.85        |       13.72        |       4.33        |                    24.78                    |                        3.66                        |                            -                            |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth)   |
+| [RTMPose-l](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       77.3        |          94.54          |        70.14        |       27.79        |       9.35        |                      -                      |                        6.05                        |                            -                            |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth)   |
+
+</details>
+
+<details open>
+<summary><b>Body8</b></summary>
+
+- `*` 代表模型在 7 个开源数据集上训练得到：
+  - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
+  - [MS COCO](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#coco)
+  - [CrowdPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#crowdpose)
+  - [MPII](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#mpii)
+  - [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#sub-jhmdb-dataset)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+  - [PoseTrack18](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#posetrack18)
+- `Body8` 代表除了以上提到的 7 个数据集，再加上 [OCHuman](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#ochuman) 合并后一起进行评测得到的指标。
+
+|                                     Config                                      | Input Size | AP<sup><br>(COCO) | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params<sup><br>(M) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                Download                                                                |
+| :-----------------------------------------------------------------------------: | :--------: | :---------------: | :---------------------: | :-----------------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-t\*](./rtmpose/body_2d_keypoint/rtmpose-t_8xb256-420e_coco-256x192.py) |  256x192   |       65.9        |          91.44          |        63.18        |        3.34        |       0.36        |                    3.20                     |                        1.06                        |                          9.02                           | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-body7_pt-body7_420e-256x192-026a1439_20230504.pth) |
+| [RTMPose-s\*](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |       69.7        |          92.45          |        65.15        |        5.47        |       0.68        |                    4.48                     |                        1.39                        |                          13.89                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-body7_pt-body7_420e-256x192-acd4a1ef_20230504.pth) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |       74.9        |          94.25          |        68.59        |       13.59        |       1.93        |                    11.06                    |                        2.29                        |                          26.44                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-256x192-e48f03d0_20230504.pth) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |       76.7        |          95.08          |        70.14        |       27.66        |       4.16        |                    18.85                    |                        3.46                        |                          45.37                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-256x192-4dba18fc_20230504.pth) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-384x288.py) |  384x288   |       76.6        |          94.64          |        70.38        |       13.72        |       4.33        |                    24.78                    |                        3.66                        |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-384x288-65e718c4_20230504.pth) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-384x288.py) |  384x288   |       78.3        |          95.36          |        71.58        |       27.79        |       9.35        |                      -                      |                        6.05                        |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth) |
+
+</details>
+
+#### 26 Keypoints
+
+- 关键点骨架定义遵循 [Halpe26](https://github.com/Fang-Haoshu/Halpe-FullBody/)，详情见 [meta info](/configs/_base_/datasets/halpe26.py)。
+- <img src="https://github.com/open-mmlab/mmpose/assets/13503330/f28ab3ba-833d-4ca7-8739-f97e6cafbab7" height="300px">
+- 模型在 `Body8` 上进行训练和评估。
+
+|                                          Config                                           | Input Size | PCK@0.1<sup><br>(Body8) | AUC<sup><br>(Body8) | Params(M) | FLOPS(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                    Download                                                                    |
+| :---------------------------------------------------------------------------------------: | :--------: | :---------------------: | :-----------------: | :-------: | :------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-t\*](./rtmpose/body_2d_keypoint/rtmpose-t_8xb1024-700e_body8-halpe26-256x192.py) |  256x192   |          91.89          |        66.35        |   3.51    |   0.37   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-body7_pt-body7-halpe26_700e-256x192-6020f8a6_20230605.pth) |
+| [RTMPose-s\*](./rtmpose/body_2d_keypoint/rtmpose-s_8xb1024-700e_body8-halpe26-256x192.py) |  256x192   |          93.01          |        68.62        |   5.70    |   0.70   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-body7_pt-body7-halpe26_700e-256x192-7f134165_20230605.pth) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb512-700e_body8-halpe26-256x192.py)  |  256x192   |          94.75          |        71.91        |   13.93   |   1.95   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-256x192-4d3e73dd_20230605.pth) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb512-700e_body8-halpe26-256x192.py)  |  256x192   |          95.37          |        73.19        |   28.11   |   4.19   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7-halpe26_700e-256x192-2abb7558_20230605.pth) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb512-700e_body8-halpe26-384x288.py)  |  384x288   |          95.15          |        73.56        |   14.06   |   4.37   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-384x288-89e6428b_20230605.pth) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb512-700e_body8-halpe26-384x288.py)  |  384x288   |          95.56          |        74.38        |   28.24   |   9.40   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7-halpe26_700e-384x288-734182ce_20230605.pth) |
+| [RTMPose-x\*](./rtmpose/body_2d_keypoint/rtmpose-x_8xb256-700e_body8-halpe26-384x288.py)  |  384x288   |          95.74          |        74.82        |   50.00   |  17.29   |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-x_simcc-body7_pt-body7-halpe26_700e-384x288-7fb6e239_20230606.pth) |
 
 #### 模型剪枝
 
@@ -163,59 +212,133 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 - 模型剪枝由 [MMRazor](https://github.com/open-mmlab/mmrazor) 提供
 
-|      Config      | Input Size | AP<sup><br>(COCO) | Params(M) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency(ms)<sup><br>(Snapdragon 865) |      Download       |
-| :--------------: | :--------: | :---------------: | :-------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: | :-----------------: |
-| RTMPose-s-aic-coco-pruned |  256x192   |       69.4        |   3.43    |   0.35   |                 -                  |                     -                     |                       -                        | [Model](https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.pth) |
+|          Config           | Input Size | AP<sup><br>(COCO) | Params<sup><br>(M) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                      Download                                                                      |
+| :-----------------------: | :--------: | :---------------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
+| RTMPose-s-aic-coco-pruned |  256x192   |       69.4        |        3.43        |       0.35        |                      -                      |                         -                          |                            -                            | [Model](https://download.openmmlab.com/mmrazor/v1/pruning/group_fisher/rtmpose-s/group_fisher_finetune_rtmpose-s_8xb256-420e_aic-coco-256x192.pth) |
 
 更多信息，请参考 [GroupFisher Pruning for RTMPose](./rtmpose/pruning/README.md).
 
 ### 人体全身 2d 关键点 (133 Keypoints)
 
-| Config                                       | Input Size | Whole AP | Whole AR | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                    Download                     |
-| :------------------------------------------- | :--------: | :------: | :------: | :------: | :--------------------------------: | :---------------------------------------: | :---------------------------------------------: |
-| [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   60.4   |   66.7   |   2.22   |               13.50                |                   4.00                    | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
-| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   63.2   |   69.4   |   4.52   |               23.41                |                   5.67                    | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
-| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   67.0   |   72.3   |  10.07   |               44.58                |                   7.68                    | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
+- 关键点骨架定义遵循 [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)，详情见 [meta info](/configs/_base_/datasets/coco_wholebody.py)。
+- <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
+
+| Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
+| :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
+| [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   58.2   |   67.4   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   61.1   |   70.0   |       4.52        |                    23.41                    |                        5.67                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   64.8   |   73.0   |       10.07       |                    44.58                    |                        7.68                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
 
 ### 动物 2d 关键点 (17 Keypoints)
 
-|                   Config                    | Input Size | AP<sup><br>(AP10K) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |                    Download                    |
-| :-----------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :--------------------------------------------: |
-| [RTMPose-m](./rtmpose/animal_2d_keypoint/rtmpose-m_8xb64-210e_ap10k-256x256.py) |  256x256   |        72.2        |   2.57   |               14.157               |                   2.404                   | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth) |
+- 关键点骨架定义遵循 [AP-10K](https://github.com/AlexTheBad/AP-10K/)，详情见 [meta info](/configs/_base_/datasets/ap10k.py)。
+- <img src="https://user-images.githubusercontent.com/100993824/227797151-091dc21a-d944-49c9-8b62-cc47fa89e69f.png" height="300px">
+
+|             Config             | Input Size | AP<sup><br>(AP10K) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download             |
+| :----------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :------------------------------: |
+| [RTMPose-m](./rtmpose/animal_2d_keypoint/rtmpose-m_8xb64-210e_ap10k-256x256.py) |  256x256   |        72.2        |       2.57        |                   14.157                    |                       2.404                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth) |
 
 ### 脸部 2d 关键点 (106 Keypoints)
 
-<div align=center>
-<img src="https://user-images.githubusercontent.com/13503330/233819275-0523118b-e6c2-41f7-8b72-324969310480.gif" width=450 height=250/>
-</div>
+- 关键点骨架定义遵循 [LaPa](https://github.com/JDAI-CV/lapa-dataset)，详情见 [meta info](/configs/_base_/datasets/lapa.py)。
+- <img src="https://github.com/open-mmlab/mmpose/assets/13503330/30fa583e-500c-4356-ac5a-7e9d7d18381a" height="300px">
 
-|                                     Config                                     | Input Size | NME<sup><br>(LaPa) | FLOPS(G) | ORT-Latency(ms)<sup><br>(i7-11700) | TRT-FP16-Latency(ms)<sup><br>(GTX 1660Ti) |  Download   |
-| :----------------------------------------------------------------------------: | :--------: | :----------------: | :------: | :--------------------------------: | :---------------------------------------: | :---------: |
-| [RTMPose-m (alpha version)](./rtmpose/face_2d_keypoint/rtmpose-m_8xb64-120e_lapa-256x256.py) |  256x256   |        1.70        |    -     |                 -                  |                     -                     | Coming soon |
+<details open>
+<summary><b>Face6</b></summary>
 
-### 手部 2d 关键点
+- `Face6` and `*` 代表模型在 6 个开源数据集上训练得到：
+  - [COCO-Wholebody-Face](https://github.com/jin-s13/COCO-WholeBody/)
+  - [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
+  - [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
+  - [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
+  - [Halpe](https://github.com/Fang-Haoshu/Halpe-FullBody/)
+  - [LaPa](https://github.com/JDAI-CV/lapa-dataset)
 
-Coming soon
+|             Config             | Input Size | NME<sup><br>(LaPa) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download             |
+| :----------------------------: | :--------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :------------------------------: |
+| [RTMPose-t\*](./rtmpose/face_2d_keypoint/rtmpose-t_8xb256-120e_lapa-256x256.py) |  256x256   |        1.67        |       0.652       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-face6_pt-in1k_120e-256x256-df79d9a5_20230529.pth) |
+| [RTMPose-s\*](./rtmpose/face_2d_keypoint/rtmpose-s_8xb256-120e_lapa-256x256.py) |  256x256   |        1.59        |       1.119       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-face6_pt-in1k_120e-256x256-d779fdef_20230529.pth) |
+| [RTMPose-m\*](./rtmpose/face_2d_keypoint/rtmpose-m_8xb256-120e_lapa-256x256.py) |  256x256   |        1.44        |       2.852       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth) |
+
+</details>
+
+### 手部 2d 关键点 (21 Keypoints)
+
+- 关键点骨架定义遵循 [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)，详情见 [meta info](/configs/_base_/datasets/coco_wholebody_hand.py)。
+- <img src="https://user-images.githubusercontent.com/100993824/227771101-03a27bd8-ccc0-4eb9-a111-660f191a7a16.png" height="300px">
+
+|       Detection Config        | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |        Download        |
+| :---------------------------: | :--------: | :---------------------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :--------------------: |
+| [RTMDet-nano (试用)](./rtmdet/hand/rtmdet_nano_320-8xb32_hand.py) |  320x320   |             76.0              |       0.31        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth) |
+
+<details open>
+<summary><b>Hand5</b></summary>
+
+- `Hand5` and `*` 代表模型在 5 个开源数据集上训练得到：
+  - [COCO-Wholebody-Hand](https://github.com/jin-s13/COCO-WholeBody/)
+  - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+  - [FreiHand2d](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+  - [RHD2d](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+
+|                                                    Config                                                    | Input Size | PCK@0.2<sup><br>(COCO-Wholebody-Hand) | PCK@0.2<sup><br>(Hand5) | AUC<sup><br>(Hand5) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |                                                                 Download                                                                 |
+| :----------------------------------------------------------------------------------------------------------: | :--------: | :-----------------------------------: | :---------------------: | :-----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-m\*<sup><br>(试用)](./rtmpose/hand_2d_keypoint/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py) |  256x256   |                 81.5                  |          96.4           |        83.9         |       2.581       |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth) |
+
+</details>
 
 ### 预训练模型
 
 我们提供了 UDP 预训练的 CSPNeXt 模型参数，训练配置请参考 [pretrain_cspnext_udp folder](./rtmpose/pretrain_cspnext_udp/)。
 
-|   Model   | Input Size | Params(M) | Flops(G) | AP<sup><br>(GT) | AR<sup><br>(GT) |                                                            Download                                                             |
-| :-------: | :--------: | :-------: | :------: | :-------------: | :-------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
-| CSPNeXt-t |  256x192   |   6.03    |   1.43   |      65.5       |      68.9       | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth) |
-| CSPNeXt-s |  256x192   |   8.58    |   1.78   |      70.0       |      73.3       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-s_udp-aic-coco_210e-256x192-92f5a029_20230130.pth)   |
-| CSPNeXt-m |  256x192   |   13.05   |   3.06   |      74.8       |      77.7       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth)   |
-| CSPNeXt-l |  256x192   |   32.44   |   5.33   |      77.2       |      79.9       |  [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth)   |
+<details close>
+<summary><b>AIC+COCO</b></summary>
+
+|    Model     | Input Size | Params<sup><br>(M) | Flops<sup><br>(G) | AP<sup><br>(GT) | AR<sup><br>(GT) |                                                     Download                                                      |
+| :----------: | :--------: | :----------------: | :---------------: | :-------------: | :-------------: | :---------------------------------------------------------------------------------------------------------------: |
+| CSPNeXt-tiny |  256x192   |        6.03        |       1.43        |      65.5       |      68.9       | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth) |
+|  CSPNeXt-s   |  256x192   |        8.58        |       1.78        |      70.0       |      73.3       | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-s_udp-aic-coco_210e-256x192-92f5a029_20230130.pth) |
+|  CSPNeXt-m   |  256x192   |       17.53        |       3.05        |      74.8       |      77.7       | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth) |
+|  CSPNeXt-l   |  256x192   |       32.44        |       5.32        |      77.2       |      79.9       | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmpose/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth) |
+
+</details>
+
+<details open>
+<summary><b>Body8</b></summary>
+
+- `*` 代表模型在 7 个开源数据集上训练得到：
+  - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
+  - [MS COCO](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#coco)
+  - [CrowdPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#crowdpose)
+  - [MPII](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#mpii)
+  - [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#sub-jhmdb-dataset)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+  - [PoseTrack18](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#posetrack18)
+- `Body8` 代表除了以上提到的 7 个数据集，再加上 [OCHuman](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#ochuman) 合并后一起进行评测得到的指标。
+
+|     Model      | Input Size | Params<sup><br>(M) | Flops<sup><br>(G) | AP<sup><br>(COCO) | PCK@0.2<sup><br>(Body8) | AUC<sup><br>(Body8) |                                      Download                                      |
+| :------------: | :--------: | :----------------: | :---------------: | :---------------: | :---------------------: | :-----------------: | :--------------------------------------------------------------------------------: |
+| CSPNeXt-tiny\* |  256x192   |        6.03        |       1.43        |       65.9        |          96.34          |        63.80        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-body7_210e-256x192-a3775292_20230504.pth) |
+|  CSPNeXt-s\*   |  256x192   |        8.58        |       1.78        |       68.7        |          96.59          |        64.92        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-s_udp-body7_210e-256x192-8c9ccbdb_20230504.pth) |
+|  CSPNeXt-m\*   |  256x192   |       17.53        |       3.05        |       73.7        |          97.42          |        68.19        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-256x192-e0c9327b_20230504.pth) |
+|  CSPNeXt-l\*   |  256x192   |       32.44        |       5.32        |       75.7        |          97.76          |        69.57        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-256x192-5e9558ef_20230504.pth) |
+|  CSPNeXt-m\*   |  384x288   |       17.53        |       6.86        |       75.8        |          97.60          |        70.18        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-body7_210e-384x288-b9bc2b57_20230504.pth) |
+|  CSPNeXt-l\*   |  384x288   |       32.44        |       11.96       |       77.2        |          97.89          |        71.23        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-body7_210e-384x288-b15bc30d_20230504.pth) |
+|  CSPNeXt-x\*   |  384x288   |       54.92        |       19.96       |       78.1        |          98.00          |        71.79        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-x_udp-body7_210e-384x288-d28b58e6_20230529.pth) |
+
+</details>
+
+#### ImageNet
 
 我们提供了 ImageNet 分类训练的 CSPNeXt 模型参数，更多细节请参考 [RTMDet](https://github.com/open-mmlab/mmdetection/blob/latest/configs/rtmdet/README.md#classification)。
 
-|    Model     | Input Size | Params(M) | Flops(G) | Top-1 (%) | Top-5 (%) |                                                              Download                                                               |
-| :----------: | :--------: | :-------: | :------: | :-------: | :-------: | :---------------------------------------------------------------------------------------------------------------------------------: |
-| CSPNeXt-tiny |  224x224   |   2.73    |   0.34   |   69.44   |   89.45   |    [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-tiny_imagenet_600e-3a2dd350.pth)     |
-|  CSPNeXt-s   |  224x224   |   4.89    |   0.66   |   74.41   |   92.23   |      [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-s_imagenet_600e-ea671761.pth)      |
-|  CSPNeXt-m   |  224x224   |   13.05   |   1.93   |   79.27   |   94.79   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-m_8xb256-rsb-a1-600e_in1k-ecb3bbd9.pth) |
-|  CSPNeXt-l   |  224x224   |   27.16   |   4.19   |   81.30   |   95.62   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-l_8xb256-rsb-a1-600e_in1k-6a760974.pth) |
+|    Model     | Input Size | Params<sup><br>(M) | Flops<sup><br>(G) | Top-1 (%) | Top-5 (%) |                                                           Download                                                            |
+| :----------: | :--------: | :----------------: | :---------------: | :-------: | :-------: | :---------------------------------------------------------------------------------------------------------------------------: |
+| CSPNeXt-tiny |  224x224   |        2.73        |       0.34        |   69.44   |   89.45   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-tiny_imagenet_600e-3a2dd350.pth)  |
+|  CSPNeXt-s   |  224x224   |        4.89        |       0.66        |   74.41   |   92.23   |   [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-s_imagenet_600e-ea671761.pth)   |
+|  CSPNeXt-m   |  224x224   |       13.05        |       1.93        |   79.27   |   94.79   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-m_8xb256-rsb-a1-600e_in1k-ecb3bbd9.pth) |
+|  CSPNeXt-l   |  224x224   |       27.16        |       4.19        |   81.30   |   95.62   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-l_8xb256-rsb-a1-600e_in1k-6a760974.pth) |
+|  CSPNeXt-x   |  224x224   |       48.85        |       7.76        |   82.10   |   95.69   | [Model](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/cspnext_rsb_pretrain/cspnext-x_8xb256-rsb-a1-600e_in1k-b3f78edd.pth) |
 
 ## 👀 可视化 [🔝](#-table-of-contents)
 
@@ -229,7 +352,7 @@ Coming soon
 我们提供了两种途径来让用户尝试 RTMPose 模型：
 
 - MMPose demo 脚本
-- MMDeploy SDK 预编译包 （推荐）
+- MMDeploy SDK 预编译包 （推荐，速度提升6-10倍）
 
 ### MMPose demo 脚本
 
@@ -275,6 +398,8 @@ MMDeploy 提供了预编译的 SDK，用于对 RTMPose 项目进行 Pipeline 推
 
 - 所有的模型必须经过 `tools/deploy.py` 导出后才能使用 PoseTracker 进行推理。
 - 导出 SDK 版模型的教程见 [SDK 推理](#%EF%B8%8F-sdk-推理)，推理的详细参数设置见 [Pipeline 推理](#-pipeline-推理)。
+- 你可以从 [硬件模型库](https://platform.openmmlab.com/deploee) 直接下载 SDK 版模型（ONNX、 TRT、ncnn 等）。
+- 同时我们也支持 [在线模型转换](https://platform.openmmlab.com/deploee/task-convert-list)。
 
 #### Linux\\
 
@@ -490,6 +615,41 @@ set-ExecutionPolicy RemoteSigned
 example\cpp\build\Release
 ```
 
+### MMPose demo 脚本
+
+通过 MMPose 提供的 demo 脚本可以基于 Pytorch 快速进行[模型推理](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html)和效果验证。
+
+**提示：**
+
+- 基于 Pytorch 推理并不能达到 RTMPose 模型的真实推理速度，只用于模型效果验证。
+
+```shell
+# 前往 mmpose 目录
+cd ${PATH_TO_MMPOSE}
+
+# RTMDet 与 RTMPose 联合推理
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input {YOUR_TEST_IMG_or_VIDEO} \
+    --show
+
+# 摄像头推理
+python demo/topdown_demo_with_mmdet.py \
+    projects/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py \
+    {PATH_TO_CHECKPOINT}/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth \
+    projects/rtmpose/rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py \
+    {PATH_TO_CHECKPOINT}/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth \
+    --input webcam \
+    --show
+```
+
+效果展示：
+
+![topdown_inference_with_rtmdet](https://user-images.githubusercontent.com/13503330/220005020-06bdf37f-6817-4681-a2c8-9dd55e4fbf1e.png)
+
 ## 👨‍🏫 模型训练 [🔝](#-table-of-contents)
 
 请参考 [训练与测试](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html) 进行 RTMPose 的训练。
@@ -505,6 +665,9 @@ example\cpp\build\Release
 ## 🏗️ 部署教程 [🔝](#-table-of-contents)
 
 本教程将展示如何通过 [MMDeploy](https://github.com/open-mmlab/mmdeploy/tree/main) 部署 RTMPose 项目。
+
+- 你可以从 [硬件模型库](https://platform.openmmlab.com/deploee) 直接下载 SDK 版模型（ONNX、 TRT、ncnn 等）。
+- 同时我们也支持 [在线模型转换](https://platform.openmmlab.com/deploee/task-convert-list)。
 
 ### 🧩 安装
 

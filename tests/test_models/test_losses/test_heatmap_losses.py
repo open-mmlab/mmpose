@@ -4,7 +4,8 @@ from unittest import TestCase
 import torch
 
 from mmpose.models.losses.heatmap_loss import (AdaptiveWingLoss,
-                                               FocalHeatmapLoss)
+                                               FocalHeatmapLoss,
+                                               KeypointMSELoss)
 
 
 class TestAdaptiveWingLoss(TestCase):
@@ -62,4 +63,57 @@ class TestFocalHeatmapLoss(TestCase):
             torch.allclose(
                 loss(fake_pred, fake_label, fake_weight),
                 torch.tensor(5.8062),
+                atol=1e-4))
+
+
+class TestKeypointMSELoss(TestCase):
+
+    def test_loss(self):
+
+        # test loss w/o target_weight and without mask
+        loss = KeypointMSELoss(
+            use_target_weight=False, skip_empty_channel=False)
+
+        fake_pred = torch.zeros((1, 4, 4, 4))
+        fake_label = torch.zeros((1, 4, 4, 4))
+
+        self.assertTrue(
+            torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.)))
+
+        fake_pred = torch.ones((1, 4, 4, 4)) * 0.5
+        fake_label = torch.ones((1, 4, 4, 4)) * 0.5
+        self.assertTrue(
+            torch.allclose(
+                loss(fake_pred, fake_label), torch.tensor(0.), atol=1e-4))
+
+        # test loss w/ target_weight and without mask
+        loss = KeypointMSELoss(
+            use_target_weight=True, skip_empty_channel=False)
+
+        fake_weight = torch.ones((1, 4)).float()
+        self.assertTrue(
+            torch.allclose(
+                loss(fake_pred, fake_label, fake_weight),
+                torch.tensor(0.),
+                atol=1e-4))
+
+        # test loss w/ target_weight and with mask
+        loss = KeypointMSELoss(
+            use_target_weight=True, skip_empty_channel=False)
+
+        fake_mask = torch.ones((1, 1, 4, 4)).float()
+        self.assertTrue(
+            torch.allclose(
+                loss(fake_pred, fake_label, fake_weight, fake_mask),
+                torch.tensor(0.),
+                atol=1e-4))
+
+        # test loss w/ target_weight and skip empty channels
+        loss = KeypointMSELoss(use_target_weight=True, skip_empty_channel=True)
+
+        fake_mask = torch.ones((1, 1, 4, 4)).float()
+        self.assertTrue(
+            torch.allclose(
+                loss(fake_pred, fake_label, fake_weight, fake_mask),
+                torch.tensor(0.),
                 atol=1e-4))

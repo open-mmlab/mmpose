@@ -10,6 +10,7 @@ MMPose supported datasets:
 - [AFLW](#aflw-dataset) \[ [Homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/) \]
 - [COFW](#cofw-dataset) \[ [Homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/) \]
 - [COCO-WholeBody-Face](#coco-wholebody-face) \[ [Homepage](https://github.com/jin-s13/COCO-WholeBody/) \]
+- [LaPa](#lapa-dataset) \[ [Homepage](https://github.com/JDAI-CV/lapa-dataset) \]
 
 ## 300W Dataset
 
@@ -325,3 +326,59 @@ mmpose
 Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) to support COCO-WholeBody evaluation:
 
 `pip install xtcocotools`
+
+## LaPa
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://aaai.org/ojs/index.php/AAAI/article/view/6832/6686">LaPa (AAAI'2020)</a></summary>
+
+```bibtex
+@inproceedings{liu2020new,
+  title={A New Dataset and Boundary-Attention Semantic Segmentation for Face Parsing.},
+  author={Liu, Yinglu and Shi, Hailin and Shen, Hao and Si, Yue and Wang, Xiaobo and Mei, Tao},
+  booktitle={AAAI},
+  pages={11637--11644},
+  year={2020}
+}
+```
+
+</details>
+
+<div align="center">
+  <img src="https://github.com/lucia123/lapa-dataset/raw/master/sample.png" height="200px">
+</div>
+
+For [LaPa](https://github.com/JDAI-CV/lapa-dataset) dataset, images can be downloaded from [their github page](https://github.com/JDAI-CV/lapa-dataset).
+
+Download and extract them under $MMPOSE/data, and use our `tools/dataset_converters/lapa2coco.py` to make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── LaPa
+        │-- annotations
+        │   │-- lapa_train.json
+        │   |-- lapa_val.json
+        │   |-- lapa_test.json
+        |   |-- lapa_trainval.json
+        │-- train
+        │   │-- images
+        │   │-- labels
+        │   │-- landmarks
+        │-- val
+        │   │-- images
+        │   │-- labels
+        │   │-- landmarks
+        `-- test
+        │   │-- images
+        │   │-- labels
+        │   │-- landmarks
+
+```

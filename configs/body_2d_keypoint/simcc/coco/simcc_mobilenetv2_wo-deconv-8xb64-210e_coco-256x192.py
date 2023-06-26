@@ -51,7 +51,7 @@ model = dict(
         in_channels=1280,
         out_channels=17,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=tuple([s // 32 for s in codec['input_size']]),
         simcc_split_ratio=codec['simcc_split_ratio'],
         deconv_out_channels=None,
         loss=dict(type='KLDiscretLoss', use_target_weight=True),

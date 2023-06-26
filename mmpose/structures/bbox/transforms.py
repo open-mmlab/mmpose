@@ -111,7 +111,7 @@ def bbox_xywh2cs(bbox: np.ndarray,
 def bbox_cs2xyxy(center: np.ndarray,
                  scale: np.ndarray,
                  padding: float = 1.) -> np.ndarray:
-    """Transform the bbox format from (center, scale) to (x,y,w,h).
+    """Transform the bbox format from (center, scale) to (x1,y1,x2,y2).
 
     Args:
         center (ndarray): BBox center (x, y) in shape (2,) or (n, 2)
@@ -120,7 +120,7 @@ def bbox_cs2xyxy(center: np.ndarray,
             Default: 1.0
 
     Returns:
-        ndarray[float32]: BBox (x, y, w, h) in shape (4, ) or (n, 4)
+        ndarray[float32]: BBox (x1, y1, x2, y2) in shape (4, ) or (n, 4)
     """
 
     dim = center.ndim
