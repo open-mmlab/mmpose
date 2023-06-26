@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from mmcv.cnn.bricks import DropPath
 from mmengine.model import BaseModule, constant_init
-from timm.models.layers import trunc_normal_
+from mmengine.model.weight_init import trunc_normal_
 
 from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
