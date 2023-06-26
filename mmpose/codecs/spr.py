@@ -131,7 +131,7 @@ class SPR(BaseKeypointCodec):
         Returns:
             np.ndarray: Heatmap weight array in the same shape with heatmaps
         """
-        heatmap_weights = np.ones(heatmaps.shape) * bg_weight
+        heatmap_weights = np.ones(heatmaps.shape, dtype=np.float32) * bg_weight
         heatmap_weights[heatmaps > 0] = fg_weight
         return heatmap_weights
 
