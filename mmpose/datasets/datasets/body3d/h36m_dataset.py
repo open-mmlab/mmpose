@@ -260,10 +260,12 @@ class Human36mDataset(BaseMocapDataset):
         if self.factor_file:
             with get_local_path(self.factor_file) as local_path:
                 factors = np.load(local_path).astype(np.float32)
-            assert factors.shape[0] == kpts_3d.shape[0]
-            for idx, frame_ids in enumerate(self.sequence_indices):
-                factor = factors[frame_ids].astype(np.float32)
-                instance_list[idx].update({'factor': factor})
+        else:
+            factors = np.zeros((kpts_3d.shape[0], ), dtype=np.float32)
+        assert factors.shape[0] == kpts_3d.shape[0]
+        for idx, frame_ids in enumerate(self.sequence_indices):
+            factor = factors[frame_ids].astype(np.float32)
+            instance_list[idx].update({'factor': factor})
 
         return instance_list, image_list
 

@@ -961,7 +961,7 @@ class GenerateTarget(BaseTransform):
             # into results.
             auxiliary_encode_kwargs = {
                 key: results[key]
-                for key in self.encoder.auxiliary_encode_keys if key in results
+                for key in self.encoder.auxiliary_encode_keys
             }
             encoded = self.encoder.encode(
                 keypoints=keypoints,
@@ -973,7 +973,7 @@ class GenerateTarget(BaseTransform):
             for _encoder in self.encoder:
                 auxiliary_encode_kwargs = {
                     key: results[key]
-                    for key in _encoder.auxiliary_encode_keys if key in results
+                    for key in _encoder.auxiliary_encode_keys
                 }
                 encoded_list.append(
                     _encoder.encode(

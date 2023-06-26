@@ -39,6 +39,7 @@ class TestMonoPoseLifting(TestCase):
         camera_param = self.get_camera_param(
             'S1/S1_Directions_1.54138969/S1_Directions_1.54138969_000001.jpg',
             camera_param)
+        factor = 0.1 + 5 * np.random.rand(1, )
 
         self.data = dict(
             keypoints=keypoints,
@@ -46,6 +47,7 @@ class TestMonoPoseLifting(TestCase):
             lifting_target=lifting_target,
             lifting_target_visible=lifting_target_visible,
             camera_param=camera_param,
+            factor=factor,
             encoded_wo_sigma=encoded_wo_sigma)
 
     def test_build(self):
@@ -58,11 +60,12 @@ class TestMonoPoseLifting(TestCase):
         lifting_target = self.data['lifting_target']
         lifting_target_visible = self.data['lifting_target_visible']
         camera_param = self.data['camera_param']
+        factor = self.data['factor']
 
         # test default settings
         codec = self.build_pose_lifting_label()
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
-                               lifting_target_visible, camera_param)
+                               lifting_target_visible, camera_param, factor)
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))
@@ -78,7 +81,7 @@ class TestMonoPoseLifting(TestCase):
         # test concatenating visibility
         codec = self.build_pose_lifting_label(concat_vis=True)
         encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
-                               lifting_target_visible, camera_param)
+                               lifting_target_visible, camera_param, factor)
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 3))
         self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))

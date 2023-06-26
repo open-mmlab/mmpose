@@ -71,6 +71,8 @@ class MonoPoseLifting(BaseKeypointCodec):
             lifting_target_visible (np.ndarray, optional): Target coordinate in
                 shape (T, K, ).
             camera_param (dict, optional): The camera parameter dictionary.
+            factor (np.ndarray, optional): The factor mapping camera and image
+                  coordinate in shape (T, ).
 
         Returns:
             encoded (dict): Contains the following items:
@@ -78,7 +80,7 @@ class MonoPoseLifting(BaseKeypointCodec):
                 - keypoint_labels (np.ndarray): The processed keypoints in
                   shape like (N, K, D).
                 - keypoint_labels_visible (np.ndarray): The processed
-                  keypoints' weights in shape (N, K, ) or (N-1, K, ).
+                  keypoints' weights in shape (N, K, ) or (N, K-1, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
@@ -86,7 +88,7 @@ class MonoPoseLifting(BaseKeypointCodec):
                 - trajectory_weights (np.ndarray): The trajectory weights in
                   shape (K, ).
                 - factor (np.ndarray): The factor mapping camera and image
-                  coordinate in shape (N, 1).
+                  coordinate in shape (T, 1).
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
@@ -132,7 +134,7 @@ class MonoPoseLifting(BaseKeypointCodec):
             ..., :, :] - lifting_target_label[...,
                                               self.root_index:self.root_index +
                                               1, :]
-        if factor is None:
+        if factor is None or factor[0] == 0:
             factor = factor_
         if factor.ndim == 1:
             factor = factor[:, None]
