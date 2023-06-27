@@ -144,6 +144,35 @@ class TestVideoPoseLifting(TestCase):
                 encoded['camera_param']['f'],
                 atol=4.))
 
+        # test with multiple targets
+        keypoints = (0.1 + 0.8 * np.random.rand(2, 17, 2)) * [192, 256]
+        keypoints = np.round(keypoints).astype(np.float32)
+        keypoints_visible = np.random.randint(2, size=(2, 17))
+        lifting_target = (0.1 + 0.8 * np.random.rand(2, 17, 3))
+        lifting_target_visible = np.random.randint(
+            2, size=(
+                2,
+                17,
+            ))
+        codec = self.build_pose_lifting_label()
+        encoded = codec.encode(keypoints, keypoints_visible, lifting_target,
+                               lifting_target_visible, camera_param)
+
+        self.assertEqual(encoded['keypoint_labels'].shape, (2, 17, 2))
+        self.assertEqual(encoded['lifting_target_label'].shape, (2, 17, 3))
+        self.assertEqual(encoded['lifting_target_weights'].shape, (
+            2,
+            17,
+        ))
+        self.assertEqual(encoded['trajectory_weights'].shape, (
+            2,
+            17,
+        ))
+        self.assertEqual(encoded['target_root'].shape, (
+            2,
+            3,
+        ))
+
     def test_decode(self):
         lifting_target = self.data['lifting_target']
         encoded_wo_sigma = self.data['encoded_wo_sigma']

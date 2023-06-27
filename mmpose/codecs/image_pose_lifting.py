@@ -138,7 +138,8 @@ class ImagePoseLifting(BaseKeypointCodec):
             f'Got invalid joint shape {lifting_target.shape}'
 
         root = lifting_target[..., self.root_index, :]
-        lifting_target_label = lifting_target - root[:, None]
+        lifting_target_label = lifting_target - lifting_target[
+            ..., self.root_index:self.root_index + 1, :]
 
         if self.remove_root:
             lifting_target_label = np.delete(

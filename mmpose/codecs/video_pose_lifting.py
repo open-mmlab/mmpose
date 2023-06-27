@@ -138,7 +138,8 @@ class VideoPoseLifting(BaseKeypointCodec):
                 f'Got invalid joint shape {lifting_target.shape}'
 
             root = lifting_target[..., self.root_index, :]
-            lifting_target_label = lifting_target_label - root[:, None]
+            lifting_target_label -= lifting_target_label[
+                ..., self.root_index:self.root_index + 1, :]
             encoded['target_root'] = root
 
             if self.remove_root:
