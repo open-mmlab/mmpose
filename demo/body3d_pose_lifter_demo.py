@@ -234,7 +234,6 @@ def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
 
         pred_instances = pose_lift_res.pred_instances
         keypoints = pred_instances.keypoints
-        # print(keypoints)
         keypoint_scores = pred_instances.keypoint_scores
         if keypoint_scores.ndim == 3:
             keypoint_scores = np.squeeze(keypoint_scores, axis=1)
@@ -260,9 +259,8 @@ def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
     pred_3d_data_samples = merge_data_samples(pose_lift_results)
     det_data_sample = merge_data_samples(pose_est_results)
 
-    num_instances = args.num_instances
-    if num_instances < 0:
-        num_instances = len(pose_lift_results)
+    if args.num_instances < 0:
+        args.num_instances = len(pose_lift_results)
 
     # Visualization
     if visualizer is not None:
@@ -275,7 +273,7 @@ def get_pose_lift_results(args, visualizer, pose_lifter, pose_est_results_list,
             show=args.show,
             draw_bbox=True,
             kpt_thr=args.kpt_thr,
-            num_instances=num_instances,
+            num_instances=args.num_instances,
             wait_time=args.show_interval)
 
     return pred_3d_data_samples.get('pred_instances', None)
