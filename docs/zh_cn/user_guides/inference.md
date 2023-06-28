@@ -89,6 +89,17 @@ python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' \
 
 - 摄像头（在这种情况下，输入参数应该设置为`webcam`或`webcam:{CAMERA_ID}`）
 
+当输入对应于多个图像时，例如输入为**视频**或**文件夹**路径时，推理生成器必须被遍历，以便推理器对视频/文件夹中的所有帧/图像进行推理。以下是一个示例：
+
+```python
+folder_path = 'tests/data/coco'
+
+result_generator = inferencer(folder_path, show=True)
+results = [result for result in result_generator]
+```
+
+在这个示例中，`inferencer` 接受 `folder_path` 作为输入，并返回一个生成器对象（`result_generator`），用于生成推理结果。通过遍历 `result_generator` 并将每个结果存储在 `results` 列表中，您可以获得视频/文件夹中所有帧/图像的推理结果。
+
 ### 自定义姿态估计模型
 
 `MMPoseInferencer`提供了几种可用于自定义所使用的模型的方法：
