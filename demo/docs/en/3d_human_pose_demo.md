@@ -20,6 +20,7 @@ ${MMPOSE_CHECKPOINT_FILE_3D} \
 [--show] \
 [--rebase-keypoint-height] \
 [--norm-pose-2d] \
+[--num-instances] \
 [--output-root ${OUT_VIDEO_ROOT}] \
 [--save-predictions]
 [--save-predictions] \
