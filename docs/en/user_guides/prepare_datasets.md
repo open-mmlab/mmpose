@@ -160,7 +160,7 @@ The heatmap target will be visualized together if it is generated in the pipelin
 
 By using [OpenDataLab](https://opendatalab.com/), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
 
-If you use MIM to download, make sure that the version is greater than v0.3.8. You can use the following command to update:
+If you use MIM to download, make sure that the version is greater than v0.3.8. You can use the following command to update, install, login and download the dataset:
 
 ```shell
 # upgrade your MIM

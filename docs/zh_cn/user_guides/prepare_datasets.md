@@ -1,18 +1,18 @@
 # 准备数据集
 
-In this document, we will give a guide on the process of preparing datasets for the MMPose. Various aspects of dataset preparation will be discussed, including using built-in datasets, creating custom datasets, combining datasets for training, browsing and downloading the datasets.
+在这份文档将指导如何为 MMPose 准备数据集，包括使用内置数据集、创建自定义数据集、结合数据集进行训练、浏览和下载数据集。
 
-## Use built-in datasets
+## 使用内置数据集
 
-**Step 1**: Prepare Data
+**步骤一**: 准备数据
 
-MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/latest/dataset_zoo.html). To properly prepare your data, please follow the guidelines associated with your chosen dataset.
+MMPose 支持多种任务和相应的数据集。你可以在 [数据集仓库](https://mmpose.readthedocs.io/en/latest/dataset_zoo.html) 中找到它们。为了正确准备你的数据，请按照你选择的数据集的指南进行操作。
 
-**Step 2**: Configure Dataset Settings in the Config File
+**步骤二**: 在配置文件中进行数据集设置
 
-Before training or evaluating models, you must configure the dataset settings. Take [`td-hm_hrnet-w32_8xb64-210e_coco-256x192.py`](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) for example, which can be used to train or evaluate the HRNet pose estimator on COCO dataset. We will go through the dataset configuration.
+在开始训练或评估模型之前，你必须配置数据集设置。以 [`td-hm_hrnet-w32_8xb64-210e_coco-256x192.py`](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) 为例，它可以用于在 COCO 数据集上训练或评估 HRNet 姿态估计器。下面我们浏览一下数据集配置：
 
-- Basic Dataset Arguments
+- 基础数据集参数
 
   ```python
   # base dataset settings
@@ -21,11 +21,11 @@ Before training or evaluating models, you must configure the dataset settings. T
   data_root = 'data/coco/'
   ```
 
-  - `dataset_type` specifies the class name of the dataset. Users can refer to [Datasets APIs](https://mmpose.readthedocs.io/en/latest/api.html#datasets) to find the class name of their desired dataset.
-  - `data_mode` determines the output format of the dataset, with two options available: `'topdown'` and `'bottomup'`. If `data_mode='topdown'`, the data element represents a single instance with its pose; otherwise, the data element is an entire image containing multiple instances and poses.
-  - `data_root` designates the root directory of the dataset.
+  - `dataset_type` 指定数据集的类名。用户可以参考 [数据集 API](https://mmpose.readthedocs.io/en/latest/api.html#datasets) 来找到他们想要的数据集的类名。
+  - `data_mode` 决定了数据集的输出格式，有两个选项可用：`'topdown'` 和 `'bottomup'`。如果 `data_mode='topdown'`，数据元素表示一个实例及其姿态；否则，一个数据元素代表一张图像，包含多个实例和姿态。
+  - `data_root` 指定数据集的根目录。
 
-- Data Processing Pipelines
+- 数据处理流程
 
   ```python
   # pipelines
@@ -47,9 +47,9 @@ Before training or evaluating models, you must configure the dataset settings. T
   ]
   ```
 
-  The `train_pipeline` and `val_pipeline` define the steps to process data elements during the training and evaluation phases, respectively. In addition to loading images and packing inputs, the `train_pipeline` primarily consists of data augmentation techniques and target generator, while the `val_pipeline` focuses on transforming data elements into a unified format.
+  `train_pipeline` 和 `val_pipeline` 分别定义了训练和评估阶段处理数据元素的步骤。除了加载图像和打包输入之外，`train_pipeline` 主要包含数据增强技术和目标生成器，而 `val_pipeline` 则专注于将数据元素转换为统一的格式。
 
-- Data Loaders
+- 数据加载器
 
   ```python
   # data loaders
@@ -86,17 +86,17 @@ Before training or evaluating models, you must configure the dataset settings. T
   test_dataloader = val_dataloader
   ```
 
-  This section is crucial for configuring the dataset in the config file. In addition to the basic dataset arguments and pipelines discussed earlier, other important parameters are defined here. The `batch_size` determines the batch size per GPU; the `ann_file` indicates the annotation file for the dataset; and `data_prefix` specifies the image folder. The `bbox_file`, which supplies detected bounding box information, is only used in the val/test data loader for top-down datasets.
+  这个部分是配置数据集的关键。除了前面讨论过的基础数据集参数和数据处理流程之外，这里还定义了其他重要的参数。`batch_size` 决定了每个 GPU 的 batch size；`ann_file` 指定了数据集的注释文件；`data_prefix` 指定了图像文件夹。`bbox_file` 仅在 top-down 数据集的 val/test 数据加载器中使用，用于提供检测到的边界框信息。
 
-We recommend copying the dataset configuration from provided config files that use the same dataset, rather than writing it from scratch, in order to minimize potential errors. By doing so, users can simply make the necessary modifications as needed, ensuring a more reliable and efficient setup process.
+我们推荐从使用相同数据集的配置文件中复制数据集配置，而不是从头开始编写，以最小化潜在的错误。通过这样做，用户可以根据需要进行必要的修改，从而确保更可靠和高效的设置过程。
 
-## Use a custom dataset
+## 使用自定义数据集
 
-The [Customize Datasets](../advanced_guides/customize_datasets.md) guide provides detailed information on how to build a custom dataset. In this section, we will highlight some key tips for using and configuring custom datasets.
+[自定义数据集](../advanced_guides/customize_datasets.md) 指南提供了如何构建自定义数据集的详细信息。在本节中，我们将强调一些使用和配置自定义数据集的关键技巧。
 
-- Determine the dataset class name. If you reorganize your dataset into the COCO format, you can simply use `CocoDataset` as the value for `dataset_type`. Otherwise, you will need to use the name of the custom dataset class you added.
+- 确定数据集类名。如果你将数据集重组为 COCO 格式，你可以简单地使用 `CocoDataset` 作为 `dataset_type` 的值。否则，你将需要使用你添加的自定义数据集类的名称。
 
-- Specify the meta information config file. MMPose 1.x employs a different strategy for specifying meta information compared to MMPose 0.x. In MMPose 1.x, users can specify the meta information config file as follows:
+- 指定元信息配置文件。MMPose 1.x 采用了与 MMPose 0.x 不同的策略来指定元信息。在 MMPose 1.x 中，用户可以按照以下方式指定元信息配置文件：
 
   ```python
   train_dataloader = dict(
@@ -112,55 +112,55 @@ The [Customize Datasets](../advanced_guides/customize_datasets.md) guide provide
   )
   ```
 
-  Note that the argument `metainfo` must be specified in the val/test data loaders as well.
+  注意，`metainfo` 参数必须在 val/test 数据加载器中指定。
 
-## Use mixed datasets for training
+## 使用混合数据集进行训练
 
-MMPose offers a convenient and versatile solution for training with mixed datasets. Please refer to [Use Mixed Datasets for Training](./mixed_datasets.md).
+MMPose 提供了一个方便且多功能的解决方案，用于训练混合数据集。请参考[混合数据集训练](./mixed_datasets.md)。
 
-## Browse dataset
+## 浏览数据集
 
-`tools/analysis_tools/browse_dataset.py` helps the user to browse a pose dataset visually, or save the image to a designated directory.
+`tools/analysis_tools/browse_dataset.py` 帮助用户可视化地浏览姿态数据集，或将图像保存到指定的目录。
 
 ```shell
 python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
 ```
 
-| ARGS                             | Description                                                                                                                                          |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CONFIG`                         | The path to the config file.                                                                                                                         |
-| `--output-dir OUTPUT_DIR`        | The target folder to save visualization results. If not specified, the visualization results will not be saved.                                      |
-| `--not-show`                     | Do not show the visualization results in an external window.                                                                                         |
-| `--phase {train, val, test}`     | Options for dataset.                                                                                                                                 |
-| `--mode {original, transformed}` | Specify the type of visualized images. `original` means to show images without pre-processing; `transformed` means to show images are pre-processed. |
-| `--show-interval SHOW_INTERVAL`  | Time interval between visualizing two images.                                                                                                        |
+| ARGS                             | Description                                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `CONFIG`                         | 配置文件的路径                                                                                             |
+| `--output-dir OUTPUT_DIR`        | 保存可视化结果的目标文件夹。如果不指定，可视化的结果将不会被保存                                           |
+| `--not-show`                     | 不适用外部窗口显示可视化的结果                                                                             |
+| `--phase {train, val, test}`     | 数据集选项                                                                                                 |
+| `--mode {original, transformed}` | 指定可视化图片类型。 `original` 为不使用数据增强的原始图片及标注可视化; `transformed` 为经过增强后的可视化 |
+| `--show-interval SHOW_INTERVAL`  | 显示图片的时间间隔                                                                                         |
 
-For instance, users who want to visualize images and annotations in COCO dataset use:
+例如，用户想要可视化 COCO 数据集中的图像和标注，可以使用：
 
 ```shell
 python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-e210_coco-256x192.py --mode original
 ```
 
-The bounding boxes and keypoints will be plotted on the original image. Following is an example:
+检测框和关键点将被绘制在原始图像上。下面是一个例子：
 ![original_coco](https://user-images.githubusercontent.com/26127467/187383698-7e518f21-b4cc-4712-9e97-99ddd8f0e437.jpg)
 
-The original images need to be processed before being fed into models. To visualize pre-processed images and annotations, users need to modify the argument `mode`  to `transformed`. For example:
+原始图像在被输入模型之前需要被处理。为了可视化预处理后的图像和标注，用户需要将参数 `mode` 修改为 `transformed`。例如：
 
 ```shell
 python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-e210_coco-256x192.py --mode transformed
 ```
 
-Here is a processed sample
+这是一个处理后的样本：
 
 ![transformed_coco](https://user-images.githubusercontent.com/26127467/187386652-bd47335d-797c-4e8c-b823-2a4915f9812f.jpg)
 
-The heatmap target will be visualized together if it is generated in the pipeline.
+热图目标将与之一起可视化，如果它是在 pipeline 中生成的。
 
-## Download dataset via MIM
+## 用 MIM 下载数据集
 
-By using [OpenDataLab](https://opendatalab.com/), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
+通过使用 [OpenDataLab](https://opendatalab.com/)，您可以直接下载开源数据集。通过平台的搜索功能，您可以快速轻松地找到他们正在寻找的数据集。使用平台上的格式化数据集，您可以高效地跨数据集执行任务。
 
-If you use MIM to download, make sure that the version is greater than v0.3.8. You can use the following command to update:
+如果您使用 MIM 下载，请确保版本大于 v0.3.8。您可以使用以下命令进行更新、安装、登录和数据集下载：
 
 ```shell
 # upgrade your MIM
@@ -175,11 +175,11 @@ odl login
 mim download mmpose --dataset coco2017
 ```
 
-### Supported datasets
+### 已支持的数据集
 
-Here is the list of supported datasets, we will continue to update it in the future.
+下面是支持的数据集列表，更多数据集将在之后持续更新：
 
-#### Body
+#### 人体数据集
 
 | Dataset name  | Download command                          |
 | ------------- | ----------------------------------------- |
@@ -188,7 +188,7 @@ Here is the list of supported datasets, we will continue to update it in the fut
 | AI Challenger | `mim download mmpose --dataset aic`       |
 | CrowdPose     | `mim download mmpose --dataset crowdpose` |
 
-#### Face
+#### 人脸数据集
 
 | Dataset name | Download command                     |
 | ------------ | ------------------------------------ |
@@ -196,7 +196,7 @@ Here is the list of supported datasets, we will continue to update it in the fut
 | 300W         | `mim download mmpose --dataset 300w` |
 | WFLW         | `mim download mmpose --dataset wflw` |
 
-#### Hand
+#### 手部数据集
 
 | Dataset name | Download command                           |
 | ------------ | ------------------------------------------ |
@@ -204,18 +204,18 @@ Here is the list of supported datasets, we will continue to update it in the fut
 | FreiHand     | `mim download mmpose --dataset freihand`   |
 | HaGRID       | `mim download mmpose --dataset hagrid`     |
 
-#### Whole Body
+#### 全身数据集
 
 | Dataset name | Download command                      |
 | ------------ | ------------------------------------- |
 | Halpe        | `mim download mmpose --dataset halpe` |
 
-#### Animal
+#### 动物数据集
 
 | Dataset name | Download command                      |
 | ------------ | ------------------------------------- |
 | AP-10K       | `mim download mmpose --dataset ap10k` |
 
-#### Fashion
+#### 服装数据集
 
 Coming Soon
