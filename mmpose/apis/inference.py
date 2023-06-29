@@ -156,7 +156,7 @@ def inference_topdown(model: nn.Module,
         init_default_scope(scope)
     pipeline = Compose(model.cfg.test_dataloader.dataset.pipeline)
 
-    if bboxes is None:
+    if bboxes is None or len(bboxes) == 0:
         # get bbox from the image size
         if isinstance(img, str):
             w, h = Image.open(img).size
