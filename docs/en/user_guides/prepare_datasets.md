@@ -1,6 +1,6 @@
 # Prepare Datasets
 
-In this document, we will give a guide on the process of preparing datasets for the MMPose. Various aspects of dataset preparation will be discussed, including using built-in datasets, creating custom datasets, combining datasets for training, and browsing the dataset.
+In this document, we will give a guide on the process of preparing datasets for the MMPose. Various aspects of dataset preparation will be discussed, including using built-in datasets, creating custom datasets, combining datasets for training, browsing and downloading the datasets.
 
 ## Use built-in datasets
 
@@ -155,3 +155,67 @@ Here is a processed sample
 ![transformed_coco](https://user-images.githubusercontent.com/26127467/187386652-bd47335d-797c-4e8c-b823-2a4915f9812f.jpg)
 
 The heatmap target will be visualized together if it is generated in the pipeline.
+
+## Download dataset via MIM
+
+By using [OpenDataLab](https://opendatalab.com/), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
+
+If you use MIM to download, make sure that the version is greater than v0.3.8. You can use the following command to update:
+
+```shell
+# upgrade your MIM
+pip install -U openmim
+
+# install OpenDataLab CLI tools
+pip install -U opendatalab
+# log in OpenDataLab, registry
+odl login
+
+# download coco2017 and preprocess by MIM
+mim download mmpose --dataset coco2017
+```
+
+### Supported datasets
+
+Here is the list of supported datasets, we will continue to update it in the future.
+
+#### Body
+
+| Dataset name  | Download command                          |
+| ------------- | ----------------------------------------- |
+| COCO 2017     | `mim download mmpose --dataset coco2017`  |
+| MPII          | `mim download mmpose --dataset mpii`      |
+| AI Challenger | `mim download mmpose --dataset aic`       |
+| CrowdPose     | `mim download mmpose --dataset crowdpose` |
+
+#### Face
+
+| Dataset name | Download command                     |
+| ------------ | ------------------------------------ |
+| LaPa         | `mim download mmpose --dataset lapa` |
+| 300W         | `mim download mmpose --dataset 300w` |
+| WFLW         | `mim download mmpose --dataset wflw` |
+
+#### Hand
+
+| Dataset name | Download command                           |
+| ------------ | ------------------------------------------ |
+| OneHand10K   | `mim download mmpose --dataset onehand10k` |
+| FreiHand     | `mim download mmpose --dataset freihand`   |
+| HaGRID       | `mim download mmpose --dataset hagrid`     |
+
+#### Whole Body
+
+| Dataset name | Download command                      |
+| ------------ | ------------------------------------- |
+| Halpe        | `mim download mmpose --dataset halpe` |
+
+#### Animal
+
+| Dataset name | Download command                      |
+| ------------ | ------------------------------------- |
+| AP-10K       | `mim download mmpose --dataset ap10k` |
+
+#### Fashion
+
+Coming Soon

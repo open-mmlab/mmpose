@@ -1,264 +1,221 @@
 # 准备数据集
 
-MMPose 目前已支持了多个任务和相应的数据集。您可以在 [数据集](https://mmpose.readthedocs.io/zh_CN/latest/dataset_zoo.html) 找到它们。请按照相应的指南准备数据。
+In this document, we will give a guide on the process of preparing datasets for the MMPose. Various aspects of dataset preparation will be discussed, including using built-in datasets, creating custom datasets, combining datasets for training, browsing and downloading the datasets.
 
-<!-- TOC -->
+## Use built-in datasets
 
-- [自定义数据集-将数据组织为 COCO 格式](#自定义数据集-将数据组织为-coco-格式)
-- [创建自定义数据集的元信息文件](#创建自定义数据集的元信息文件)
-- [创建自定义数据集类](#创建自定义数据集类)
-- [创建自定义配置文件](#创建自定义配置文件)
-- [数据集封装](#数据集封装)
+**Step 1**: Prepare Data
 
-<!-- TOC -->
+MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/latest/dataset_zoo.html). To properly prepare your data, please follow the guidelines associated with your chosen dataset.
 
-## 自定义数据集-将数据组织为 COCO 格式
+**Step 2**: Configure Dataset Settings in the Config File
 
-最简单的使用自定义数据集的方法是将您的注释格式转换为 COCO 数据集格式。
+Before training or evaluating models, you must configure the dataset settings. Take [`td-hm_hrnet-w32_8xb64-210e_coco-256x192.py`](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) for example, which can be used to train or evaluate the HRNet pose estimator on COCO dataset. We will go through the dataset configuration.
 
-COCO 格式的注释 JSON 文件具有以下必要键：
+- Basic Dataset Arguments
 
-```python
-'images': [
-    {
-        'file_name': '000000001268.jpg',
-        'height': 427,
-        'width': 640,
-        'id': 1268
-    },
-    ...
-],
-'annotations': [
-    {
-        'segmentation': [[426.36,
-            ...
-            424.34,
-            223.3]],
-        'keypoints': [0,0,0,
-            0,0,0,
-            0,0,0,
-            427,220,2,
-            443,222,2,
-            414,228,2,
-            449,232,2,
-            408,248,1,
-            454,261,2,
-            0,0,0,
-            0,0,0,
-            411,287,2,
-            431,287,2,
-            0,0,0,
-            458,265,2,
-            0,0,0,
-            466,300,1],
-        'num_keypoints': 10,
-        'area': 3894.5826,
-        'iscrowd': 0,
-        'image_id': 1268,
-        'bbox': [402.34, 205.02, 65.26, 88.45],
-        'category_id': 1,
-        'id': 215218
-    },
-    ...
-],
-'categories': [
-    {'id': 1, 'name': 'person'},
- ]
+  ```python
+  # base dataset settings
+  dataset_type = 'CocoDataset'
+  data_mode = 'topdown'
+  data_root = 'data/coco/'
+  ```
+
+  - `dataset_type` specifies the class name of the dataset. Users can refer to [Datasets APIs](https://mmpose.readthedocs.io/en/latest/api.html#datasets) to find the class name of their desired dataset.
+  - `data_mode` determines the output format of the dataset, with two options available: `'topdown'` and `'bottomup'`. If `data_mode='topdown'`, the data element represents a single instance with its pose; otherwise, the data element is an entire image containing multiple instances and poses.
+  - `data_root` designates the root directory of the dataset.
+
+- Data Processing Pipelines
+
+  ```python
+  # pipelines
+  train_pipeline = [
+      dict(type='LoadImage'),
+      dict(type='GetBBoxCenterScale'),
+      dict(type='RandomFlip', direction='horizontal'),
+      dict(type='RandomHalfBody'),
+      dict(type='RandomBBoxTransform'),
+      dict(type='TopdownAffine', input_size=codec['input_size']),
+      dict(type='GenerateTarget', encoder=codec),
+      dict(type='PackPoseInputs')
+  ]
+  val_pipeline = [
+      dict(type='LoadImage'),
+      dict(type='GetBBoxCenterScale'),
+      dict(type='TopdownAffine', input_size=codec['input_size']),
+      dict(type='PackPoseInputs')
+  ]
+  ```
+
+  The `train_pipeline` and `val_pipeline` define the steps to process data elements during the training and evaluation phases, respectively. In addition to loading images and packing inputs, the `train_pipeline` primarily consists of data augmentation techniques and target generator, while the `val_pipeline` focuses on transforming data elements into a unified format.
+
+- Data Loaders
+
+  ```python
+  # data loaders
+  train_dataloader = dict(
+      batch_size=64,
+      num_workers=2,
+      persistent_workers=True,
+      sampler=dict(type='DefaultSampler', shuffle=True),
+      dataset=dict(
+          type=dataset_type,
+          data_root=data_root,
+          data_mode=data_mode,
+          ann_file='annotations/person_keypoints_train2017.json',
+          data_prefix=dict(img='train2017/'),
+          pipeline=train_pipeline,
+      ))
+  val_dataloader = dict(
+      batch_size=32,
+      num_workers=2,
+      persistent_workers=True,
+      drop_last=False,
+      sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+      dataset=dict(
+          type=dataset_type,
+          data_root=data_root,
+          data_mode=data_mode,
+          ann_file='annotations/person_keypoints_val2017.json',
+          bbox_file='data/coco/person_detection_results/'
+          'COCO_val2017_detections_AP_H_56_person.json',
+          data_prefix=dict(img='val2017/'),
+          test_mode=True,
+          pipeline=val_pipeline,
+      ))
+  test_dataloader = val_dataloader
+  ```
+
+  This section is crucial for configuring the dataset in the config file. In addition to the basic dataset arguments and pipelines discussed earlier, other important parameters are defined here. The `batch_size` determines the batch size per GPU; the `ann_file` indicates the annotation file for the dataset; and `data_prefix` specifies the image folder. The `bbox_file`, which supplies detected bounding box information, is only used in the val/test data loader for top-down datasets.
+
+We recommend copying the dataset configuration from provided config files that use the same dataset, rather than writing it from scratch, in order to minimize potential errors. By doing so, users can simply make the necessary modifications as needed, ensuring a more reliable and efficient setup process.
+
+## Use a custom dataset
+
+The [Customize Datasets](../advanced_guides/customize_datasets.md) guide provides detailed information on how to build a custom dataset. In this section, we will highlight some key tips for using and configuring custom datasets.
+
+- Determine the dataset class name. If you reorganize your dataset into the COCO format, you can simply use `CocoDataset` as the value for `dataset_type`. Otherwise, you will need to use the name of the custom dataset class you added.
+
+- Specify the meta information config file. MMPose 1.x employs a different strategy for specifying meta information compared to MMPose 0.x. In MMPose 1.x, users can specify the meta information config file as follows:
+
+  ```python
+  train_dataloader = dict(
+      ...
+      dataset=dict(
+          type=dataset_type,
+          data_root='root/of/your/train/data',
+          ann_file='path/to/your/train/json',
+          data_prefix=dict(img='path/to/your/train/img'),
+          # specify dataset meta information
+          metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
+          ...),
+  )
+  ```
+
+  Note that the argument `metainfo` must be specified in the val/test data loaders as well.
+
+## Use mixed datasets for training
+
+MMPose offers a convenient and versatile solution for training with mixed datasets. Please refer to [Use Mixed Datasets for Training](./mixed_datasets.md).
+
+## Browse dataset
+
+`tools/analysis_tools/browse_dataset.py` helps the user to browse a pose dataset visually, or save the image to a designated directory.
+
+```shell
+python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
 ```
 
-JSON 标注文件中有三个关键词是必需的：
+| ARGS                             | Description                                                                                                                                          |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG`                         | The path to the config file.                                                                                                                         |
+| `--output-dir OUTPUT_DIR`        | The target folder to save visualization results. If not specified, the visualization results will not be saved.                                      |
+| `--not-show`                     | Do not show the visualization results in an external window.                                                                                         |
+| `--phase {train, val, test}`     | Options for dataset.                                                                                                                                 |
+| `--mode {original, transformed}` | Specify the type of visualized images. `original` means to show images without pre-processing; `transformed` means to show images are pre-processed. |
+| `--show-interval SHOW_INTERVAL`  | Time interval between visualizing two images.                                                                                                        |
 
-- `images`：包含所有图像信息的列表，每个图像都有一个 `file_name`、`height`、`width` 和 `id` 键。
-- `annotations`：包含所有实例标注信息的列表，每个实例都有一个 `segmentation`、`keypoints`、`num_keypoints`、`area`、`iscrowd`、`image_id`、`bbox`、`category_id` 和 `id` 键。
-- `categories`：包含所有类别信息的列表，每个类别都有一个 `id` 和 `name` 键。以人体姿态估计为例，`id` 为 1，`name` 为 `person`。
+For instance, users who want to visualize images and annotations in COCO dataset use:
 
-如果您的数据集已经是 COCO 格式的，那么您可以直接使用 `CocoDataset` 类来读取该数据集。
-
-## 创建自定义数据集的元信息文件
-
-对于一个新的数据集而言，您需要创建一个新的数据集元信息文件。该文件包含了数据集的基本信息，如关键点个数、排列顺序、可视化颜色、骨架连接关系等。元信息文件通常存放在 `config/_base_/datasets/` 目录下，例如：
-
-```
-config/_base_/datasets/custom.py
-```
-
-元信息文件中需要包含以下信息：
-
-- `keypoint_info`：每个关键点的信息：
-  1. `name`: 关键点名称，必须是唯一的，例如 `nose`、`left_eye` 等。
-  2. `id`: 关键点 ID，必须是唯一的，从 0 开始。
-  3. `color`: 关键点可视化时的颜色，以 (\[B, G, R\]) 格式组织起来，用于可视化。
-  4. `type`: 关键点类型，可以是 `upper`、`lower` 或 \`\`，用于数据增强。
-  5. `swap`: 关键点交换关系，用于水平翻转数据增强。
-- `skeleton_info`：骨架连接关系，用于可视化。
-- `joint_weights`：每个关键点的权重，用于损失函数计算。
-- `sigma`：标准差，用于计算 OKS 分数，详细信息请参考 [keypoints-eval](https://cocodataset.org/#keypoints-eval)。
-
-下面是一个简化版本的元信息文件（[完整版](/configs/_base_/datasets/coco.py)）：
-
-```python
-dataset_info = dict(
-    dataset_name='coco',
-    paper_info=dict(
-        author='Lin, Tsung-Yi and Maire, Michael and '
-        'Belongie, Serge and Hays, James and '
-        'Perona, Pietro and Ramanan, Deva and '
-        r'Doll{\'a}r, Piotr and Zitnick, C Lawrence',
-        title='Microsoft coco: Common objects in context',
-        container='European conference on computer vision',
-        year='2014',
-        homepage='http://cocodataset.org/',
-    ),
-    keypoint_info={
-        0:
-        dict(name='nose', id=0, color=[51, 153, 255], type='upper', swap=''),
-        1:
-        dict(
-            name='left_eye',
-            id=1,
-            color=[51, 153, 255],
-            type='upper',
-            swap='right_eye'),
-        ...
-        16:
-        dict(
-            name='right_ankle',
-            id=16,
-            color=[255, 128, 0],
-            type='lower',
-            swap='left_ankle')
-    },
-    skeleton_info={
-        0:
-        dict(link=('left_ankle', 'left_knee'), id=0, color=[0, 255, 0]),
-        ...
-        18:
-        dict(
-            link=('right_ear', 'right_shoulder'), id=18, color=[51, 153, 255])
-    },
-    joint_weights=[
-        1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2, 1.2, 1.5,
-        1.5
-    ],
-    sigmas=[
-        0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
-        0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
-    ])
+```shell
+python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-e210_coco-256x192.py --mode original
 ```
 
-## 创建自定义数据集类
+The bounding boxes and keypoints will be plotted on the original image. Following is an example:
+![original_coco](https://user-images.githubusercontent.com/26127467/187383698-7e518f21-b4cc-4712-9e97-99ddd8f0e437.jpg)
 
-如果标注信息不是用 COCO 格式存储的，那么您需要创建一个新的数据集类。数据集类需要继承自 `BaseDataset` 类，并且需要按照以下步骤实现：
+The original images need to be processed before being fed into models. To visualize pre-processed images and annotations, users need to modify the argument `mode`  to `transformed`. For example:
 
-1. 在 `mmpose/datasets/datasets` 目录下找到该数据集符合的 package，如果没有符合的，则创建一个新的 package。
-
-2. 在该 package 下创建一个新的数据集类，在对应的注册器中进行注册：
-
-   ```python
-   from mmengine.dataset import BaseDataset
-   from mmpose.registry import DATASETS
-
-   @DATASETS.register_module(name='MyCustomDataset')
-   class MyCustomDataset(BaseDataset):
-   ```
-
-   如果未注册，你会在运行时遇到 `KeyError: 'XXXXX is not in the dataset registry'`。
-   关于 `mmengine.BaseDataset` 的更多信息，请参考 [这个文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)。
-
-3. 确保你在 package 的 `__init__.py` 中导入了该数据集类。
-
-4. 确保你在 `mmpose/datasets/__init__.py` 中导入了该 package。
-
-## 创建自定义配置文件
-
-在配置文件中，你需要修改跟数据集有关的部分，例如：
-
-```python
-...
-# 自定义数据集类
-dataset_type = 'MyCustomDataset' # or 'CocoDataset'
-
-train_dataloader = dict(
-    batch_size=2,
-    dataset=dict(
-        type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
-        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
-        ...),
-    )
-
-val_dataloader = dict(
-    batch_size=2,
-    dataset=dict(
-        type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
-        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
-        ...),
-    )
-
-test_dataloader = dict(
-    batch_size=2,
-    dataset=dict(
-        type=dataset_type,
-        data_root='root/of/your/test/data',
-        ann_file='path/to/your/test/json',
-        data_prefix=dict(img='path/to/your/test/img'),
-        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
-        ...),
-    )
-...
+```shell
+python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-e210_coco-256x192.py --mode transformed
 ```
 
-请确保所有的路径都是正确的。
+Here is a processed sample
 
-## 数据集封装
+![transformed_coco](https://user-images.githubusercontent.com/26127467/187386652-bd47335d-797c-4e8c-b823-2a4915f9812f.jpg)
 
-目前 [MMEngine](https://github.com/open-mmlab/mmengine) 支持以下数据集封装：
+The heatmap target will be visualized together if it is generated in the pipeline.
 
-- [ConcatDataset](https://mmengine.readthedocs.io/zh_CN/latest/advanced_tutorials/basedataset.html#concatdataset)
-- [RepeatDataset](https://mmengine.readthedocs.io/zh_CN/latest/advanced_tutorials/basedataset.html#repeatdataset)
+## Download dataset via MIM
 
-### CombinedDataset
+By using [OpenDataLab](https://opendatalab.com/), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
 
-MMPose 提供了一个 `CombinedDataset` 类，它可以将多个数据集封装成一个数据集。它的使用方法如下：
+If you use MIM to download, make sure that the version is greater than v0.3.8. You can use the following command to update:
 
-```python
-dataset_1 = dict(
-    type='dataset_type_1',
-    data_root='root/of/your/dataset1',
-    data_prefix=dict(img_path='path/to/your/img'),
-    ann_file='annotations/train.json',
-    pipeline=[
-        # 使用转换器将标注信息统一为需要的格式
-        converter_transform_1
-    ])
+```shell
+# upgrade your MIM
+pip install -U openmim
 
-dataset_2 = dict(
-    type='dataset_type_2',
-    data_root='root/of/your/dataset2',
-    data_prefix=dict(img_path='path/to/your/img'),
-    ann_file='annotations/train.json',
-    pipeline=[
-        converter_transform_2
-    ])
+# install OpenDataLab CLI tools
+pip install -U opendatalab
+# log in OpenDataLab, registry
+odl login
 
-shared_pipeline = [
-    LoadImage(),
-    ParseImage(),
-]
-
-combined_dataset = dict(
-    type='CombinedDataset',
-    metainfo=dict(from_file='path/to/your/metainfo'),
-    datasets=[dataset_1, dataset_2],
-    pipeline=shared_pipeline,
-)
+# download coco2017 and preprocess by MIM
+mim download mmpose --dataset coco2017
 ```
 
-- **合并数据集的元信息** 决定了标注格式，可以是子数据集的元信息，也可以是自定义的元信息。如果要自定义元信息，可以参考 [创建自定义数据集的元信息文件](#创建自定义数据集的元信息文件)。
-- **KeypointConverter** 用于将不同的标注格式转换成统一的格式。比如将关键点个数不同、关键点排列顺序不同的数据集进行合并。
-- 更详细的说明请前往进阶教程-[混合数据集训练](../advanced_guides/mixed_datasets.md)。
+### Supported datasets
+
+Here is the list of supported datasets, we will continue to update it in the future.
+
+#### Body
+
+| Dataset name  | Download command                          |
+| ------------- | ----------------------------------------- |
+| COCO 2017     | `mim download mmpose --dataset coco2017`  |
+| MPII          | `mim download mmpose --dataset mpii`      |
+| AI Challenger | `mim download mmpose --dataset aic`       |
+| CrowdPose     | `mim download mmpose --dataset crowdpose` |
+
+#### Face
+
+| Dataset name | Download command                     |
+| ------------ | ------------------------------------ |
+| LaPa         | `mim download mmpose --dataset lapa` |
+| 300W         | `mim download mmpose --dataset 300w` |
+| WFLW         | `mim download mmpose --dataset wflw` |
+
+#### Hand
+
+| Dataset name | Download command                           |
+| ------------ | ------------------------------------------ |
+| OneHand10K   | `mim download mmpose --dataset onehand10k` |
+| FreiHand     | `mim download mmpose --dataset freihand`   |
+| HaGRID       | `mim download mmpose --dataset hagrid`     |
+
+#### Whole Body
+
+| Dataset name | Download command                      |
+| ------------ | ------------------------------------- |
+| Halpe        | `mim download mmpose --dataset halpe` |
+
+#### Animal
+
+| Dataset name | Download command                      |
+| ------------ | ------------------------------------- |
+| AP-10K       | `mim download mmpose --dataset ap10k` |
+
+#### Fashion
+
+Coming Soon
