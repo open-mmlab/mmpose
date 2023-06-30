@@ -27,7 +27,7 @@ default_hooks = dict(
 
 # codec settings
 codec = dict(
-    type='MonoPoseLifting', num_keypoints=17, concat_vis=True, rootrel=True)
+    type='MotionBERTLabel', num_keypoints=17, concat_vis=True, rootrel=True)
 
 # model settings
 model = dict(
@@ -77,6 +77,8 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         ann_file='annotation_body3d/fps50/h36m_test.npz',
+        # ann_file='annotation_body3d/fps50/h36m_test_original.npz',
+        # factor_file='annotation_body3d/fps50/h36m_factors.npy',
         seq_len=1,
         multiple_target=243,
         seq_step=1,

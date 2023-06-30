@@ -5,11 +5,11 @@ from unittest import TestCase
 import numpy as np
 from mmengine.fileio import load
 
-from mmpose.codecs import MonoPoseLifting
+from mmpose.codecs import MotionBERTLabel
 from mmpose.registry import KEYPOINT_CODECS
 
 
-class TestMonoPoseLifting(TestCase):
+class TestMotionBERTLabel(TestCase):
 
     def get_camera_param(self, imgname, camera_param) -> dict:
         """Get camera parameters of a frame by its image name."""
@@ -19,7 +19,7 @@ class TestMonoPoseLifting(TestCase):
         return camera_param[(subj, camera)]
 
     def build_pose_lifting_label(self, **kwargs):
-        cfg = dict(type='MonoPoseLifting', num_keypoints=17)
+        cfg = dict(type='MotionBERTLabel', num_keypoints=17)
         cfg.update(kwargs)
         return KEYPOINT_CODECS.build(cfg)
 
@@ -52,7 +52,7 @@ class TestMonoPoseLifting(TestCase):
 
     def test_build(self):
         codec = self.build_pose_lifting_label()
-        self.assertIsInstance(codec, MonoPoseLifting)
+        self.assertIsInstance(codec, MotionBERTLabel)
 
     def test_encode(self):
         keypoints = self.data['keypoints']

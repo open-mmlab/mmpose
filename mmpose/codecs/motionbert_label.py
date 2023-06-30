@@ -11,8 +11,9 @@ from .utils import camera_to_image_coord
 
 
 @KEYPOINT_CODECS.register_module()
-class MonoPoseLifting(BaseKeypointCodec):
-    r"""Generate keypoint coordinates for pose lifter.
+class MotionBERTLabel(BaseKeypointCodec):
+    r"""Generate keypoint and label coordinates for `MotionBERT`_ by Zhu et al
+    (2022).
 
     Note:
 
@@ -31,6 +32,8 @@ class MonoPoseLifting(BaseKeypointCodec):
             Default: ``False``.
         concat_vis (bool): If true, concat the visibility item of keypoints.
             Default: ``False``.
+        rootrel (bool): If true, the root keypoint will be set to the
+            coordinate origin. Default: ``False``.
     """
 
     auxiliary_encode_keys = {
