@@ -61,16 +61,19 @@ class ImagePoseLifting(BaseKeypointCodec):
         self.reshape_keypoints = reshape_keypoints
         self.concat_vis = concat_vis
         if keypoints_mean is not None:
-            keypoints_mean = np.array(keypoints_mean).reshape(
-                1, num_keypoints, -1)
-            keypoints_std = np.array(keypoints_std).reshape(
-                1, num_keypoints, -1)
+            keypoints_mean = np.array(
+                keypoints_mean,
+                dtype=np.float32).reshape(1, num_keypoints, -1)
+            keypoints_std = np.array(
+                keypoints_std, dtype=np.float32).reshape(1, num_keypoints, -1)
             assert keypoints_std is not None
             assert keypoints_mean.shape == keypoints_std.shape
         if target_mean is not None:
             target_dim = num_keypoints - 1 if remove_root else num_keypoints
-            target_mean = np.array(target_mean).reshape(1, target_dim, -1)
-            target_std = np.array(target_std).reshape(1, target_dim, -1)
+            target_mean = np.array(
+                target_mean, dtype=np.float32).reshape(1, target_dim, -1)
+            target_std = np.array(
+                target_std, dtype=np.float32).reshape(1, target_dim, -1)
             assert target_std is not None
             assert target_mean.shape == target_std.shape
         self.keypoints_mean = keypoints_mean
