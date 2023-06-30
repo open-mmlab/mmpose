@@ -127,29 +127,37 @@ train_pipeline = [
 val_pipeline = train_pipeline
 
 # data loaders
-dataset_cfg = dict(
-    type=dataset_type,
-    ann_file='annotation_body3d/fps50/h36m_train.npz',
-    seq_len=1,
-    causal=True,
-    keypoint_2d_src='gt',
-    data_root=data_root,
-    data_prefix=dict(img='images/'),
-    pipeline=train_pipeline,
-)
 train_dataloader = dict(
     batch_size=64,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
-    dataset=dataset_cfg)
+    dataset=dict(
+        type=dataset_type,
+        ann_file='annotation_body3d/fps50/h36m_train.npz',
+        seq_len=1,
+        causal=True,
+        keypoint_2d_src='gt',
+        data_root=data_root,
+        data_prefix=dict(img='images/'),
+        pipeline=train_pipeline,
+    ))
 val_dataloader = dict(
     batch_size=64,
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
-    dataset=dataset_cfg)
+    dataset=dict(
+        type=dataset_type,
+        ann_file='annotation_body3d/fps50/h36m_test.npz',
+        seq_len=1,
+        causal=True,
+        keypoint_2d_src='gt',
+        data_root=data_root,
+        data_prefix=dict(img='images/'),
+        pipeline=train_pipeline,
+    ))
 test_dataloader = val_dataloader
 
 # evaluators
