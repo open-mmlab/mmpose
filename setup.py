@@ -78,6 +78,13 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                     else:
                         version = rest  # NOQA
                     info['version'] = (op, version)
+
+            if 'google.colab' in sys.modules and info[
+                    'package'] == 'xtcocotools':
+                info = dict(
+                    line=info['line'],
+                    package='git+https://github.com/jin-s13/xtcocoapi')
+
             yield info
 
     def parse_require_file(fpath):
