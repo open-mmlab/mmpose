@@ -88,6 +88,10 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                     info['version'] = (op, version)
 
             if is_running_on_colab() and info['package'] == 'xtcocotools':
+                # Due to an incompatibility between the Colab platform and the
+                # pre-built xtcocotools PyPI package, it is necessary to
+                # compile xtcocotools from source on Colab. Therefore, we use
+                # the source code from the GitHub repository.
                 info = dict(
                     line=info['line'],
                     package='xtcocotools@'
