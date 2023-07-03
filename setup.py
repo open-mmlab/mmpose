@@ -90,7 +90,8 @@ def parse_requirements(fname='requirements.txt', with_version=True):
             if is_running_on_colab() and info['package'] == 'xtcocotools':
                 info = dict(
                     line=info['line'],
-                    package='git+https://github.com/jin-s13/xtcocoapi')
+                    package='xtcocotools@'
+                    'git+https://github.com/jin-s13/xtcocoapi')
 
             yield info
 
