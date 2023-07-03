@@ -13,6 +13,14 @@ def readme():
     return content
 
 
+def is_running_on_colab():
+    try:
+        import google.colab  # noqa
+        return True
+    except ImportError:
+        return False
+
+
 version_file = 'mmpose/version.py'
 
 
@@ -79,8 +87,7 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                         version = rest  # NOQA
                     info['version'] = (op, version)
 
-            if 'google.colab' in sys.modules and info[
-                    'package'] == 'xtcocotools':
+            if is_running_on_colab() and info['package'] == 'xtcocotools':
                 info = dict(
                     line=info['line'],
                     package='git+https://github.com/jin-s13/xtcocoapi')
