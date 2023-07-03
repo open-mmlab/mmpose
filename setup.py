@@ -6,19 +6,17 @@ import sys
 import warnings
 from setuptools import find_packages, setup
 
+try:
+    import google.colab  # noqa
+    ON_COLAB = True
+except ImportError:
+    ON_COLAB = False
+
 
 def readme():
     with open('README.md', encoding='utf-8') as f:
         content = f.read()
     return content
-
-
-def is_running_on_colab():
-    try:
-        import google.colab  # noqa
-        return True
-    except ImportError:
-        return False
 
 
 version_file = 'mmpose/version.py'
@@ -87,11 +85,10 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                         version = rest  # NOQA
                     info['version'] = (op, version)
 
-            if is_running_on_colab() and info['package'] == 'xtcocotools':
+            if ON_COLAB and info['package'] == 'xtcocotools':
                 # Due to an incompatibility between the Colab platform and the
                 # pre-built xtcocotools PyPI package, it is necessary to
-                # compile xtcocotools from source on Colab. Therefore, we use
-                # the source code from the GitHub repository.
+                # compile xtcocotools from source on Colab.
                 info = dict(
                     line=info['line'],
                     package='xtcocotools@'
