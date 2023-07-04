@@ -113,6 +113,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
     - [RTMPose](/projects/rtmpose/)
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
+    - [Simple Keypoints](/projects/skps/)
   - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
 
 <br/>
