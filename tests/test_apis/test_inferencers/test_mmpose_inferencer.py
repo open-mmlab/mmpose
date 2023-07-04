@@ -11,9 +11,14 @@ import mmcv
 
 from mmpose.apis.inferencers import MMPoseInferencer
 from mmpose.structures import PoseDataSample
+from mmpose.utils import register_all_modules
 
 
 class TestMMPoseInferencer(TestCase):
+
+    def tearDown(self) -> None:
+        register_all_modules(init_default_scope=True)
+        return super().tearDown()
 
     def test_pose2d_call(self):
         try:
