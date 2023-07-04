@@ -480,8 +480,7 @@ mmpose
 </div>
 
 ```bibtex
-@InProceedings{
-    Ng_2022_CVPR,
+@inproceedings{Ng_2022_CVPR,
     author    = {Ng, Xun Long and Ong, Kian Eng and Zheng, Qichen and Ni, Yun and Yeo, Si Yong and Liu, Jun},
     title     = {Animal Kingdom: A Large and Diverse Dataset for Animal Behavior Understanding},
     booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},

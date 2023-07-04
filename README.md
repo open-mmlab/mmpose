@@ -97,9 +97,12 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- We are excited to release **YOLOX-Pose**, a One-Stage multi-person pose estimation model based on YOLOX. Checkout our [project page](/projects/yolox_pose/) for more details.
+- We are glad to support 3 new datasets:
+  - (CVPR 2023) [Human-Art](https://github.com/IDEA-Research/HumanArt)
+  - (CVPR 2022) [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom)
+  - (AAAI 2020) [LaPa](https://github.com/JDAI-CV/lapa-dataset/)
 
-![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
+![image](https://github.com/open-mmlab/mmpose/assets/13503330/c9171dbb-7e7a-4c39-98e3-c92932182efb)
 
 - Welcome to [*projects of MMPose*](/projects/README.md), where you can access to the latest features of MMPose, and share your ideas and codes with the community at once. Contribution to MMPose will be simple and smooth:
 
@@ -110,18 +113,20 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
     - [RTMPose](/projects/rtmpose/)
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
+    - [Simple Keypoints](/projects/skps/)
   - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
 
 <br/>
 
-- 2022-04-06: MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) is officially released, with the main updates including:
+- 2023-07-04: MMPose [v1.1.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) is officially released, with the main updates including:
 
-  - Release of [YOLOX-Pose](/projects/yolox_pose/), a One-Stage multi-person pose estimation model based on YOLOX
-  - Development of [MMPose for AIGC](/projects/mmpose4aigc/) based on RTMPose, generating high-quality skeleton images for Pose-guided AIGC projects
-  - Support for OpenPose-style skeleton visualization
-  - More complete and user-friendly [documentation and tutorials](https://mmpose.readthedocs.io/en/latest/overview.html)
+  - Support new datasets: Human-Art, Animal Kingdom and LaPa.
+  - Support new config type that is more user-friendly and flexible.
+  - Improve RTMPose with better performance.
+  - Migrate 3D pose estimation models on h36m.
+  - Inference speedup and webcam inference with all demo scripts.
 
-  Please refer to the [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) for more updates brought by MMPose v1.0.0!
+  Please refer to the [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) for more updates brought by MMPose v1.1.0!
 
 ## 0.x / 1.x Migration
 
