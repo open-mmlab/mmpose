@@ -17,7 +17,7 @@ Models:
       AP (M): 0.671
       AP (L): 0.576
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w32_8xb10-140e_crowdpose-512x512_147bae97-20221228.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w32_8xb10-300e_crowdpose-512x512_147bae97-20221228.pth
 - Config: configs/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w48_8xb5-300e_crowdpose-640x640.py
   In Collection: DEKR
   Metadata:
@@ -34,4 +34,4 @@ Models:
       AP (M): 0.688
       AP (L): 0.593
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/bottom_up/dekr/hrnet_w48_crowdpose_640x640-ef6b6040_20220930.pth
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w48_8xb5-300e_crowdpose-640x640_4ea6031e-20230128.pth
