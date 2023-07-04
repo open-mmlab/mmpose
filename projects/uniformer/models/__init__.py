@@ -1,3 +1,1 @@
-from .uniformer import * # noqa
-
-__all__ = ['Uniformer']
+from .uniformer import *  # noqa

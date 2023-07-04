@@ -29,7 +29,8 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater', interval=5))
+default_hooks = dict(
+    checkpoint=dict(save_best='coco/AP', rule='greater', interval=5))
 
 # codec settings
 codec = dict(
@@ -38,7 +39,7 @@ codec = dict(
 # model settings
 norm_cfg = dict(type='SyncBN', requires_grad=True)
 model = dict(
-    type='Uniformer',
+    type='TopdownPoseEstimator',
     # pretrained='/path/to/hrt_small.pth', # Set the path to pretrained backbone here
     data_preprocessor=dict(
         type='PoseDataPreprocessor',
@@ -46,8 +47,8 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='Uniformer',
-        embed_dim=[64, 128, 320, 512],
+        type='UniFormer',
+        embed_dims=[64, 128, 320, 512],
         layers=[5, 8, 20, 7],
         head_dim=64,
         drop_path_rate=0.4,
@@ -56,13 +57,14 @@ model = dict(
         hybrid=False,
         init_cfg=dict(type='Pretrained', checkpoint='')),
     head=dict(
-        type='TopdownSimpleHead',
+        type='HeatmapHead',
         in_channels=512,
         out_channels=17,
-        norm_cfg=norm_cfg,
+        # norm_cfg=norm_cfg,
         extra=dict(final_conv_kernel=1, ),
-        loss=dict(type='JointMSELoss', use_target_weight=True),
-        decoder=codec),
+        loss=dict(type='KeypointMSELoss', use_target_weight=True),
+        decoder=codec,
+        init_cfg=[dict(norm_cfg=norm_cfg)]),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
