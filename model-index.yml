@@ -74,7 +74,7 @@ Import:
 - configs/body_2d_keypoint/topdown_regression/coco/mobilenetv2_rle_coco.yml
 - configs/body_2d_keypoint/topdown_regression/mpii/resnet_mpii.yml
 - configs/body_2d_keypoint/topdown_regression/mpii/resnet_rle_mpii.yml
-- configs/body_3d_keypoint/video_pose_lift/h36m/videopose3d_h36m.yml
+- configs/body_3d_keypoint/pose_lift/h36m/videopose3d_h36m.yml
 - configs/face_2d_keypoint/rtmpose/coco_wholebody_face/rtmpose_coco_wholebody_face.yml
 - configs/face_2d_keypoint/rtmpose/wflw/rtmpose_wflw.yml
 - configs/face_2d_keypoint/topdown_heatmap/300w/hrnetv2_300w.yml
