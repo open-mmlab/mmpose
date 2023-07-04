@@ -95,7 +95,10 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 我们发布了 **YOLOX-Pose**，一个基于 YOLOX 的 One-Stage 多人姿态估计模型。更多信息敬请参阅 YOLOX-Pose [项目主页](/projects/yolox_pose/)
+- 我们支持了三个新的数据集:
+  - (CVPR 2023) [Human-Art](https://github.com/IDEA-Research/HumanArt)
+  - (CVPR 2022) [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom)
+  - (AAAI 2020) [LaPa](https://github.com/JDAI-CV/lapa-dataset/)
 
 ![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
 
@@ -112,14 +115,15 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 <br/>
 
-- 2022-04-06：MMPose [v1.0.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) 正式发布了，主要更新包括:
+- 2023-07-04：MMPose [v1.1.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) 正式发布了，主要更新包括:
 
-  - 发布了 [YOLOX-Pose](/projects/yolox_pose/)，一个基于 YOLOX 的 One-Stage 多人姿态估计模型
-  - 基于 RTMPose 开发的 [MMPose for AIGC](/projects/mmpose4aigc/)，生成高质量骨架图片用于 Pose-guided AIGC 项目
-  - 支持 OpenPose 风格的骨架可视化
-  - 更加完善、友好的 [文档和教程](https://mmpose.readthedocs.io/zh_CN/latest/overview.html)
+  - 支持新数据集：Human-Art、Animal Kingdom、LaPa。
+  - 支持新的配置文件风格，支持 IDE 跳转和搜索。
+  - 提供更强性能的 RTMPose 模型。
+  - 迁移 3D 姿态估计算法。
+  - 加速推理脚本，全部 demo 脚本支持摄像头推理。
 
-  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0) 以了解更多 MMPose v1.0.0 带来的更新!
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) 以了解更多 MMPose v1.1.0 带来的更新!
 
 ## 0.x / 1.x 迁移
 
