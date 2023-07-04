@@ -1,4 +1,6 @@
-if '_base_':
+from mmengine.config import read_base
+
+with read_base():
     from ._base_.py_default_runtime import *
 
 from datasets import (CocoDataset, FilterDetPoseAnnotations, PackDetPoseInputs,
