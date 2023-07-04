@@ -5,3 +5,4 @@ myst-parser
 sphinx==4.5.0
 sphinx_copybutton
 sphinx_markdown_tables
+urllib3<2.0.0

@@ -52,3 +52,17 @@ Results on Grévy’s Zebra test set
 | ResNet-152 |  160x160   | 0.921 | 1.67 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
 | ResNet-101 |  160x160   | 0.915 | 1.83 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
 | ResNet-50  |  160x160   | 0.914 | 1.87 | [resnet_zebra.md](./zebra/resnet_zebra.md) |
+
+### Animal-Kingdom Dataset
+
+Results on AnimalKingdom test set
+
+|   Model   | Input Size |     class     | PCK(0.05) |                 Details and Download                  |
+| :-------: | :--------: | :-----------: | :-------: | :---------------------------------------------------: |
+| HRNet-w32 |  256x256   |      P1       |  0.6323   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |      P2       |  0.3741   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |  P3_mammals   |   0.571   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   | P3_amphibians |  0.5358   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |  P3_reptiles  |   0.51    | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |   P3_birds    |  0.7671   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |
+| HRNet-w32 |  256x256   |   P3_fishes   |  0.6406   | [hrnet_animalkingdom.md](./ak/hrnet_animalkingdom.md) |

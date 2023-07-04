@@ -20,7 +20,7 @@ from mmpose.apis import MMPoseInferencer
 
 img_path = 'tests/data/coco/000000000785.jpg'   # replace this with your own image path
 
-# create the inferencer using the model alias
+# instantiate the inferencer using the model alias
 inferencer = MMPoseInferencer('human')
 
 # The MMPoseInferencer API employs a lazy inference approach,
@@ -32,7 +32,46 @@ result = next(result_generator)
 If everything works fine, you will see the following image in a new window:
 ![inferencer_result_coco](https://user-images.githubusercontent.com/26127467/220008302-4a57fd44-0978-408e-8351-600e5513316a.jpg)
 
-The variable `result` is a dictionary that contains two keys, `'visualization'` and `'predictions'`. The `'visualization'` key is meant to store visualization results, but since the `return_vis` argument wasn't specified, this list remains empty. The `'predictions'` key, however, holds a list of estimated keypoints for each detected instance.
+The `result` variable is a dictionary comprising two keys, `'visualization'` and `'predictions'`.
+
+- `'visualization'` holds a list which:
+
+  - contains visualization results, such as the input image, markers of the estimated poses, and optional predicted heatmaps.
+  - remains empty if the `return_vis` argument is not specified.
+
+- `'predictions'` stores:
+
+  - a list of estimated keypoints for each identified instance.
+
+The structure of the `result` dictionary is as follows:
+
+```python
+result = {
+    'visualization': [
+        # number of elements: batch_size (defaults to 1)
+        vis_image_1,
+        ...
+    ],
+    'predictions': [
+        # pose estimation result of each image
+        # number of elements: batch_size (defaults to 1)
+        [
+            # pose information of each detected instance
+            # number of elements: number of detected instances
+            {'keypoints': ...,  # instance 1
+            'keypoint_scores': ...,
+            ...
+            },
+            {'keypoints': ...,  # instance 2
+            'keypoint_scores': ...,
+            ...
+            },
+        ]
+    ...
+    ]
+}
+
+```
 
 A **command-line interface (CLI)** tool for the inferencer is also available: `demo/inferencer_demo.py`. This tool allows users to perform inference using the same model and inputs with the following command:
 
@@ -51,6 +90,17 @@ The inferencer is capable of processing a range of input types, which includes t
 - An image array (NA for CLI tool)
 - A list of image arrays (NA for CLI tool)
 - A webcam (in which case the `input` parameter should be set to either `'webcam'` or `'webcam:{CAMERA_ID}'`)
+
+Please note that when the input corresponds to multiple images, such as when the input is a video or a folder path, the inference process needs to iterate over the results generator in order to perform inference on all the frames or images within the folder. Here's an example in Python:
+
+```python
+folder_path = 'tests/data/coco'
+
+result_generator = inferencer(folder_path, show=True)
+results = [result for result in result_generator]
+```
+
+In this example, the `inferencer` takes the `folder_path` as input and returns a generator object (`result_generator`) that produces inference results. By iterating over the `result_generator` and storing each result in the `results` list, you can obtain the inference results for all the frames or images within the folder.
 
 ### Custom Pose Estimation Models
 
@@ -74,6 +124,8 @@ inferencer = MMPoseInferencer(
 ```
 
 The complere list of model alias can be found in the [Model Alias](#model-alias) section.
+
+**Custom Object Detector for Top-down Pose Estimation Models**
 
 In addition, top-down pose estimators also require an object detection model. The inferencer is capable of inferring the instance type for models trained with datasets supported in MMPose, and subsequently constructing the necessary object detection model. Alternatively, users may also manually specify the detection model using the following methods:
 
@@ -106,6 +158,8 @@ inferencer = MMPoseInferencer(
     det_cat_ids=[0],  # the category id of 'human' class
 )
 ```
+
+To perform top-down pose estimation on cropped images containing a single object, users can set `det_model='whole_image'`. This bypasses the object detector initialization, creating a bounding box that matches the input image size and directly sending the entire image to the top-down pose estimator.
 
 ### Dump Results
 
@@ -171,28 +225,39 @@ The `MMPoseInferencer` offers a variety of arguments for customizing pose estima
 | ---------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `pose2d`         | Specifies the model alias, configuration file name, or configuration file path for the 2D pose estimation model. |
 | `pose2d_weights` | Specifies the URL or local path to the 2D pose estimation model's checkpoint file.                               |
+| `pose3d`         | Specifies the model alias, configuration file name, or configuration file path for the 3D pose estimation model. |
+| `pose3d_weights` | Specifies the URL or local path to the 3D pose estimation model's checkpoint file.                               |
 | `det_model`      | Specifies the model alias, configuration file name, or configuration file path for the object detection model.   |
 | `det_weights`    | Specifies the URL or local path to the object detection model's checkpoint file.                                 |
 | `det_cat_ids`    | Specifies the list of category IDs corresponding to the object classes to be detected.                           |
 | `device`         | The device to perform the inference. If left `None`, the Inferencer will select the most suitable one.           |
 | `scope`          | The namespace where the model modules are defined.                                                               |
 
-The inferencer is designed to handle both visualization and saving of predictions. Here is a list of arguments available when performing inference with the `MMPoseInferencer`:
+The inferencer is designed for both visualization and saving predictions. The table below presents the list of arguments available when using the `MMPoseInferencer` for inference, along with their compatibility with 2D and 3D inferencing:
 
-| Argument            | Description                                                                                                                                        |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `show`              | Determines whether the image or video should be displayed in a pop-up window.                                                                      |
-| `radius`            | Sets the keypoint radius for visualization.                                                                                                        |
-| `thickness`         | Sets the link thickness for visualization.                                                                                                         |
-| `return_vis`        | Determines whether visualization images should be included in the results.                                                                         |
-| `vis_out_dir`       | Specifies the folder path for saving the visualization images. If not set, the visualization images will not be saved.                             |
-| `return_datasample` | Determines whether to return the prediction in the format of `PoseDataSample`.                                                                     |
-| `pred_out_dir`      | Specifies the folder path for saving the predictions. If not set, the predictions will not be saved.                                               |
-| `out_dir`           | If `vis_out_dir` or `pred_out_dir` is not set, the values will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively. |
+| Argument                 | Description                                                                                                                                                       | 2D  | 3D  |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| `show`                   | Controls the display of the image or video in a pop-up window.                                                                                                    | ✔️  | ✔️  |
+| `radius`                 | Sets the visualization keypoint radius.                                                                                                                           | ✔️  | ✔️  |
+| `thickness`              | Determines the link thickness for visualization.                                                                                                                  | ✔️  | ✔️  |
+| `kpt_thr`                | Sets the keypoint score threshold. Keypoints with scores exceeding this threshold will be displayed.                                                              | ✔️  | ✔️  |
+| `draw_bbox`              | Decides whether to display the bounding boxes of instances.                                                                                                       | ✔️  | ✔️  |
+| `draw_heatmap`           | Decides if the predicted heatmaps should be drawn.                                                                                                                | ✔️  | ❌  |
+| `black_background`       | Decides whether the estimated poses should be displayed on a black background.                                                                                    | ✔️  | ❌  |
+| `skeleton_style`         | Sets the skeleton style. Options include 'mmpose' (default) and 'openpose'.                                                                                       | ✔️  | ❌  |
+| `use_oks_tracking`       | Decides whether to use OKS as a similarity measure in tracking.                                                                                                   | ❌  | ✔️  |
+| `tracking_thr`           | Sets the similarity threshold for tracking.                                                                                                                       | ❌  | ✔️  |
+| `norm_pose_2d`           | Decides whether to scale the bounding box to the dataset's average bounding box scale and relocate the bounding box to the dataset's average bounding box center. | ❌  | ✔️  |
+| `rebase_keypoint_height` | Decides whether to set the lowest keypoint with height 0.                                                                                                         | ❌  | ✔️  |
+| `return_vis`             | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |
+| `vis_out_dir`            | Defines the folder path to save the visualization images. If unset, the visualization images will not be saved.                                                   | ✔️  | ✔️  |
+| `return_datasample`      | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
+| `pred_out_dir`           | Specifies the folder path to save the predictions. If unset, the predictions will not be saved.                                                                   | ✔️  | ✔️  |
+| `out_dir`                | If `vis_out_dir` or `pred_out_dir` is unset, these will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively.                       | ✔️  | ✔️  |
 
 ### Model Alias
 
-MMPose provides a set of pre-defined aliases for commonly used models. These aliases can be used as shorthand when initializing the `MMPoseInferencer` instead of specifying the full model configuration name. Below is a list of the available model aliases and their corresponding configuration names:
+The MMPose library has predefined aliases for several frequently used models. These aliases can be utilized as a shortcut when initializing the `MMPoseInferencer`, as an alternative to providing the full model configuration name. Here are the available 2D model aliases and their corresponding configuration names:
 
 | Alias     | Configuration Name                                 | Task                            | Pose Estimator | Detector            |
 | --------- | -------------------------------------------------- | ------------------------------- | -------------- | ------------------- |
@@ -206,6 +271,12 @@ MMPose provides a set of pre-defined aliases for commonly used models. These ali
 | vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base   | RTMDet-m            |
 | vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large  | RTMDet-m            |
 | vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge   | RTMDet-m            |
+
+The following table lists the available 3D model aliases and their corresponding configuration names:
+
+| Alias   | Configuration Name                                        | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | --------------------------------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 

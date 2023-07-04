@@ -23,7 +23,7 @@ We recommend that users follow our best practices to install MMPose. However, th
 
 In this section we demonstrate how to prepare an environment with PyTorch.
 
-MMPose works on Linux, Windows and macOS. It requires Python 3.7+, CUDA 9.2+ and PyTorch 1.6+.
+MMPose works on Linux, Windows and macOS. It requires Python 3.7+, CUDA 9.2+ and PyTorch 1.8+.
 
 If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose Installation](#install-mmpose). Otherwise, you can follow these steps for the preparation.
 
@@ -59,13 +59,13 @@ conda install pytorch torchvision cpuonly -c pytorch
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install "mmcv>=2.0.0"
+mim install "mmcv>=2.0.1"
 ```
 
 Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can easily install mmdet as a dependency by running:
 
 ```shell
-mim install "mmdet>=3.0.0"
+mim install "mmdet>=3.1.0"
 ```
 
 ## Best Practices
@@ -89,7 +89,7 @@ pip install -v -e .
 To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
-mim install "mmpose>=1.0.0"
+mim install "mmpose>=1.1.0"
 ```
 
 ## Verify the installation
@@ -173,7 +173,7 @@ To install MMCV with pip instead of MIM, please follow [MMCV installation guides
 For example, the following command install mmcv built for PyTorch 1.10.x and CUDA 11.3.
 
 ```shell
-pip install 'mmcv>=2.0.0' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
+pip install 'mmcv>=2.0.1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
 ### Install on CPU-only platforms
@@ -192,7 +192,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```shell
 !pip3 install openmim
 !mim install mmengine
-!mim install "mmcv>=2.0.0"
+!mim install "mmcv>=2.0.1"
 ```
 
 **Step 2.** Install MMPose from the source.
@@ -208,7 +208,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 1.0.0
+# Example output: 1.1.0
 ```
 
 ```{note}
@@ -220,7 +220,7 @@ Note that within Jupyter, the exclamation mark `!` is used to call external exec
 We provide a [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/docker/Dockerfile) to build an image. Ensure that your [docker version](https://docs.docker.com/engine/install/) >=19.03.
 
 ```shell
-# build an image with PyTorch 1.6.0, CUDA 10.1, CUDNN 7.
+# build an image with PyTorch 1.8.0, CUDA 10.1, CUDNN 7.
 # If you prefer other versions, just modified the Dockerfile
 docker build -t mmpose docker/
 ```

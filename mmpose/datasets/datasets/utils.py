@@ -174,6 +174,11 @@ def parse_pose_metainfo(metainfo: dict):
         metainfo['joint_weights'], dtype=np.float32)
     parsed['sigmas'] = np.array(metainfo['sigmas'], dtype=np.float32)
 
+    if 'stats_info' in metainfo:
+        parsed['stats_info'] = {}
+        for name, val in metainfo['stats_info'].items():
+            parsed['stats_info'][name] = np.array(val, dtype=np.float32)
+
     # formatting
     def _map(src, mapping: dict):
         if isinstance(src, (list, tuple)):

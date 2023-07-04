@@ -13,9 +13,14 @@ from mmengine.infer.infer import BaseInferencer
 
 from mmpose.apis.inferencers import Pose2DInferencer
 from mmpose.structures import PoseDataSample
+from mmpose.utils import register_all_modules
 
 
 class TestPose2DInferencer(TestCase):
+
+    def tearDown(self) -> None:
+        register_all_modules(init_default_scope=True)
+        return super().tearDown()
 
     def _get_det_model_weights(self):
         if platform.system().lower() == 'windows':

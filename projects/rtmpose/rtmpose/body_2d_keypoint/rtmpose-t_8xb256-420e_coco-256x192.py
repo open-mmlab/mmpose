@@ -1,9 +1,15 @@
 _base_ = ['mmpose::_base_/default_runtime.py']
 
+# common setting
+num_keypoints = 17
+input_size = (192, 256)
+
 # runtime
 max_epochs = 420
 stage2_num_epochs = 30
 base_lr = 4e-3
+train_batch_size = 256
+val_batch_size = 64
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)
@@ -12,6 +18,7 @@ randomness = dict(seed=21)
 optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.),
+    clip_grad=dict(max_norm=35, norm_type=2),
     paramwise_cfg=dict(
         norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
 
@@ -24,7 +31,6 @@ param_scheduler = [
         begin=0,
         end=1000),
     dict(
-        # use cosine lr from 210 to 420 epoch
         type='CosineAnnealingLR',
         eta_min=base_lr * 0.05,
         begin=max_epochs // 2,
@@ -40,7 +46,7 @@ auto_scale_lr = dict(base_batch_size=1024)
 # codec settings
 codec = dict(
     type='SimCCLabel',
-    input_size=(192, 256),
+    input_size=input_size,
     sigma=(4.9, 5.66),
     simcc_split_ratio=2.0,
     normalize=False,
@@ -69,14 +75,14 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmpose/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth'  # noqa
+            'rtmposev1/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth'  # noqa
         )),
     head=dict(
         type='RTMCCHead',
         in_channels=384,
-        out_channels=17,
+        out_channels=num_keypoints,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=tuple([s // 32 for s in codec['input_size']]),
         simcc_split_ratio=codec['simcc_split_ratio'],
         final_layer_kernel_size=7,
         gau_cfg=dict(
@@ -177,7 +183,7 @@ train_pipeline_stage2 = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=256,
+    batch_size=train_batch_size,
     num_workers=10,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -190,7 +196,7 @@ train_dataloader = dict(
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
-    batch_size=64,
+    batch_size=val_batch_size,
     num_workers=10,
     persistent_workers=True,
     drop_last=False,

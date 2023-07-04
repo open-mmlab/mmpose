@@ -1,0 +1,138 @@
+Collections:
+- Name: RTMPose
+  Paper:
+    Title: "RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose"
+    URL: https://arxiv.org/abs/2303.07399
+  README: https://github.com/open-mmlab/mmpose/blob/main/projects/rtmpose/README.md
+Models:
+- Config: configs/body_2d_keypoint/rtmpose/humanart/rtmpose-l_8xb256-420e_humanart-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: &id001
+    - RTMPose
+    Training Data: &id002
+    - COCO
+    - Human-Art
+  Name: rtmpose-l_8xb256-420e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.748
+      AP@0.5: 0.901
+      AP@0.75: 0.816
+      AR: 0.796
+      AR@0.5: 0.938
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.378
+      AP@0.5: 0.521
+      AP@0.75: 0.399
+      AR: 0.442
+      AR@0.5: 0.584
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.905
+      AP@0.75: 0.812
+      AR: 0.783
+      AR@0.5: 0.915
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_8xb256-420e_humanart-256x192-389f2cb0_20230611.pth
+- Config: configs/body_2d_keypoint/rtmpose/humanart/rtmpose-m_8xb256-420e_humanart-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-m_8xb256-420e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.725
+      AP@0.5: 0.892
+      AP@0.75: 0.795
+      AR: 0.775
+      AR@0.5: 0.929
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.355
+      AP@0.5: 0.503
+      AP@0.75: 0.377
+      AR: 0.417
+      AR@0.5: 0.568
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.728
+      AP@0.5: 0.895
+      AP@0.75: 0.791
+      AR: 0.759
+      AR@0.5: 0.906
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_8xb256-420e_humanart-256x192-8430627b_20230611.pth
+- Config: configs/body_2d_keypoint/rtmpose/humanart/rtmpose-s_8xb256-420e_humanart-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-s_8xb256-420e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.706
+      AP@0.5: 0.888
+      AP@0.75: 0.780
+      AR: 0.759
+      AR@0.5: 0.928
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.311
+      AP@0.5: 0.462
+      AP@0.75: 0.323
+      AR: 0.381
+      AR@0.5: 0.540
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.698
+      AP@0.5: 0.893
+      AP@0.75: 0.768
+      AR: 0.732
+      AR@0.5: 0.903
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_8xb256-420e_humanart-256x192-5a3ac943_20230611.pth
+- Config: configs/body_2d_keypoint/rtmpose/humanart/rtmpose-t_8xb256-420e_humanart-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-t_8xb256-420e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.665
+      AP@0.5: 0.875
+      AP@0.75: 0.739
+      AR: 0.721
+      AR@0.5: 0.916
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.249
+      AP@0.5: 0.395
+      AP@0.75: 0.256
+      AR: 0.323
+      AR@0.5: 0.485
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.655
+      AP@0.5: 0.872
+      AP@0.75: 0.720
+      AR: 0.693
+      AR@0.5: 0.890
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_8xb256-420e_humanart-256x192-60b68c98_20230612.pth
