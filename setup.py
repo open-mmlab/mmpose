@@ -6,6 +6,12 @@ import sys
 import warnings
 from setuptools import find_packages, setup
 
+try:
+    import google.colab  # noqa
+    ON_COLAB = True
+except ImportError:
+    ON_COLAB = False
+
 
 def readme():
     with open('README.md', encoding='utf-8') as f:
@@ -78,6 +84,16 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                     else:
                         version = rest  # NOQA
                     info['version'] = (op, version)
+
+            if ON_COLAB and info['package'] == 'xtcocotools':
+                # Due to an incompatibility between the Colab platform and the
+                # pre-built xtcocotools PyPI package, it is necessary to
+                # compile xtcocotools from source on Colab.
+                info = dict(
+                    line=info['line'],
+                    package='xtcocotools@'
+                    'git+https://github.com/jin-s13/xtcocoapi')
+
             yield info
 
     def parse_require_file(fpath):
@@ -128,7 +144,9 @@ def add_mim_extension():
     else:
         return
 
-    filenames = ['tools', 'configs', 'demo', 'model-index.yml']
+    filenames = [
+        'tools', 'configs', 'demo', 'model-index.yml', 'dataset-index.yml'
+    ]
     repo_path = osp.dirname(__file__)
     mim_path = osp.join(repo_path, 'mmpose', '.mim')
     os.makedirs(mim_path, exist_ok=True)

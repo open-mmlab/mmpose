@@ -1,0 +1,145 @@
+Collections:
+- Name: ViTPose
+  Paper:
+    Title: 'ViTPose: Simple Vision Transformer Baselines for Human Pose Estimation'
+    URL: https://arxiv.org/abs/2204.12484
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/vitpose.md
+  Metadata:
+    Training Resources: 8x A100 GPUs
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-small_8xb64-210e_humanart-256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: &id001
+    - ViTPose
+    - Classic Head
+    Model Size: Small
+    Training Data: &id002
+    - COCO
+    - Human-Art
+  Name: td-hm_ViTPose-small_8xb64-210e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.737
+      AP@0.5: 0.902
+      AP@0.75: 0.811
+      AR: 0.792
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.381
+      AP@0.5: 0.532
+      AP@0.75: 0.405
+      AR: 0.448
+      AR@0.5: 0.602
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.738
+      AP@0.5: 0.905
+      AP@0.75: 0.802
+      AR: 0.768
+      AR@0.5: 0.911
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-small_8xb64-210e_humanart-256x192-5cbe2bfc_20230611.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-base_8xb64-210e_humanart-256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Model Size: Base
+    Training Data: *id002
+  Name: td-hm_ViTPose-base_8xb64-210e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.758
+      AP@0.5: 0.906
+      AP@0.75: 0.829
+      AR: 0.812
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.410
+      AP@0.5: 0.549
+      AP@0.75: 0.434
+      AR: 0.475
+      AR@0.5: 0.615
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.759
+      AP@0.5: 0.905
+      AP@0.75: 0.823
+      AR: 0.790
+      AR@0.5: 0.917
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-base_8xb64-210e_humanart-256x192-b417f546_20230611.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-large_8xb64-210e_humanart-256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Model Size: Large
+    Training Data: *id002
+  Name: td-hm_ViTPose-large_8xb64-210e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.782
+      AP@0.5: 0.914
+      AP@0.75: 0.849
+      AR: 0.835
+      AR@0.5: 0.953
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.459
+      AP@0.5: 0.592
+      AP@0.75: 0.487
+      AR: 0.525
+      AR@0.5: 0.656
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.789
+      AP@0.5: 0.916
+      AP@0.75: 0.845
+      AR: 0.819
+      AR@0.5: 0.929
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-large_8xb64-210e_humanart-256x192-9aba9345_20230614.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-huge_8xb64-210e_humanart-256x192.py
+  In Collection: ViTPose
+  Metadata:
+    Architecture: *id001
+    Model Size: Huge
+    Training Data: *id002
+  Name: td-hm_ViTPose-huge_8xb64-210e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.788
+      AP@0.5: 0.914
+      AP@0.75: 0.853
+      AR: 0.841
+      AR@0.5: 0.956
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.468
+      AP@0.5: 0.594
+      AP@0.75: 0.498
+      AR: 0.534
+      AR@0.5: 0.655
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.800
+      AP@0.5: 0.926
+      AP@0.75: 0.855
+      AR: 0.828
+      AR@0.5: 0.933
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-huge_8xb64-210e_humanart-256x192-603bb573_20230612.pth

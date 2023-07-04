@@ -256,4 +256,4 @@ combined_dataset = dict(
 
 - **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then `KeypointConverter` can be used to unify the keypoints number and order.
 
-- More details about `CombinedDataset` and `KeypointConverter` can be found in Advanced Guides-[Training with Mixed Datasets](../advanced_guides/mixed_datasets.md).
+- More details about `CombinedDataset` and `KeypointConverter` can be found in Advanced Guides-[Training with Mixed Datasets](../user_guides/mixed_datasets.md).

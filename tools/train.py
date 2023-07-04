@@ -96,8 +96,9 @@ def merge_args(cfg, args):
 
     # enable automatic-mixed-precision training
     if args.amp is True:
-        optim_wrapper = cfg.optim_wrapper.get('type', 'OptimWrapper')
-        assert optim_wrapper in ['OptimWrapper', 'AmpOptimWrapper'], \
+        from mmengine.optim import AmpOptimWrapper, OptimWrapper
+        optim_wrapper = cfg.optim_wrapper.get('type', OptimWrapper)
+        assert optim_wrapper in (OptimWrapper, AmpOptimWrapper), \
             '`--amp` is not supported custom optimizer wrapper type ' \
             f'`{optim_wrapper}.'
         cfg.optim_wrapper.type = 'AmpOptimWrapper'
@@ -115,7 +116,7 @@ def merge_args(cfg, args):
     if args.auto_scale_lr:
         cfg.auto_scale_lr.enable = True
 
-    # visualization-
+    # visualization
     if args.show or (args.show_dir is not None):
         assert 'visualization' in cfg.default_hooks, \
             'PoseVisualizationHook is not set in the ' \

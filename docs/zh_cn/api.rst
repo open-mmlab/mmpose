@@ -132,5 +132,3 @@ hooks
 ^^^^^^^^^^^
 .. automodule:: mmpose.engine.hooks
     :members:
-
-.. include:: webcam_api.rst

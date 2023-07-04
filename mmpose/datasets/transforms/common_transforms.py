@@ -649,6 +649,8 @@ class Albumentation(BaseTransform):
                     f'{obj_type} is not pixel-level transformations. '
                     'Please use with caution.')
             obj_cls = getattr(albumentations, obj_type)
+        elif isinstance(obj_type, type):
+            obj_cls = obj_type
         else:
             raise TypeError(f'type must be a str, but got {type(obj_type)}')
 
@@ -1028,6 +1030,16 @@ class GenerateTarget(BaseTransform):
                     'dataset_keypoint_weights']
 
         results.update(encoded)
+
+        if results.get('keypoint_weights', None) is not None:
+            results['transformed_keypoints_visible'] = results[
+                'keypoint_weights']
+        elif results.get('keypoints', None) is not None:
+            results['transformed_keypoints_visible'] = results[
+                'keypoints_visible']
+        else:
+            raise ValueError('GenerateTarget requires \'keypoint_weights\' or'
+                             ' \'keypoints_visible\' in the results.')
 
         return results
 

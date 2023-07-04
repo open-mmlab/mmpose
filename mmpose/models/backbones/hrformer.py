@@ -299,17 +299,12 @@ class CrossFFN(BaseModule):
         self.act3 = build_activation_layer(act_cfg)
         self.norm3 = build_norm_layer(norm_cfg, out_features)[1]
 
-        # put the modules togather
-        self.layers = [
-            self.fc1, self.norm1, self.act1, self.dw3x3, self.norm2, self.act2,
-            self.fc2, self.norm3, self.act3
-        ]
-
     def forward(self, x, H, W):
         """Forward function."""
         x = nlc_to_nchw(x, (H, W))
-        for layer in self.layers:
-            x = layer(x)
+        x = self.act1(self.norm1(self.fc1(x)))
+        x = self.act2(self.norm2(self.dw3x3(x)))
+        x = self.act3(self.norm3(self.fc2(x)))
         x = nchw_to_nlc(x)
         return x
 

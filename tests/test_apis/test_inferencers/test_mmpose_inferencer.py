@@ -11,11 +11,16 @@ import mmcv
 
 from mmpose.apis.inferencers import MMPoseInferencer
 from mmpose.structures import PoseDataSample
+from mmpose.utils import register_all_modules
 
 
 class TestMMPoseInferencer(TestCase):
 
-    def test_call(self):
+    def tearDown(self) -> None:
+        register_all_modules(init_default_scope=True)
+        return super().tearDown()
+
+    def test_pose2d_call(self):
         try:
             from mmdet.apis.det_inferencer import DetInferencer  # noqa: F401
         except (ImportError, ModuleNotFoundError):
@@ -88,3 +93,37 @@ class TestMMPoseInferencer(TestCase):
                           os.listdir(f'{tmp_dir}/predictions'))
         self.assertTrue(inferencer._video_input)
         self.assertIn(len(results['predictions']), (4, 5))
+
+    def test_pose3d_call(self):
+        try:
+            from mmdet.apis.det_inferencer import DetInferencer  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            return unittest.skip('mmdet is not installed')
+
+        # top-down model
+        if platform.system().lower() == 'windows':
+            # the default human pose estimator utilizes rtmdet-m detector
+            # through alias, which seems not compatible with windows
+            det_model = 'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'
+            det_weights = 'https://download.openmmlab.com/mmdetection/v2.0/' \
+                          'faster_rcnn/faster_rcnn_r50_fpn_1x_coco/' \
+                          'faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
+        else:
+            det_model, det_weights = None, None
+        inferencer = MMPoseInferencer(
+            pose3d='human3d', det_model=det_model, det_weights=det_weights)
+
+        # `inputs` is path to a video
+        inputs = 'https://user-images.githubusercontent.com/87690686/' \
+            '164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4'
+        with TemporaryDirectory() as tmp_dir:
+            results = defaultdict(list)
+            for res in inferencer(inputs, out_dir=tmp_dir):
+                for key in res:
+                    results[key].extend(res[key])
+            self.assertIn('164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4',
+                          os.listdir(f'{tmp_dir}/visualizations'))
+            self.assertIn(
+                '164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.json',
+                os.listdir(f'{tmp_dir}/predictions'))
+        self.assertTrue(inferencer._video_input)

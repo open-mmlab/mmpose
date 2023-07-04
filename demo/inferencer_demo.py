@@ -26,6 +26,19 @@ def parse_args():
         'If it is not specified and "pose2d" is a model name of metafile, '
         'the weights will be loaded from metafile.')
     parser.add_argument(
+        '--pose3d',
+        type=str,
+        default=None,
+        help='Pretrained 3D pose estimation algorithm. It\'s the path to the '
+        'config file or the model name defined in metafile.')
+    parser.add_argument(
+        '--pose3d-weights',
+        type=str,
+        default=None,
+        help='Path to the custom checkpoint file of the selected pose model. '
+        'If it is not specified and "pose3d" is a model name of metafile, '
+        'the weights will be loaded from metafile.')
+    parser.add_argument(
         '--det-model',
         type=str,
         default=None,
@@ -78,6 +91,26 @@ def parse_args():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
+        '--tracking-thr', type=float, default=0.3, help='Tracking threshold')
+    parser.add_argument(
+        '--use-oks-tracking',
+        action='store_true',
+        help='Whether to use OKS as similarity in tracking')
+    parser.add_argument(
+        '--norm-pose-2d',
+        action='store_true',
+        help='Scale the bbox (along with the 2D pose) to the average bbox '
+        'scale of the dataset, and move the bbox (along with the 2D pose) to '
+        'the average bbox center of the dataset. This is useful when bbox '
+        'is small, especially in multi-person scenarios.')
+    parser.add_argument(
+        '--rebase-keypoint-height',
+        action='store_true',
+        help='Rebase the predicted 3D pose so its lowest keypoint has a '
+        'height of 0 (landing on the ground). This is useful for '
+        'visualization when the model do not predict the global position '
+        'of the 3D pose.')
+    parser.add_argument(
         '--radius',
         type=int,
         default=3,
@@ -87,6 +120,16 @@ def parse_args():
         type=int,
         default=1,
         help='Link thickness for visualization.')
+    parser.add_argument(
+        '--skeleton-style',
+        default='mmpose',
+        type=str,
+        choices=['mmpose', 'openpose'],
+        help='Skeleton style selection')
+    parser.add_argument(
+        '--black-background',
+        action='store_true',
+        help='Plot predictions on a black image')
     parser.add_argument(
         '--vis-out-dir',
         type=str,
@@ -106,10 +149,9 @@ def parse_args():
 
     init_kws = [
         'pose2d', 'pose2d_weights', 'scope', 'device', 'det_model',
-        'det_weights', 'det_cat_ids'
+        'det_weights', 'det_cat_ids', 'pose3d', 'pose3d_weights'
     ]
     init_args = {}
-    init_args['output_heatmaps'] = call_args.pop('draw_heatmap')
     for init_kw in init_kws:
         init_args[init_kw] = call_args.pop(init_kw)
 

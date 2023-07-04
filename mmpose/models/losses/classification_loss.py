@@ -14,11 +14,16 @@ class BCELoss(nn.Module):
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
         loss_weight (float): Weight of the loss. Default: 1.0.
+        with_logits (bool): Whether to use BCEWithLogitsLoss. Default: False.
     """
 
-    def __init__(self, use_target_weight=False, loss_weight=1.):
+    def __init__(self,
+                 use_target_weight=False,
+                 loss_weight=1.,
+                 with_logits=False):
         super().__init__()
-        self.criterion = F.binary_cross_entropy
+        self.criterion = F.binary_cross_entropy if not with_logits\
+            else F.binary_cross_entropy_with_logits
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 

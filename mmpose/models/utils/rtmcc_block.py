@@ -105,7 +105,7 @@ class ScaleNorm(nn.Module):
             torch.Tensor: The tensor after applying scale norm.
         """
 
-        norm = torch.norm(x, dim=-1, keepdim=True) * self.scale
+        norm = torch.norm(x, dim=2, keepdim=True) * self.scale
         return x / norm.clamp(min=self.eps) * self.g
 
 
@@ -243,29 +243,34 @@ class RTMCCBlock(nn.Module):
 
         x = self.ln(x)
 
+        # [B, K, in_token_dims] -> [B, K, e + e + s]
         uv = self.uv(x)
+        uv = self.act_fn(uv)
 
         if self.attn_type == 'self-attn':
-            u, v, base = torch.split(
-                self.act_fn(uv), [self.e, self.e, self.s], dim=-1)
-
+            # [B, K, e + e + s] -> [B, K, e], [B, K, e], [B, K, s]
+            u, v, base = torch.split(uv, [self.e, self.e, self.s], dim=2)
+            # [B, K, 1, s] * [1, 1, 2, s] + [2, s] -> [B, K, 2, s]
             base = base.unsqueeze(2) * self.gamma[None, None, :] + self.beta
 
             if self.pos_enc:
                 base = rope(base, dim=1)
-
-            q, k = torch.unbind(base, dim=-2)
+            # [B, K, 2, s] -> [B, K, s], [B, K, s]
+            q, k = torch.unbind(base, dim=2)
 
         else:
-            u, q = torch.split(self.act_fn(uv), [self.e, self.s], dim=-1)
+            # [B, K, e + s] -> [B, K, e], [B, K, s]
+            u, q = torch.split(uv, [self.e, self.s], dim=2)
 
-            k = self.k_fc(k)
-            v = self.v_fc(v)
+            k = self.k_fc(k)  # -> [B, K, s]
+            v = self.v_fc(v)  # -> [B, K, e]
 
             if self.pos_enc:
                 q = rope(q, 1)
                 k = rope(k, 1)
 
+        # [B, K, s].permute() -> [B, s, K]
+        # [B, K, s] x [B, s, K] -> [B, K, K]
         qk = torch.bmm(q, k.permute(0, 2, 1))
 
         if self.use_rel_bias:
@@ -274,13 +279,14 @@ class RTMCCBlock(nn.Module):
             else:
                 bias = self.rel_pos_bias(q.size(1), k.size(1))
             qk += bias[:, :q.size(1), :k.size(1)]
-
+        # [B, K, K]
         kernel = torch.square(F.relu(qk / self.sqrt_s))
 
         if self.dropout_rate > 0.:
             kernel = self.dropout(kernel)
-
+        # [B, K, K] x [B, K, e] -> [B, K, e]
         x = u * torch.bmm(kernel, v)
+        # [B, K, e] -> [B, K, out_token_dims]
         x = self.o(x)
 
         return x
