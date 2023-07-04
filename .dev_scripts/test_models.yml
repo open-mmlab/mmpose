@@ -474,7 +474,7 @@ cases:
     dataset: COCO
     eval: AP
     metrics:
-      AP: 0.781
+      AP: 0.780
 
 - name: td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192
   params:
