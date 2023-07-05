@@ -207,8 +207,9 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.label_mapping_table.items():
             if key in results:
                 # For pose-lifting, store only target-related fields
-                if 'lifting_target' in results and key in {
-                        'keypoint_labels', 'keypoint_weights'
+                if 'lifting_target' in results and packed_key in {
+                        'keypoint_labels', 'keypoint_weights',
+                        'keypoints_visible'
                 }:
                     continue
                 if isinstance(results[key], list):
