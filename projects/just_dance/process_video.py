@@ -12,16 +12,17 @@ from mmengine.utils import track_iter_progress
 from mmpose.apis import Pose2DInferencer
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.visualization import PoseLocalVisualizer
+
 try:
     from .calculate_similarity import (calculate_similarity,
-                                    select_piece_from_similarity)
+                                       select_piece_from_similarity)
     from .utils import (blend_images, convert_video_fps, get_smoothed_kpt,
-                        resize_image_to_fixed_height)                                    
+                        resize_image_to_fixed_height)
 except ImportError:
     from calculate_similarity import (calculate_similarity,
-                                    select_piece_from_similarity)    
+                                      select_piece_from_similarity)
     from utils import (blend_images, convert_video_fps, get_smoothed_kpt,
-                        resize_image_to_fixed_height)                                        
+                       resize_image_to_fixed_height)
 
 det_config = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -215,6 +216,7 @@ class VideoProcessor:
         if video_writer is not None:
             video_writer.release()
         return output_file
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
