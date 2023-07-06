@@ -131,8 +131,11 @@ class MotionBERTLabel(BaseKeypointCodec):
             ..., :2] = keypoint_labels[..., :2] / w * 2 - [1, h / w]
 
         # convert target to image coordinate
-        lifting_target_label, factor_ = camera_to_image_coord(
-            self.root_index, lifting_target_label, _camera_param)
+        T = keypoint_labels.shape[0]
+        factor_ = np.array([4] * T, dtype=np.float32).reshape(T, )
+        if 'f' in _camera_param and 'c' in _camera_param:
+            lifting_target_label, factor_ = camera_to_image_coord(
+                self.root_index, lifting_target_label, _camera_param)
         lifting_target_label[..., :, :] = lifting_target_label[
             ..., :, :] - lifting_target_label[...,
                                               self.root_index:self.root_index +
@@ -141,7 +144,7 @@ class MotionBERTLabel(BaseKeypointCodec):
             factor = factor_
         if factor.ndim == 1:
             factor = factor[:, None]
-        lifting_target_label *= 1000 * factor[..., None]
+        lifting_target_label *= factor[..., None]
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
@@ -206,4 +209,5 @@ class MotionBERTLabel(BaseKeypointCodec):
             keypoints *= factor[..., None]
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[
             ..., self.root_index:self.root_index + 1, :]
+        keypoints /= 1000.
         return keypoints, scores

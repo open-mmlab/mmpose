@@ -317,6 +317,7 @@ def inference_pose_lifter_model(model,
             K,
         ), dtype=np.float32)
         data_info['lifting_target'] = np.zeros((1, K, 3), dtype=np.float32)
+        data_info['factor'] = np.zeros((T, ), dtype=np.float32)
         data_info['lifting_target_visible'] = np.ones((1, K, 1),
                                                       dtype=np.float32)
 
