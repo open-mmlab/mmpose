@@ -137,7 +137,8 @@ class TestMotionBERTLabel(TestCase):
 
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[..., 0, :]
 
-        self.assertTrue(np.allclose(keypoints[..., :2], _keypoints[..., :2]))
+        self.assertTrue(
+            np.allclose(keypoints[..., :2] / 1000, _keypoints[..., :2]))
 
         # test with factor
         keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 3))
@@ -154,4 +155,5 @@ class TestMotionBERTLabel(TestCase):
         keypoints *= encoded['factor']
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[..., 0, :]
 
-        self.assertTrue(np.allclose(keypoints[..., :2], _keypoints[..., :2]))
+        self.assertTrue(
+            np.allclose(keypoints[..., :2] / 1000, _keypoints[..., :2]))
