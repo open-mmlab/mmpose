@@ -3,6 +3,7 @@
 This project presents a dance scoring system based on RTMPose. Users can compare the similarity between two dancers in different videos: one referred to as the "teacher video" and the other as the "student video."
 
 Here is an example of the output dance comparison:
+
 ![output](https://github.com/open-mmlab/mmpose/assets/26127467/56d5c4d1-55d8-4222-b481-2418cc29a8d4)
 
 ## Usage
