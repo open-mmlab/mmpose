@@ -7,14 +7,14 @@ visualizer = dict(
     type='Pose3dLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # runtime
-train_cfg = dict(max_epochs=80, val_interval=10)
+train_cfg = dict(max_epochs=160, val_interval=10)
 
 # optimizer
-optim_wrapper = dict(optimizer=dict(type='Adam', lr=1e-4))
+optim_wrapper = dict(optimizer=dict(type='Adam', lr=1e-3))
 
 # learning policy
 param_scheduler = [
-    dict(type='ExponentialLR', gamma=0.98, end=80, by_epoch=True)
+    dict(type='ExponentialLR', gamma=0.975, end=80, by_epoch=True)
 ]
 
 auto_scale_lr = dict(base_batch_size=1024)
@@ -45,7 +45,7 @@ model = dict(
         in_channels=2 * 17,
         stem_channels=1024,
         num_blocks=4,
-        kernel_sizes=(1, 1, 1, 1, 1),
+        kernel_sizes=(3, 3, 3, 3, 3),
         dropout=0.25,
         use_stride_conv=True,
     ),
@@ -91,11 +91,9 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         ann_file='annotation_body3d/fps50/h36m_train.npz',
-        seq_len=1,
+        seq_len=243,
         causal=False,
-        pad_video_seq=False,
-        keypoint_2d_src='detection',
-        keypoint_2d_det_file='joint_2d_det_files/cpn_ft_h36m_dbb_train.npy',
+        pad_video_seq=True,
         camera_param_file='annotation_body3d/cameras.pkl',
         data_root=data_root,
         data_prefix=dict(img='images/'),
@@ -111,11 +109,9 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         ann_file='annotation_body3d/fps50/h36m_test.npz',
-        seq_len=1,
+        seq_len=243,
         causal=False,
-        pad_video_seq=False,
-        keypoint_2d_src='detection',
-        keypoint_2d_det_file='joint_2d_det_files/cpn_ft_h36m_dbb_test.npy',
+        pad_video_seq=True,
         camera_param_file='annotation_body3d/cameras.pkl',
         data_root=data_root,
         data_prefix=dict(img='images/'),

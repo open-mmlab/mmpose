@@ -7,7 +7,7 @@ visualizer = dict(
     type='Pose3dLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # runtime
-train_cfg = dict(max_epochs=80, val_interval=10)
+train_cfg = dict(max_epochs=160, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(type='Adam', lr=1e-3))
