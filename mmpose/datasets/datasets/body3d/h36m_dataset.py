@@ -47,6 +47,8 @@ class Human36mDataset(BaseMocapDataset):
             Default: 1.
         multiple_target (int): If larger than 0, merge every
             ``multiple_target`` sequence together. Default: 0.
+        multiple_target_step (int): The interval for merging sequence. Only
+            valid when ``multiple_target`` is larger than 0. Default: 0.
         pad_video_seq (bool): Whether to pad the video so that poses will be
             predicted for every frame in the video. Default: ``False``.
         causal (bool): If set to ``True``, the rightmost input frame will be
@@ -110,6 +112,7 @@ class Human36mDataset(BaseMocapDataset):
                  seq_len: int = 1,
                  seq_step: int = 1,
                  multiple_target: int = 0,
+                 multiple_target_step: int = 0,
                  pad_video_seq: bool = False,
                  causal: bool = True,
                  subset_frac: float = 1.0,
@@ -151,6 +154,10 @@ class Human36mDataset(BaseMocapDataset):
             assert exists(factor_file), 'Annotation file does not exist.'
         self.factor_file = factor_file
 
+        if multiple_target > 0 and multiple_target_step == 0:
+            multiple_target_step = multiple_target
+        self.multiple_target_step = multiple_target_step
+
         super().__init__(
             ann_file=ann_file,
             seq_len=seq_len,
@@ -191,8 +198,9 @@ class Human36mDataset(BaseMocapDataset):
                 n_frame = len(_indices)
                 seqs_from_video = [
                     _indices[i:(i + self.multiple_target):_step]
-                    for i in range(0, n_frame, self.multiple_target)
-                ][:n_frame // self.multiple_target]
+                    for i in range(0, n_frame, self.multiple_target_step)
+                ][:(n_frame + self.multiple_target_step -
+                    self.multiple_target) // self.multiple_target_step]
                 sequence_indices.extend(seqs_from_video)
 
         else:

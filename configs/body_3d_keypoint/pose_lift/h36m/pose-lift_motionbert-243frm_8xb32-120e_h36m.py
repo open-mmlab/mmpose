@@ -7,11 +7,16 @@ visualizer = dict(
     type='Pose3dLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # runtime
-train_cfg = None
+train_cfg = dict(max_epochs=120, val_interval=10)
 
 # optimizer
+optim_wrapper = dict(
+    optimizer=dict(type='AdamW', lr=0.0002, weight_decay=0.01))
 
 # learning policy
+param_scheduler = [
+    dict(type='ExponentialLR', gamma=0.99, end=120, by_epoch=True)
+]
 
 auto_scale_lr = dict(base_batch_size=512)
 
@@ -57,6 +62,18 @@ dataset_type = 'Human36mDataset'
 data_root = 'data/h36m/'
 
 # pipelines
+train_pipeline = [
+    dict(
+        type='RandomFlipAroundRoot',
+        keypoints_flip_cfg={},
+        target_flip_cfg={},
+        flip_image=True),
+    dict(type='GenerateTarget', encoder=codec),
+    dict(
+        type='PackPoseInputs',
+        meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
+                   'factor', 'camera_param'))
+]
 val_pipeline = [
     dict(type='GenerateTarget', encoder=codec),
     dict(
@@ -66,9 +83,27 @@ val_pipeline = [
 ]
 
 # data loaders
+train_dataloader = dict(
+    batch_size=32,
+    prefetch_factor=4,
+    pin_memory=True,
+    num_workers=2,
+    persistent_workers=True,
+    sampler=dict(type='DefaultSampler', shuffle=True),
+    dataset=dict(
+        type=dataset_type,
+        ann_file='annotation_body3d/fps50/h36m_train.npz',
+        seq_len=1,
+        multiple_target=243,
+        multiple_target_step=81,
+        camera_param_file='annotation_body3d/cameras.pkl',
+        data_root=data_root,
+        data_prefix=dict(img='images/'),
+        pipeline=train_pipeline,
+    ))
+
 val_dataloader = dict(
     batch_size=32,
-    shuffle=False,
     prefetch_factor=4,
     pin_memory=True,
     num_workers=2,
@@ -78,8 +113,8 @@ val_dataloader = dict(
         type=dataset_type,
         ann_file='annotation_body3d/fps50/h36m_test.npz',
         seq_len=1,
-        multiple_target=243,
         seq_step=1,
+        multiple_target=243,
         camera_param_file='annotation_body3d/cameras.pkl',
         data_root=data_root,
         data_prefix=dict(img='images/'),

@@ -25,6 +25,8 @@ class RandomFlipAroundRoot(BaseTransform):
         flip_prob (float): Probability of flip. Default: 0.5.
         flip_camera (bool): Whether to flip horizontal distortion coefficients.
             Default: ``False``.
+        flip_image (bool): Whether to flip keypoints horizontally according
+            to image size. Default: ``False``.
 
     Required keys:
         keypoints
@@ -39,14 +41,16 @@ class RandomFlipAroundRoot(BaseTransform):
                  keypoints_flip_cfg,
                  target_flip_cfg,
                  flip_prob=0.5,
-                 flip_camera=False):
+                 flip_camera=False,
+                 flip_image=False):
         self.keypoints_flip_cfg = keypoints_flip_cfg
         self.target_flip_cfg = target_flip_cfg
         self.flip_prob = flip_prob
         self.flip_camera = flip_camera
+        self.flip_image = flip_image
 
     def transform(self, results: Dict) -> dict:
-        """The transform function of :class:`ZeroCenterPose`.
+        """The transform function of :class:`RandomFlipAroundRoot`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
 
@@ -76,6 +80,15 @@ class RandomFlipAroundRoot(BaseTransform):
                 flip_indices = results['flip_indices']
 
             # flip joint coordinates
+            _camera_param = deepcopy(results['camera_param'])
+            if self.flip_image:
+                assert 'camera_param' in results, \
+                    'Camera parameters are missing.'
+                assert 'w' in _camera_param
+                w = _camera_param['w'] / 2
+                self.keypoints_flip_cfg['center_x'] = w
+                self.target_flip_cfg['center_x'] = w
+
             keypoints, keypoints_visible = flip_keypoints_custom_center(
                 keypoints, keypoints_visible, flip_indices,
                 **self.keypoints_flip_cfg)
@@ -92,7 +105,6 @@ class RandomFlipAroundRoot(BaseTransform):
             if self.flip_camera:
                 assert 'camera_param' in results, \
                     'Camera parameters are missing.'
-                _camera_param = deepcopy(results['camera_param'])
 
                 assert 'c' in _camera_param
                 _camera_param['c'][0] *= -1
