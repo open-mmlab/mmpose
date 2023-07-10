@@ -47,7 +47,7 @@ def process_video(
 
 
 # download video resources
-mkdir_or_exist('resources')
+mkdir_or_exist(os.path.join(project_path, 'resources'))
 os.system(
     f'wget -O {project_path}/resources/tom.mp4 https://download.openmmlab.com/mmpose/v1/projects/just_dance/tom.mp4'  # noqa
 )
