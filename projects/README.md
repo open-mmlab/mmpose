@@ -54,4 +54,10 @@ We also provide some documentation listed below to help you get started:
   <img src="https://user-images.githubusercontent.com/13503330/231416285-5467d313-0732-4ada-97e1-12be6ec69a28.png" width="800"/>
   </div><br/>
 
+- **[💃Just-Dance](./just_dance)**: Enhancing Dance scoring system for comparing dance performances in videos
+
+  <div align=center>
+  <img src="https://github.com/open-mmlab/mmpose/assets/26127467/a80978ad-c66d-4bac-bf56-1fa191716f1c" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
+  </div><br/>
+
 - **What's next? Join the rank of <span style="color:blue"> *MMPose contributors* </span> by creating a new  project**!
