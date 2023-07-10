@@ -1,7 +1,5 @@
 # Just Dance - A Simple Implementation
 
-![title_image](https://github.com/open-mmlab/mmpose/assets/26127467/a80978ad-c66d-4bac-bf56-1fa191716f1c)
-
 This project presents a dance scoring system based on RTMPose. Users can compare the similarity between two dancers in different videos: one referred to as the "teacher video" and the other as the "student video."
 
 Here is an example of the output dance comparison:
