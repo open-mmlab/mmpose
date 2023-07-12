@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
-from mmpose.evaluation.functional import keypoint_pck_accuracy
+from mmpose.evaluation.functional import keypoint_mpjpe
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -142,11 +142,11 @@ class MotionRegressionHead(BaseHead):
 
         pred_outputs = self.forward(inputs)
 
-        lifting_target_label = torch.cat([
+        lifting_target_label = torch.stack([
             d.gt_instance_labels.lifting_target_label
             for d in batch_data_samples
         ])
-        lifting_target_weights = torch.cat([
+        lifting_target_weights = torch.stack([
             d.gt_instance_labels.lifting_target_weights
             for d in batch_data_samples
         ])
@@ -159,19 +159,18 @@ class MotionRegressionHead(BaseHead):
         losses.update(loss_pose3d=loss)
 
         # calculate accuracy
-        _, avg_acc, _ = keypoint_pck_accuracy(
+        mpjpe_err = keypoint_mpjpe(
             pred=to_numpy(pred_outputs),
             gt=to_numpy(lifting_target_label),
-            mask=to_numpy(lifting_target_weights) > 0,
-            thr=0.05,
-            norm_factor=np.ones((pred_outputs.size(0), 3), dtype=np.float32))
+            mask=to_numpy(lifting_target_weights) > 0)
 
-        mpjpe_pose = torch.tensor(avg_acc, device=lifting_target_label.device)
+        mpjpe_pose = torch.tensor(
+            mpjpe_err, device=lifting_target_label.device)
         losses.update(mpjpe=mpjpe_pose)
 
         return losses
 
     @property
     def default_init_cfg(self):
-        init_cfg = [dict(type='Normal', layer=['Linear'], std=0.01, bias=0)]
+        init_cfg = [dict(type='TruncNormal', layer=['Linear'], std=0.02)]
         return init_cfg

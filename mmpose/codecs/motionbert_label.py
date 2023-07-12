@@ -34,6 +34,8 @@ class MotionBERTLabel(BaseKeypointCodec):
             Default: ``False``.
         rootrel (bool): If true, the root keypoint will be set to the
             coordinate origin. Default: ``False``.
+        factor_label (bool): If true, the label will be multiplied by a factor.
+            Default: ``True``.
     """
 
     auxiliary_encode_keys = {
@@ -46,7 +48,8 @@ class MotionBERTLabel(BaseKeypointCodec):
                  remove_root: bool = False,
                  save_index: bool = False,
                  concat_vis: bool = False,
-                 rootrel: bool = False):
+                 rootrel: bool = False,
+                 factor_label: bool = True):
         super().__init__()
 
         self.num_keypoints = num_keypoints
@@ -55,6 +58,7 @@ class MotionBERTLabel(BaseKeypointCodec):
         self.save_index = save_index
         self.concat_vis = concat_vis
         self.rootrel = rootrel
+        self.factor_label = factor_label
 
     def encode(self,
                keypoints: np.ndarray,
@@ -144,7 +148,8 @@ class MotionBERTLabel(BaseKeypointCodec):
             factor = factor_
         if factor.ndim == 1:
             factor = factor[:, None]
-        lifting_target_label *= factor[..., None]
+        if self.factor_label:
+            lifting_target_label *= factor[..., None]
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible

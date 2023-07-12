@@ -31,7 +31,13 @@ default_hooks = dict(
 )
 
 # codec settings
-codec = dict(
+train_codec = dict(
+    type='MotionBERTLabel',
+    num_keypoints=17,
+    concat_vis=True,
+    rootrel=True,
+    factor_label=False)
+val_codec = dict(
     type='MotionBERTLabel', num_keypoints=17, concat_vis=True, rootrel=True)
 
 # model settings
@@ -52,8 +58,8 @@ model = dict(
         in_channels=512,
         out_channels=3,
         embedding_size=512,
-        loss=dict(type='MPJPELoss'),
-        decoder=codec,
+        loss=dict(type='MPJPEVelocityJointLoss'),
+        decoder=val_codec,
     ),
 )
 
@@ -68,14 +74,14 @@ train_pipeline = [
         keypoints_flip_cfg={},
         target_flip_cfg={},
         flip_image=True),
-    dict(type='GenerateTarget', encoder=codec),
+    dict(type='GenerateTarget', encoder=train_codec),
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
                    'factor', 'camera_param'))
 ]
 val_pipeline = [
-    dict(type='GenerateTarget', encoder=codec),
+    dict(type='GenerateTarget', encoder=val_codec),
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
