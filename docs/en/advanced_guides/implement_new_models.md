@@ -7,9 +7,6 @@ This tutorial will introduce how to implement your own models in MMPose. After s
 
 ## Basic Concepts
 
-不论你想实现的模型是以上哪一种，这一节的内容都对你很重要，因为它是 OpenMMLab 系列算法库构建模型的基本原则。
-在 MMPose 中，所有与模型结构实现相关的代码都存放在 [models 目录](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models)下：
-
 What you want to implement is one of the above, and this section is important to you because it is the basic principle of building models in the OpenMMLab.
 
 In MMPose, all the code related to the implementation of the model structure is stored in the [models directory](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models) :
@@ -61,7 +58,7 @@ from .base_backbone import BaseBackbone
 class YourNewBackbone(BaseBackbone):
 ```
 
-Finally, please remember to import your new backbone network in [__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py) .
+Finally, please remember to import your new backbone network in `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py)` .
 
 ## Heads
 
@@ -81,4 +78,4 @@ from ..base_head import BaseHead
 class YourNewHead(BaseHead):
 ```
 
-Finally, please remember to import your new prediction head in [__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py) .
+Finally, please remember to import your new prediction head in `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py)` .
