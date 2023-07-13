@@ -14,13 +14,13 @@ In MMPose, all the code related to the implementation of the model structure is 
 ```shell
 mmpose
 |----models
-     |----backbones             # 骨干网络
-     |----data_preprocessors    # 数据预处理，如：图片归一化
-     |----heads                 # 预测头
-     |----losses                # 损失函数
-     |----necks                 # 颈部
-     |----pose_estimators       # 姿态估计算法范式
-     |----utils                 # 工具方法
+     |----backbones             #
+     |----data_preprocessors    # image normalization
+     |----heads                 #
+     |----losses                # loss functions
+     |----necks                 #
+     |----pose_estimators       # algorithm paradigm
+     |----utils                 #
 ```
 
 You can refer to the following flow chart to locate the module you need to implement:
