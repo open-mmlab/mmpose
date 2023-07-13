@@ -71,9 +71,9 @@ MMPose 数据的组织主要包含三个方面：
 
 ### 数据集元信息
 
-元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 `[$MMPOSE/configs/_base_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets)` 目录下。
+元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 [$MMPOSE/configs/_base_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets) 目录下。
 
-在 MMPose 中使用自定义数据集时，你需要增加对应的元信息配置文件。以 MPII 数据集（`[$MMPOSE/configs/_base_/datasets/mpii.py](https://github.com/open-mmlab/mmpose/blob/main/configs/_base_/datasets/mpii.py)`）为例：
+在 MMPose 中使用自定义数据集时，你需要增加对应的元信息配置文件。以 MPII 数据集（[$MMPOSE/configs/_base_/datasets/mpii.py](https://github.com/open-mmlab/mmpose/blob/main/configs/_base_/datasets/mpii.py)）为例：
 
 ```Python
 dataset_info = dict(
@@ -153,9 +153,9 @@ MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此�
 关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
 ```
 
-在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在 `[$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py)`。
+在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在 [$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py)。
 
-下面我们以MPII数据集的实现（`[$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/body/mpii_dataset.py)`）为例：
+下面我们以MPII数据集的实现（[$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/body/mpii_dataset.py)）为例：
 
 ```Python
 @DATASETS.register_module()
@@ -304,7 +304,7 @@ test_pipeline = [
 
 #### i. 数据增强
 
-数据增强中常用的变换存放在 `[$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py)` 中，如 `RandomFlip`、`RandomHalfBody` 等。
+数据增强中常用的变换存放在 [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py) 中，如 `RandomFlip`、`RandomHalfBody` 等。
 
 对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于 bottom-up 方法，这些则是由 `BottomupRandomAffine` 实现。
 
@@ -370,11 +370,11 @@ class GenerateTarget(BaseTransform):
 
 - Bottom-up: `[B, N, K, D]`
 
-当前已经支持的编解码器定义在 `[$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs)` 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
+当前已经支持的编解码器定义在 [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs) 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
 
 #### iv. 数据打包
 
-数据经过前处理变换后，最终需要通过 `PackPoseInputs` 打包成数据样本。该操作定义在 `[$MMPOSE/mmpose/datasets/transforms/formatting.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py)` 中。
+数据经过前处理变换后，最终需要通过 `PackPoseInputs` 打包成数据样本。该操作定义在 [$MMPOSE/mmpose/datasets/transforms/formatting.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py) 中。
 
 打包过程会将数据流水线中用字典 `results` 存储的数据转换成用 MMPose 所需的标准数据结构， 如 `InstanceData`，`PixelData`，`PoseDataSample` 等。
 
@@ -441,7 +441,7 @@ def get_pose_data_sample(self):
 
 - **预测头（Head）**：用于实现核心算法功能和损失函数定义
 
-我们在 `[$MMPOSE/models/pose_estimators/base.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/pose_estimators/base.py)` 下为姿态估计模型定义了一个基类 `BasePoseEstimator`，所有的模型（如 `TopdownPoseEstimator`）都需要继承这个基类，并重载对应的方法。
+我们在 [$MMPOSE/models/pose_estimators/base.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/pose_estimators/base.py) 下为姿态估计模型定义了一个基类 `BasePoseEstimator`，所有的模型（如 `TopdownPoseEstimator`）都需要继承这个基类，并重载对应的方法。
 
 在模型的 `forward()` 方法中提供了三种不同的模式：
 
@@ -493,7 +493,7 @@ data_preprocessor=dict(
 
 ### 主干网络（Backbone）
 
-MMPose 实现的主干网络存放在 `[$MMPOSE/mmpose/models/backbones](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/backbones)` 目录下。
+MMPose 实现的主干网络存放在 [$MMPOSE/mmpose/models/backbones](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/backbones) 目录下。
 
 在实际开发中，开发者经常会使用预训练的网络权重进行迁移学习，这能有效提升模型在小数据集上的性能。 在 MMPose 中，只需要在配置文件 `backbone` 的 `init_cfg` 中设置：
 
@@ -529,11 +529,11 @@ init_cfg=dict(
 class YourBackbone(BaseBackbone):
 ```
 
-同时在 `[$MMPOSE/mmpose/models/backbones/__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py)` 下进行 `import`，并加入到 `__all__` 中，才能被配置文件正确地调用。
+同时在 [$MMPOSE/mmpose/models/backbones/\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py) 下进行 `import`，并加入到 `__all__` 中，才能被配置文件正确地调用。
 
 ### 颈部模块（Neck）
 
-MMPose 中 Neck 相关的模块定义在 `[$MMPOSE/mmpose/models/necks](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/necks)` 目录下.
+MMPose 中 Neck 相关的模块定义在 [$MMPOSE/mmpose/models/necks](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/necks) 目录下.
 
 颈部模块通常是介于主干网络和预测头之间的模块，在部分模型算法中会用到，常见的颈部模块有：
 
@@ -575,7 +575,7 @@ MMPose 中 Neck 相关的模块定义在 `[$MMPOSE/mmpose/models/necks](https://
 
 通常来说，预测头是模型算法实现的核心，用于控制模型的输出，并进行损失函数计算。
 
-MMPose 中 Head 相关的模块定义在 `[$MMPOSE/mmpose/models/heads](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/heads)` 目录下，开发者在自定义预测头时需要继承我们提供的基类 [BaseHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py)，并重载以下三个方法对应模型推理的三种模式：
+MMPose 中 Head 相关的模块定义在 [$MMPOSE/mmpose/models/heads](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/heads) 目录下，开发者在自定义预测头时需要继承我们提供的基类 [BaseHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py)，并重载以下三个方法对应模型推理的三种模式：
 
 - forward()
 

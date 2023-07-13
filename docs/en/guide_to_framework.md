@@ -69,9 +69,9 @@ The organization of data in MMPose contains:
 
 ### Dataset Meta Information
 
-The meta information of a pose dataset usually includes the definition of keypoints and skeleton, symmetrical characteristic, and keypoint properties (e.g. belonging to upper or lower body, weights and sigmas). These information is important in data preprocessing, model training and evaluation. In MMpose, the dataset meta information is stored in configs files under `[$MMPOSE/configs/_base_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets)`.
+The meta information of a pose dataset usually includes the definition of keypoints and skeleton, symmetrical characteristic, and keypoint properties (e.g. belonging to upper or lower body, weights and sigmas). These information is important in data preprocessing, model training and evaluation. In MMpose, the dataset meta information is stored in configs files under [$MMPOSE/configs/_base_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets).
 
-To use a custom dataset in MMPose, you need to add a new config file of the dataset meta information. Take the MPII dataset (`[$MMPOSE/configs/_base_/datasets/mpii.py](https://github.com/open-mmlab/mmpose/blob/main/configs/_base_/datasets/mpii.py)`) as an example. Here is its dataset information:
+To use a custom dataset in MMPose, you need to add a new config file of the dataset meta information. Take the MPII dataset ([$MMPOSE/configs/_base_/datasets/mpii.py](https://github.com/open-mmlab/mmpose/blob/main/configs/_base_/datasets/mpii.py)) as an example. Here is its dataset information:
 
 ```Python
 dataset_info = dict(
@@ -154,9 +154,9 @@ Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like st
 Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
 ```
 
-The bbox format in MMPose is in `xyxy` instead of `xywh`, which is consistent with the format used in other OpenMMLab projects like [MMDetection](https://github.com/open-mmlab/mmdetection).  We provide useful utils for bbox format conversion, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., which are defined in `[$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py)`.
+The bbox format in MMPose is in `xyxy` instead of `xywh`, which is consistent with the format used in other OpenMMLab projects like [MMDetection](https://github.com/open-mmlab/mmdetection).  We provide useful utils for bbox format conversion, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., which are defined in [$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py).
 
-Let's take the implementation of the MPII dataset (`[$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/body/mpii_dataset.py)`) as an example.
+Let's take the implementation of the MPII dataset ([$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/body/mpii_dataset.py)) as an example.
 
 ```Python
 @DATASETS.register_module()
@@ -306,7 +306,7 @@ In MMPose, the modules used for data transformation are under `[$MMPOSE/mmpose/d
 
 #### i. Augmentation
 
-Commonly used transforms are defined in `[$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py)`, such as `RandomFlip`, `RandomHalfBody`, etc.
+Commonly used transforms are defined in [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py), such as `RandomFlip`, `RandomHalfBody`, etc.
 
 For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
 
@@ -350,7 +350,7 @@ Note that we unify the data format of top-down and bottom-up methods, which mean
 
 - Bottom-up: `[B, N, K, D]`
 
-The provided codecs are stored under `[$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs)`.
+The provided codecs are stored under [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs).
 
 ```{note}
 If you wish to customize a new codec, you can refer to [Codec](./user_guides/codecs.md) for more details.
@@ -358,7 +358,7 @@ If you wish to customize a new codec, you can refer to [Codec](./user_guides/cod
 
 #### iv. Packing
 
-After the data is transformed, you need to pack it using `[PackPoseInputs](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py)`.
+After the data is transformed, you need to pack it using [PackPoseInputs](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py).
 
 This method converts the data stored in the dictionary `results` into standard data structures in MMPose, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
 
@@ -423,7 +423,7 @@ In MMPose 1.0, the model consists of the following components:
 
 - **Head**: used to implement the core algorithm and loss function
 
-We define a base class `BasePoseEstimator` for the model in `[$MMPOSE/models/pose_estimators/base.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/pose_estimators/base.py)`. All models, e.g. `TopdownPoseEstimator`, should inherit from this base class and override the corresponding methods.
+We define a base class `BasePoseEstimator` for the model in [$MMPOSE/models/pose_estimators/base.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/pose_estimators/base.py). All models, e.g. `TopdownPoseEstimator`, should inherit from this base class and override the corresponding methods.
 
 Three modes are provided in `forward()` of the estimator:
 
@@ -475,7 +475,7 @@ It will transpose the channel order of the input image from `bgr` to `rgb` and n
 
 ### Backbone
 
-MMPose provides some commonly used backbones under `[$MMPOSE/mmpose/models/backbones](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/backbones)`.
+MMPose provides some commonly used backbones under [$MMPOSE/mmpose/models/backbones](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/backbones).
 
 In practice, developers often use pre-trained backbone weights for transfer learning, which can improve the performance of the model on small datasets.
 
@@ -513,7 +513,7 @@ It should be emphasized that if you add a new backbone, you need to register it 
 class YourBackbone(BaseBackbone):
 ```
 
-Besides, import it in `[$MMPOSE/mmpose/models/backbones/__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py)`, and add it to `__all__`.
+Besides, import it in [$MMPOSE/mmpose/models/backbones/\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py), and add it to `__all__`.
 
 ### Neck
 
@@ -557,7 +557,7 @@ Neck is usually a module between Backbone and Head, which is used in some algori
 
 Generally speaking, Head is often the core of an algorithm, which is used to make predictions and perform loss calculation.
 
-Modules related to Head in MMPose are defined under `[$MMPOSE/mmpose/models/heads](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/heads)`, and developers need to inherit the base class `BaseHead` when customizing Head and override the following methods:
+Modules related to Head in MMPose are defined under [$MMPOSE/mmpose/models/heads](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/heads), and developers need to inherit the base class `BaseHead` when customizing Head and override the following methods:
 
 - forward()
 
@@ -565,7 +565,7 @@ Modules related to Head in MMPose are defined under `[$MMPOSE/mmpose/models/head
 
 - loss()
 
-Specifically, `predict()` method needs to return pose predictions in the image space, which is obtained from the model output though the decoding function provided by the codec. We implement this process in `[BaseHead.decode()](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py)`.
+Specifically, `predict()` method needs to return pose predictions in the image space, which is obtained from the model output though the decoding function provided by the codec. We implement this process in [BaseHead.decode()](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py).
 
 On the other hand, we will perform test-time augmentation(TTA) in `predict()`.
 

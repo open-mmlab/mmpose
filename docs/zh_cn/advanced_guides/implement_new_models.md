@@ -57,7 +57,7 @@ from .base_backbone import BaseBackbone
 class YourNewBackbone(BaseBackbone):
 ```
 
-最后，请记得在 `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py)` 中导入你的新骨干网络。
+最后，请记得在 [backbones/\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py) 中导入你的新骨干网络。
 
 ## 预测头部
 
@@ -77,4 +77,4 @@ from ..base_head import BaseHead
 class YourNewHead(BaseHead):
 ```
 
-最后，请记得在 `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py)` 中导入你的新预测头部。
+最后，请记得在 [heads/\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py) 中导入你的新预测头部。
