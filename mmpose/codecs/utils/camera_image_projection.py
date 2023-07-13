@@ -1,8 +1,27 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Dict, Tuple
+
 import numpy as np
 
 
-def camera_to_image_coord(root_index, kpts_3d_cam, camera_param):
+def camera_to_image_coord(root_index: int, kpts_3d_cam: np.ndarray,
+                          camera_param: Dict) -> Tuple[np.ndarray, np.ndarray]:
+    """Project keypoints from camera space to image space and calculate factor.
+
+    Args:
+        root_index (int): Index for root keypoint.
+        kpts_3d_cam (np.ndarray): Keypoint coordinates in camera space in
+            shape (N, K, D).
+        camera_param (dict): Parameters for the camera.
+
+    Returns:
+        tuple:
+        - kpts_3d_image (np.ndarray): Keypoint coordinates in image space in
+            shape (N, K, D).
+        - factor (np.ndarray): The scaling factor that maps keypoints from
+            image space to camera space in shape (N, ).
+    """
+
     root = kpts_3d_cam[..., root_index, :]
     tl_kpt = root.copy()
     tl_kpt[..., :2] -= 1.0
@@ -28,7 +47,20 @@ def camera_to_image_coord(root_index, kpts_3d_cam, camera_param):
     return kpts_3d_image, factor
 
 
-def camera_to_pixel(kpts_3d, fx, fy, cx, cy):
+def camera_to_pixel(kpts_3d: np.ndarray, fx: float, fy: float, cx: float,
+                    cy: float) -> np.ndarray:
+    """Project keypoints from camera space to image space.
+
+    Args:
+        kpts_3d (np.ndarray): Keypoint coordinates in camera space.
+        fx (float): x-coordinate of camera's focal length.
+        fy (float): y-coordinate of camera's focal length.
+        cx (float): x-coordinate of image center.
+        cy (float): y-coordinate of image center.
+
+    Returns:
+        pose_2d (np.ndarray): Projected keypoint coordinates in image space.
+    """
     pose_2d = kpts_3d[..., :2] / kpts_3d[..., 2:3]
     pose_2d[..., 0] *= fx
     pose_2d[..., 1] *= fy
