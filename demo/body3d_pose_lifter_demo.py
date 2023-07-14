@@ -452,10 +452,11 @@ def main():
 
                 video_writer.write(mmcv.rgb2bgr(frame_vis))
 
-            # press ESC to exit
-            if cv2.waitKey(5) & 0xFF == 27:
-                break
-            time.sleep(args.show_interval)
+            if args.show:
+                # press ESC to exit
+                if cv2.waitKey(5) & 0xFF == 27:
+                    break
+                time.sleep(args.show_interval)
 
         video.release()
 

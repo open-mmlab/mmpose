@@ -17,7 +17,7 @@ We provide a Jupyter Notebook [`just_dance_demo.ipynb`](./just_dance_demo.ipynb)
 Users can simply run the following command to generate the comparison video:
 
 ```shell
-python process_video ${TEACHER_VIDEO} ${STUDENT_VIDEO}
+python process_video.py ${TEACHER_VIDEO} ${STUDENT_VIDEO}
 ```
 
 ### Gradio
