@@ -296,7 +296,7 @@ test_pipeline = [
 
 数据在三个空间中变换的流程如图所示：
 
-![migration-cn](https://user-images.githubusercontent.com/13503330/187831574-13804daf-f498-47c2-ba43-64b8e6ffe3dd.png)
+![tour_cn](https://github.com/open-mmlab/mmpose/assets/13503330/4c989d86-e824-49ea-9ba8-b3978548db37)
 
 在MMPose中，数据变换所需要的模块在 `[$MMPOSE/mmpose/datasets/transforms](https://github.com/open-mmlab/mmpose/tree/main/mmpose/datasets/transforms)` 目录下，它们的工作流程如图所示：
 

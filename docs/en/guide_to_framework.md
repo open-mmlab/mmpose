@@ -298,7 +298,7 @@ In a keypoint detection task, data will be transformed among three scale spaces:
 
 Here is a diagram to show the workflow of data transformation among the three scale spaces:
 
-![migration-en](https://user-images.githubusercontent.com/13503330/187190213-cad87b5f-0a95-4f1f-b722-15896914ded4.png)
+![tour_en](https://github.com/open-mmlab/mmpose/assets/13503330/e82710e6-4181-4eb0-8185-7075b43dbec3)
 
 In MMPose, the modules used for data transformation are under `[$MMPOSE/mmpose/datasets/transforms](https://github.com/open-mmlab/mmpose/tree/main/mmpose/datasets/transforms)`, and their workflow is shown as follows:
 

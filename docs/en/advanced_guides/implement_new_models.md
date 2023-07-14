@@ -31,7 +31,7 @@ You can refer to the following flow chart to locate the module you need to imple
 
 In pose estimatiors, we will define the inference process of a model, and decode the model output results in `predict()`, first transform it from `output space` to `input image space` using the [codec](./codecs.md), and then combine the meta information to transform to `original image space`.
 
-![pose_estimator_en](https://github.com/open-mmlab/mmpose/assets/13503330/48c3813e-b977-4215-b5bc-e7379cfd2bce)
+![pose_estimator_en](https://github.com/open-mmlab/mmpose/assets/13503330/0764baab-41c7-4a1d-ab64-5d7f9dfc8eec)
 
 Currently, MMPose supports the following types of pose estimator:
 
