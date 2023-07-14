@@ -30,7 +30,7 @@ mmpose
 
 在姿态估计范式中，我们会定义一个模型的推理流程，并在 `predict()` 中对模型输出结果进行解码，先将其从 `输出尺度空间` 用 [编解码器](./codecs.md) 变换到 `输入图片空间`，然后再结合元信息变换到 `原始图片空间`。
 
-![image](https://github.com/open-mmlab/mmpose/assets/13503330/e3e700ac-a047-4cff-9017-67f83676b8cb)
+![pose_estimator_cn](https://github.com/open-mmlab/mmpose/assets/13503330/0c048f66-b889-4268-937f-71b8753b505f)
 
 当前 MMPose 已支持以下几类算法范式：
 

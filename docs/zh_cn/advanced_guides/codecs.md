@@ -8,7 +8,7 @@ MMPose 1.0 中引入了新模块 **编解码器（Codec）** ，将关键点数�
 
 编解码器在工作流程中所处的位置如下所示：
 
-![codec-cn](https://user-images.githubusercontent.com/13503330/187829784-4d5939de-97d7-43cc-b934-c6d17c02d589.png)
+![pose_estimator_cn](https://github.com/open-mmlab/mmpose/assets/13503330/0c048f66-b889-4268-937f-71b8753b505f)
 
 一个编解码器主要包含两个部分：
 
