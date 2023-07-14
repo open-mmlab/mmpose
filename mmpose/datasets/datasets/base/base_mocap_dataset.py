@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import itertools
 import os.path as osp
 from copy import deepcopy
 from itertools import filterfalse, groupby
@@ -21,6 +22,8 @@ class BaseMocapDataset(BaseDataset):
     Args:
         ann_file (str): Annotation file path. Default: ''.
         seq_len (int): Number of frames in a sequence. Default: 1.
+        multiple_target (int): If larger than 0, merge every
+            ``multiple_target`` sequence together. Default: 0.
         causal (bool): If set to ``True``, the rightmost input frame will be
             the target frame. Otherwise, the middle input frame will be the
             target frame. Default: ``True``.
@@ -63,6 +66,7 @@ class BaseMocapDataset(BaseDataset):
     def __init__(self,
                  ann_file: str = '',
                  seq_len: int = 1,
+                 multiple_target: int = 0,
                  causal: bool = True,
                  subset_frac: float = 1.0,
                  camera_param_file: Optional[str] = None,
@@ -101,6 +105,10 @@ class BaseMocapDataset(BaseDataset):
 
         self.seq_len = seq_len
         self.causal = causal
+
+        self.multiple_target = multiple_target
+        if self.multiple_target:
+            assert (self.seq_len == 1)
 
         assert 0 < subset_frac <= 1, (
             f'Unsupported `subset_frac` {subset_frac}. Supported range '
@@ -241,6 +249,17 @@ class BaseMocapDataset(BaseDataset):
             sequence_indices = [[idx] for idx in range(num_imgs)]
         else:
             raise NotImplementedError('Multi-frame data sample unsupported!')
+
+        if self.multiple_target > 0:
+            sequence_indices_merged = []
+            for i in range(0, len(sequence_indices), self.multiple_target):
+                if i + self.multiple_target > len(sequence_indices):
+                    break
+                sequence_indices_merged.append(
+                    list(
+                        itertools.chain.from_iterable(
+                            sequence_indices[i:i + self.multiple_target])))
+            sequence_indices = sequence_indices_merged
         return sequence_indices
 
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
@@ -274,7 +293,9 @@ class BaseMocapDataset(BaseDataset):
         image_list = []
 
         for idx, frame_ids in enumerate(self.sequence_indices):
-            assert len(frame_ids) == self.seq_len
+            assert len(frame_ids) == (self.multiple_target
+                                      if self.multiple_target else
+                                      self.seq_len), f'{len(frame_ids)}'
 
             _img_names = img_names[frame_ids]
 
@@ -286,7 +307,9 @@ class BaseMocapDataset(BaseDataset):
             keypoints_3d = _keypoints_3d[..., :3]
             keypoints_3d_visible = _keypoints_3d[..., 3]
 
-            target_idx = -1 if self.causal else int(self.seq_len) // 2
+            target_idx = [-1] if self.causal else [int(self.seq_len) // 2]
+            if self.multiple_target:
+                target_idx = list(range(self.multiple_target))
 
             instance_info = {
                 'num_keypoints': num_keypoints,

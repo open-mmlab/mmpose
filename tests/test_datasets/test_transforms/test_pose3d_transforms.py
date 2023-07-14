@@ -35,7 +35,7 @@ def get_h36m_sample():
     scales = data['scale'].astype(np.float32)
 
     idx = 0
-    target_idx = 0
+    target_idx = [0]
 
     data_info = {
         'keypoints': keypoints[idx, :, :2].reshape(1, -1, 2),
@@ -52,7 +52,6 @@ def get_h36m_sample():
         'sample_idx': idx,
         'lifting_target': keypoints_3d[target_idx, :, :3],
         'lifting_target_visible': keypoints_3d[target_idx, :, 3],
-        'target_img_path': osp.join('tests/data/h36m', imgnames[target_idx]),
     }
 
     # add camera parameters
@@ -108,9 +107,12 @@ class TestRandomFlipAroundRoot(TestCase):
         tar_vis2 = results['lifting_target_visible']
 
         self.assertEqual(kpts_vis2.shape, (1, 17))
-        self.assertEqual(tar_vis2.shape, (17, ))
+        self.assertEqual(tar_vis2.shape, (
+            1,
+            17,
+        ))
         self.assertEqual(kpts2.shape, (1, 17, 2))
-        self.assertEqual(tar2.shape, (17, 3))
+        self.assertEqual(tar2.shape, (1, 17, 3))
 
         flip_indices = [
             0, 4, 5, 6, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 11, 12, 13
@@ -121,12 +123,15 @@ class TestRandomFlipAroundRoot(TestCase):
             self.assertTrue(
                 np.allclose(kpts1[0][left][1:], kpts2[0][right][1:], atol=4.))
             self.assertTrue(
-                np.allclose(tar1[left][1:], tar2[right][1:], atol=4.))
+                np.allclose(
+                    tar1[..., left, 1:], tar2[..., right, 1:], atol=4.))
 
             self.assertTrue(
-                np.allclose(kpts_vis1[0][left], kpts_vis2[0][right], atol=4.))
+                np.allclose(
+                    kpts_vis1[..., left], kpts_vis2[..., right], atol=4.))
             self.assertTrue(
-                np.allclose(tar_vis1[left], tar_vis2[right], atol=4.))
+                np.allclose(
+                    tar_vis1[..., left], tar_vis2[..., right], atol=4.))
 
         # test camera flipping
         transform = RandomFlipAroundRoot(
@@ -148,3 +153,23 @@ class TestRandomFlipAroundRoot(TestCase):
                 -self.data_info['camera_param']['p'][0],
                 camera2['p'][0],
                 atol=4.))
+
+        # test flipping w.r.t. image
+        transform = RandomFlipAroundRoot({}, {}, flip_prob=1, flip_image=True)
+        results = deepcopy(self.data_info)
+        results = transform(results)
+        kpts2 = results['keypoints']
+        tar2 = results['lifting_target']
+
+        camera_param = results['camera_param']
+        for left, right in enumerate(flip_indices):
+            self.assertTrue(
+                np.allclose(
+                    camera_param['w'] - kpts1[0][left][:1],
+                    kpts2[0][right][:1],
+                    atol=4.))
+            self.assertTrue(
+                np.allclose(kpts1[0][left][1:], kpts2[0][right][1:], atol=4.))
+            self.assertTrue(
+                np.allclose(
+                    tar1[..., left, 1:], tar2[..., right, 1:], atol=4.))

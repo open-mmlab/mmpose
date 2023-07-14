@@ -51,8 +51,6 @@ def keypoints_to_tensor(keypoints: Union[np.ndarray, Sequence[np.ndarray]]
     """
     if isinstance(keypoints, np.ndarray):
         keypoints = np.ascontiguousarray(keypoints)
-        N = keypoints.shape[0]
-        keypoints = keypoints.transpose(1, 2, 0).reshape(-1, N)
         tensor = torch.from_numpy(keypoints).contiguous()
     else:
         assert is_seq_of(keypoints, np.ndarray)
@@ -209,9 +207,9 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.label_mapping_table.items():
             if key in results:
                 # For pose-lifting, store only target-related fields
-                if 'lifting_target_label' in results and key in {
+                if 'lifting_target' in results and packed_key in {
                         'keypoint_labels', 'keypoint_weights',
-                        'transformed_keypoints_visible'
+                        'keypoints_visible'
                 }:
                     continue
                 if isinstance(results[key], list):

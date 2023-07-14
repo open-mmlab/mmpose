@@ -25,6 +25,10 @@ class ImagePoseLifting(BaseKeypointCodec):
             Default: ``False``.
         save_index (bool): If true, store the root position separated from the
             original pose. Default: ``False``.
+        reshape_keypoints (bool): If true, reshape the keypoints into shape
+            (-1, N). Default: ``True``.
+        concat_vis (bool): If true, concat the visibility item of keypoints.
+            Default: ``False``.
         keypoints_mean (np.ndarray, optional): Mean values of keypoints
             coordinates in shape (K, D).
         keypoints_std (np.ndarray, optional): Std values of keypoints
@@ -42,6 +46,8 @@ class ImagePoseLifting(BaseKeypointCodec):
                  root_index: int,
                  remove_root: bool = False,
                  save_index: bool = False,
+                 reshape_keypoints: bool = True,
+                 concat_vis: bool = False,
                  keypoints_mean: Optional[np.ndarray] = None,
                  keypoints_std: Optional[np.ndarray] = None,
                  target_mean: Optional[np.ndarray] = None,
@@ -52,9 +58,23 @@ class ImagePoseLifting(BaseKeypointCodec):
         self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
-        if keypoints_mean is not None and keypoints_std is not None:
+        self.reshape_keypoints = reshape_keypoints
+        self.concat_vis = concat_vis
+        if keypoints_mean is not None:
+            keypoints_mean = np.array(
+                keypoints_mean,
+                dtype=np.float32).reshape(1, num_keypoints, -1)
+            keypoints_std = np.array(
+                keypoints_std, dtype=np.float32).reshape(1, num_keypoints, -1)
+            assert keypoints_std is not None
             assert keypoints_mean.shape == keypoints_std.shape
-        if target_mean is not None and target_std is not None:
+        if target_mean is not None:
+            target_dim = num_keypoints - 1 if remove_root else num_keypoints
+            target_mean = np.array(
+                target_mean, dtype=np.float32).reshape(1, target_dim, -1)
+            target_std = np.array(
+                target_std, dtype=np.float32).reshape(1, target_dim, -1)
+            assert target_std is not None
             assert target_mean.shape == target_std.shape
         self.keypoints_mean = keypoints_mean
         self.keypoints_std = keypoints_std
@@ -73,15 +93,17 @@ class ImagePoseLifting(BaseKeypointCodec):
             keypoints_visible (np.ndarray, optional): Keypoint visibilities in
                 shape (N, K).
             lifting_target (np.ndarray, optional): 3d target coordinate in
-                shape (K, C).
+                shape (T, K, C).
             lifting_target_visible (np.ndarray, optional): Target coordinate in
-                shape (K, ).
+                shape (T, K, ).
 
         Returns:
             encoded (dict): Contains the following items:
 
                 - keypoint_labels (np.ndarray): The processed keypoints in
-                  shape (K * D, N) where D is 2 for 2d coordinates.
+                  shape like (N, K, D) or (K * D, N).
+                - keypoint_labels_visible (np.ndarray): The processed
+                  keypoints' weights in shape (N, K, ) or (N-1, K, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
@@ -93,18 +115,20 @@ class ImagePoseLifting(BaseKeypointCodec):
 
                 In addition, there are some optional items it may contain:
 
+                - target_root (np.ndarray): The root coordinate of target in
+                  shape (C, ). Exists if ``zero_center`` is ``True``.
                 - target_root_removed (bool): Indicate whether the root of
-                  pose lifting target is removed. Added if ``self.remove_root``
-                  is ``True``.
+                  pose-lifitng target is removed. Exists if
+                  ``remove_root`` is ``True``.
                 - target_root_index (int): An integer indicating the index of
-                  root. Added if ``self.remove_root`` and ``self.save_index``
+                  root. Exists if ``remove_root`` and ``save_index``
                   are ``True``.
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if lifting_target is None:
-            lifting_target = keypoints[0]
+            lifting_target = [keypoints[0]]
 
         # set initial value for `lifting_target_weights`
         # and `trajectory_weights`
@@ -126,13 +150,16 @@ class ImagePoseLifting(BaseKeypointCodec):
             f'Got invalid joint shape {lifting_target.shape}'
 
         root = lifting_target[..., self.root_index, :]
-        lifting_target_label = lifting_target - root
+        lifting_target_label = lifting_target - lifting_target[
+            ..., self.root_index:self.root_index + 1, :]
 
         if self.remove_root:
             lifting_target_label = np.delete(
                 lifting_target_label, self.root_index, axis=-2)
-            assert lifting_target_weights.ndim in {1, 2}
-            axis_to_remove = -2 if lifting_target_weights.ndim == 2 else -1
+            lifting_target_visible = np.delete(
+                lifting_target_visible, self.root_index, axis=-2)
+            assert lifting_target_weights.ndim in {2, 3}
+            axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
             lifting_target_weights = np.delete(
                 lifting_target_weights, self.root_index, axis=axis_to_remove)
             # Add a flag to avoid latter transforms that rely on the root
@@ -145,15 +172,17 @@ class ImagePoseLifting(BaseKeypointCodec):
 
         # Normalize the 2D keypoint coordinate with mean and std
         keypoint_labels = keypoints.copy()
-        if self.keypoints_mean is not None and self.keypoints_std is not None:
-            keypoints_shape = keypoints.shape
-            assert self.keypoints_mean.shape == keypoints_shape[1:]
+        if self.keypoints_mean is not None:
+            assert self.keypoints_mean.shape[1:] == keypoints.shape[1:]
+            encoded['keypoints_mean'] = self.keypoints_mean.copy()
+            encoded['keypoints_std'] = self.keypoints_std.copy()
 
             keypoint_labels = (keypoint_labels -
                                self.keypoints_mean) / self.keypoints_std
-        if self.target_mean is not None and self.target_std is not None:
-            target_shape = lifting_target_label.shape
-            assert self.target_mean.shape == target_shape
+        if self.target_mean is not None:
+            assert self.target_mean.shape == lifting_target_label.shape
+            encoded['target_mean'] = self.target_mean.copy()
+            encoded['target_std'] = self.target_std.copy()
 
             lifting_target_label = (lifting_target_label -
                                     self.target_mean) / self.target_std
@@ -163,7 +192,19 @@ class ImagePoseLifting(BaseKeypointCodec):
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
+        if self.concat_vis:
+            keypoints_visible_ = keypoints_visible
+            if keypoints_visible.ndim == 2:
+                keypoints_visible_ = keypoints_visible[..., None]
+            keypoint_labels = np.concatenate(
+                (keypoint_labels, keypoints_visible_), axis=2)
+
+        if self.reshape_keypoints:
+            N = keypoint_labels.shape[0]
+            keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
+
         encoded['keypoint_labels'] = keypoint_labels
+        encoded['keypoint_labels_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights
         encoded['trajectory_weights'] = trajectory_weights
@@ -190,11 +231,11 @@ class ImagePoseLifting(BaseKeypointCodec):
         keypoints = encoded.copy()
 
         if self.target_mean is not None and self.target_std is not None:
-            assert self.target_mean.shape == keypoints.shape[1:]
+            assert self.target_mean.shape == keypoints.shape
             keypoints = keypoints * self.target_std + self.target_mean
 
-        if target_root.size > 0:
-            keypoints = keypoints + np.expand_dims(target_root, axis=0)
+        if target_root is not None and target_root.size > 0:
+            keypoints = keypoints + target_root
             if self.remove_root:
                 keypoints = np.insert(
                     keypoints, self.root_index, target_root, axis=1)

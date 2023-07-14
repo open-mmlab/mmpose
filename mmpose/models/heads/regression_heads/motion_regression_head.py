@@ -1,42 +1,43 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional, Sequence, Tuple, Union
+from collections import OrderedDict
+from typing import Tuple
 
 import numpy as np
 import torch
 from torch import Tensor, nn
 
-from mmpose.evaluation.functional import keypoint_pck_accuracy
+from mmpose.evaluation.functional import keypoint_mpjpe
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                  Predictions)
 from ..base_head import BaseHead
 
-OptIntSeq = Optional[Sequence[int]]
-
 
 @MODELS.register_module()
-class TemporalRegressionHead(BaseHead):
-    """Temporal Regression head of `VideoPose3D`_ by Dario et al (CVPR'2019).
+class MotionRegressionHead(BaseHead):
+    """Regression head of `MotionBERT`_ by Zhu et al (2022).
 
     Args:
-        in_channels (int | sequence[int]): Number of input channels
-        num_joints (int): Number of joints
+        in_channels (int): Number of input channels. Default: 256.
+        out_channels (int): Number of output channels. Default: 3.
+        embedding_size (int): Number of embedding channels. Default: 512.
         loss (Config): Config for keypoint loss. Defaults to use
-            :class:`SmoothL1Loss`
+            :class:`MSELoss`
         decoder (Config, optional): The decoder config that controls decoding
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
 
-    .. _`VideoPose3D`: https://arxiv.org/abs/1811.11742
+    .. _`MotionBERT`: https://arxiv.org/abs/2210.06551
     """
 
     _version = 2
 
     def __init__(self,
-                 in_channels: Union[int, Sequence[int]],
-                 num_joints: int,
+                 in_channels: int = 256,
+                 out_channels: int = 3,
+                 embedding_size: int = 512,
                  loss: ConfigType = dict(
                      type='MSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -48,7 +49,7 @@ class TemporalRegressionHead(BaseHead):
         super().__init__(init_cfg)
 
         self.in_channels = in_channels
-        self.num_joints = num_joints
+        self.out_channels = out_channels
         self.loss_module = MODELS.build(loss)
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
@@ -56,7 +57,12 @@ class TemporalRegressionHead(BaseHead):
             self.decoder = None
 
         # Define fully-connected layers
-        self.conv = nn.Conv1d(in_channels, self.num_joints * 3, 1)
+        self.pre_logits = nn.Sequential(
+            OrderedDict([('fc', nn.Linear(in_channels, embedding_size)),
+                         ('act', nn.Tanh())]))
+        self.fc = nn.Linear(
+            embedding_size,
+            out_channels) if embedding_size > 0 else nn.Identity()
 
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
@@ -68,11 +74,11 @@ class TemporalRegressionHead(BaseHead):
         Returns:
             Tensor: Output coordinates (and sigmas[optional]).
         """
-        x = feats[-1]
+        x = feats  # (B, F, K, in_channels)
+        x = self.pre_logits(x)  # (B, F, K, embedding_size)
+        x = self.fc(x)  # (B, F, K, out_channels)
 
-        x = self.conv(x)
-
-        return x.reshape(-1, self.num_joints, 3)
+        return x
 
     def predict(self,
                 feats: Tuple[Tensor],
@@ -91,20 +97,40 @@ class TemporalRegressionHead(BaseHead):
 
         batch_coords = self.forward(feats)  # (B, K, D)
 
-        # Restore global position with target_root
-        target_root = batch_data_samples[0].metainfo.get('target_root', None)
-        if target_root is not None:
-            target_root = torch.stack([
-                torch.from_numpy(b.metainfo['target_root'])
+        # Restore global position with camera_param and factor
+        camera_param = batch_data_samples[0].metainfo.get('camera_param', None)
+        if camera_param is not None:
+            w = torch.stack([
+                torch.from_numpy(np.array([b.metainfo['camera_param']['w']]))
+                for b in batch_data_samples
+            ])
+            h = torch.stack([
+                torch.from_numpy(np.array([b.metainfo['camera_param']['h']]))
                 for b in batch_data_samples
             ])
         else:
-            target_root = torch.stack([
+            w = torch.stack([
+                torch.empty((0), dtype=torch.float32)
+                for _ in batch_data_samples
+            ])
+            h = torch.stack([
                 torch.empty((0), dtype=torch.float32)
                 for _ in batch_data_samples
             ])
 
-        preds = self.decode((batch_coords, target_root))
+        factor = batch_data_samples[0].metainfo.get('factor', None)
+        if factor is not None:
+            factor = torch.stack([
+                torch.from_numpy(b.metainfo['factor'])
+                for b in batch_data_samples
+            ])
+        else:
+            factor = torch.stack([
+                torch.empty((0), dtype=torch.float32)
+                for _ in batch_data_samples
+            ])
+
+        preds = self.decode((batch_coords, w, h, factor))
 
         return preds
 
@@ -116,11 +142,11 @@ class TemporalRegressionHead(BaseHead):
 
         pred_outputs = self.forward(inputs)
 
-        lifting_target_label = torch.cat([
+        lifting_target_label = torch.stack([
             d.gt_instance_labels.lifting_target_label
             for d in batch_data_samples
         ])
-        lifting_target_weights = torch.cat([
+        lifting_target_weights = torch.stack([
             d.gt_instance_labels.lifting_target_weights
             for d in batch_data_samples
         ])
@@ -133,19 +159,18 @@ class TemporalRegressionHead(BaseHead):
         losses.update(loss_pose3d=loss)
 
         # calculate accuracy
-        _, avg_acc, _ = keypoint_pck_accuracy(
+        mpjpe_err = keypoint_mpjpe(
             pred=to_numpy(pred_outputs),
             gt=to_numpy(lifting_target_label),
-            mask=to_numpy(lifting_target_weights) > 0,
-            thr=0.05,
-            norm_factor=np.ones((pred_outputs.size(0), 3), dtype=np.float32))
+            mask=to_numpy(lifting_target_weights) > 0)
 
-        mpjpe_pose = torch.tensor(avg_acc, device=lifting_target_label.device)
+        mpjpe_pose = torch.tensor(
+            mpjpe_err, device=lifting_target_label.device)
         losses.update(mpjpe=mpjpe_pose)
 
         return losses
 
     @property
     def default_init_cfg(self):
-        init_cfg = [dict(type='Normal', layer=['Linear'], std=0.01, bias=0)]
+        init_cfg = [dict(type='TruncNormal', layer=['Linear'], std=0.02)]
         return init_cfg

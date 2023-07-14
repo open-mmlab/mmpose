@@ -271,8 +271,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 K,
             ),
                                                      dtype=np.float32)
-            data_info['lifting_target'] = np.zeros((K, 3), dtype=np.float32)
-            data_info['lifting_target_visible'] = np.ones((K, 1),
+            data_info['lifting_target'] = np.zeros((1, K, 3), dtype=np.float32)
+            data_info['lifting_target_visible'] = np.ones((1, K, 1),
                                                           dtype=np.float32)
             data_info['camera_param'] = dict(w=width, h=height)
 

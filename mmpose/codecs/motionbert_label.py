@@ -7,11 +7,13 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
+from .utils import camera_to_image_coord
 
 
 @KEYPOINT_CODECS.register_module()
-class VideoPoseLifting(BaseKeypointCodec):
-    r"""Generate keypoint coordinates for pose lifter.
+class MotionBERTLabel(BaseKeypointCodec):
+    r"""Generate keypoint and label coordinates for `MotionBERT`_ by Zhu et al
+    (2022).
 
     Note:
 
@@ -22,96 +24,84 @@ class VideoPoseLifting(BaseKeypointCodec):
 
     Args:
         num_keypoints (int): The number of keypoints in the dataset.
-        zero_center: Whether to zero-center the target around root. Default:
-            ``True``.
         root_index (int): Root keypoint index in the pose. Default: 0.
         remove_root (bool): If true, remove the root keypoint from the pose.
             Default: ``False``.
         save_index (bool): If true, store the root position separated from the
             original pose, only takes effect if ``remove_root`` is ``True``.
             Default: ``False``.
-        reshape_keypoints (bool): If true, reshape the keypoints into shape
-            (-1, N). Default: ``True``.
         concat_vis (bool): If true, concat the visibility item of keypoints.
             Default: ``False``.
-        normalize_camera (bool): Whether to normalize camera intrinsics.
-            Default: ``False``.
+        rootrel (bool): If true, the root keypoint will be set to the
+            coordinate origin. Default: ``False``.
+        factor_label (bool): If true, the label will be multiplied by a factor.
+            Default: ``True``.
     """
 
     auxiliary_encode_keys = {
-        'lifting_target', 'lifting_target_visible', 'camera_param'
+        'lifting_target', 'lifting_target_visible', 'camera_param', 'factor'
     }
 
     def __init__(self,
                  num_keypoints: int,
-                 zero_center: bool = True,
                  root_index: int = 0,
                  remove_root: bool = False,
                  save_index: bool = False,
-                 reshape_keypoints: bool = True,
                  concat_vis: bool = False,
-                 normalize_camera: bool = False):
+                 rootrel: bool = False,
+                 factor_label: bool = True):
         super().__init__()
 
         self.num_keypoints = num_keypoints
-        self.zero_center = zero_center
         self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
-        self.reshape_keypoints = reshape_keypoints
         self.concat_vis = concat_vis
-        self.normalize_camera = normalize_camera
+        self.rootrel = rootrel
+        self.factor_label = factor_label
 
     def encode(self,
                keypoints: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None,
                lifting_target: Optional[np.ndarray] = None,
                lifting_target_visible: Optional[np.ndarray] = None,
-               camera_param: Optional[dict] = None) -> dict:
+               camera_param: Optional[dict] = None,
+               factor: Optional[np.ndarray] = None) -> dict:
         """Encoding keypoints from input image space to normalized space.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D).
+            keypoints (np.ndarray): Keypoint coordinates in shape (B, T, K, D).
             keypoints_visible (np.ndarray, optional): Keypoint visibilities in
-                shape (N, K).
+                shape (B, T, K).
             lifting_target (np.ndarray, optional): 3d target coordinate in
                 shape (T, K, C).
             lifting_target_visible (np.ndarray, optional): Target coordinate in
                 shape (T, K, ).
             camera_param (dict, optional): The camera parameter dictionary.
+            factor (np.ndarray, optional): The factor mapping camera and image
+                  coordinate in shape (T, ).
 
         Returns:
             encoded (dict): Contains the following items:
 
                 - keypoint_labels (np.ndarray): The processed keypoints in
-                  shape like (N, K, D) or (K * D, N).
+                  shape like (N, K, D).
                 - keypoint_labels_visible (np.ndarray): The processed
-                  keypoints' weights in shape (N, K, ) or (N-1, K, ).
+                  keypoints' weights in shape (N, K, ) or (N, K-1, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
                   shape (K, ) or (K-1, ).
                 - trajectory_weights (np.ndarray): The trajectory weights in
                   shape (K, ).
-
-                In addition, there are some optional items it may contain:
-
-                - target_root (np.ndarray): The root coordinate of target in
-                  shape (C, ). Exists if ``zero_center`` is ``True``.
-                - target_root_removed (bool): Indicate whether the root of
-                  pose-lifitng target is removed. Exists if
-                  ``remove_root`` is ``True``.
-                - target_root_index (int): An integer indicating the index of
-                  root. Exists if ``remove_root`` and ``save_index``
-                  are ``True``.
-                - camera_param (dict): The updated camera parameter dictionary.
-                  Exists if ``normalize_camera`` is ``True``.
+                - factor (np.ndarray): The factor mapping camera and image
+                  coordinate in shape (T, 1).
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if lifting_target is None:
-            lifting_target = [keypoints[0]]
+            lifting_target = [keypoints[..., 0, :, :]]
 
         # set initial value for `lifting_target_weights`
         # and `trajectory_weights`
@@ -131,54 +121,35 @@ class VideoPoseLifting(BaseKeypointCodec):
         encoded = dict()
 
         lifting_target_label = lifting_target.copy()
-        # Zero-center the target pose around a given root keypoint
-        if self.zero_center:
-            assert (lifting_target.ndim >= 2 and
-                    lifting_target.shape[-2] > self.root_index), \
-                f'Got invalid joint shape {lifting_target.shape}'
-
-            root = lifting_target[..., self.root_index, :]
-            lifting_target_label -= lifting_target_label[
-                ..., self.root_index:self.root_index + 1, :]
-            encoded['target_root'] = root
-
-            if self.remove_root:
-                lifting_target_label = np.delete(
-                    lifting_target_label, self.root_index, axis=-2)
-                lifting_target_visible = np.delete(
-                    lifting_target_visible, self.root_index, axis=-2)
-                assert lifting_target_weights.ndim in {2, 3}
-                axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
-                lifting_target_weights = np.delete(
-                    lifting_target_weights,
-                    self.root_index,
-                    axis=axis_to_remove)
-                # Add a flag to avoid latter transforms that rely on the root
-                # joint or the original joint index
-                encoded['target_root_removed'] = True
-
-                # Save the root index for restoring the global pose
-                if self.save_index:
-                    encoded['target_root_index'] = self.root_index
-
-        # Normalize the 2D keypoint coordinate with image width and height
-        _camera_param = deepcopy(camera_param)
-        assert 'w' in _camera_param and 'h' in _camera_param
-        center = np.array([0.5 * _camera_param['w'], 0.5 * _camera_param['h']],
-                          dtype=np.float32)
-        scale = np.array(0.5 * _camera_param['w'], dtype=np.float32)
-
-        keypoint_labels = (keypoints - center) / scale
+        keypoint_labels = keypoints.copy()
 
         assert keypoint_labels.ndim in {2, 3}
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
-        if self.normalize_camera:
-            assert 'f' in _camera_param and 'c' in _camera_param
-            _camera_param['f'] = _camera_param['f'] / scale
-            _camera_param['c'] = (_camera_param['c'] - center[:, None]) / scale
-            encoded['camera_param'] = _camera_param
+        # Normalize the 2D keypoint coordinate with image width and height
+        _camera_param = deepcopy(camera_param)
+        assert 'w' in _camera_param and 'h' in _camera_param
+        w, h = _camera_param['w'], _camera_param['h']
+        keypoint_labels[
+            ..., :2] = keypoint_labels[..., :2] / w * 2 - [1, h / w]
+
+        # convert target to image coordinate
+        T = keypoint_labels.shape[0]
+        factor_ = np.array([4] * T, dtype=np.float32).reshape(T, )
+        if 'f' in _camera_param and 'c' in _camera_param:
+            lifting_target_label, factor_ = camera_to_image_coord(
+                self.root_index, lifting_target_label, _camera_param)
+        lifting_target_label[..., :, :] = lifting_target_label[
+            ..., :, :] - lifting_target_label[...,
+                                              self.root_index:self.root_index +
+                                              1, :]
+        if factor is None or factor[0] == 0:
+            factor = factor_
+        if factor.ndim == 1:
+            factor = factor[:, None]
+        if self.factor_label:
+            lifting_target_label *= factor[..., None]
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
@@ -187,41 +158,61 @@ class VideoPoseLifting(BaseKeypointCodec):
             keypoint_labels = np.concatenate(
                 (keypoint_labels, keypoints_visible_), axis=2)
 
-        if self.reshape_keypoints:
-            N = keypoint_labels.shape[0]
-            keypoint_labels = keypoint_labels.transpose(1, 2, 0).reshape(-1, N)
-
         encoded['keypoint_labels'] = keypoint_labels
-        encoded['keypoints_visible'] = keypoints_visible
+        encoded['keypoint_labels_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
         encoded['lifting_target_weights'] = lifting_target_weights
+        encoded['lifting_target'] = lifting_target_label
+        encoded['lifting_target_visible'] = lifting_target_visible
         encoded['trajectory_weights'] = trajectory_weights
+        encoded['factor'] = factor
 
         return encoded
 
-    def decode(self,
-               encoded: np.ndarray,
-               target_root: Optional[np.ndarray] = None
-               ) -> Tuple[np.ndarray, np.ndarray]:
+    def decode(
+        self,
+        encoded: np.ndarray,
+        w: Optional[np.ndarray] = None,
+        h: Optional[np.ndarray] = None,
+        factor: Optional[np.ndarray] = None,
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image
         space.
 
         Args:
             encoded (np.ndarray): Coordinates in shape (N, K, C).
-            target_root (np.ndarray, optional): The pose-lifitng target root
-                coordinate. Default: ``None``.
+            w (np.ndarray, optional): The image widths in shape (N, ).
+                Default: ``None``.
+            h (np.ndarray, optional): The image heights in shape (N, ).
+                Default: ``None``.
+            factor (np.ndarray, optional): The factor for projection in shape
+                (N, ). Default: ``None``.
 
         Returns:
             keypoints (np.ndarray): Decoded coordinates in shape (N, K, C).
             scores (np.ndarray): The keypoint scores in shape (N, K).
         """
         keypoints = encoded.copy()
-
-        if target_root is not None and target_root.size > 0:
-            keypoints = keypoints + target_root
-            if self.remove_root:
-                keypoints = np.insert(
-                    keypoints, self.root_index, target_root, axis=1)
         scores = np.ones(keypoints.shape[:-1], dtype=np.float32)
 
+        if self.rootrel:
+            keypoints[..., 0, :] = 0
+
+        if w is not None and w.size > 0:
+            assert w.shape == h.shape
+            assert w.shape[0] == keypoints.shape[0]
+            assert w.ndim in {1, 2}
+            if w.ndim == 1:
+                w = w[:, None]
+                h = h[:, None]
+            trans = np.append(
+                np.ones((w.shape[0], 1)), h / w, axis=1)[:, None, :]
+            keypoints[..., :2] = (keypoints[..., :2] + trans) * w[:, None] / 2
+            keypoints[..., 2:] = keypoints[..., 2:] * w[:, None] / 2
+        if factor is not None and factor.size > 0:
+            assert factor.shape[0] == keypoints.shape[0]
+            keypoints *= factor[..., None]
+        keypoints[..., :, :] = keypoints[..., :, :] - keypoints[
+            ..., self.root_index:self.root_index + 1, :]
+        keypoints /= 1000.
         return keypoints, scores

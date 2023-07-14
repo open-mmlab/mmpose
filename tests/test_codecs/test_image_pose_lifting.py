@@ -13,14 +13,18 @@ class TestImagePoseLifting(TestCase):
         keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [192, 256]
         keypoints = np.round(keypoints).astype(np.float32)
         keypoints_visible = np.random.randint(2, size=(1, 17))
-        lifting_target = (0.1 + 0.8 * np.random.rand(17, 3))
-        lifting_target_visible = np.random.randint(2, size=(17, ))
+        lifting_target = (0.1 + 0.8 * np.random.rand(1, 17, 3))
+        lifting_target_visible = np.random.randint(
+            2, size=(
+                1,
+                17,
+            ))
         encoded_wo_sigma = np.random.rand(1, 17, 3)
 
         self.keypoints_mean = np.random.rand(17, 2).astype(np.float32)
         self.keypoints_std = np.random.rand(17, 2).astype(np.float32) + 1e-6
-        self.target_mean = np.random.rand(17, 3).astype(np.float32)
-        self.target_std = np.random.rand(17, 3).astype(np.float32) + 1e-6
+        self.target_mean = np.random.rand(1, 17, 3).astype(np.float32)
+        self.target_std = np.random.rand(1, 17, 3).astype(np.float32) + 1e-6
 
         self.data = dict(
             keypoints=keypoints,
@@ -30,7 +34,11 @@ class TestImagePoseLifting(TestCase):
             encoded_wo_sigma=encoded_wo_sigma)
 
     def build_pose_lifting_label(self, **kwargs):
-        cfg = dict(type='ImagePoseLifting', num_keypoints=17, root_index=0)
+        cfg = dict(
+            type='ImagePoseLifting',
+            num_keypoints=17,
+            root_index=0,
+            reshape_keypoints=False)
         cfg.update(kwargs)
         return KEYPOINT_CODECS.build(cfg)
 
@@ -50,10 +58,19 @@ class TestImagePoseLifting(TestCase):
                                lifting_target_visible)
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
-        self.assertEqual(encoded['lifting_target_label'].shape, (17, 3))
-        self.assertEqual(encoded['lifting_target_weights'].shape, (17, ))
-        self.assertEqual(encoded['trajectory_weights'].shape, (17, ))
-        self.assertEqual(encoded['target_root'].shape, (3, ))
+        self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))
+        self.assertEqual(encoded['lifting_target_weights'].shape, (
+            1,
+            17,
+        ))
+        self.assertEqual(encoded['trajectory_weights'].shape, (
+            1,
+            17,
+        ))
+        self.assertEqual(encoded['target_root'].shape, (
+            1,
+            3,
+        ))
 
         # test removing root
         codec = self.build_pose_lifting_label(
@@ -63,10 +80,16 @@ class TestImagePoseLifting(TestCase):
 
         self.assertTrue('target_root_removed' in encoded
                         and 'target_root_index' in encoded)
-        self.assertEqual(encoded['lifting_target_weights'].shape, (16, ))
+        self.assertEqual(encoded['lifting_target_weights'].shape, (
+            1,
+            16,
+        ))
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
-        self.assertEqual(encoded['lifting_target_label'].shape, (16, 3))
-        self.assertEqual(encoded['target_root'].shape, (3, ))
+        self.assertEqual(encoded['lifting_target_label'].shape, (1, 16, 3))
+        self.assertEqual(encoded['target_root'].shape, (
+            1,
+            3,
+        ))
 
         # test normalization
         codec = self.build_pose_lifting_label(
@@ -78,7 +101,7 @@ class TestImagePoseLifting(TestCase):
                                lifting_target_visible)
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
-        self.assertEqual(encoded['lifting_target_label'].shape, (17, 3))
+        self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))
 
     def test_decode(self):
         lifting_target = self.data['lifting_target']
@@ -112,12 +135,10 @@ class TestImagePoseLifting(TestCase):
                                lifting_target_visible)
 
         _keypoints, _ = codec.decode(
-            np.expand_dims(encoded['lifting_target_label'], axis=0),
+            encoded['lifting_target_label'],
             target_root=lifting_target[..., 0, :])
 
-        self.assertTrue(
-            np.allclose(
-                np.expand_dims(lifting_target, axis=0), _keypoints, atol=5.))
+        self.assertTrue(np.allclose(lifting_target, _keypoints, atol=5.))
 
         # test removing root
         codec = self.build_pose_lifting_label(remove_root=True)
@@ -125,12 +146,10 @@ class TestImagePoseLifting(TestCase):
                                lifting_target_visible)
 
         _keypoints, _ = codec.decode(
-            np.expand_dims(encoded['lifting_target_label'], axis=0),
+            encoded['lifting_target_label'],
             target_root=lifting_target[..., 0, :])
 
-        self.assertTrue(
-            np.allclose(
-                np.expand_dims(lifting_target, axis=0), _keypoints, atol=5.))
+        self.assertTrue(np.allclose(lifting_target, _keypoints, atol=5.))
 
         # test normalization
         codec = self.build_pose_lifting_label(
@@ -142,9 +161,7 @@ class TestImagePoseLifting(TestCase):
                                lifting_target_visible)
 
         _keypoints, _ = codec.decode(
-            np.expand_dims(encoded['lifting_target_label'], axis=0),
+            encoded['lifting_target_label'],
             target_root=lifting_target[..., 0, :])
 
-        self.assertTrue(
-            np.allclose(
-                np.expand_dims(lifting_target, axis=0), _keypoints, atol=5.))
+        self.assertTrue(np.allclose(lifting_target, _keypoints, atol=5.))

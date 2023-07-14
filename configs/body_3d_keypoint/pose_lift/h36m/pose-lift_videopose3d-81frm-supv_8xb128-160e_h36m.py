@@ -7,7 +7,7 @@ visualizer = dict(
     type='Pose3dLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # runtime
-train_cfg = dict(max_epochs=80, val_interval=10)
+train_cfg = dict(max_epochs=160, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(type='Adam', lr=1e-3))
@@ -44,8 +44,8 @@ model = dict(
         type='TCN',
         in_channels=2 * 17,
         stem_channels=1024,
-        num_blocks=4,
-        kernel_sizes=(3, 3, 3, 3, 3),
+        num_blocks=3,
+        kernel_sizes=(3, 3, 3, 3),
         dropout=0.25,
         use_stride_conv=True,
     ),
@@ -91,7 +91,7 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         ann_file='annotation_body3d/fps50/h36m_train.npz',
-        seq_len=243,
+        seq_len=81,
         causal=False,
         pad_video_seq=True,
         camera_param_file='annotation_body3d/cameras.pkl',
@@ -109,7 +109,7 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         ann_file='annotation_body3d/fps50/h36m_test.npz',
-        seq_len=243,
+        seq_len=81,
         causal=False,
         pad_video_seq=True,
         camera_param_file='annotation_body3d/cameras.pkl',

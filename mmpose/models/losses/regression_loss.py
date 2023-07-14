@@ -366,6 +366,84 @@ class SoftWingLoss(nn.Module):
 
 
 @MODELS.register_module()
+class MPJPEVelocityJointLoss(nn.Module):
+    """MPJPE (Mean Per Joint Position Error) loss.
+
+    Args:
+        loss_weight (float): Weight of the loss. Default: 1.0.
+        lambda_scale (float): Factor of the N-MPJPE loss. Default: 0.5.
+        lambda_3d_velocity (float): Factor of the velocity loss. Default: 20.0.
+    """
+
+    def __init__(self,
+                 use_target_weight=False,
+                 loss_weight=1.,
+                 lambda_scale=0.5,
+                 lambda_3d_velocity=20.0):
+        super().__init__()
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
+        self.lambda_scale = lambda_scale
+        self.lambda_3d_velocity = lambda_3d_velocity
+
+    def forward(self, output, target, target_weight=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            output (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+            target_weight (torch.Tensor[N,K,D]):
+                Weights across different joint types.
+        """
+        norm_output = torch.mean(
+            torch.sum(torch.square(output), dim=-1, keepdim=True),
+            dim=-2,
+            keepdim=True)
+        norm_target = torch.mean(
+            torch.sum(target * output, dim=-1, keepdim=True),
+            dim=-2,
+            keepdim=True)
+
+        velocity_output = output[..., 1:, :, :] - output[..., :-1, :, :]
+        velocity_target = target[..., 1:, :, :] - target[..., :-1, :, :]
+
+        if self.use_target_weight:
+            assert target_weight is not None
+            mpjpe = torch.mean(
+                torch.norm((output - target) * target_weight, dim=-1))
+
+            nmpjpe = torch.mean(
+                torch.norm(
+                    (norm_target / norm_output * output - target) *
+                    target_weight,
+                    dim=-1))
+
+            loss_3d_velocity = torch.mean(
+                torch.norm(
+                    (velocity_output - velocity_target) * target_weight,
+                    dim=-1))
+        else:
+            mpjpe = torch.mean(torch.norm(output - target, dim=-1))
+
+            nmpjpe = torch.mean(
+                torch.norm(
+                    norm_target / norm_output * output - target, dim=-1))
+
+            loss_3d_velocity = torch.mean(
+                torch.norm(velocity_output - velocity_target, dim=-1))
+
+        loss = mpjpe + nmpjpe * self.lambda_scale + \
+            loss_3d_velocity * self.lambda_3d_velocity
+
+        return loss * self.loss_weight
+
+
+@MODELS.register_module()
 class MPJPELoss(nn.Module):
     """MPJPE (Mean Per Joint Position Error) loss.
 
