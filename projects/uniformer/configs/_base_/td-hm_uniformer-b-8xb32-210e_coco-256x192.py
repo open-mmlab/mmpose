@@ -51,7 +51,7 @@ model = dict(
         depths=[5, 8, 20, 7],
         head_dim=64,
         drop_path_rate=0.4,
-        use_checkpoint=False,
+        use_checkpoint=False,  # whether use torch.utils.checkpoint
         use_window=False,  # whether use window MHRA
         use_hybrid=False,  # whether use hybrid MHRA
         init_cfg=dict(
@@ -65,7 +65,7 @@ model = dict(
         final_layer=dict(kernel_size=1),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
-        init_cfg=[dict(norm_cfg=norm_cfg)]),
+        init_cfg=dict(norm_cfg=norm_cfg)),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',

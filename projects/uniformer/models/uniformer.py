@@ -541,12 +541,12 @@ class UniFormer(BaseBackbone):
             self.pre_logits = nn.Identity()
 
         self.apply(self._init_weights)
-        self.init_weights(init_cfg=init_cfg)
+        self.init_weights()
 
-    def init_weights(self, init_cfg):
+    def init_weights(self, pretrained=None):
         if (isinstance(self.init_cfg, dict)
                 and self.init_cfg['type'] == 'Pretrained'):
-            pretrained_path = init_cfg['checkpoint']
+            pretrained_path = self.init_cfg['checkpoint']
             load_checkpoint(
                 self,
                 pretrained_path,
