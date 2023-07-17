@@ -1,7 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 from argparse import ArgumentParser
 
 from mmcv.image import imread
+from mmengine.logging import print_log
 
 from mmpose.apis import inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
@@ -99,6 +101,12 @@ def main():
         skeleton_style=args.skeleton_style,
         show=args.show,
         out_file=args.out_file)
+
+    if args.out_file is not None:
+        print_log(
+            f'the output image has been saved at {args.out_file}',
+            logger='current',
+            level=logging.INFO)
 
 
 if __name__ == '__main__':

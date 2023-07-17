@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import mimetypes
 import os
 import time
@@ -9,6 +10,7 @@ import json_tricks as json
 import mmcv
 import mmengine
 import numpy as np
+from mmengine.logging import print_log
 
 from mmpose.apis import inference_bottomup, init_model
 from mmpose.registry import VISUALIZERS
@@ -222,6 +224,13 @@ def main():
                 f,
                 indent='\t')
         print(f'predictions have been saved at {args.pred_save_path}')
+
+    if output_file:
+        input_type = input_type.replace('webcam', 'video')
+        print_log(
+            f'the output {input_type} has been saved at {output_file}',
+            logger='current',
+            level=logging.INFO)
 
 
 if __name__ == '__main__':

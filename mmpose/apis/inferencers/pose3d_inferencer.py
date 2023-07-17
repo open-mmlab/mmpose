@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import os
 import warnings
 from collections import defaultdict
@@ -12,6 +13,7 @@ import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
+from mmengine.logging import print_log
 from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
@@ -509,6 +511,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                             file_name = os.path.basename(
                                 self.video_info['name'])
                         out_file = join_path(dir_name, file_name)
+                        self.video_info['output_file'] = out_file
                         self.video_info['writer'] = cv2.VideoWriter(
                             out_file, fourcc, self.video_info['fps'],
                             (visualization.shape[1], visualization.shape[0]))
@@ -519,6 +522,10 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                     file_name = file_name if file_name else img_name
                     out_file = join_path(dir_name, file_name)
                     mmcv.imwrite(out_img, out_file)
+                    print_log(
+                        f'the output image has been saved at {out_file}',
+                        logger='current',
+                        level=logging.INFO)
 
         if return_vis:
             return results

@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import mimetypes
 import os
 import warnings
@@ -16,6 +17,7 @@ from mmengine.dataset import Compose
 from mmengine.fileio import (get_file_backend, isdir, join_path,
                              list_dir_or_file)
 from mmengine.infer.infer import BaseInferencer
+from mmengine.logging import print_log
 from mmengine.registry import init_default_scope
 from mmengine.runner.checkpoint import _load_checkpoint_to_model
 from mmengine.structures import InstanceData
@@ -358,6 +360,7 @@ class BaseMMPoseInferencer(BaseInferencer):
                             file_name = os.path.basename(
                                 self.video_info['name'])
                         out_file = join_path(dir_name, file_name)
+                        self.video_info['output_file'] = out_file
                         self.video_info['writer'] = cv2.VideoWriter(
                             out_file, fourcc, self.video_info['fps'],
                             (visualization.shape[1], visualization.shape[0]))
@@ -367,6 +370,10 @@ class BaseMMPoseInferencer(BaseInferencer):
                     file_name = file_name if file_name else img_name
                     out_file = join_path(dir_name, file_name)
                     mmcv.imwrite(out_img, out_file)
+                    print_log(
+                        f'the output image has been saved at {out_file}',
+                        logger='current',
+                        level=logging.INFO)
 
         if return_vis:
             return results
@@ -454,6 +461,11 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         # Release the video writer if it exists
         if self.video_info['writer'] is not None:
+            out_file = self.video_info['output_file']
+            print_log(
+                f'the output video has been saved at {out_file}',
+                logger='current',
+                level=logging.INFO)
             self.video_info['writer'].release()
 
         # Save predictions
