@@ -52,9 +52,12 @@ model = dict(
         head_dim=64,
         drop_path_rate=0.4,
         use_checkpoint=False,
-        use_window=False, # whether use window MHRA
-        use_hybrid=False, # whether use hybrid MHRA
-        init_cfg=dict(type='Pretrained', checkpoint='${PATH_TO_YOUR_uniformer_base_in1k.pth}')), # Set the path to pretrained backbone here
+        use_window=False,  # whether use window MHRA
+        use_hybrid=False,  # whether use hybrid MHRA
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='$PATH_TO_YOUR_uniformer_base_in1k.pth')
+    ),  # Set the path to pretrained backbone here
     head=dict(
         type='HeatmapHead',
         in_channels=512,
@@ -72,7 +75,7 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = '/root/autodl-tmp/data/coco/'
+data_root = '/data/coco/'
 
 # pipelines
 train_pipeline = [

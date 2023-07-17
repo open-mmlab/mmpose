@@ -1,15 +1,10 @@
-import math
 from collections import OrderedDict
-from functools import partial
-from typing import List, Union
 
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import build_activation_layer, build_norm_layer
 from mmcv.cnn.bricks.transformer import build_dropout
-from mmengine.model import BaseModule
 from mmengine.model.weight_init import trunc_normal_
 from mmengine.runner import checkpoint, load_checkpoint
 from mmengine.utils import to_2tuple
@@ -49,8 +44,7 @@ class CMlp(nn.Module):
                  hidden_features=None,
                  out_features=None,
                  act_cfg=dict(type='GELU'),
-                 drop_rate=0.,
-                 init_cfg=None):
+                 drop_rate=0.):
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
@@ -78,8 +72,7 @@ class CBlock(nn.Module):
                  attn_drop_rate=0.,
                  drop_path_rate=0.,
                  act_cfg=dict(type='GELU'),
-                 norm_cfg=dict(type='LN'),
-                 init_cfg=None):
+                 norm_cfg=dict(type='LN')):
         super().__init__()
         self.pos_embed = nn.Conv2d(
             embed_dims,
@@ -96,20 +89,21 @@ class CBlock(nn.Module):
             kernel_size=5,
             padding=2,
             groups=embed_dims)
-        # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
+        # NOTE: drop path for stochastic depth,
+        # we shall see if this is better than dropout here
         self.drop_path = build_dropout(
             dict(type='DropPath', drop_prob=drop_path_rate)
         ) if drop_path_rate > 0. else nn.Identity()
         self.norm2 = nn.BatchNorm2d(embed_dims)
         mlp_hidden_dim = int(embed_dims * mlp_ratio)
-        self.cffn = CMlp(
+        self.mlp = CMlp(
             embed_dims, mlp_hidden_dim, act_cfg=act_cfg, drop_rate=drop_rate)
 
     def forward(self, x):
         x = x + self.pos_embed(x)
         x = x + self.drop_path(
             self.conv2(self.attn(self.conv1(self.norm1(x)))))
-        x = x + self.drop_path(self.cffn(self.norm2(x)))
+        x = x + self.drop_path(self.mlp(self.norm2(x)))
         return x
 
 
@@ -157,11 +151,16 @@ class Attention(nn.Module):
 class PatchEmbed(nn.Module):
     """Image to Patch Embedding."""
 
-    def __init__(self, img_size=224, patch_size=16, in_channels=3, embed_dims=768):
+    def __init__(self,
+                 img_size=224,
+                 patch_size=16,
+                 in_channels=3,
+                 embed_dims=768):
         super().__init__()
         img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
-        num_patches = (img_size[1] // patch_size[1]) * (img_size[0] // patch_size[0])
+        num_patches = (img_size[1] // patch_size[1]) * (
+            img_size[0] // patch_size[0])
         self.img_size = img_size
         self.patch_size = patch_size
         self.num_patches = num_patches
@@ -192,8 +191,7 @@ class MSA(nn.Module):
                  proj_drop_rate=0.,
                  drop_path_rate=0.,
                  act_cfg=dict(type='GELU'),
-                 norm_cfg=dict(type='LN'),
-                 init_cfg=None):
+                 norm_cfg=dict(type='LN')):
         super().__init__()
         self.pos_embed = nn.Conv2d(
             embed_dims,
@@ -204,7 +202,8 @@ class MSA(nn.Module):
         self.norm1 = build_norm_layer(norm_cfg, embed_dims)[1]
         self.attn = Attention(embed_dims, num_heads, qkv_bias, qk_scale,
                               attn_drop_rate, proj_drop_rate)
-        # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
+        # NOTE: drop path for stochastic depth,
+        # we shall see if this is better than dropout here
         self.drop_path = build_dropout(
             dict(type='DropPath', drop_prob=drop_path_rate)
         ) if drop_path_rate > 0. else nn.Identity()
@@ -240,8 +239,7 @@ class WindowMSA(nn.Module):
                  proj_drop_rate=0.,
                  drop_path_rate=0.,
                  act_cfg=dict(type='GELU'),
-                 norm_cfg=dict(type='LN'),
-                 init_cfg=None):
+                 norm_cfg=dict(type='LN')):
         super().__init__()
         self.windows_size = window_size
         self.pos_embed = nn.Conv2d(
@@ -253,7 +251,8 @@ class WindowMSA(nn.Module):
         self.norm1 = build_norm_layer(norm_cfg, embed_dims)[1]
         self.attn = Attention(embed_dims, num_heads, qkv_bias, qk_scale,
                               attn_drop_rate, proj_drop_rate)
-        # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
+        # NOTE: drop path for stochastic depth,
+        # we shall see if this is better than dropout here
         self.drop_path = build_dropout(
             dict(type='DropPath', drop_prob=drop_path_rate)
         ) if drop_path_rate > 0. else nn.Identity()
@@ -334,21 +333,29 @@ class WindowMSA(nn.Module):
 
 @MODELS.register_module()
 class UniFormer(BaseBackbone):
-    """ Vision Transformer
-    A PyTorch implement of : `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale`  -
-        https://arxiv.org/abs/2010.11929
+    """The implementation of Uniformer with downstream pose estimation task.
+
+    UniFormer: Unifying Convolution and Self-attention for Visual Recognition
+      https://arxiv.org/abs/2201.09450
+    UniFormer: Unified Transformer for Efficient Spatiotemporal Representation
+      Learning https://arxiv.org/abs/2201.04676
 
     Args:
         depths (tuple[int]): number of block in each layer
         img_size (int, tuple): input image size. Default: 224.
         in_channels (int): number of input channels. Default: 3.
-        num_classes (int): number of classes for classification head. Default 80.
-        embed_dims (tuple[int]): embedding dimension. Default to [64, 128, 320, 512].
+        num_classes (int): number of classes for classification head. Default
+            to 80.
+        embed_dims (tuple[int]): embedding dimension.
+            Default to [64, 128, 320, 512].
         head_dim (int): dimension of attention heads
         mlp_ratio (int): ratio of mlp hidden dim to embedding dim
-        qkv_bias (bool, optional): if True, add a learnable bias to query, key, value. Default: True
-        qk_scale (float | None, optional): override default qk scale of head_dim ** -0.5 if set. Default: None.
-        representation_size (Optional[int]): enable and set representation layer (pre-logits) to this value if set
+        qkv_bias (bool, optional): if True, add a learnable bias to query, key,
+            value. Default: True
+        qk_scale (float | None, optional): override default qk scale of
+            head_dim ** -0.5 if set. Default: None.
+        representation_size (Optional[int]): enable and set representation
+            layer (pre-logits) to this value if set
         drop_rate (float): dropout rate. Default: 0.
         attn_drop_rate (float): attention dropout rate. Default: 0.
         drop_path_rate (float): stochastic depth rate. Default: 0.
@@ -382,30 +389,44 @@ class UniFormer(BaseBackbone):
                  use_window=False,
                  use_hybrid=False,
                  window_size=14,
-                 init_cfg=[dict(type='Pretrained', checkpoint='/root/mmpose/projects/uniformer/uniformer_image/uniformer_base_in1k.pth')]):         
+                 init_cfg=[
+                     dict(
+                         type='Pretrained',
+                         checkpoint='$PATH_TO_YOUR_uniformer_base_in1k.pth')
+                 ]):
         super().__init__(init_cfg=init_cfg)
-        
+
         self.num_classes = num_classes
         self.use_checkpoint = use_checkpoint
         self.checkpoint_num = checkpoint_num
         self.use_window = use_window
-        # print(f'Use Checkpoint: {self.use_checkpoint}')
-        # print(f'Checkpoint Number: {self.checkpoint_num}')
         self.logger = get_root_logger()
-        self.logger.info(
-            f'Use torch.utils.checkpoint: {self.use_checkpoint}, checkpoint number: {self.checkpoint_num}'
-        )
-        self.num_features = self.embed_dims = embed_dims  # num_features for consistency with other models
+        self.logger.info(f'Use torch.utils.checkpoint: {self.use_checkpoint}, \
+                checkpoint number: {self.checkpoint_num}')
+        # num_features for consistency with other models
+        self.num_features = self.embed_dims = embed_dims
         norm_cfg = norm_cfg or dict(type='LN', eps=1e-6)
 
-        self.patch_embed1 = PatchEmbed(img_size=img_size,
-                                       patch_size=4, in_channels=in_channels, embed_dims=embed_dims[0])
-        self.patch_embed2 = PatchEmbed(img_size=img_size // 4, 
-                                       patch_size=2, in_channels=embed_dims[0], embed_dims=embed_dims[1])
-        self.patch_embed3 = PatchEmbed(img_size=img_size // 8,
-                                       patch_size=2, in_channels=embed_dims[1], embed_dims=embed_dims[2])
-        self.patch_embed4 = PatchEmbed(img_size=img_size // 16,
-                                       patch_size=2, in_channels=embed_dims[2], embed_dims=embed_dims[3])
+        self.patch_embed1 = PatchEmbed(
+            img_size=img_size,
+            patch_size=4,
+            in_channels=in_channels,
+            embed_dims=embed_dims[0])
+        self.patch_embed2 = PatchEmbed(
+            img_size=img_size // 4,
+            patch_size=2,
+            in_channels=embed_dims[0],
+            embed_dims=embed_dims[1])
+        self.patch_embed3 = PatchEmbed(
+            img_size=img_size // 8,
+            patch_size=2,
+            in_channels=embed_dims[1],
+            embed_dims=embed_dims[2])
+        self.patch_embed4 = PatchEmbed(
+            img_size=img_size // 16,
+            patch_size=2,
+            in_channels=embed_dims[2],
+            embed_dims=embed_dims[3])
 
         self.drop_after_pos = nn.Dropout(drop_rate)
         dpr = [
@@ -459,8 +480,7 @@ class UniFormer(BaseBackbone):
             for i in range(depths[2]):
                 if (i + 1) % 4 == 0:
                     block3.append(
-                        MSA(
-                            diembed_dimsm=embed_dims[2],
+                        MSA(diembed_dimsm=embed_dims[2],
                             num_heads=num_heads[2],
                             mlp_ratio=mlp_ratio,
                             qkv_bias=qkv_bias,
@@ -471,7 +491,7 @@ class UniFormer(BaseBackbone):
                             norm_cfg=norm_cfg))
                 else:
                     block3.append(
-                        MSA(
+                        WindowMSA(
                             embed_dims=embed_dims[2],
                             num_heads=num_heads[2],
                             window_size=window_size,
@@ -486,8 +506,7 @@ class UniFormer(BaseBackbone):
         else:
             self.logger.info('Use global window for all blocks in stage3')
             self.blocks3 = nn.ModuleList([
-                MSA(
-                    embed_dims=embed_dims[2],
+                MSA(embed_dims=embed_dims[2],
                     num_heads=num_heads[2],
                     mlp_ratio=mlp_ratio,
                     qkv_bias=qkv_bias,
@@ -499,8 +518,7 @@ class UniFormer(BaseBackbone):
             ])
         self.norm3 = build_norm_layer(norm_cfg, embed_dims[2])[1]
         self.blocks4 = nn.ModuleList([
-            MSA(
-                embed_dims=embed_dims[3],
+            MSA(embed_dims=embed_dims[3],
                 num_heads=num_heads[3],
                 mlp_ratio=mlp_ratio,
                 qkv_bias=qkv_bias,
@@ -526,7 +544,8 @@ class UniFormer(BaseBackbone):
         self.init_weights(init_cfg=init_cfg)
 
     def init_weights(self, init_cfg):
-        if (isinstance(self.init_cfg, dict) and self.init_cfg['type']=='Pretrained'):
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
             pretrained_path = init_cfg['checkpoint']
             load_checkpoint(
                 self,
@@ -593,4 +612,4 @@ class UniFormer(BaseBackbone):
                 x = blk(x)
         x_out = self.norm4(x.permute(0, 2, 3, 1))
         out.append(x_out.permute(0, 3, 1, 2).contiguous())
-        return tuple(out)
+        return out

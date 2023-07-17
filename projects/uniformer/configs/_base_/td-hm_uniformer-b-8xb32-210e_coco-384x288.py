@@ -16,7 +16,9 @@ codec = dict(
 model = dict(
     backbone=dict(
         drop_path_rate=0.4,
-        init_cfg=dict(type='Pretrained', checkpoint='${PATH_TO_YOUR_uniformer_base_in1k.pth}')),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='$PATH_TO_YOUR_uniformer_base_in1k.pth')),
     test_cfg=dict())
 
 train_dataloader = dict(batch_size=32)

@@ -4,4 +4,6 @@ model = dict(
     backbone=dict(
         depths=[3, 4, 8, 3],
         drop_path_rate=0.2,
-        init_cfg=dict(type='Pretrained', checkpoint='${PATH_TO_YOUR_uniformer_small_in1k.pth}')))
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='$PATH_TO_YOUR_uniformer_small_in1k.pth')))
