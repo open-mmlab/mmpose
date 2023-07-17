@@ -19,7 +19,7 @@ from mmpose.registry import MODELS
 from mmpose.utils import get_root_logger
 
 
-class Mlp(BaseModule):
+class Mlp(nn.Module):
 
     def __init__(self,
                  in_features,
@@ -42,7 +42,7 @@ class Mlp(BaseModule):
         return x
 
 
-class ConvMlp(BaseModule):
+class CMlp(nn.Module):
 
     def __init__(self,
                  in_features,
@@ -51,7 +51,7 @@ class ConvMlp(BaseModule):
                  act_cfg=dict(type='GELU'),
                  drop_rate=0.,
                  init_cfg=None):
-        super().__init__(init_cfg=init_cfg)
+        super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
         self.fc1 = nn.Conv2d(in_features, hidden_features, kernel_size=1)
@@ -66,7 +66,7 @@ class ConvMlp(BaseModule):
         return x
 
 
-class ConvBlock(BaseModule):
+class CBlock(nn.Module):
 
     def __init__(self,
                  embed_dims,
@@ -80,7 +80,7 @@ class ConvBlock(BaseModule):
                  act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN'),
                  init_cfg=None):
-        super().__init__(init_cfg)
+        super().__init__()
         self.pos_embed = nn.Conv2d(
             embed_dims,
             embed_dims,
@@ -102,7 +102,7 @@ class ConvBlock(BaseModule):
         ) if drop_path_rate > 0. else nn.Identity()
         self.norm2 = nn.BatchNorm2d(embed_dims)
         mlp_hidden_dim = int(embed_dims * mlp_ratio)
-        self.cffn = ConvMlp(
+        self.cffn = CMlp(
             embed_dims, mlp_hidden_dim, act_cfg=act_cfg, drop_rate=drop_rate)
 
     def forward(self, x):
@@ -113,12 +113,12 @@ class ConvBlock(BaseModule):
         return x
 
 
-class Attention(BaseModule):
+class Attention(nn.Module):
 
     def __init__(
         self,
         embed_dims,
-        num_heads,
+        num_heads=8,
         qkv_bias=False,
         qk_scale=None,
         attn_drop_rate=0.,
@@ -154,17 +154,17 @@ class Attention(BaseModule):
         return x
 
 
-class PatchEmbed(BaseModule):
+class PatchEmbed(nn.Module):
     """Image to Patch Embedding."""
 
-    def __init__(self, patch_size=16, in_channels=3, embed_dims=768):
+    def __init__(self, img_size=224, patch_size=16, in_channels=3, embed_dims=768):
         super().__init__()
-        # img_size = to_2tuple(img_size)
+        img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
-        # num_patches = (img_size[1] // patch_size[1]) * (img_size[0] // patch_size[0])
-        # self.img_size = img_size
+        num_patches = (img_size[1] // patch_size[1]) * (img_size[0] // patch_size[0])
+        self.img_size = img_size
         self.patch_size = patch_size
-        # self.num_patches = num_patches
+        self.num_patches = num_patches
         self.norm = nn.LayerNorm(embed_dims)
         self.proj = nn.Conv2d(
             in_channels, embed_dims, kernel_size=patch_size, stride=patch_size)
@@ -179,7 +179,7 @@ class PatchEmbed(BaseModule):
         return x
 
 
-class SABlockMSA(BaseModule):
+class MSA(nn.Module):
 
     def __init__(self,
                  embed_dims,
@@ -194,7 +194,7 @@ class SABlockMSA(BaseModule):
                  act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN'),
                  init_cfg=None):
-        super().__init__(init_cfg=init_cfg)
+        super().__init__()
         self.pos_embed = nn.Conv2d(
             embed_dims,
             embed_dims,
@@ -226,7 +226,7 @@ class SABlockMSA(BaseModule):
         return x
 
 
-class SABlockWindowMSA(BaseModule):
+class WindowMSA(nn.Module):
 
     def __init__(self,
                  embed_dims,
@@ -242,7 +242,7 @@ class SABlockWindowMSA(BaseModule):
                  act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN'),
                  init_cfg=None):
-        super().__init__(init_cfg)
+        super().__init__()
         self.windows_size = window_size
         self.pos_embed = nn.Conv2d(
             embed_dims,
@@ -339,11 +339,11 @@ class UniFormer(BaseBackbone):
         https://arxiv.org/abs/2010.11929
 
     Args:
-        layer (list): number of block in each layer
+        depths (tuple[int]): number of block in each layer
         img_size (int, tuple): input image size. Default: 224.
         in_channels (int): number of input channels. Default: 3.
         num_classes (int): number of classes for classification head. Default 80.
-        embed_dimss (tuple[int]): embedding dimension. Default to [64, 128, 320, 512].
+        embed_dims (tuple[int]): embedding dimension. Default to [64, 128, 320, 512].
         head_dim (int): dimension of attention heads
         mlp_ratio (int): ratio of mlp hidden dim to embedding dim
         qkv_bias (bool, optional): if True, add a learnable bias to query, key, value. Default: True
@@ -354,18 +354,20 @@ class UniFormer(BaseBackbone):
         drop_path_rate (float): stochastic depth rate. Default: 0.
         norm_layer (nn.Module): normalization layer
         pretrained (str, optional): model pretrained path. Default: None.
-        use_checkpoint (bool): whether use checkpoint
+        use_checkpoint (bool): whether use torch.utils.checkpoint
         checkpoint_num (list): index for using checkpoint in every stage
-        windows (bool): whether use window MHRA
-        hybrid (bool): whether use hybrid MHRA
+        use_windows (bool): whether use window MHRA
+        use_hybrid (bool): whether use hybrid MHRA
         window_size (int): size of window (>14). Default: 14.
+        init_cfg (dict or list[dict], optional)
     """
 
     def __init__(self,
-                 layers=[3, 4, 8, 3],
+                 depths=(3, 4, 8, 3),
+                 img_size=224,
                  in_channels=3,
                  num_classes=80,
-                 embed_dims=[64, 128, 320, 512],
+                 embed_dims=(64, 128, 320, 512),
                  head_dim=64,
                  mlp_ratio=4.,
                  qkv_bias=True,
@@ -375,43 +377,43 @@ class UniFormer(BaseBackbone):
                  attn_drop_rate=0.,
                  drop_path_rate=0.,
                  norm_cfg=dict(type='LN', eps=1e-6),
-                 pretrained=None,
                  use_checkpoint=False,
                  checkpoint_num=[0, 0, 0, 0],
-                 windows=False,
-                 hybrid=False,
+                 use_window=False,
+                 use_hybrid=False,
                  window_size=14,
-                 init_cfg=None):
-        super().__init__()
+                 init_cfg=[dict(type='Pretrained', checkpoint='/root/mmpose/projects/uniformer/uniformer_image/uniformer_base_in1k.pth')]):         
+        super().__init__(init_cfg=init_cfg)
+        
         self.num_classes = num_classes
         self.use_checkpoint = use_checkpoint
         self.checkpoint_num = checkpoint_num
-        self.windows = windows
+        self.use_window = use_window
         # print(f'Use Checkpoint: {self.use_checkpoint}')
         # print(f'Checkpoint Number: {self.checkpoint_num}')
         self.logger = get_root_logger()
         self.logger.info(
-            f'Use checkpoint: {self.use_checkpoint}, checkpoint number: {self.checkpoint_num}'
+            f'Use torch.utils.checkpoint: {self.use_checkpoint}, checkpoint number: {self.checkpoint_num}'
         )
         self.num_features = self.embed_dims = embed_dims  # num_features for consistency with other models
         norm_cfg = norm_cfg or dict(type='LN', eps=1e-6)
 
-        self.patch_embed1 = PatchEmbed(
-            patch_size=4, in_channels=in_channels, embed_dims=embed_dims[0])
-        self.patch_embed2 = PatchEmbed(
-            patch_size=2, in_channels=embed_dims[0], embed_dims=embed_dims[1])
-        self.patch_embed3 = PatchEmbed(
-            patch_size=2, in_channels=embed_dims[1], embed_dims=embed_dims[2])
-        self.patch_embed4 = PatchEmbed(
-            patch_size=2, in_channels=embed_dims[2], embed_dims=embed_dims[3])
+        self.patch_embed1 = PatchEmbed(img_size=img_size,
+                                       patch_size=4, in_channels=in_channels, embed_dims=embed_dims[0])
+        self.patch_embed2 = PatchEmbed(img_size=img_size // 4, 
+                                       patch_size=2, in_channels=embed_dims[0], embed_dims=embed_dims[1])
+        self.patch_embed3 = PatchEmbed(img_size=img_size // 8,
+                                       patch_size=2, in_channels=embed_dims[1], embed_dims=embed_dims[2])
+        self.patch_embed4 = PatchEmbed(img_size=img_size // 16,
+                                       patch_size=2, in_channels=embed_dims[2], embed_dims=embed_dims[3])
 
         self.drop_after_pos = nn.Dropout(drop_rate)
         dpr = [
-            x.item() for x in torch.linspace(0, drop_path_rate, sum(layers))
+            x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))
         ]  # stochastic depth decay rule
         num_heads = [dim // head_dim for dim in embed_dims]
         self.blocks1 = nn.ModuleList([
-            ConvBlock(
+            CBlock(
                 embed_dims=embed_dims[0],
                 num_heads=num_heads[0],
                 mlp_ratio=mlp_ratio,
@@ -420,11 +422,11 @@ class UniFormer(BaseBackbone):
                 drop_rate=drop_rate,
                 attn_drop_rate=attn_drop_rate,
                 drop_path_rate=dpr[i],
-                norm_cfg=norm_cfg) for i in range(layers[0])
+                norm_cfg=norm_cfg) for i in range(depths[0])
         ])
         self.norm1 = build_norm_layer(norm_cfg, embed_dims[0])[1]
         self.blocks2 = nn.ModuleList([
-            ConvBlock(
+            CBlock(
                 embed_dims=embed_dims[1],
                 num_heads=num_heads[1],
                 mlp_ratio=mlp_ratio,
@@ -432,15 +434,14 @@ class UniFormer(BaseBackbone):
                 qk_scale=qk_scale,
                 drop_rate=drop_rate,
                 attn_drop_rate=attn_drop_rate,
-                drop_path_rate=dpr[i + layers[0]],
-                norm_cfg=norm_cfg) for i in range(layers[1])
+                drop_path_rate=dpr[i + depths[0]],
+                norm_cfg=norm_cfg) for i in range(depths[1])
         ])
         self.norm2 = build_norm_layer(norm_cfg, embed_dims[1])[1]
-        if self.windows:
-            # print('Use local window for all blocks in stage3')
+        if self.use_window:
             self.logger.info('Use local window for all blocks in stage3')
             self.blocks3 = nn.ModuleList([
-                SABlockWindowMSA(
+                WindowMSA(
                     embed_dims=embed_dims[2],
                     num_heads=num_heads[2],
                     window_size=window_size,
@@ -449,17 +450,16 @@ class UniFormer(BaseBackbone):
                     qk_scale=qk_scale,
                     drop_rate=drop_rate,
                     attn_drop_rate=attn_drop_rate,
-                    drop_path_rate=dpr[i + layers[0] + layers[1]],
-                    norm_cfg=norm_cfg) for i in range(layers[2])
+                    drop_path_rate=dpr[i + depths[0] + depths[1]],
+                    norm_cfg=norm_cfg) for i in range(depths[2])
             ])
-        elif hybrid:
-            # print('Use hybrid window for blocks in stage3')
+        elif use_hybrid:
             self.logger.info('Use hybrid window for blocks in stage3')
             block3 = []
-            for i in range(layers[2]):
+            for i in range(depths[2]):
                 if (i + 1) % 4 == 0:
                     block3.append(
-                        SABlockMSA(
+                        MSA(
                             diembed_dimsm=embed_dims[2],
                             num_heads=num_heads[2],
                             mlp_ratio=mlp_ratio,
@@ -467,11 +467,11 @@ class UniFormer(BaseBackbone):
                             qk_scale=qk_scale,
                             drop_rate=drop_rate,
                             attn_drop_rate=attn_drop_rate,
-                            drop_path_rate=dpr[i + layers[0] + layers[1]],
+                            drop_path_rate=dpr[i + depths[0] + depths[1]],
                             norm_cfg=norm_cfg))
                 else:
                     block3.append(
-                        SABlockWindowMSA(
+                        MSA(
                             embed_dims=embed_dims[2],
                             num_heads=num_heads[2],
                             window_size=window_size,
@@ -480,14 +480,13 @@ class UniFormer(BaseBackbone):
                             qk_scale=qk_scale,
                             drop_rate=drop_rate,
                             attn_drop_rate=attn_drop_rate,
-                            drop_path_rate=dpr[i + layers[0] + layers[1]],
+                            drop_path_rate=dpr[i + depths[0] + depths[1]],
                             norm_cfg=norm_cfg))
             self.blocks3 = nn.ModuleList(block3)
         else:
-            # print('Use global window for all blocks in stage3')
             self.logger.info('Use global window for all blocks in stage3')
             self.blocks3 = nn.ModuleList([
-                SABlockMSA(
+                MSA(
                     embed_dims=embed_dims[2],
                     num_heads=num_heads[2],
                     mlp_ratio=mlp_ratio,
@@ -495,12 +494,12 @@ class UniFormer(BaseBackbone):
                     qk_scale=qk_scale,
                     drop_rate=drop_rate,
                     attn_drop_rate=attn_drop_rate,
-                    drop_path_rate=dpr[i + layers[0] + layers[1]],
-                    norm_cfg=norm_cfg) for i in range(layers[2])
+                    drop_path_rate=dpr[i + depths[0] + depths[1]],
+                    norm_cfg=norm_cfg) for i in range(depths[2])
             ])
         self.norm3 = build_norm_layer(norm_cfg, embed_dims[2])[1]
         self.blocks4 = nn.ModuleList([
-            SABlockMSA(
+            MSA(
                 embed_dims=embed_dims[3],
                 num_heads=num_heads[3],
                 mlp_ratio=mlp_ratio,
@@ -508,8 +507,8 @@ class UniFormer(BaseBackbone):
                 qk_scale=qk_scale,
                 drop_rate=drop_rate,
                 attn_drop_rate=attn_drop_rate,
-                drop_path_rate=dpr[i + layers[0] + layers[1] + layers[2]],
-                norm_cfg=norm_cfg) for i in range(layers[3])
+                drop_path_rate=dpr[i + depths[0] + depths[1] + depths[2]],
+                norm_cfg=norm_cfg) for i in range(depths[3])
         ])
         self.norm4 = build_norm_layer(norm_cfg, embed_dims[3])[1]
 
@@ -524,18 +523,18 @@ class UniFormer(BaseBackbone):
             self.pre_logits = nn.Identity()
 
         self.apply(self._init_weights)
-        self.init_weights(pretrained=pretrained)
+        self.init_weights(init_cfg=init_cfg)
 
-    def init_weights(self, pretrained):
-        if isinstance(pretrained, str):
+    def init_weights(self, init_cfg):
+        if (isinstance(self.init_cfg, dict) and self.init_cfg['type']=='Pretrained'):
+            pretrained_path = init_cfg['checkpoint']
             load_checkpoint(
                 self,
-                pretrained,
+                pretrained_path,
                 map_location='cpu',
                 strict=False,
                 logger=self.logger)
-            # print(f'Load pretrained model from {pretrained}')
-            self.logger.info(f'Load pretrained model from{pretrained}')
+            self.logger.info(f'Load pretrained model from: {pretrained_path}')
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
@@ -561,7 +560,7 @@ class UniFormer(BaseBackbone):
 
     def forward(self, x):
         out = []
-        x, _ = self.patch_embed1(x)
+        x = self.patch_embed1(x)
         x = self.drop_after_pos(x)
         for i, blk in enumerate(self.blocks1):
             if self.use_checkpoint and i < self.checkpoint_num[0]:
@@ -570,7 +569,7 @@ class UniFormer(BaseBackbone):
                 x = blk(x)
         x_out = self.norm1(x.permute(0, 2, 3, 1))
         out.append(x_out.permute(0, 3, 1, 2).contiguous())
-        x, _ = self.patch_embed2(x)
+        x = self.patch_embed2(x)
         for i, blk in enumerate(self.blocks2):
             if self.use_checkpoint and i < self.checkpoint_num[1]:
                 x = checkpoint.checkpoint(blk, x)
@@ -578,7 +577,7 @@ class UniFormer(BaseBackbone):
                 x = blk(x)
         x_out = self.norm2(x.permute(0, 2, 3, 1))
         out.append(x_out.permute(0, 3, 1, 2).contiguous())
-        x, _ = self.patch_embed3(x)
+        x = self.patch_embed3(x)
         for i, blk in enumerate(self.blocks3):
             if self.use_checkpoint and i < self.checkpoint_num[2]:
                 x = checkpoint.checkpoint(blk, x)
@@ -586,7 +585,7 @@ class UniFormer(BaseBackbone):
                 x = blk(x)
         x_out = self.norm3(x.permute(0, 2, 3, 1))
         out.append(x_out.permute(0, 3, 1, 2).contiguous())
-        x, _ = self.patch_embed4(x)
+        x = self.patch_embed4(x)
         for i, blk in enumerate(self.blocks4):
             if self.use_checkpoint and i < self.checkpoint_num[3]:
                 x = checkpoint.checkpoint(blk, x)

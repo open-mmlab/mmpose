@@ -2,7 +2,17 @@
 
 This project implements a topdown heatmap based human pose estimator, utilizing the approach outlined in **UniFormer: Unifying Convolution and Self-attention for Visual Recognition** (TPAMI 2023) and **UniFormer: Unified Transformer for Efficient Spatiotemporal Representation Learning** (ICLR 2022).
 
+<img src="https://raw.githubusercontent.com/Sense-X/UniFormer/main/figures/framework.png" alt><br>
+
+<img src="https://raw.githubusercontent.com/Sense-X/UniFormer/main/figures/dense_adaption.jpg" alt><br>
+
 ## Usage
+
+### Inference
+
+### Training and Testing
+
+## Results
 
 ## Citation
 

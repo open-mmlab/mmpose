@@ -14,10 +14,10 @@ codec = dict(
     type='MSRAHeatmap', input_size=(320, 488), heatmap_size=(80, 112), sigma=3)
 
 model = dict(
-    # pretrained='/path/to/hrt_small.pth', # Set the path to pretrained backbone here
     backbone=dict(
-        layers=[3, 4, 8, 3],
-        drop_path_rate=0.2),
+        depths=[3, 4, 8, 3],
+        drop_path_rate=0.2,
+        init_cfg=dict(type='Pretrained', checkpoint='${PATH_TO_YOUR_uniformer_small_in1k.pth}')),
     test_cfg=dict())
 
 train_dataloader = dict(batch_size=32)
