@@ -272,6 +272,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             ),
                                                      dtype=np.float32)
             data_info['lifting_target'] = np.zeros((1, K, 3), dtype=np.float32)
+            data_info['factor'] = np.zeros((T, ), dtype=np.float32)
             data_info['lifting_target_visible'] = np.ones((1, K, 1),
                                                           dtype=np.float32)
             data_info['camera_param'] = dict(w=width, h=height)
@@ -299,7 +300,6 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             list: A list of data samples, each containing the model's output
                 results.
         """
-
         pose_lift_results = self.model.test_step(inputs)
 
         # Post-processing of pose estimation results
@@ -309,8 +309,16 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             pose_lift_res.track_id = pose_est_results_converted[idx].get(
                 'track_id', 1e4)
 
-            # Invert x and z values of the keypoints
+            # align the shape of output keypoints coordinates and scores
             keypoints = pose_lift_res.pred_instances.keypoints
+            keypoint_scores = pose_lift_res.pred_instances.keypoint_scores
+            if keypoint_scores.ndim == 3:
+                pose_lift_results[idx].pred_instances.keypoint_scores = \
+                    np.squeeze(keypoint_scores, axis=1)
+            if keypoints.ndim == 4:
+                keypoints = np.squeeze(keypoints, axis=1)
+
+            # Invert x and z values of the keypoints
             keypoints = keypoints[..., [0, 2, 1]]
             keypoints[..., 0] = -keypoints[..., 0]
             keypoints[..., 2] = -keypoints[..., 2]
