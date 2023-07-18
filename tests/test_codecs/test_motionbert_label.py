@@ -73,10 +73,6 @@ class TestMotionBERTLabel(TestCase):
             1,
             17,
         ))
-        self.assertEqual(encoded['trajectory_weights'].shape, (
-            1,
-            17,
-        ))
 
         # test concatenating visibility
         codec = self.build_pose_lifting_label(concat_vis=True)

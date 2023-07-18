@@ -32,11 +32,7 @@ default_hooks = dict(
 
 # codec settings
 train_codec = dict(
-    type='MotionBERTLabel',
-    num_keypoints=17,
-    concat_vis=True,
-    rootrel=True,
-    factor_label=False)
+    type='MotionBERTLabel', num_keypoints=17, concat_vis=True, mode='train')
 val_codec = dict(
     type='MotionBERTLabel', num_keypoints=17, concat_vis=True, rootrel=True)
 
@@ -73,7 +69,8 @@ train_pipeline = [
     dict(
         type='RandomFlipAroundRoot',
         keypoints_flip_cfg=dict(center_mode='static', center_x=0.),
-        target_flip_cfg=dict(center_mode='static', center_x=0.)),
+        target_flip_cfg=dict(center_mode='static', center_x=0.),
+        flip_label=True),
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
