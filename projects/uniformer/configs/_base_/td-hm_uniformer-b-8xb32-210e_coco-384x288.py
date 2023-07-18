@@ -1,9 +1,9 @@
-_base_ = ['./td-hm_uniformer-b-8xb32-210e_coco-256x192.py']
+_base_ = ['./td-hm_uniformer-b-8xb128-210e_coco-256x192.py']
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=2e-3,
+    lr=5e-4,
 ))
 
 # hooks

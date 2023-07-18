@@ -8,7 +8,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=5e-4,
+    lr=2e-3,
 ))
 
 # learning policy
@@ -65,7 +65,7 @@ model = dict(
         final_layer=dict(kernel_size=1),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
-        init_cfg=dict(norm_cfg=norm_cfg)),
+        init_cfg=[dict(norm_cfg=norm_cfg)]),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',

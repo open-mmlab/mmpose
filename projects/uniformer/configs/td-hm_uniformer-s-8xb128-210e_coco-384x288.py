@@ -1,18 +1,10 @@
 _base_ = ['./_base_/td-hm_uniformer-b-8xb32-210e_coco-384x288.py']
 
-# hooks
-default_hooks = dict(
-    checkpoint=dict(save_best='coco/AP', rule='greater', interval=5))
-
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
     lr=2e-3,
 ))
-
-# codec settings
-codec = dict(
-    type='MSRAHeatmap', input_size=(288, 384), heatmap_size=(72, 96), sigma=3)
 
 model = dict(
     backbone=dict(
@@ -23,5 +15,5 @@ model = dict(
             checkpoint='$PATH_TO_YOUR_uniformer_small_in1k.pth')),
     test_cfg=dict())
 
-train_dataloader = dict(batch_size=32)
+train_dataloader = dict(batch_size=128)
 val_dataloader = dict(batch_size=256)

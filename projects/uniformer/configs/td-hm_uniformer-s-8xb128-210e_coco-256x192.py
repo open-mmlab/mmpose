@@ -1,4 +1,4 @@
-_base_ = ['./_base_/td-hm_uniformer-b-8xb32-210e_coco-256x192.py']
+_base_ = ['./_base_/td-hm_uniformer-b-8xb128-210e_coco-256x192.py']
 
 model = dict(
     backbone=dict(
