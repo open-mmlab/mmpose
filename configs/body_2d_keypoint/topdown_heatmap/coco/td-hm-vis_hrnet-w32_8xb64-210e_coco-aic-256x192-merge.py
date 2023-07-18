@@ -76,7 +76,12 @@ model = dict(
     ),
     head=dict(
         type='VisPredictHead',
-        loss=dict(type='BCELoss', use_target_weight=True, use_sigmoid=True),
+        loss=dict(
+            type='BCELoss',
+            use_target_weight=True,
+            use_sigmoid=True,
+            loss_weight=1e-4,
+        ),
         use_sigmoid=False,
         pose_cfg=dict(
             type='HeatmapHead',

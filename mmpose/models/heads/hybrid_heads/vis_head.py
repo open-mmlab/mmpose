@@ -201,17 +201,17 @@ class VisPredictHead(BaseHead):
             dict: A dictionary of losses.
         """
         vis_pred_outputs = self.vis_forward(feats)
-        vis_labels = torch.cat([
-            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
-        ])
-        if 'keypoints_visible_weights' in batch_data_samples[
-                0].gt_instance_labels:
-            vis_weights = torch.cat([
-                d.gt_instance_labels.keypoints_visible_weights
-                for d in batch_data_samples
-            ])
-        else:
-            vis_weights = None
+        vis_labels = []
+        vis_weights = [] if self.loss_module.use_target_weight else None
+        for d in batch_data_samples:
+            vis_label = d.gt_instance_labels.keypoint_weights.float()
+            vis_labels.append(vis_label)
+            if vis_weights is not None:
+                vis_weights.append(
+                    getattr(d.gt_instance_labels, 'keypoints_visible_weights',
+                            vis_label.new_ones(vis_label.shape)))
+        vis_labels = torch.cat(vis_labels)
+        vis_weights = torch.cat(vis_weights) if vis_weights else None
 
         # calculate vis losses
         losses = dict()

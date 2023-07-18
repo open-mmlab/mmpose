@@ -37,7 +37,8 @@ def flip_keypoints(keypoints: np.ndarray,
             the input ``keypoints_visible`` is ``None``
     """
 
-    assert keypoints.shape[:2] == keypoints_visible.shape[:2], (
+    ndim = keypoints.ndim
+    assert keypoints.shape[:-1] == keypoints_visible.shape[:ndim - 1], (
         f'Mismatched shapes of keypoints {keypoints.shape} and '
         f'keypoints_visible {keypoints_visible.shape}')
 
@@ -48,9 +49,10 @@ def flip_keypoints(keypoints: np.ndarray,
 
     # swap the symmetric keypoint pairs
     if direction == 'horizontal' or direction == 'vertical':
-        keypoints = keypoints[..., flip_indices, :]
+        keypoints = keypoints.take(flip_indices, axis=ndim - 2)
         if keypoints_visible is not None:
-            keypoints_visible = keypoints_visible[..., flip_indices]
+            keypoints_visible = keypoints_visible.take(
+                flip_indices, axis=ndim - 2)
 
     # flip the keypoints
     w, h = image_size
