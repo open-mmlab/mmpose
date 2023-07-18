@@ -69,12 +69,11 @@ data_root = 'data/h36m/'
 
 # pipelines
 train_pipeline = [
+    dict(type='GenerateTarget', encoder=train_codec),
     dict(
         type='RandomFlipAroundRoot',
-        keypoints_flip_cfg={},
-        target_flip_cfg={},
-        flip_image=True),
-    dict(type='GenerateTarget', encoder=train_codec),
+        keypoints_flip_cfg=dict(center_mode='static', center_x=0.),
+        target_flip_cfg=dict(center_mode='static', center_x=0.)),
     dict(
         type='PackPoseInputs',
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',

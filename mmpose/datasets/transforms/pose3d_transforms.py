@@ -25,29 +25,31 @@ class RandomFlipAroundRoot(BaseTransform):
         flip_prob (float): Probability of flip. Default: 0.5.
         flip_camera (bool): Whether to flip horizontal distortion coefficients.
             Default: ``False``.
-        flip_image (bool): Whether to flip keypoints horizontally according
-            to image size. Default: ``False``.
 
     Required keys:
-        keypoints
-        lifting_target
+        - keypoints
+        - lifting_target
+        - keypoints_visible (optional)
+        - lifting_target_visible (optional)
+        - flip_indices (optional)
 
     Modified keys:
-        (keypoints, keypoints_visible, lifting_target, lifting_target_visible,
-        camera_param)
+        - keypoints (optional)
+        - keypoints_visible (optional)
+        - lifting_target (optional)
+        - lifting_target_visible (optional)
+        - camera_param (optional)
     """
 
     def __init__(self,
                  keypoints_flip_cfg,
                  target_flip_cfg,
                  flip_prob=0.5,
-                 flip_camera=False,
-                 flip_image=False):
+                 flip_camera=False):
         self.keypoints_flip_cfg = keypoints_flip_cfg
         self.target_flip_cfg = target_flip_cfg
         self.flip_prob = flip_prob
         self.flip_camera = flip_camera
-        self.flip_image = flip_image
 
     def transform(self, results: Dict) -> dict:
         """The transform function of :class:`RandomFlipAroundRoot`.
@@ -81,13 +83,6 @@ class RandomFlipAroundRoot(BaseTransform):
 
             # flip joint coordinates
             _camera_param = deepcopy(results['camera_param'])
-            if self.flip_image:
-                assert 'camera_param' in results, \
-                    'Camera parameters are missing.'
-                assert 'w' in _camera_param
-                w = _camera_param['w'] / 2
-                self.keypoints_flip_cfg['center_x'] = w
-                self.target_flip_cfg['center_x'] = w
 
             keypoints, keypoints_visible = flip_keypoints_custom_center(
                 keypoints, keypoints_visible, flip_indices,

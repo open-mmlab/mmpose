@@ -153,23 +153,3 @@ class TestRandomFlipAroundRoot(TestCase):
                 -self.data_info['camera_param']['p'][0],
                 camera2['p'][0],
                 atol=4.))
-
-        # test flipping w.r.t. image
-        transform = RandomFlipAroundRoot({}, {}, flip_prob=1, flip_image=True)
-        results = deepcopy(self.data_info)
-        results = transform(results)
-        kpts2 = results['keypoints']
-        tar2 = results['lifting_target']
-
-        camera_param = results['camera_param']
-        for left, right in enumerate(flip_indices):
-            self.assertTrue(
-                np.allclose(
-                    camera_param['w'] - kpts1[0][left][:1],
-                    kpts2[0][right][:1],
-                    atol=4.))
-            self.assertTrue(
-                np.allclose(kpts1[0][left][1:], kpts2[0][right][1:], atol=4.))
-            self.assertTrue(
-                np.allclose(
-                    tar1[..., left, 1:], tar2[..., right, 1:], atol=4.))
