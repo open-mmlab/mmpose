@@ -32,8 +32,10 @@ class TestKeypointConverter(TestCase):
             self.assertTrue((results['keypoints'][:, target_index] ==
                              self.data_info['keypoints'][:,
                                                          source_index]).all())
+            self.assertEqual(results['keypoints_visible'].ndim, 3)
+            self.assertEqual(results['keypoints_visible'].shape[2], 2)
             self.assertTrue(
-                (results['keypoints_visible'][:, target_index] ==
+                (results['keypoints_visible'][:, target_index, 0] ==
                  self.data_info['keypoints_visible'][:, source_index]).all())
 
         # 2-to-1 mapping
@@ -58,8 +60,10 @@ class TestKeypointConverter(TestCase):
                     (results['keypoints'][:, target_index] == 0.5 *
                      (self.data_info['keypoints'][:, source_index] +
                       self.data_info['keypoints'][:, source_index2])).all())
+                self.assertEqual(results['keypoints_visible'].ndim, 3)
+                self.assertEqual(results['keypoints_visible'].shape[2], 2)
                 self.assertTrue(
-                    (results['keypoints_visible'][:, target_index] ==
+                    (results['keypoints_visible'][:, target_index, 0] ==
                      self.data_info['keypoints_visible'][:, source_index] *
                      self.data_info['keypoints_visible'][:,
                                                          source_index2]).all())
@@ -67,7 +71,9 @@ class TestKeypointConverter(TestCase):
                 self.assertTrue(
                     (results['keypoints'][:, target_index] ==
                      self.data_info['keypoints'][:, source_index]).all())
+                self.assertEqual(results['keypoints_visible'].ndim, 3)
+                self.assertEqual(results['keypoints_visible'].shape[2], 2)
                 self.assertTrue(
-                    (results['keypoints_visible'][:, target_index] ==
+                    (results['keypoints_visible'][:, target_index, 0] ==
                      self.data_info['keypoints_visible'][:,
                                                          source_index]).all())

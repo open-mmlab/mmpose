@@ -31,7 +31,7 @@ class VisPredictHead(BaseHead):
                  pose_cfg: ConfigType,
                  loss: ConfigType = dict(
                      type='BCELoss', use_target_weight=False,
-                     with_logits=True),
+                     use_sigmoid=True),
                  use_sigmoid: bool = False,
                  init_cfg: OptConfigType = None):
 
@@ -54,14 +54,12 @@ class VisPredictHead(BaseHead):
         self.pose_head = MODELS.build(pose_cfg)
         self.pose_cfg = pose_cfg
 
-        self.use_sigmoid = use_sigmoid
-
         modules = [
             nn.AdaptiveAvgPool2d(1),
             nn.Flatten(),
             nn.Linear(self.in_channels, self.out_channels)
         ]
-        if use_sigmoid:
+        if self.loss_module.use_sigmoid:
             modules.append(nn.Sigmoid())
 
         self.vis_head = nn.Sequential(*modules)
@@ -168,7 +166,7 @@ class VisPredictHead(BaseHead):
 
         batch_vis.unsqueeze_(dim=1)  # (B, N, K, D)
 
-        if not self.use_sigmoid:
+        if not self.loss_module.use_sigmoid:
             batch_vis = torch.sigmoid(batch_vis)
 
         batch_pose = self.pose_head.predict(feats, batch_data_samples,
@@ -206,10 +204,18 @@ class VisPredictHead(BaseHead):
         vis_labels = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
+        if 'keypoints_visible_weights' in batch_data_samples[
+                0].gt_instance_labels:
+            vis_weights = torch.cat([
+                d.gt_instance_labels.keypoints_visible_weights
+                for d in batch_data_samples
+            ])
+        else:
+            vis_weights = None
 
         # calculate vis losses
         losses = dict()
-        loss_vis = self.loss_module(vis_pred_outputs, vis_labels)
+        loss_vis = self.loss_module(vis_pred_outputs, vis_labels, vis_weights)
 
         losses.update(loss_vis=loss_vis)
 

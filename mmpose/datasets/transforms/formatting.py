@@ -128,7 +128,7 @@ class PackPoseInputs(BaseTransform):
         'keypoint_y_labels': 'keypoint_y_labels',
         'keypoint_weights': 'keypoint_weights',
         'instance_coords': 'instance_coords',
-        'transformed_keypoints_visible': 'keypoints_visible',
+        'keypoints_visible_weights': 'keypoints_visible_weights'
     }
 
     # items in `field_mapping_table` will be packed into
@@ -195,10 +195,6 @@ class PackPoseInputs(BaseTransform):
         if self.pack_transformed and 'transformed_keypoints' in results:
             gt_instances.set_field(results['transformed_keypoints'],
                                    'transformed_keypoints')
-        if self.pack_transformed and \
-                'transformed_keypoints_visible' in results:
-            gt_instances.set_field(results['transformed_keypoints_visible'],
-                                   'transformed_keypoints_visible')
 
         data_sample.gt_instances = gt_instances
 

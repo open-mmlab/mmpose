@@ -20,8 +20,8 @@ def flip_keypoints(keypoints: np.ndarray,
     Args:
         keypoints (np.ndarray): Keypoints in shape (..., K, D)
         keypoints_visible (np.ndarray, optional): The visibility of keypoints
-            in shape (..., K, 1). Set ``None`` if the keypoint visibility is
-            unavailable
+            in shape (..., K, 1) or (..., K, 2). Set ``None`` if the keypoint
+            visibility is unavailable
         image_size (tuple): The image shape in [w, h]
         flip_indices (List[int]): The indices of each keypoint's symmetric
             keypoint
@@ -33,11 +33,11 @@ def flip_keypoints(keypoints: np.ndarray,
         - keypoints_flipped (np.ndarray): Flipped keypoints in shape
             (..., K, D)
         - keypoints_visible_flipped (np.ndarray, optional): Flipped keypoints'
-            visibility in shape (..., K, 1). Return ``None`` if the input
-            ``keypoints_visible`` is ``None``
+            visibility in shape (..., K, 1) or (..., K, 2). Return ``None`` if
+            the input ``keypoints_visible`` is ``None``
     """
 
-    assert keypoints.shape[:-1] == keypoints_visible.shape, (
+    assert keypoints.shape[:2] == keypoints_visible.shape[:2], (
         f'Mismatched shapes of keypoints {keypoints.shape} and '
         f'keypoints_visible {keypoints_visible.shape}')
 

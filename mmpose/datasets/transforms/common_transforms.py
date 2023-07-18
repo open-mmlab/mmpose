@@ -340,7 +340,7 @@ class RandomHalfBody(BaseTransform):
 
         Args:
             keypoints_visible (np.ndarray, optional): The visibility of
-                keypoints in shape (N, K, 1).
+                keypoints in shape (N, K, 1) or (N, K, 2).
             upper_body_ids (list): The list of upper body keypoint indices
             lower_body_ids (list): The list of lower body keypoint indices
 
@@ -348,6 +348,9 @@ class RandomHalfBody(BaseTransform):
             list[list[int] | None]: The selected half-body keypoint indices
             of each instance. ``None`` means not applying half-body transform.
         """
+
+        if keypoints_visible.ndim == 3:
+            keypoints_visible = keypoints_visible[..., 0]
 
         half_body_ids = []
 
@@ -390,7 +393,6 @@ class RandomHalfBody(BaseTransform):
         Returns:
             dict: The result dict.
         """
-
         half_body_ids = self._random_select_half_body(
             keypoints_visible=results['keypoints_visible'],
             upper_body_ids=results['upper_body_ids'],
@@ -952,6 +954,10 @@ class GenerateTarget(BaseTransform):
                 ' \'keypoints\' in the results.')
 
         keypoints_visible = results['keypoints_visible']
+        if keypoints_visible.ndim == 3 and keypoints_visible.shape[2] == 2:
+            keypoints_visible, keypoints_visible_weights = \
+                keypoints_visible[..., 0], keypoints_visible[..., 1]
+            results['keypoints_visible_weights'] = keypoints_visible_weights
 
         # Encoded items from the encoder(s) will be updated into the results.
         # Please refer to the document of the specific codec for details about
@@ -1030,16 +1036,6 @@ class GenerateTarget(BaseTransform):
                     'dataset_keypoint_weights']
 
         results.update(encoded)
-
-        if results.get('keypoint_weights', None) is not None:
-            results['transformed_keypoints_visible'] = results[
-                'keypoint_weights']
-        elif results.get('keypoints', None) is not None:
-            results['transformed_keypoints_visible'] = results[
-                'keypoints_visible']
-        else:
-            raise ValueError('GenerateTarget requires \'keypoint_weights\' or'
-                             ' \'keypoints_visible\' in the results.')
 
         return results
 
