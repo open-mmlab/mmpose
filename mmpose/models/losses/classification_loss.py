@@ -15,7 +15,7 @@ class BCELoss(nn.Module):
             Different joint types may have different target weights.
         loss_weight (float): Weight of the loss. Default: 1.0.
         use_sigmoid (bool, optional): Whether the prediction uses sigmoid
-            of softmax. Defaults to False.
+            before output. Defaults to False.
     """
 
     def __init__(self,
