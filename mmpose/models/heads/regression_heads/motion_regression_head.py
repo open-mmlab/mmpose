@@ -7,6 +7,7 @@ import torch
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import keypoint_mpjpe
+from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -95,7 +96,24 @@ class MotionRegressionHead(BaseHead):
                   (B, N, K).
         """
 
-        batch_coords = self.forward(feats)  # (B, K, D)
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test -> feats = [orig, flipped]
+            assert isinstance(feats, list) and len(feats) == 2
+            flip_indices = batch_data_samples[0].metainfo['flip_indices']
+            _feats, _feats_flip = feats
+            _batch_coords = self.forward(_feats)
+            _batch_coords_flip = np.stack([
+                flip_heatmaps(
+                    self.forward(_feat_flip),
+                    flip_mode=test_cfg.get('flip_mode', 'heatmap'),
+                    flip_indices=flip_indices,
+                    shift_heatmap=test_cfg.get('shift_heatmap', False))
+                for _feat_flip in _feats_flip
+            ],
+                                          axis=0)
+            batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
+        else:
+            batch_coords = self.forward(feats)
 
         # Restore global position with camera_param and factor
         camera_param = batch_data_samples[0].metainfo.get('camera_param', None)

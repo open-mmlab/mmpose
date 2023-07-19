@@ -57,7 +57,7 @@ model = dict(
         loss=dict(type='MPJPEVelocityJointLoss'),
         decoder=val_codec,
     ),
-)
+    test_cfg=dict(flip_test=True))
 
 # base dataset settings
 dataset_type = 'Human36mDataset'

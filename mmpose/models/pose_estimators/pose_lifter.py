@@ -244,7 +244,12 @@ class PoseLifter(BasePoseEstimator):
         assert self.with_head, (
             'The model must have head to perform prediction.')
 
-        feats = self.extract_feat(inputs)
+        if self.test_cfg.get('flip_test', False):
+            _feats = self.extract_feat(inputs)
+            _feats_flip = self.extract_feat(inputs.flip(-1))
+            feats = [_feats, _feats_flip]
+        else:
+            feats = self.extract_feat(inputs)
 
         pose_preds, batch_pred_instances, batch_pred_fields = None, None, None
         traj_preds, batch_traj_instances, batch_traj_fields = None, None, None
