@@ -7,7 +7,7 @@ import torch
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import keypoint_mpjpe
-from mmpose.models.utils.tta import flip_heatmaps
+from mmpose.models.utils.tta import flip_coordinates
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -102,15 +102,15 @@ class MotionRegressionHead(BaseHead):
             flip_indices = batch_data_samples[0].metainfo['flip_indices']
             _feats, _feats_flip = feats
             _batch_coords = self.forward(_feats)
-            _batch_coords_flip = np.stack([
-                flip_heatmaps(
-                    self.forward(_feat_flip),
-                    flip_mode=test_cfg.get('flip_mode', 'heatmap'),
+            _batch_coords_flip = torch.stack([
+                flip_coordinates(
+                    _batch_coord_flip,
                     flip_indices=flip_indices,
-                    shift_heatmap=test_cfg.get('shift_heatmap', False))
-                for _feat_flip in _feats_flip
+                    shift_coords=test_cfg.get('shift_coords', True),
+                    input_size=(1, 1))
+                for _batch_coord_flip in self.forward(_feats_flip)
             ],
-                                          axis=0)
+                                             dim=0)
             batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
         else:
             batch_coords = self.forward(feats)
