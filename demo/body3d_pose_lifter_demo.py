@@ -133,6 +133,8 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
                       pose_est_frame, pose_est_results_last,
                       pose_est_results_list, next_id, pose_lifter,
                       pose_lift_frame, visualizer):
+    """Visualize detected and predicted keypoints of one image."""
+
     pose_lift_dataset = pose_lifter.cfg.test_dataloader.dataset
 
     det_result = inference_detector(detector, frame)
@@ -143,7 +145,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
                                    pred_instance.scores > args.bbox_thr)]
 
-    # make person results for current image
+    # estimate pose results for current image
     pose_est_results = inference_topdown(pose_estimator, pose_est_frame,
                                          bboxes)
 
@@ -175,7 +177,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
             pose_est_results[i].pred_instances.areas = np.array(areas)
             pose_est_results[i].pred_instances.bboxes = np.array(bboxes)
 
-        # get track id information
+        # track id
         track_id, pose_est_results_last, _ = _track(data_sample,
                                                     pose_est_results_last,
                                                     args.tracking_thr)
@@ -228,6 +230,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         image_size=pose_lift_frame.shape[:2],
         norm_pose_2d=args.norm_pose_2d)
 
+    # post-processing
     for idx, pose_lift_result in enumerate(pose_lift_results):
         pose_lift_result.track_id = pose_est_results[idx].get('track_id', 1e4)
 
