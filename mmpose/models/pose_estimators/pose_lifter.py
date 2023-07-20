@@ -2,9 +2,11 @@
 from itertools import zip_longest
 from typing import Tuple, Union
 
+import torch
 from torch import Tensor
 
 from mmpose.models.utils import check_and_update_config
+from mmpose.models.utils.tta import flip_coordinates
 from mmpose.registry import MODELS
 from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
                                  Optional, OptMultiConfig, OptSampleList,
@@ -244,7 +246,22 @@ class PoseLifter(BasePoseEstimator):
         assert self.with_head, (
             'The model must have head to perform prediction.')
 
-        feats = self.extract_feat(inputs)
+        if self.test_cfg.get('flip_test', False):
+            flip_indices = data_samples[0].metainfo['flip_indices']
+            _feats = self.extract_feat(inputs)
+            _feats_flip = self.extract_feat(
+                torch.stack([
+                    flip_coordinates(
+                        _input,
+                        flip_indices=flip_indices,
+                        shift_coords=self.test_cfg.get('shift_coords', True),
+                        input_size=(1, 1)) for _input in inputs
+                ],
+                            dim=0))
+
+            feats = [_feats, _feats_flip]
+        else:
+            feats = self.extract_feat(inputs)
 
         pose_preds, batch_pred_instances, batch_pred_fields = None, None, None
         traj_preds, batch_traj_instances, batch_traj_fields = None, None, None

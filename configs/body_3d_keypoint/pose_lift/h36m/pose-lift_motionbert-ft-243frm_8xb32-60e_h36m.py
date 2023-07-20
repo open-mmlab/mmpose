@@ -7,7 +7,7 @@ visualizer = dict(
     type='Pose3dLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # runtime
-train_cfg = dict(max_epochs=120, val_interval=10)
+train_cfg = dict(max_epochs=60, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(
@@ -15,7 +15,7 @@ optim_wrapper = dict(
 
 # learning policy
 param_scheduler = [
-    dict(type='ExponentialLR', gamma=0.99, end=120, by_epoch=True)
+    dict(type='ExponentialLR', gamma=0.99, end=60, by_epoch=True)
 ]
 
 auto_scale_lr = dict(base_batch_size=512)
@@ -57,7 +57,12 @@ model = dict(
         loss=dict(type='MPJPEVelocityJointLoss'),
         decoder=val_codec,
     ),
-    test_cfg=dict(flip_test=True))
+    test_cfg=dict(flip_test=True),
+    init_cfg=dict(
+        type='Pretrained',
+        checkpoint='https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/'
+        'pose_lift/h36m/motionbert_pretrain_h36m-29ffebf5_20230719.pth'),
+)
 
 # base dataset settings
 dataset_type = 'Human36mDataset'

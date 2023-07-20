@@ -34,8 +34,8 @@ class MotionBERTLabel(BaseKeypointCodec):
             Default: ``False``.
         rootrel (bool): If true, the root keypoint will be set to the
             coordinate origin. Default: ``False``.
-        factor_label (bool): If true, the label will be multiplied by a factor.
-            Default: ``True``.
+        mode (str): Indicating whether the current mode is 'train' or 'test'.
+            Default: ``'test'``.
     """
 
     auxiliary_encode_keys = {
@@ -49,7 +49,7 @@ class MotionBERTLabel(BaseKeypointCodec):
                  save_index: bool = False,
                  concat_vis: bool = False,
                  rootrel: bool = False,
-                 factor_label: bool = True):
+                 mode: str = 'test'):
         super().__init__()
 
         self.num_keypoints = num_keypoints
@@ -58,7 +58,8 @@ class MotionBERTLabel(BaseKeypointCodec):
         self.save_index = save_index
         self.concat_vis = concat_vis
         self.rootrel = rootrel
-        self.factor_label = factor_label
+        assert mode.lower() in {'train', 'test'}
+        self.mode = mode.lower()
 
     def encode(self,
                keypoints: np.ndarray,
@@ -92,8 +93,6 @@ class MotionBERTLabel(BaseKeypointCodec):
                   shape (K, C) or (K-1, C).
                 - lifting_target_weights (np.ndarray): The target weights in
                   shape (K, ) or (K-1, ).
-                - trajectory_weights (np.ndarray): The trajectory weights in
-                  shape (K, ).
                 - factor (np.ndarray): The factor mapping camera and image
                   coordinate in shape (T, 1).
         """
@@ -104,16 +103,13 @@ class MotionBERTLabel(BaseKeypointCodec):
             lifting_target = [keypoints[..., 0, :, :]]
 
         # set initial value for `lifting_target_weights`
-        # and `trajectory_weights`
         if lifting_target_visible is None:
             lifting_target_visible = np.ones(
                 lifting_target.shape[:-1], dtype=np.float32)
             lifting_target_weights = lifting_target_visible
-            trajectory_weights = (1 / lifting_target[:, 2])
         else:
             valid = lifting_target_visible > 0.5
             lifting_target_weights = np.where(valid, 1., 0.).astype(np.float32)
-            trajectory_weights = lifting_target_weights
 
         if camera_param is None:
             camera_param = dict()
@@ -140,6 +136,13 @@ class MotionBERTLabel(BaseKeypointCodec):
         if 'f' in _camera_param and 'c' in _camera_param:
             lifting_target_label, factor_ = camera_to_image_coord(
                 self.root_index, lifting_target_label, _camera_param)
+        if self.mode == 'train':
+            w, h = w / 1000, h / 1000
+            lifting_target_label[
+                ..., :2] = lifting_target_label[..., :2] / w * 2 - [
+                    0.001, h / w
+                ]
+            lifting_target_label[..., 2] = lifting_target_label[..., 2] / w * 2
         lifting_target_label[..., :, :] = lifting_target_label[
             ..., :, :] - lifting_target_label[...,
                                               self.root_index:self.root_index +
@@ -148,7 +151,7 @@ class MotionBERTLabel(BaseKeypointCodec):
             factor = factor_
         if factor.ndim == 1:
             factor = factor[:, None]
-        if self.factor_label:
+        if self.mode == 'test':
             lifting_target_label *= factor[..., None]
 
         if self.concat_vis:
@@ -164,7 +167,6 @@ class MotionBERTLabel(BaseKeypointCodec):
         encoded['lifting_target_weights'] = lifting_target_weights
         encoded['lifting_target'] = lifting_target_label
         encoded['lifting_target_visible'] = lifting_target_visible
-        encoded['trajectory_weights'] = trajectory_weights
         encoded['factor'] = factor
 
         return encoded

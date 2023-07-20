@@ -94,7 +94,7 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
-        ann_file='annotation_body3d/fps50/h36m_train.npz',
+        ann_file='annotation_body3d/fps50/h36m_train_original.npz',
         seq_len=1,
         multiple_target=243,
         multiple_target_step=81,
@@ -113,7 +113,8 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
-        ann_file='annotation_body3d/fps50/h36m_test.npz',
+        ann_file='annotation_body3d/fps50/h36m_test_original.npz',
+        factor_file='annotation_body3d/fps50/h36m_factors.npy',
         seq_len=1,
         seq_step=1,
         multiple_target=243,
