@@ -68,6 +68,15 @@ Note that some of the demo scripts in MMPose require [MMDetection](https://githu
 mim install "mmdet>=3.1.0"
 ```
 
+```{note}
+Here are the version correspondences between mmdet, mmpose and mmcv:
+
+- mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
+- mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
+
+If you encounter version incompatibility issues, please check the correspondence using `pip list | grep mm` and upgrade or downgrade the dependencies accordingly.
+```
+
 ## Best Practices
 
 ### Build MMPose from source
@@ -140,6 +149,15 @@ results = inference_topdown(model, 'demo.jpg')
 The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/main/tests/data/coco/000000000785.jpg).
 
 The inference results will be a list of `PoseDataSample`, and the predictions are in the `pred_instances`, indicating the detected keypoint locations and scores.
+
+```{note}
+MMCV version should match PyTorch version strictly. If you encounter the following issues:
+
+- No module named 'mmcv.ops'
+- No module named 'mmcv._ext'
+
+It means that the current PyTorch version does not match the CUDA version. You can check the CUDA version using `nvidia-smi`, and it should match the `+cu1xx` in PyTorch version in `pip list | grep torch`. Otherwise, you need to uninstall PyTorch and reinstall it, then reinstall MMCV (the installation order **CAN NOT** be swapped).
+```
 
 ## Customize Installation
 
