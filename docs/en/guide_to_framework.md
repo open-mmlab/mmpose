@@ -17,6 +17,7 @@ This  tutorial covers what developers will concern when using MMPose 1.0:
 The content of this tutorial is organized as follows:
 
 - [A 20 Minute Guide to MMPose Framework](#a-20-minute-guide-to-mmpose-framework)
+  - [Structure](#structure)
   - [Overview](#overview)
   - [Step1: Configs](#step1-configs)
   - [Step2: Data](#step2-data)
@@ -32,6 +33,47 @@ The content of this tutorial is organized as follows:
     - [Backbone](#backbone)
     - [Neck](#neck)
     - [Head](#head)
+
+## Structure
+
+The file structure of MMPose 1.0 is as follows:
+
+```shell
+mmpose
+|----apis
+|----structures
+|----datasets
+     |----transforms
+|----codecs
+|----models
+     |----pose_estimators
+     |----data_preprocessors
+     |----backbones
+     |----necks
+     |----heads
+     |----losses
+|----engine
+     |----hooks
+|----evaluation
+|----visualization
+```
+
+- **apis** provides high-level APIs for model inference
+- **structures** provides data structures like bbox, keypoint and PoseDataSample
+- **datasets** supports various datasets for pose estimation
+  - **transforms** contains a lot of useful data augmentation transforms
+- **codecs** provides pose encoders and decoders: an encoder encodes poses (mostly keypoints) into learning targets (e.g. heatmaps), and a decoder decodes model outputs into pose predictions
+- **models** provides all components of pose estimation models in a modular structure
+  - **pose_estimators** defines all pose estimation model classes
+  - **data_preprocessors** is for preprocessing the input data of the model
+  - **backbones** provides a collection of backbone networks
+  - **necks** contains various neck modules
+  - **heads** contains various prediction heads that perform pose estimation
+  - **losses** contains various loss functions
+- **engine** provides runtime components related to pose estimation
+  - **hooks** provides various hooks of the runner
+- **evaluation** provides metrics for evaluating model performance
+- **visualization** is for visualizing skeletons, heatmaps and other information
 
 ## Overview
 
@@ -62,9 +104,7 @@ Note that all new modules need to be registered using `Registry` and imported in
 The organization of data in MMPose contains:
 
 - Dataset Meta Information
-
 - Dataset
-
 - Pipeline
 
 ### Dataset Meta Information
@@ -264,6 +304,10 @@ When supporting MPII dataset, since we need to use `head_size` to calculate `PCK
 
 To support a dataset that is beyond the scope of [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py), you may need to subclass from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to the [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
 
+```{note}
+If you wish to customize a new dataset, you can refer to [Customize Datasets](./advanced_guides/customize_datasets.md) for more details.
+```
+
 ### Pipeline
 
 Data augmentations and transformations during pre-processing are organized as a pipeline. Here is an example of typical pipelines：
@@ -306,21 +350,21 @@ In MMPose, the modules used for data transformation are under `[$MMPOSE/mmpose/d
 
 #### i. Augmentation
 
-Commonly used transforms are defined in [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py), such as `RandomFlip`, `RandomHalfBody`, etc.
+Commonly used transforms are defined in [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py), such as [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94), [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263), etc.
 
-For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
+For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433). For bottom-up methods, [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) is used.
 
 ```{note}
-Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
+Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by [GetBBoxCenterScale](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L31).
 ```
 
 #### ii. Transformation
 
-Affine transformation is used to convert images and annotations from the original image space to the input space. This is done by `TopdownAffine` for top-down methods and `BottomupRandomAffine` for bottom-up methods.
+Affine transformation is used to convert images and annotations from the original image space to the input space. This is done by [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) for top-down methods and [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) for bottom-up methods.
 
 #### iii. Encoding
 
-In training phase, after the data is transformed from the original image space into the input space, it is necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
+In training phase, after the data is transformed from the original image space into the input space, it is necessary to use [GenerateTarget](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L873) to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
 
 In MMPose, we collect Encoding and Decoding processes into a **Codec**, in which `encode()` and `decode()` are implemented.
 
@@ -360,7 +404,7 @@ If you wish to customize a new codec, you can refer to [Codec](./user_guides/cod
 
 After the data is transformed, you need to pack it using [PackPoseInputs](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py).
 
-This method converts the data stored in the dictionary `results` into standard data structures in MMPose, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
+This method converts the data stored in the dictionary `results` into standard data structures in MMPose, such as `InstanceData`, `PixelData`, [PoseDataSample](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/structures/pose_data_sample.py), etc.
 
 Specifically, we divide the data into `gt` (ground-truth) and `pred` (prediction), each of which has the following types:
 
@@ -368,7 +412,7 @@ Specifically, we divide the data into `gt` (ground-truth) and `pred` (prediction
 - **instance_labels**(torch.tensor): instance-level training labels (e.g. normalized coordinates, keypoint visibility) in the output scale space
 - **fields**(torch.tensor): pixel-level training labels or predictions (e.g. Gaussian Heatmaps) in the output scale space
 
-The following is an example of the implementation of `PoseDataSample` under the hood:
+The following is an example of the implementation of [PoseDataSample](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/structures/pose_data_sample.py) under the hood:
 
 ```Python
 def get_pose_data_sample(self):

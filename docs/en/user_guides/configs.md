@@ -2,6 +2,25 @@
 
 We use python files as configs and incorporate modular and inheritance design into our config system, which is convenient to conduct various experiments.
 
+## Structure
+
+The file structure of configs is as follows:
+
+```shell
+configs
+|----_base_
+     |----datasets
+     |----default_runtime.py
+|----animal_2d_keypoint
+|----body_2d_keypoint
+|----body_3d_keypoint
+|----face_2d_keypoint
+|----fashion_2d_keypoint
+|----hand_2d_keypoint
+|----hand_3d_keypoint
+|----wholebody_2d_keypoint
+```
+
 ## Introduction
 
 MMPose is equipped with a powerful config system. Cooperating with Registry, a config file can organize all the configurations in the form of python dictionaries and create instances of the corresponding modules.

@@ -11,30 +11,20 @@ MMPose 是一款基于 Pytorch 的姿态估计开源工具箱，是 OpenMMLab �
 MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs、models、engine、evaluation 和 visualization。
 
 - **apis** 提供用于模型推理的高级 API
-
 - **structures** 提供 bbox、keypoint 和 PoseDataSample 等数据结构
-
 - **datasets** 支持用于姿态估计的各种数据集
-
   - **transforms** 包含各种数据增强变换
-
 - **codecs** 提供姿态编解码器：编码器用于将姿态信息（通常为关键点坐标）编码为模型学习目标（如热力图），解码器则用于将模型输出解码为姿态估计结果
-
 - **models** 以模块化结构提供了姿态估计模型的各类组件
-
   - **pose_estimators** 定义了所有姿态估计模型类
   - **data_preprocessors** 用于预处理模型的输入数据
   - **backbones** 包含各种骨干网络
   - **necks** 包含各种模型颈部组件
   - **heads** 包含各种模型头部
   - **losses** 包含各种损失函数
-
 - **engine** 包含与姿态估计任务相关的运行时组件
-
   - **hooks** 提供运行时的各种钩子
-
 - **evaluation** 提供各种评估模型性能的指标
-
 - **visualization** 用于可视化关键点骨架和热力图等信息
 
 ## 如何使用本指南

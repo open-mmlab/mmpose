@@ -77,8 +77,8 @@ An example of the dataset config is as follows.
 1. `name`: the keypoint name. The keypoint name must be unique.
 2. `id`: the keypoint id.
 3. `color`: (\[B, G, R\]) is used for keypoint visualization.
-4. `type`: 'upper' or 'lower', will be used in data augmentation.
-5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
+4. `type`: 'upper' or 'lower', will be used in data augmentation [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/b225a773d168fc2afd48cde5f76c0202d1ba2f52/mmpose/datasets/transforms/common_transforms.py#L263).
+5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part, used in data augmentation [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94). We need to flip the keypoints accordingly.
 
 `skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
 
