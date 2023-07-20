@@ -66,6 +66,15 @@ mim install "mmcv>=2.0.1"
 mim install "mmdet>=3.1.0"
 ```
 
+```{note}
+新旧版本 mmpose、mmdet、mmcv 的对应关系为：
+
+- mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
+- mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
+
+如果遇到版本不兼容的问题，请使用 `pip list | grep mm` 检查对应关系后，升级或降级相关依赖。
+```
+
 ## 最佳实践
 
 根据具体需求，我们支持两种安装模式: 从源码安装（推荐）和作为 Python 包安装
@@ -140,6 +149,15 @@ results = inference_topdown(model, 'demo.jpg')
 
 示例图片 `demo.jpg` 可以从 [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/main/tests/data/coco/000000000785.jpg) 下载。
 推理结果是一个 `PoseDataSample` 列表，预测结果将会保存在 `pred_instances` 中，包括检测到的关键点位置和置信度。
+
+```{note}
+MMCV 版本与 PyTorch 版本需要严格对应，如果遇到如下问题：
+
+- No module named 'mmcv.ops'
+- No module named 'mmcv._ext'
+
+说明当前环境中的 PyTorch 版本与 CUDA 版本不匹配。你可以通过 `nvidia-smi` 查看 CUDA 版本，需要与 `pip list | grep torch` 中 PyTorch 的 `+cu1xx` 对应，否则，你需要先卸载 PyTorch 并重新安装，然后重新安装 MMCV（这里的安装顺序**不可以**交换）。
+```
 
 ## 自定义安装
 

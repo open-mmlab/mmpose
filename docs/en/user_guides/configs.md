@@ -114,11 +114,22 @@ Here is the description of General configuration:
 # General
 default_scope = 'mmpose'
 default_hooks = dict(
-    timer=dict(type='IterTimerHook'), # time the data processing and model inference
-    logger=dict(type='LoggerHook', interval=50), # interval to print logs
-    param_scheduler=dict(type='ParamSchedulerHook'), # update lr
+    # time the data processing and model inference
+    timer=dict(type='IterTimerHook'),
+    # interval to print logs，50 iters by default
+    logger=dict(type='LoggerHook', interval=50),
+    # update lr according to the lr scheduler
+    param_scheduler=dict(type='ParamSchedulerHook'),
     checkpoint=dict(
-        type='CheckpointHook', interval=1, save_best='coco/AP', # interval to save ckpt
+        # interval to save ckpt
+        # e.g.
+        # save_best='coco/AP' means save the best ckpt according to coco/AP of CocoMetric
+        # save_best='PCK' means save the best ckpt according to PCK of PCKAccuracy
+        type='CheckpointHook', interval=1, save_best='coco/AP',
+
+        # rule to judge the metric
+        # 'greater' means the larger the better
+        # 'less' means the smaller the better
         rule='greater'), # rule to judge the metric
     sampler_seed=dict(type='DistSamplerSeedHook')) # set the distributed seed
 env_cfg = dict(
@@ -135,21 +146,14 @@ log_processor = dict( # Format, interval to log
 log_level = 'INFO' # The level of logging
 ```
 
+```{note}
+We now support two visualizer backends: LocalVisBackend and TensorboardVisBackend, the former is for local visualization and the latter is for Tensorboard visualization. You can choose according to your needs. See [Train and Test](./train_and_test.md) for details.
+```
+
 General configuration is stored alone in the `$MMPOSE/configs/_base_`, and inherited by doing:
 
 ```Python
 _base_ = ['../../../_base_/default_runtime.py'] # take the config file as the starting point of the relative path
-```
-
-```{note}
-CheckpointHook:
-
-- save_best: `'coco/AP'` for `CocoMetric`, `'PCK'` for `PCKAccuracy`
-- max_keep_ckpts: the maximum checkpoints to keep. Defaults to -1, which means unlimited.
-
-Example:
-
-`default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1))`
 ```
 
 ### Data
