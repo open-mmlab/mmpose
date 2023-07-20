@@ -2,6 +2,25 @@
 
 MMPose 使用 Python 文件作为配置文件，将模块化设计和继承设计结合到配置系统中，便于进行各种实验。
 
+## 目录结构
+
+MMPose 的配置文件目录结构如下：
+
+```shell
+configs
+|----_base_
+     |----datasets
+     |----default_runtime.py
+|----animal_2d_keypoint
+|----body_2d_keypoint
+|----body_3d_keypoint
+|----face_2d_keypoint
+|----fashion_2d_keypoint
+|----hand_2d_keypoint
+|----hand_3d_keypoint
+|----wholebody_2d_keypoint
+```
+
 ## 简介
 
 MMPose 拥有一套强大的配置系统，在注册器的配合下，用户可以通过一个配置文件来定义整个项目需要用到的所有内容，以 Python 字典形式组织配置信息，传递给注册器完成对应模块的实例化。

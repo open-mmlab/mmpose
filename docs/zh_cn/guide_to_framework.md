@@ -19,6 +19,7 @@ MMPose 1.0 采用了全新的模块结构设计以精简代码，提升运行效
 以下是这篇教程的目录：
 
 - [20 分钟了解 MMPose 架构设计](#20-分钟了解-mmpose-架构设计)
+  - [文件结构](#文件结构)
   - [总览](#总览)
   - [Step1：配置文件](#step1配置文件)
   - [Step2：数据](#step2数据)
@@ -34,6 +35,47 @@ MMPose 1.0 采用了全新的模块结构设计以精简代码，提升运行效
     - [主干网络（Backbone）](#主干网络backbone)
     - [颈部模块（Neck）](#颈部模块neck)
     - [预测头（Head）](#预测头head)
+
+## 文件结构
+
+MMPose 1.0 的文件结构如下所示：
+
+```shell
+mmpose
+|----apis
+|----structures
+|----datasets
+     |----transforms
+|----codecs
+|----models
+     |----pose_estimators
+     |----data_preprocessors
+     |----backbones
+     |----necks
+     |----heads
+     |----losses
+|----engine
+     |----hooks
+|----evaluation
+|----visualization
+```
+
+- **apis** 提供用于模型推理的高级 API
+- **structures** 提供 bbox、keypoint 和 PoseDataSample 等数据结构
+- **datasets** 支持用于姿态估计的各种数据集
+  - **transforms** 包含各种数据增强变换
+- **codecs** 提供姿态编解码器：编码器用于将姿态信息（通常为关键点坐标）编码为模型学习目标（如热力图），解码器则用于将模型输出解码为姿态估计结果
+- **models** 以模块化结构提供了姿态估计模型的各类组件
+  - **pose_estimators** 定义了所有姿态估计模型类
+  - **data_preprocessors** 用于预处理模型的输入数据
+  - **backbones** 包含各种骨干网络
+  - **necks** 包含各种模型颈部组件
+  - **heads** 包含各种模型头部
+  - **losses** 包含各种损失函数
+- **engine** 包含与姿态估计任务相关的运行时组件
+  - **hooks** 提供运行时的各种钩子
+- **evaluation** 提供各种评估模型性能的指标
+- **visualization** 用于可视化关键点骨架和热力图等信息
 
 ## 总览
 
@@ -262,6 +304,10 @@ class MpiiDataset(BaseCocoStyleDataset):
 
 如果自定义数据集无法被 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) 支持，你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)。
 
+```{note}
+如果你想自定义数据集，请参考 [自定义数据集](./advanced_guides/customize_datasets.md)。
+```
+
 ### 数据流水线
 
 一个典型的数据流水线配置如下：
@@ -304,46 +350,38 @@ test_pipeline = [
 
 #### i. 数据增强
 
-数据增强中常用的变换存放在 [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py) 中，如 `RandomFlip`、`RandomHalfBody` 等。
+数据增强中常用的变换存放在 [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py) 中，如 [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94)、[RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263) 等。
 
-对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于 bottom-up 方法，这些则是由 `BottomupRandomAffine` 实现。
+对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433) 来实现；对于 bottom-up 方法，这些则是由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 实现。
 
 ```{note}
-值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 `GetBBoxCenterScale` 来得到。
+值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 [GetBBoxCenterScale](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L31) 来得到。
 ```
 
 #### ii. 数据变换
 
-我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 `TopdownAffine` 完成，在 bottom-up 方法中则由 `BottomupRandomAffine` 完成。
+我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) 完成，在 bottom-up 方法中则由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 完成。
 
 #### iii. 数据编码
 
-在模型训练时，数据从原始空间变换到输入图片空间后，需要使用 `GenerateTarget` 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
+在模型训练时，数据从原始空间变换到输入图片空间后，需要使用 [GenerateTarget](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L873) 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
 
 在 MMPose 中，我们将编码和解码过程集合成一个编解码器（Codec），在其中实现 `encode()` 和 `decode()`。
 
 目前 MMPose 支持生成以下类型的监督目标：
 
 - `heatmap`: 高斯热图
-
 - `keypoint_label`: 关键点标签（如归一化的坐标值）
-
 - `keypoint_xy_label`: 单个坐标轴关键点标签
-
 - `heatmap+keypoint_label`: 同时生成高斯热图和关键点标签
-
 - `multiscale_heatmap`: 多尺度高斯热图
 
 生成的监督目标会按以下关键字进行封装：
 
 - `heatmaps`：高斯热图
-
 - `keypoint_labels`：关键点标签（如归一化的坐标值）
-
 - `keypoint_x_labels`：x 轴关键点标签
-
 - `keypoint_y_labels`：y 轴关键点标签
-
 - `keypoint_weights`：关键点权重
 
 ```Python
@@ -374,9 +412,9 @@ class GenerateTarget(BaseTransform):
 
 #### iv. 数据打包
 
-数据经过前处理变换后，最终需要通过 `PackPoseInputs` 打包成数据样本。该操作定义在 [$MMPOSE/mmpose/datasets/transforms/formatting.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py) 中。
+数据经过前处理变换后，最终需要通过 [PackPoseInputs](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py) 打包成数据样本。
 
-打包过程会将数据流水线中用字典 `results` 存储的数据转换成用 MMPose 所需的标准数据结构， 如 `InstanceData`，`PixelData`，`PoseDataSample` 等。
+打包过程会将数据流水线中用字典 `results` 存储的数据转换成用 MMPose 所需的标准数据结构， 如 `InstanceData`，`PixelData`，[PoseDataSample](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/structures/pose_data_sample.py) 等。
 
 具体而言，我们将数据样本内容分为 `gt`（标注真值） 和 `pred`（模型预测）两部分，它们都包含以下数据项：
 
@@ -386,7 +424,7 @@ class GenerateTarget(BaseTransform):
 
 - **fields**(torch.tensor)：像素级别的训练标签（如高斯热图）或预测结果，属于输出尺度空间
 
-下面是 `PoseDataSample` 底层实现的例子：
+下面是 [PoseDataSample](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/structures/pose_data_sample.py) 底层实现的例子：
 
 ```Python
 def get_pose_data_sample(self):
