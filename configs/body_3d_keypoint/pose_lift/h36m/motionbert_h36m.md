@@ -43,11 +43,13 @@ Testing results on Human3.6M dataset with ground truth 2D detections
 | [MotionBERT\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-120e_h36m.py) | 34.5  |     34.6      |  27.1   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_h36m-f554954f_20230531.pth) |
 | [MotionBERT-finetuned\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-120e_h36m.py) | 26.9  |     26.8      |  21.0   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth) |
 
-Testing results on Human3.6M dataset from the [official repo](https://github.com/Walter0807/MotionBERT) with ground truth 2D detections
+Testing results on Human3.6M dataset converted from the [official repo](https://github.com/Walter0807/MotionBERT)<sup>1</sup> with ground truth 2D detections
 
 | Arch                                                                                    | MPJPE | average MPJPE | P-MPJPE |                                           ckpt                                           |
 | :-------------------------------------------------------------------------------------- | :---: | :-----------: | :-----: | :--------------------------------------------------------------------------------------: |
-| [MotionBERT\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-120e_h36m.py) | 39.8  |     39.2      |  33.4   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_h36m-f554954f_20230531.pth) |
-| [MotionBERT-finetuned\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-120e_h36m.py) | 37.7  |     37.2      |  32.2   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth) |
+| [MotionBERT\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-120e_h36m-original.py) | 39.8  |     39.2      |  33.4   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_h36m-f554954f_20230531.pth) |
+| [MotionBERT-finetuned\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-120e_h36m-original.py) | 37.7  |     37.2      |  32.2   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth) |
+
+<sup>1</sup> To test with the dataset from official repo, please download the [test annotation file](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/h36m_test_original.npz), [train annotation file](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/h36m_train_original.npz) and [factors](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/h36m_factors.npy) under `$MMPOSE/data/h36m/annotation_body3d/fps50`.
 
 *Models with * are converted from the [official repo](https://github.com/Walter0807/MotionBERT). The config files of these models are only for validation. We don't ensure these config files' training accuracy and welcome you to contribute your reproduction results.*
