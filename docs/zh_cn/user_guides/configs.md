@@ -253,12 +253,10 @@ test_dataloader = val_dataloader # 默认情况下不区分验证集和测试集
 ```
 
 ```{note}
-
 常用功能可以参考以下教程:
-- [恢复训练](../common_usages/resume_training.md)
-- [自动混合精度训练](../common_usages/amp_training.md)
-- [设置随机种子](../common_usages/set_random_seed.md)
-
+- [恢复训练](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#id7)
+- [自动混合精度训练](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#amp)
+- [设置随机种子](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#id10)
 ```
 
 ### 训练配置

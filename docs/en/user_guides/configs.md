@@ -234,10 +234,9 @@ test_dataloader = val_dataloader # use val as test by default
 
 ```{note}
 Common Usages:
-- [Resume training](../common_usages/resume_training.md)
-- [Automatic mixed precision (AMP) training](../common_usages/amp_training.md)
-- [Set the random seed](../common_usages/set_random_seed.md)
-
+- [Resume training](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#id7)
+- [Automatic mixed precision (AMP) training](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#amp)
+- [Set the random seed](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#id10)
 ```
 
 ### Training
