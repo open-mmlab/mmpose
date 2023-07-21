@@ -162,3 +162,53 @@ dataset = dict(
 ```
 
 Additionally, the output channel number of the model should be adjusted as the number of keypoints changes. If the users aim to evaluate the model on the COCO dataset, a subset of model outputs must be chosen. This subset can be customized using the `output_keypoint_indices` argument in `test_cfg`. Users can refer to the [config file](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py), which combines the COCO and AIC dataset, for more details and use it as a template to create their custom dataset.
+
+## Sampling Strategy for Mixed Datasets
+
+When training with mixed datasets, users often encounter the problem of inconsistent data distributions between different datasets. To address this issue, we provide two different sampling strategies:
+
+1. Adjust the sampling ratio of each sub dataset
+2. Adjust the ratio of each sub dataset in each batch
+
+### Adjust the sampling ratio of each sub dataset
+
+In `CombinedDataset`, we provide the `sample_ratio_factor` argument to adjust the sampling ratio of each sub dataset.
+
+For example:
+
+- If `sample_ratio_factor` is `[1.0, 0.5]`, then all data from the first sub dataset will be included in the training, and the second sub dataset will be sampled at a ratio of 0.5.
+- If `sample_ratio_factor` is `[1.0, 2.0]`, then all data from the first sub dataset will be included in the training, and the second sub dataset will be sampled at a ratio of 2 times its total number.
+
+### Adjust the ratio of each sub dataset in each batch
+
+In [$MMPOSE/datasets/samplers.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py) we provide [MultiSourceSampler](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py#L15) to adjust the ratio of each sub dataset in each batch.
+
+For example:
+
+- If `sample_ratio_factor` is `[1.0, 0.5]`, then the data volume of the first sub dataset in each batch will be `1.0 / (1.0 + 0.5) = 66.7%`, and the data volume of the second sub dataset will be `0.5 / (1.0 + 0.5) = 33.3%`. That is, the first sub dataset will be twice as large as the second sub dataset in each batch.
+
+Users can set the `sampler` argument in the configuration file:
+
+```python
+# data loaders
+train_bs = 256
+train_dataloader = dict(
+    batch_size=train_bs,
+    num_workers=4,
+    persistent_workers=True,
+    sampler=dict(
+        type='MultiSourceSampler',
+        batch_size=train_bs,
+        # ratio of sub datasets in each batch
+        source_ratio=[1.0, 0.5],
+        shuffle=True,
+        round_up=True),
+    dataset=dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        # set sub datasets
+        datasets=[sub_dataset1, sub_dataset2],
+        pipeline=train_pipeline,
+        test_mode=False,
+    ))
+```
