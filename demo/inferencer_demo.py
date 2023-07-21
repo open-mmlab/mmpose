@@ -104,12 +104,20 @@ def parse_args():
         'the average bbox center of the dataset. This is useful when bbox '
         'is small, especially in multi-person scenarios.')
     parser.add_argument(
-        '--rebase-keypoint-height',
+        '--disable-rebase-keypoint',
         action='store_true',
-        help='Rebase the predicted 3D pose so its lowest keypoint has a '
-        'height of 0 (landing on the ground). This is useful for '
-        'visualization when the model do not predict the global position '
-        'of the 3D pose.')
+        default=False,
+        help='Whether to disable rebasing the predicted 3D pose so its '
+        'lowest keypoint has a height of 0 (landing on the ground). Rebase '
+        'is useful for visualization when the model do not predict the '
+        'global position of the 3D pose.')
+    parser.add_argument(
+        '--num-instances',
+        type=int,
+        default=1,
+        help='The number of 3D poses to be visualized in every frame. If '
+        'less than 0, it will be set to the number of pose results in the '
+        'first frame.')
     parser.add_argument(
         '--radius',
         type=int,

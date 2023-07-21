@@ -71,7 +71,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
         'norm_pose_2d'
     }
-    forward_kwargs: set = {'rebase_keypoint_height'}
+    forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
         'return_vis',
         'show',
@@ -79,6 +79,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         'draw_bbox',
         'radius',
         'thickness',
+        'num_instances',
         'kpt_thr',
         'vis_out_dir',
     }
@@ -290,13 +291,13 @@ class Pose3DInferencer(BaseMMPoseInferencer):
     @torch.no_grad()
     def forward(self,
                 inputs: Union[dict, tuple],
-                rebase_keypoint_height: bool = False):
+                disable_rebase_keypoint: bool = False):
         """Perform forward pass through the model and process the results.
 
         Args:
             inputs (Union[dict, tuple]): The inputs for the model.
-            rebase_keypoint_height (bool, optional): Flag to rebase the
-                height of the keypoints (z-axis). Defaults to False.
+            disable_rebase_keypoint (bool, optional): Flag to disable rebasing
+                the height of the keypoints. Defaults to False.
 
         Returns:
             list: A list of data samples, each containing the model's output
@@ -326,7 +327,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             keypoints[..., 2] = -keypoints[..., 2]
 
             # If rebase_keypoint_height is True, adjust z-axis values
-            if rebase_keypoint_height:
+            if not disable_rebase_keypoint:
                 keypoints[..., 2] -= np.min(
                     keypoints[..., 2], axis=-1, keepdims=True)
 
@@ -420,6 +421,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                   radius: int = 3,
                   thickness: int = 1,
                   kpt_thr: float = 0.3,
+                  num_instances: int = 1,
                   vis_out_dir: str = '',
                   window_name: str = '',
                   window_close_event_handler: Optional[Callable] = None
@@ -480,6 +482,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             # thereby eliminating the issue of inference getting stuck.
             wait_time = 1e-5 if self._video_input else wait_time
 
+            if num_instances < 0:
+                num_instances = len(pred.pred_instances)
+
             visualization = self.visualizer.add_datasample(
                 window_name,
                 img,
@@ -489,7 +494,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
-                kpt_thr=kpt_thr)
+                kpt_thr=kpt_thr,
+                num_instances=num_instances)
             results.append(visualization)
 
             if vis_out_dir:
