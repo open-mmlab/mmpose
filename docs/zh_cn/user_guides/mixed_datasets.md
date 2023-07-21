@@ -84,6 +84,9 @@ dataset = dict(
     # `train_pipeline` 包含了常用的数据预处理，
     # 比如图片读取、数据增广等
     pipeline=train_pipeline,
+    # sample_ratio_factor 参数是用来调节每个子数据集
+    # 在组合数据集中的样本数量比例的
+    sample_ratio_factor=[1.0, 0.5]
 )
 ```
 

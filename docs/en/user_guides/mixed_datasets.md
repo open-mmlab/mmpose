@@ -84,6 +84,11 @@ dataset = dict(
     # The pipeline includes typical transforms, such as loading the
     # image and data augmentation
     pipeline=train_pipeline,
+    # The sample_ratio_factor controls the sampling ratio of
+    # each dataset in the combined dataset. The length of sample_ratio_factor
+    # should match the number of datasets. Each factor indicates the sampling
+    # ratio of the corresponding dataset relative to its original length.
+    sample_ratio_factor=[1.0, 0.5]
 )
 ```
 
