@@ -71,7 +71,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
         'norm_pose_2d'
     }
-    forward_kwargs: set = {'rebase_keypoint_height'}
+    forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
         'return_vis',
         'show',
@@ -290,13 +290,13 @@ class Pose3DInferencer(BaseMMPoseInferencer):
     @torch.no_grad()
     def forward(self,
                 inputs: Union[dict, tuple],
-                rebase_keypoint_height: bool = False):
+                disable_rebase_keypoint: bool = False):
         """Perform forward pass through the model and process the results.
 
         Args:
             inputs (Union[dict, tuple]): The inputs for the model.
-            rebase_keypoint_height (bool, optional): Flag to rebase the
-                height of the keypoints (z-axis). Defaults to False.
+            disable_rebase_keypoint (bool, optional): Flag to disable rebasing
+                the height of the keypoints. Defaults to False.
 
         Returns:
             list: A list of data samples, each containing the model's output
@@ -326,7 +326,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             keypoints[..., 2] = -keypoints[..., 2]
 
             # If rebase_keypoint_height is True, adjust z-axis values
-            if rebase_keypoint_height:
+            if not disable_rebase_keypoint:
                 keypoints[..., 2] -= np.min(
                     keypoints[..., 2], axis=-1, keepdims=True)
 
