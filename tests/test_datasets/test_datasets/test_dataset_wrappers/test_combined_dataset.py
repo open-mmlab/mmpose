@@ -98,6 +98,12 @@ class TestCombinedDataset(TestCase):
         self.assertEqual(subset_idx, 0)
         self.assertEqual(sample_idx, lens[0] - 1)
 
+        with self.assertRaises(AssertionError):
+            _ = self.build_combined_dataset(sample_ratio_factor=[1, 0.3, 0.1])
+
+        with self.assertRaises(AssertionError):
+            _ = self.build_combined_dataset(sample_ratio_factor=[1, -0.3])
+
     def test_prepare_data(self):
         dataset = self.build_combined_dataset()
         lens = dataset._lens

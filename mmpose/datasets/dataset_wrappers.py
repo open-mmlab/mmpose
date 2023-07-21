@@ -42,6 +42,8 @@ class CombinedDataset(BaseDataset):
             assert len(sample_ratio_factor) == len(datasets), f'the length ' \
                 f'of `sample_ratio_factor` {len(sample_ratio_factor)} does ' \
                 f'not match the length of `datasets` {len(datasets)}'
+            assert min(sample_ratio_factor) >= 0.0, 'the ratio values in ' \
+                '`sample_ratio_factor` should not be negative.'
             self._lens_ori = self._lens
             self._lens = [
                 round(l * sample_ratio_factor[i])
