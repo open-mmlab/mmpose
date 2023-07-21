@@ -79,6 +79,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         'draw_bbox',
         'radius',
         'thickness',
+        'num_instances',
         'kpt_thr',
         'vis_out_dir',
     }
@@ -420,6 +421,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                   radius: int = 3,
                   thickness: int = 1,
                   kpt_thr: float = 0.3,
+                  num_instances: int = 1,
                   vis_out_dir: str = '',
                   window_name: str = '',
                   window_close_event_handler: Optional[Callable] = None
@@ -480,6 +482,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             # thereby eliminating the issue of inference getting stuck.
             wait_time = 1e-5 if self._video_input else wait_time
 
+            if num_instances < 0:
+                num_instances = len(pred.pred_instances)
+
             visualization = self.visualizer.add_datasample(
                 window_name,
                 img,
@@ -489,7 +494,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
-                kpt_thr=kpt_thr)
+                kpt_thr=kpt_thr,
+                num_instances=num_instances)
             results.append(visualization)
 
             if vis_out_dir:

@@ -249,6 +249,7 @@ The inferencer is designed for both visualization and saving predictions. The ta
 | `tracking_thr`           | Sets the similarity threshold for tracking.                                                                                                                       | ❌  | ✔️  |
 | `norm_pose_2d`           | Decides whether to scale the bounding box to the dataset's average bounding box scale and relocate the bounding box to the dataset's average bounding box center. | ❌  | ✔️  |
 | `rebase_keypoint_height` | Decides whether to set the lowest keypoint with height 0.                                                                                                         | ❌  | ✔️  |
+| `num_instances`          | Sets the number of instances to visualize in the results. If set to a negative number, all detected instances will be visualized.                                 | ❌  | ✔️  |
 | `return_vis`             | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |
 | `vis_out_dir`            | Defines the folder path to save the visualization images. If unset, the visualization images will not be saved.                                                   | ✔️  | ✔️  |
 | `return_datasample`      | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |

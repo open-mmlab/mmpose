@@ -237,6 +237,7 @@ result = next(result_generator)
 | `tracking_thr`            | 设置追踪的相似度阈值。                                                                                                     | ❌  | ✔️  |
 | `norm_pose_2d`            | 决定是否将边界框缩放至数据集的平均边界框尺寸，并将边界框移至数据集的平均边界框中心。                                       | ❌  | ✔️  |
 | `disable_rebase_keypoint` | 决定是否将最低关键点的高度置为 0。                                                                                         | ❌  | ✔️  |
+| `num_instances`           | 设置可视化结果中显示的实例数量。如果设置为负数，则所有实例的结果都会可视化。                                               | ❌  | ✔️  |
 | `return_vis`              | 决定是否在结果中包含可视化图像。                                                                                           | ✔️  | ✔️  |
 | `vis_out_dir`             | 定义保存可视化图像的文件夹路径。如果未设置，将不保存可视化图像。                                                           | ✔️  | ✔️  |
 | `return_datasample`       | 决定是否以 `PoseDataSample` 格式返回预测。                                                                                 | ✔️  | ✔️  |
