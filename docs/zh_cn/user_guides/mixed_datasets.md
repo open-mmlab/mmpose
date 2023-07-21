@@ -160,3 +160,53 @@ dataset = dict(
 ```
 
 此外，在使用混合数据集时，由于关键点数量的变化，模型的输出通道数也要做相应调整。如果用户用混合数据集训练了模型，但是要在 COCO 数据集上评估模型，就需要从模型输出的关键点中取出一个子集来匹配 COCO 中的关键点格式。可以通过 `test_cfg` 中的 `output_keypoint_indices` 参数自定义此子集。这个 [配置文件](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) 展示了如何用 AIC 和 COCO 合并后的数据集训练模型并在 COCO 数据集上进行测试。用户可以查阅这个文件以获取更多细节，或者参考这个文件来构建新的混合数据集。
+
+## 调整混合数据集采样策略
+
+在混合数据集训练中，常常面临着不同数据集的数据分布不统一问题，对此我们提供了两种不同的采样策略：
+
+1. 调整每个子数据集的采样比例
+2. 调整每个 batch 中每个子数据集的比例
+
+### 调整每个子数据集的采样比例
+
+在 `CombinedDataset` 中，我们提供了 `sample_ratio_factor` 参数来调整每个子数据集的采样比例。
+
+例如：
+
+- 如果 `sample_ratio_factor` 为 `[1.0, 0.5]`，则第一个子数据集全部数据加入训练，第二个子数据集抽样出 0.5 加入训练。
+- 如果 `sample_ratio_factor` 为 `[1.0, 2.0]`，则第一个子数据集全部数据加入训练，第二个子数据集抽样出其总数的 2 倍加入训练。
+
+### 调整每个 batch 中每个子数据集的比例
+
+在 [$MMPOSE/datasets/samplers.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py) 中，我们提供了 [MultiSourceSampler](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py#L15) 来调整每个 batch 中每个子数据集的比例。
+
+例如：
+
+- 如果 `sample_ratio_factor` 为 `[1.0, 0.5]`，则每个 batch 中第一个子数据集的数据量为 `1.0 / (1.0 + 0.5) = 66.7%`，第二个子数据集的数据量为 `0.5 / (1.0 + 0.5) = 33.3%`。即，第一个子数据集在 batch 中的占比为第二个子数据集的 2 倍。
+
+用户可以在配置文件中通过 `sampler` 参数来进行设置：
+
+```python
+# data loaders
+train_bs = 256
+train_dataloader = dict(
+    batch_size=train_bs,
+    num_workers=4,
+    persistent_workers=True,
+    sampler=dict(
+        type='MultiSourceSampler',
+        batch_size=train_bs,
+        # 设置子数据集比例
+        source_ratio=[1.0, 0.5],
+        shuffle=True,
+        round_up=True),
+    dataset=dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        # 子数据集
+        datasets=[sub_dataset1, sub_dataset2],
+        pipeline=train_pipeline,
+        test_mode=False,
+    ))
+```
