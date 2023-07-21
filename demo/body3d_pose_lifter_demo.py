@@ -58,12 +58,13 @@ def parse_args():
         default=False,
         help='Whether to show visualizations')
     parser.add_argument(
-        '--rebase-keypoint-height',
+        '--disable-rebase-keypoint',
         action='store_true',
-        help='Rebase the predicted 3D pose so its lowest keypoint has a '
-        'height of 0 (landing on the ground). This is useful for '
-        'visualization when the model do not predict the global position '
-        'of the 3D pose.')
+        default=False,
+        help='Whether to disable rebasing the predicted 3D pose so its '
+        'lowest keypoint has a height of 0 (landing on the ground). Rebase '
+        'is useful for visualization when the model do not predict the '
+        'global position of the 3D pose.')
     parser.add_argument(
         '--norm-pose-2d',
         action='store_true',
@@ -74,7 +75,7 @@ def parse_args():
     parser.add_argument(
         '--num-instances',
         type=int,
-        default=-1,
+        default=1,
         help='The number of 3D poses to be visualized in every frame. If '
         'less than 0, it will be set to the number of pose results in the '
         'first frame.')
@@ -132,9 +133,40 @@ def parse_args():
 def process_one_image(args, detector, frame, frame_idx, pose_estimator,
                       pose_est_frame, pose_est_results_last,
                       pose_est_results_list, next_id, pose_lifter,
-                      pose_lift_frame, visualizer):
-    """Visualize detected and predicted keypoints of one image."""
+                      visualize_frame, visualizer):
+    """Visualize detected and predicted keypoints of one image.
 
+    Args:
+        args (Argument): Custom command-line arguments.
+        detector (mmdet.BaseDetector): The mmdet detector.
+        frame (np.ndarray): The image frame read from input image or video.
+        frame_idx (int): The index of current frame.
+        pose_estimator (TopdownPoseEstimator): The pose estimator for 2d pose.
+        pose_est_frame (np.ndarray | list(np.ndarray)): The frames for pose
+            estimation.
+        pose_est_results_last (list(PoseDataSample)): The results of pose
+            estimation from the last frame for tracking instances.
+        pose_est_results_list (list(list(PoseDataSample))): The list of all
+            pose estimation results converted by
+            ``convert_keypoint_definition`` from previous frames. In
+            pose-lifting stage it is used to obtain the 2d estimation sequence.
+        next_id (int): The next track id to be used.
+        pose_lifter (PoseLifter): The pose-lifter for estimating 3d pose.
+        visualize_frame (np.ndarray): The image for drawing the results on.
+        visualizer (Visualizer): The visualizer for visualizing the 2d and 3d
+            pose estimation results.
+
+    Returns:
+        pose_est_results (list(PoseDataSample)): The pose estimation result of
+            the current frame.
+        pose_est_results_list (list(list(PoseDataSample))): The list of all
+            converted pose estimation results until the current frame.
+        pred_3d_instances (InstanceData): The result of pose-lifting.
+            Specifically, the predicted keypoints and scores are saved at
+            ``pred_3d_instances.keypoints`` and
+            ``pred_3d_instances.keypoint_scores``.
+        next_id (int): The next track id to be used.
+    """
     pose_lift_dataset = pose_lifter.cfg.test_dataloader.dataset
 
     det_result = inference_detector(detector, frame)
@@ -227,7 +259,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     pose_lift_results = inference_pose_lifter_model(
         pose_lifter,
         pose_seq_2d,
-        image_size=pose_lift_frame.shape[:2],
+        image_size=visualize_frame.shape[:2],
         norm_pose_2d=args.norm_pose_2d)
 
     # post-processing
@@ -249,7 +281,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         keypoints[..., 2] = -keypoints[..., 2]
 
         # rebase height (z-axis)
-        if args.rebase_keypoint_height:
+        if not args.disable_rebase_keypoint:
             keypoints[..., 2] -= np.min(
                 keypoints[..., 2], axis=-1, keepdims=True)
 
@@ -260,7 +292,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
 
     pred_3d_data_samples = merge_data_samples(pose_lift_results)
     det_data_sample = merge_data_samples(pose_est_results)
-    pred_3d_pred = pred_3d_data_samples.get('pred_instances', None)
+    pred_3d_instances = pred_3d_data_samples.get('pred_instances', None)
 
     if args.num_instances < 0:
         args.num_instances = len(pose_lift_results)
@@ -269,7 +301,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     if visualizer is not None:
         visualizer.add_datasample(
             'result',
-            pose_lift_frame,
+            visualize_frame,
             data_sample=pred_3d_data_samples,
             det_data_sample=det_data_sample,
             draw_gt=False,
@@ -279,7 +311,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
             num_instances=args.num_instances,
             wait_time=args.show_interval)
 
-    return pose_est_results, pose_est_results_list, pred_3d_pred, next_id
+    return pose_est_results, pose_est_results_list, pred_3d_instances, next_id
 
 
 def main():
@@ -362,7 +394,7 @@ def main():
     pred_instances_list = []
     if input_type == 'image':
         frame = mmcv.imread(args.input, channel_order='rgb')
-        _, _, pred_3d_pred, _ = process_one_image(
+        _, _, pred_3d_instances, _ = process_one_image(
             args=args,
             detector=detector,
             frame=frame,
@@ -373,12 +405,12 @@ def main():
             pose_est_results_list=pose_est_results_list,
             next_id=0,
             pose_lifter=pose_lifter,
-            pose_lift_frame=frame,
+            visualize_frame=frame,
             visualizer=visualizer)
 
         if args.save_predictions:
             # save prediction results
-            pred_instances_list = split_instances(pred_3d_pred)
+            pred_instances_list = split_instances(pred_3d_instances)
 
         if save_output:
             frame_vis = visualizer.get_image()
@@ -419,7 +451,7 @@ def main():
                 pose_est_frame = frames
 
             # make person results for current image
-            (pose_est_results, pose_est_results_list, pred_3d_pred,
+            (pose_est_results, pose_est_results_list, pred_3d_instances,
              next_id) = process_one_image(
                  args=args,
                  detector=detector,
@@ -431,7 +463,7 @@ def main():
                  pose_est_results_list=pose_est_results_list,
                  next_id=next_id,
                  pose_lifter=pose_lifter,
-                 pose_lift_frame=mmcv.bgr2rgb(frame),
+                 visualize_frame=mmcv.bgr2rgb(frame),
                  visualizer=visualizer)
 
             if args.save_predictions:
@@ -439,7 +471,7 @@ def main():
                 pred_instances_list.append(
                     dict(
                         frame_id=frame_idx,
-                        instances=split_instances(pred_3d_pred)))
+                        instances=split_instances(pred_3d_instances)))
 
             if save_output:
                 frame_vis = visualizer.get_image()
