@@ -26,7 +26,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=256)
+auto_scale_lr = dict(base_batch_size=1024)
 
 # hooks
 default_hooks = dict(
@@ -55,9 +55,9 @@ model = dict(
         use_window=False,  # whether use window MHRA
         use_hybrid=False,  # whether use hybrid MHRA
         init_cfg=dict(
+            # Set the path to pretrained backbone here
             type='Pretrained',
-            checkpoint='$PATH_TO_YOUR_uniformer_base_in1k.pth')
-    ),  # Set the path to pretrained backbone here
+            checkpoint='$PATH_TO_YOUR_uniformer_base_in1k.pth')),
     head=dict(
         type='HeatmapHead',
         in_channels=512,
@@ -66,11 +66,7 @@ model = dict(
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec,
         init_cfg=[dict(norm_cfg=norm_cfg)]),
-    test_cfg=dict(
-        flip_test=True,
-        flip_mode='heatmap',
-        shift_heatmap=True,
-    ))
+    test_cfg=dict(flip_test=True, flip_mode='heatmap', shift_heatmap=True))
 
 # base dataset settings
 dataset_type = 'CocoDataset'

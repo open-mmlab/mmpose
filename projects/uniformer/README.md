@@ -69,7 +69,7 @@ python tools/test.py $CONFIG --auto-scale-lr
 ```
 
 ```shell
-python tools/test.py $CONFIG $CHECKPOINT --auto-scale-lr
+python tools/test.py $CONFIG $CHECKPOINT
 ```
 
 3. To Train and Test with Multiple GPUs:
@@ -86,14 +86,14 @@ bash tools/dist_test.sh $CONFIG $CHECKPOINT $NUM_GPUs --amp
 
 Results on COCO val2017
 
-|                                Model                                 | Input Size | AP  | AP<sup>50</sup> | AP<sup>75</sup> | AR  | AR<sup>50</sup> |                                Download                                 |
-| :------------------------------------------------------------------: | :--------: | :-: | :-------------: | :-------------: | :-: | :-------------: | :---------------------------------------------------------------------: |
-| [UniFormer-S](./configs/td-hm_uniformer-s-8xb128-210e_coco-256x192.py) |  256x192   |     |                 |                 |     |                 | [model](https://drive.google.com/file/d/162R0JuTpf3gpLe1IK6oxRoQK7JSj4ylx/view?usp=sharing) \| [log](https://drive.google.com/file/d/15j40u97Db6TA2gMHdn0yFEsDFb5SMBy4/view?usp=sharing) |
-| [UniFormer-S](./configs/td-hm_uniformer-s-8xb128-210e_coco-384x288.py) |  384x288   |     |                 |                 |     |                 | [model](https://drive.google.com/file/d/163vuFkpcgVOthC05jCwjGzo78Nr0eikW/view?usp=sharing) \| [log](https://drive.google.com/file/d/15X9M_5cq9RQMgs64Yn9YvV5k5f0zOBHo/view?usp=sharing) |
-| [UniFormer-S](./configs/td-hm_uniformer-s-8xb64-210e_coco-448x320.py) |  448x320   |     |                 |                 |     |                 | [model](https://drive.google.com/file/d/165nQRsT58SXJegcttksHwDn46Fme5dGX/view?usp=sharing) \| [log](https://drive.google.com/file/d/15IJjSWp4R5OybMdV2CZEUx_TwXdTMOee/view?usp=sharing) |
-| [UniFormer-B](./configs/_base_/td-hm_uniformer-b-8xb128-210e_coco-256x192.py) |  256x192   |     |                 |                 |     |                 | [model](https://drive.google.com/file/d/15tzJaRyEzyWp2mQhpjDbBzuGoyCaJJ-2/view?usp=sharing) \| [log](https://drive.google.com/file/d/15jJyTPcJKj_id0PNdytloqt7yjH2M8UR/view?usp=sharing) |
-| [UniFormer-B](./configs/_base_/td-hm_uniformer-b-8xb32-210e_coco-384x288.py) |  384x288   |     |                 |                 |     |                 | [model](https://drive.google.com/file/d/15qtUaOR_C7-vooheJE75mhA9oJQt3gSx/view?usp=sharing) \| [log](https://drive.google.com/file/d/15L1Uxo_uRSMlGnOvWzAzkJLKX6Qh_xNw/view?usp=sharing) |
-| [UniFormer-B](./configs/_base_/td-hm_uniformer-b-8xb32-210e_coco-448x320.py) |  448x320   |     |                 |                 |     |                 | [model](https://drive.google.com/file/d/156iNxetiCk8JJz41aFDmFh9cQbCaMk3D/view?usp=sharing) \| [log](https://drive.google.com/file/d/15aRpZc2Tie5gsn3_l-aXto1MrC9wyzMC/view?usp=sharing) |
+|                                Model                                | Input Size |  AP  | AP<sup>50</sup> | AP<sup>75</sup> |  AR  | AR<sup>50</sup> |                                Download                                |
+| :-----------------------------------------------------------------: | :--------: | :--: | :-------------: | :-------------: | :--: | :-------------: | :--------------------------------------------------------------------: |
+| [UniFormer-S](./configs/td-hm_uniformer-s-8xb128-210e_coco-256x192.py) |  256x192   | 74.0 |      90.2       |      82.1       | 79.5 |      94.1       | [model](https://drive.google.com/file/d/162R0JuTpf3gpLe1IK6oxRoQK7JSj4ylx/view?usp=sharing) \| [log](https://drive.google.com/file/d/15j40u97Db6TA2gMHdn0yFEsDFb5SMBy4/view?usp=sharing) |
+| [UniFormer-S](./configs/td-hm_uniformer-s-8xb128-210e_coco-384x288.py) |  384x288   | 75.9 |      90.6       |      83.0       | 81.0 |      94.3       | [model](https://drive.google.com/file/d/163vuFkpcgVOthC05jCwjGzo78Nr0eikW/view?usp=sharing) \| [log](https://drive.google.com/file/d/15X9M_5cq9RQMgs64Yn9YvV5k5f0zOBHo/view?usp=sharing) |
+| [UniFormer-S](./configs/td-hm_uniformer-s-8xb64-210e_coco-448x320.py) |  448x320   | 76.2 |      90.6       |      83.2       | 81.4 |      94.4       | [model](https://drive.google.com/file/d/165nQRsT58SXJegcttksHwDn46Fme5dGX/view?usp=sharing) \| [log](https://drive.google.com/file/d/15IJjSWp4R5OybMdV2CZEUx_TwXdTMOee/view?usp=sharing) |
+| [UniFormer-B](./configs/_base_/td-hm_uniformer-b-8xb128-210e_coco-256x192.py) |  256x192   | 75.0 |      90.5       |      83.0       | 80.4 |      94.2       | [model](https://drive.google.com/file/d/15tzJaRyEzyWp2mQhpjDbBzuGoyCaJJ-2/view?usp=sharing) \| [log](https://drive.google.com/file/d/15jJyTPcJKj_id0PNdytloqt7yjH2M8UR/view?usp=sharing) |
+| [UniFormer-B](./configs/_base_/td-hm_uniformer-b-8xb32-210e_coco-384x288.py) |  384x288   | 76.7 |      90.8       |      84.1       | 81.9 |      94.6       | [model](https://drive.google.com/file/d/15qtUaOR_C7-vooheJE75mhA9oJQt3gSx/view?usp=sharing) \| [log](https://drive.google.com/file/d/15L1Uxo_uRSMlGnOvWzAzkJLKX6Qh_xNw/view?usp=sharing) |
+| [UniFormer-B](./configs/_base_/td-hm_uniformer-b-8xb32-210e_coco-448x320.py) |  448x320   | 77.4 |      91.0       |      84.4       | 82.4 |      94.9       | [model](https://drive.google.com/file/d/156iNxetiCk8JJz41aFDmFh9cQbCaMk3D/view?usp=sharing) \| [log](https://drive.google.com/file/d/15aRpZc2Tie5gsn3_l-aXto1MrC9wyzMC/view?usp=sharing) |
 
 Note:
 

@@ -6,14 +6,16 @@ optim_wrapper = dict(optimizer=dict(
     lr=1.0e-3,
 ))
 
+# automatically scaling LR based on the actual training batch size
+auto_scale_lr = dict(base_batch_size=512)
+
 model = dict(
     backbone=dict(
         depths=[3, 4, 8, 3],
         drop_path_rate=0.2,
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='$PATH_TO_YOUR_uniformer_small_in1k.pth')),
-    test_cfg=dict())
+            checkpoint='$PATH_TO_YOUR_uniformer_small_in1k.pth')))
 
 train_dataloader = dict(batch_size=64)
 val_dataloader = dict(batch_size=256)
