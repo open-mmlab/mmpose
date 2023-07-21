@@ -18,22 +18,22 @@ ${MMPOSE_CONFIG_FILE_3D} \
 ${MMPOSE_CHECKPOINT_FILE_3D} \
 --input ${VIDEO_PATH or IMAGE_PATH or 'webcam'} \
 [--show] \
-[--rebase-keypoint-height] \
+[--disable-rebase-keypoint] \
 [--norm-pose-2d] \
-[--num-instances] \
+[--num-instances ${NUM_INSTANCES}] \
 [--output-root ${OUT_VIDEO_ROOT}] \
-[--save-predictions]
 [--save-predictions] \
 [--device ${GPU_ID  or  CPU}] \
-[--det-cat-id DET_CAT_ID] \
-[--bbox-thr BBOX_THR] \
-[--kpt-thr KPT_THR] \
+[--det-cat-id ${DET_CAT_ID}] \
+[--bbox-thr ${BBOX_THR}] \
+[--kpt-thr ${KPT_THR}] \
 [--use-oks-tracking] \
-[--tracking-thr TRACKING_THR] \
-[--show-interval INTERVAL] \
-[--thickness THICKNESS] \
-[--radius RADIUS] \
-[--use-multi-frames] [--online]
+[--tracking-thr ${TRACKING_THR}] \
+[--show-interval ${INTERVAL}] \
+[--thickness ${THICKNESS}] \
+[--radius ${RADIUS}] \
+[--use-multi-frames] \
+[--online]
 ```
 
 Note that
@@ -58,7 +58,7 @@ configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft
 https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth  \
 --input https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
 --output-root  vis_results  \
---rebase-keypoint-height  --save-predictions
+--save-predictions
 ```
 
 During 2D pose detection, for multi-frame inference that rely on extra frames to get the final results of the current frame, try this:
@@ -73,7 +73,6 @@ configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft
 https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth  \
 --input https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
 --output-root  vis_results  \
---rebase-keypoint-height \
 --use-multi-frames  --online
 ```
 
@@ -83,8 +82,7 @@ The Inferencer provides a convenient interface for inference, allowing customiza
 
 ```shell
 python demo/inferencer_demo.py tests/data/coco/000000000785.jpg \
-    --pose3d human3d --vis-out-dir vis_results/human3d \
-    --rebase-keypoint-height
+    --pose3d human3d --vis-out-dir vis_results/human3d
 ```
 
 This command infers the image and saves the visualization results in the `vis_results/human3d` directory.
