@@ -63,8 +63,7 @@ model = dict(
         out_channels=17,
         final_layer=dict(kernel_size=1),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        decoder=codec,
-        init_cfg=[dict(norm_cfg=norm_cfg)]),
+        decoder=codec),
     test_cfg=dict(flip_test=True, flip_mode='heatmap', shift_heatmap=True))
 
 # base dataset settings

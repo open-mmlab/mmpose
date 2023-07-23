@@ -628,20 +628,73 @@ class UniFormer(BaseBackbone):
         else:
             self.pre_logits = nn.Identity()
 
-    # TODO: fix this part
-        self.apply(self._init_weights)
-        self.init_weights(pretrained=self.init_cfg['checkpoint'])
+        # self.apply(self._init_weights)
+        # self.init_weights()
 
-    def init_weights(self, pretrained=None):
-        if isinstance(pretrained, str):
-            logger = get_root_logger()
+    def init_weights(self):
+        """Initialize the weights in backbone.
+
+        Args:
+            pretrained (str, optional): Path to pre-trained weights.
+                Defaults to None.
+        """
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
+            pretrained = self.init_cfg['checkpoint']
             load_checkpoint(
                 self,
                 pretrained,
                 map_location='cpu',
                 strict=False,
-                logger=logger)
-            print(f'Load pretrained model from {pretrained}')
+                logger=self.logger)
+            self.logger.info(f'Load pretrained model from {pretrained}')
+
+
+#         if (isinstance(self.init_cfg, dict)
+#                 and self.init_cfg['type'] == 'Pretrained'):
+#             # Suppress zero_init_residual if use pretrained model.
+#             state_dict = get_state_dict(
+#                 self.init_cfg['checkpoint'], map_location='cpu')
+
+#             # strip prefix of state_dict
+#             if list(state_dict.keys())[0].startswith('module.'):
+#                 state_dict = {k[7:]: v for k, v in state_dict.items()}
+
+#             # reshape absolute position embedding
+#             if state_dict.get('absolute_pos_embed') is not None:
+#                 absolute_pos_embed = state_dict['absolute_pos_embed']
+#                 N1, L, C1 = absolute_pos_embed.size()
+#                 N2, C2, H, W = self.absolute_pos_embed.size()
+#                 if N1 != N2 or C1 != C2 or L != H * W:
+#                     self.logger.warning('Error in loading absolute_pos_embed, pass')
+#                 else:
+#                     state_dict['absolute_pos_embed'] = absolute_pos_embed.view(
+#                         N2, H, W, C2).permute(0, 3, 1, 2).contiguous()
+
+#             # interpolate position bias table if needed
+#             relative_position_bias_table_keys = [
+#                 k for k in state_dict.keys()
+#                 if 'relative_position_bias_table' in k
+#             ]
+#             for table_key in relative_position_bias_table_keys:
+#                 table_pretrained = state_dict[table_key]
+#                 table_current = self.state_dict()[table_key]
+#                 L1, nH1 = table_pretrained.size()
+#                 L2, nH2 = table_current.size()
+#                 if nH1 != nH2:
+#                     self.logger.warning(f'Error in loading {table_key}, pass')
+#                 elif L1 != L2:
+#                     S1 = int(L1**0.5)
+#                     S2 = int(L2**0.5)
+#                     table_pretrained_resized = F.interpolate(
+#                         table_pretrained.permute(1, 0).reshape(1, nH1, S1, S1),
+#                         size=(S2, S2),
+#                         mode='bicubic')
+#                     state_dict[table_key] = table_pretrained_resized.view(
+#                         nH2, L2).permute(1, 0).contiguous()
+
+#             # load state_dict
+#             load_state_dict(self, state_dict, strict=False, logger=self.logger)
 
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
@@ -651,8 +704,6 @@ class UniFormer(BaseBackbone):
         elif isinstance(m, nn.LayerNorm):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
-
-    #######################
 
     @torch.jit.ignore
     def no_weight_decay(self):
@@ -702,4 +753,7 @@ class UniFormer(BaseBackbone):
                 x = blk(x)
         x_out = self.norm4(x.permute(0, 2, 3, 1))
         out.append(x_out.permute(0, 3, 1, 2).contiguous())
-        return out
+        return tuple(out)
+
+    def train(self, mode=True):
+        super().train(mode)
