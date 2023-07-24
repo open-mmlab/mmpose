@@ -144,6 +144,10 @@ class TestPose2DInferencer(TestCase):
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
                                  results3['predictions'][3][0]['keypoints'])
 
+        with self.assertRaises(AssertionError):
+            for res in inferencer(inputs, vis_out_dir=f'{tmp_dir}/1.jpg'):
+                pass
+
         # `inputs` is path to a video
         inputs = 'tests/data/posetrack18/videos/000001_mpiinew_test/' \
                  '000001_mpiinew_test.mp4'
