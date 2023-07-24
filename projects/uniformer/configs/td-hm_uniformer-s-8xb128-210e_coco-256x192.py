@@ -1,4 +1,4 @@
-_base_ = ['./_base_/td-hm_uniformer-b-8xb128-210e_coco-256x192.py']
+_base_ = ['./td-hm_uniformer-b-8xb128-210e_coco-256x192.py']
 
 # automatically scaling LR based on the actual training batch size
 auto_scale_lr = dict(base_batch_size=1024)

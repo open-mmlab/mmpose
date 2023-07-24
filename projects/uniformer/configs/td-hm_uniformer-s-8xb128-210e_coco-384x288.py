@@ -1,4 +1,4 @@
-_base_ = ['./_base_/td-hm_uniformer-b-8xb32-210e_coco-384x288.py']
+_base_ = ['./td-hm_uniformer-b-8xb32-210e_coco-384x288.py']
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
