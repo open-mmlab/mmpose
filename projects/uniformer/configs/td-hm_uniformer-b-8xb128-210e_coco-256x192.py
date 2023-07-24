@@ -60,7 +60,9 @@ model = dict(
         init_cfg=dict(
             # Set the path to pretrained backbone here
             type='Pretrained',
-            checkpoint='${PATH_TO_YOUR_uniformer_small_in1k.pth}')),
+            checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
+            'uniformer/uniformer_base_in1k.pth'  # noqa
+        )),
     head=dict(
         type='HeatmapHead',
         in_channels=512,

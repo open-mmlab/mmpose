@@ -27,9 +27,7 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 
 2. Download Pretrained Weights
 
-In order to either running inferences or training on the `uniformer pose estimation` project, you have to download the original Uniformer pretrained weights on ImageNet1k dataset and the weights trained for the downstream pose estimation task. The original ImageNet1k weights are hosted on SenseTime's [huggingface repository](https://huggingface.co/Sense-X/uniformer_image) and the pose estimation weights can be downloaded according to the [official README](https://github.com/Sense-X/UniFormer/tree/main/pose_estimation)
-
-Once you have the weights downloaded, you can move them to the ideal places and update the corresponding paths in the [config files](./configs/) and the main [uniformer.py](./models/uniformer.py)
+To either run inferences or train on the `uniformer pose estimation` project, you have to download the original Uniformer pretrained weights on the ImageNet1k dataset and the weights trained for the downstream pose estimation task. The original ImageNet1k weights are hosted on SenseTime's [huggingface repository](https://huggingface.co/Sense-X/uniformer_image), and the downstream pose estimation task weights are hosted either on Google Drive or Baiduyun. We have uploaded them to the OpenMMLab download URLs, allowing users to use them without burden. For example, you can take a look at [`td-hm_uniformer-b-8xb128-210e_coco-256x192.py`](./configs/td-hm_uniformer-b-8xb128-210e_coco-256x192.py#62), the corresponding pretrained weight URL is already here and when the training or testing process starts, the weight will be automatically downloaded to your device. For the downstream task weights, you can get their URLs from the [benchmark result table](#results).
 
 ### Inference
 
@@ -46,9 +44,9 @@ For more information on using the inferencer, please see [this document](https:/
 Here's an example code:
 
 ```shell
-python demo/inferencer_demo.py ../../tests/data/coco/000000000785.jpg \
-    --pose2d ./projects/uniformer/configs/td-hm_uniformer-s-8xb128-210e_coco-256x192.py \
-    --pose2d-weights $PATH_TO_YOUR_UNIFORMER_top_down_256x192_global_base.pth \
+python demo/inferencer_demo.py tests/data/coco/000000000785.jpg \
+    --pose2d projects/uniformer/configs/td-hm_uniformer-s-8xb128-210e_coco-256x192.py \
+    --pose2d-weights https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_256x192_global_small-d4a7fdac_20230724.pth \
     --vis-out-dir vis_results
 ```
 
