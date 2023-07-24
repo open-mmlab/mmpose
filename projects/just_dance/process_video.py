@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import tempfile
+from typing import Optional
 
 import cv2
 import mmcv
@@ -24,32 +25,50 @@ except ImportError:
     from utils import (blend_images, convert_video_fps, get_smoothed_kpt,
                        resize_image_to_fixed_height)
 
-det_config = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    'configs/rtmdet-nano_one-person.py')
-det_weights = 'https://download.openmmlab.com/mmpose/v1/projects/' \
-    'rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth'
+model_cfg = dict(
+    human=dict(
+        model='rtmpose-t_8xb256-420e_aic-coco-256x192',
+        det_model=os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'configs/rtmdet-nano_one-person.py'),
+        det_weights='https://download.openmmlab.com/mmpose/v1/projects/'
+        'rtmpose/rtmdet_nano_8xb32-100e_coco-obj365-person-05d8511e.pth',
+    ),
+    bear=dict(
+        model='rtmpose-l_8xb256-420e_humanart-256x192',
+        det_model='rtmdet-m',
+        det_cat_ids=77,
+    ),
+)
 
 
 class VideoProcessor:
     """A class to process videos for pose estimation and visualization."""
 
+    def __init__(self):
+        self.category = 'human'
+
+    def _set_category(self, category):
+        assert category in model_cfg
+        self.category = category
+
     @property
     def pose_estimator(self) -> Pose2DInferencer:
         if not hasattr(self, '_pose_estimator'):
-            self._pose_estimator = Pose2DInferencer(
-                'rtmpose-t_8xb256-420e_aic-coco-256x192',
-                det_model=det_config,
-                det_weights=det_weights)
-            self._pose_estimator.model.test_cfg['flip_test'] = False
-        return self._pose_estimator
+            self._pose_estimator = dict()
+        if self.category not in self._pose_estimator:
+            self._pose_estimator[self.category] = Pose2DInferencer(
+                **(model_cfg[self.category]))
+            self._pose_estimator[
+                self.category].model.test_cfg['flip_test'] = False
+        return self._pose_estimator[self.category]
 
     @property
     def visualizer(self) -> PoseLocalVisualizer:
         if hasattr(self, '_visualizer'):
             return self._visualizer
         elif hasattr(self, '_pose_estimator'):
-            return self._pose_estimator.visualizer
+            return self.pose_estimator.visualizer
 
         # init visualizer
         self._visualizer = PoseLocalVisualizer()
@@ -109,11 +128,16 @@ class VideoProcessor:
 
         video_reader = mmcv.VideoReader(video)
 
-        if video_reader.fps != 30:
+        if abs(video_reader.fps - 30) > 0.1:
             video_reader = mmcv.VideoReader(convert_video_fps(video))
 
-        assert video_reader.fps == 30, f'only support videos with 30 FPS, ' \
-            f'but the video {video_fname} has {video_reader.fps} fps'
+        assert abs(video_reader.fps - 30) < 0.1, f'only support videos with ' \
+            f'30 FPS, but the video {video_fname} has {video_reader.fps} fps'
+
+        if os.path.basename(video_fname).startswith('bear'):
+            self._set_category('bear')
+        else:
+            self._set_category('human')
         keypoints_list = []
         for i, frame in enumerate(video_reader):
             keypoints = self.get_keypoints_from_frame(frame)
@@ -123,7 +147,10 @@ class VideoProcessor:
         return keypoints
 
     @torch.no_grad()
-    def run(self, tch_video: str, stu_video: str):
+    def run(self,
+            tch_video: str,
+            stu_video: str,
+            output_file: Optional[str] = None):
         # extract human poses
         tch_kpts = self.get_keypoints_from_video(tch_video)
         stu_kpts = self.get_keypoints_from_video(stu_video)
@@ -137,8 +164,9 @@ class VideoProcessor:
         # output
         tch_name = os.path.basename(tch_video).rsplit('.', 1)[0]
         stu_name = os.path.basename(stu_video).rsplit('.', 1)[0]
-        fname = f'{tch_name}-{stu_name}.mp4'
-        output_file = os.path.join(tempfile.mkdtemp(), fname)
+        if output_file is None:
+            fname = f'{tch_name}-{stu_name}.mp4'
+            output_file = os.path.join(tempfile.mkdtemp(), fname)
         return self.generate_output_video(tch_video, stu_video, output_file,
                                           tch_kpts, stu_kpts, piece_info)
 
@@ -223,7 +251,9 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('teacher_video', help='Path to the Teacher Video')
     parser.add_argument('student_video', help='Path to the Student Video')
+    parser.add_argument(
+        '--output-file', help='Path to save the output Video', default=None)
     args = parser.parse_args()
 
     processor = VideoProcessor()
-    processor.run(args.teacher_video, args.student_video)
+    processor.run(args.teacher_video, args.student_video, args.output_file)

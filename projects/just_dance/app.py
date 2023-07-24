@@ -57,6 +57,12 @@ os.system(
 os.system(
     f'wget -O {project_path}/resources/tsinghua_30fps.mp4 https://download.openmmlab.com/mmpose/v1/projects/just_dance/tsinghua_30fps.mp4'  # noqa
 )
+os.system(
+    f'wget -O {project_path}/resources/student1.mp4 https://download.openmmlab.com/mmpose/v1/projects/just_dance/student1.mp4'  # noqa
+)
+os.system(
+    f'wget -O {project_path}/resources/bear_teacher.mp4 https://download.openmmlab.com/mmpose/v1/projects/just_dance/bear_teacher.mp4'  # noqa
+)
 
 with gr.Blocks() as demo:
     with gr.Tab('Upload-Video'):
@@ -66,13 +72,15 @@ with gr.Blocks() as demo:
                 student_video = gr.Video(type='mp4')
                 gr.Examples([
                     os.path.join(project_path, 'resources/tom.mp4'),
-                    os.path.join(project_path, 'resources/tsinghua_30fps.mp4')
+                    os.path.join(project_path, 'resources/tsinghua_30fps.mp4'),
+                    os.path.join(project_path, 'resources/student1.mp4')
                 ], student_video)
             with gr.Column():
                 gr.Markdown('Teacher Video')
                 teacher_video = gr.Video(type='mp4')
                 gr.Examples([
-                    os.path.join(project_path, 'resources/idol_producer.mp4')
+                    os.path.join(project_path, 'resources/idol_producer.mp4'),
+                    os.path.join(project_path, 'resources/bear_teacher.mp4')
                 ], teacher_video)
 
         button = gr.Button('Grading', variant='primary')

@@ -16,6 +16,7 @@ Import:
 - configs/body_2d_keypoint/rtmpose/coco/rtmpose_coco.yml
 - configs/body_2d_keypoint/rtmpose/crowdpose/rtmpose_crowdpose.yml
 - configs/body_2d_keypoint/rtmpose/mpii/rtmpose_mpii.yml
+- configs/body_2d_keypoint/rtmpose/humanart/rtmpose_humanart.yml
 - configs/body_2d_keypoint/simcc/coco/mobilenetv2_coco.yml
 - configs/body_2d_keypoint/simcc/coco/resnet_coco.yml
 - configs/body_2d_keypoint/simcc/coco/vipnas_coco.yml
