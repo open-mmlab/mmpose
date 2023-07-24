@@ -5,6 +5,9 @@ custom_imports = dict(imports='projects.uniformer.models')
 # runtime
 train_cfg = dict(max_epochs=210, val_interval=10)
 
+# enable DDP training when pretrained model is used
+find_unused_parameters = True
+
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
@@ -56,7 +59,7 @@ model = dict(
         init_cfg=dict(
             # Set the path to pretrained backbone here
             type='Pretrained',
-            checkpoint='$PATH_TO_YOUR_uniformer_base_in1k.pth')),
+            checkpoint='${PATH_TO_YOUR_uniformer_small_in1k.pth}')),
     head=dict(
         type='HeatmapHead',
         in_channels=512,

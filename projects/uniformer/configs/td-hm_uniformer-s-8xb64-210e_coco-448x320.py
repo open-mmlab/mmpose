@@ -15,7 +15,7 @@ model = dict(
         drop_path_rate=0.2,
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='$PATH_TO_YOUR_uniformer_small_in1k.pth')))
+            checkpoint='${PATH_TO_YOUR_uniformer_small_in1k.pth}')))
 
 train_dataloader = dict(batch_size=64)
 val_dataloader = dict(batch_size=256)
