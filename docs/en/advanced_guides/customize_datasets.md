@@ -72,19 +72,15 @@ configs/_base_/datasets/custom.py
 
 An example of the dataset config is as follows.
 
-`keypoint_info` contains the information about each keypoint.
-
-1. `name`: the keypoint name. The keypoint name must be unique.
-2. `id`: the keypoint id.
-3. `color`: (\[B, G, R\]) is used for keypoint visualization.
-4. `type`: 'upper' or 'lower', will be used in data augmentation [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/b225a773d168fc2afd48cde5f76c0202d1ba2f52/mmpose/datasets/transforms/common_transforms.py#L263).
-5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part, used in data augmentation [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94). We need to flip the keypoints accordingly.
-
-`skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
-
-`joint_weights` assigns different loss weights to different keypoints.
-
-`sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
+- `keypoint_info` contains the information about each keypoint.
+  1. `name`: the keypoint name. The keypoint name must be unique.
+  2. `id`: the keypoint id.
+  3. `color`: (\[B, G, R\]) is used for keypoint visualization.
+  4. `type`: 'upper' or 'lower', will be used in data augmentation [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py#L263).
+  5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part, used in data augmentation [RandomFlip](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py#L94). We need to flip the keypoints accordingly.
+- `skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
+- `joint_weights` assigns different loss weights to different keypoints.
+- `sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
 
 Here is an simplified example of dataset_info config file ([full text](/configs/_base_/datasets/coco.py)).
 
