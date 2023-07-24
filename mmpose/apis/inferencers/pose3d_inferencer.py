@@ -392,6 +392,15 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         else:
             inputs = self._inputs_to_list(inputs)
 
+        # check the compatibility between inputs/outputs
+        if not self._video_input and len(inputs) > 0:
+            vis_out_dir = visualize_kwargs.get('vis_out_dir', None)
+            if vis_out_dir is not None:
+                _, file_extension = os.path.splitext(vis_out_dir)
+                assert not file_extension, f'the argument `vis_out_dir` ' \
+                    f'should be a folder while the input contains multiple ' \
+                    f'images, but got {vis_out_dir}'
+
         inputs = self.preprocess(
             inputs, batch_size=batch_size, **preprocess_kwargs)
 
