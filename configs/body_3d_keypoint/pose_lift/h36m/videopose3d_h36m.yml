@@ -1,0 +1,103 @@
+Collections:
+- Name: VideoPose3D
+  Paper:
+    Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
+      training
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/videopose3d.md
+Models:
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m.py
+  In Collection: VideoPose3D
+  Metadata:
+    Architecture: &id001
+    - VideoPose3D
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 40.0
+      P-MPJPE: 30.1
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-81frm-supv_8xb128-80e_h36m.py
+  In Collection: VideoPose3D
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-81frm-supv_8xb128-80e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 38.9
+      P-MPJPE: 29.2
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m.py
+  In Collection: VideoPose3D
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 37.6
+      P-MPJPE: 28.3
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised-880bea25_20210527.pth
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m.py
+  In Collection: VideoPose3D
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 52.9
+      P-MPJPE: 41.3
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py
+  In Collection: VideoPose3D
+  Alias: human3d
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 47.9
+      P-MPJPE: 38.0
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-27frm-semi-supv_8xb64-200e_h36m.py
+  In Collection: VideoPose3D
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-27frm-semi-supv_8xb64-200e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 58.1
+      N-MPJPE: 54.7
+      P-MPJPE: 42.8
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised-54aef83b_20210527.pth
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-27frm-semi-supv-cpn-ft_8xb64-200e_h36m.py
+  In Collection: VideoPose3D
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M
+  Name: pose-lift_videopose3d-27frm-semi-supv-cpn-ft_8xb64-200e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 67.4
+      N-MPJPE: 63.2
+      P-MPJPE: 50.1
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised_cpn_ft-71be9cde_20210527.pth

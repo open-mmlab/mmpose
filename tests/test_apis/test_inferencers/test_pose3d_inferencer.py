@@ -12,9 +12,14 @@ import torch
 
 from mmpose.apis.inferencers import Pose2DInferencer, Pose3DInferencer
 from mmpose.structures import PoseDataSample
+from mmpose.utils import register_all_modules
 
 
 class TestPose3DInferencer(TestCase):
+
+    def tearDown(self) -> None:
+        register_all_modules(init_default_scope=True)
+        return super().tearDown()
 
     def _get_det_model_weights(self):
         if platform.system().lower() == 'windows':
@@ -41,7 +46,7 @@ class TestPose3DInferencer(TestCase):
         # 1. init with config path and checkpoint
         inferencer = Pose3DInferencer(
             model=  # noqa
-            'configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py',  # noqa
+            'configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py',  # noqa
             weights=  # noqa
             'https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth',  # noqa
             pose2d_model='configs/body_2d_keypoint/simcc/coco/'
@@ -57,7 +62,7 @@ class TestPose3DInferencer(TestCase):
 
         # 2. init with config name
         inferencer = Pose3DInferencer(
-            model='configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_'
+            model='configs/body_3d_keypoint/pose_lift/h36m/pose-lift_'
             'videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py',
             pose2d_model='configs/body_2d_keypoint/simcc/coco/'
             'simcc_res50_8xb64-210e_coco-256x192.py',

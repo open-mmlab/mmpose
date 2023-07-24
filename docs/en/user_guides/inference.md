@@ -235,25 +235,26 @@ The `MMPoseInferencer` offers a variety of arguments for customizing pose estima
 
 The inferencer is designed for both visualization and saving predictions. The table below presents the list of arguments available when using the `MMPoseInferencer` for inference, along with their compatibility with 2D and 3D inferencing:
 
-| Argument                 | Description                                                                                                                                                       | 2D  | 3D  |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
-| `show`                   | Controls the display of the image or video in a pop-up window.                                                                                                    | ✔️  | ✔️  |
-| `radius`                 | Sets the visualization keypoint radius.                                                                                                                           | ✔️  | ✔️  |
-| `thickness`              | Determines the link thickness for visualization.                                                                                                                  | ✔️  | ✔️  |
-| `kpt_thr`                | Sets the keypoint score threshold. Keypoints with scores exceeding this threshold will be displayed.                                                              | ✔️  | ✔️  |
-| `draw_bbox`              | Decides whether to display the bounding boxes of instances.                                                                                                       | ✔️  | ✔️  |
-| `draw_heatmap`           | Decides if the predicted heatmaps should be drawn.                                                                                                                | ✔️  | ❌  |
-| `black_background`       | Decides whether the estimated poses should be displayed on a black background.                                                                                    | ✔️  | ❌  |
-| `skeleton_style`         | Sets the skeleton style. Options include 'mmpose' (default) and 'openpose'.                                                                                       | ✔️  | ❌  |
-| `use_oks_tracking`       | Decides whether to use OKS as a similarity measure in tracking.                                                                                                   | ❌  | ✔️  |
-| `tracking_thr`           | Sets the similarity threshold for tracking.                                                                                                                       | ❌  | ✔️  |
-| `norm_pose_2d`           | Decides whether to scale the bounding box to the dataset's average bounding box scale and relocate the bounding box to the dataset's average bounding box center. | ❌  | ✔️  |
-| `rebase_keypoint_height` | Decides whether to set the lowest keypoint with height 0.                                                                                                         | ❌  | ✔️  |
-| `return_vis`             | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |
-| `vis_out_dir`            | Defines the folder path to save the visualization images. If unset, the visualization images will not be saved.                                                   | ✔️  | ✔️  |
-| `return_datasample`      | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
-| `pred_out_dir`           | Specifies the folder path to save the predictions. If unset, the predictions will not be saved.                                                                   | ✔️  | ✔️  |
-| `out_dir`                | If `vis_out_dir` or `pred_out_dir` is unset, these will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively.                       | ✔️  | ✔️  |
+| Argument                  | Description                                                                                                                                                       | 2D  | 3D  |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| `show`                    | Controls the display of the image or video in a pop-up window.                                                                                                    | ✔️  | ✔️  |
+| `radius`                  | Sets the visualization keypoint radius.                                                                                                                           | ✔️  | ✔️  |
+| `thickness`               | Determines the link thickness for visualization.                                                                                                                  | ✔️  | ✔️  |
+| `kpt_thr`                 | Sets the keypoint score threshold. Keypoints with scores exceeding this threshold will be displayed.                                                              | ✔️  | ✔️  |
+| `draw_bbox`               | Decides whether to display the bounding boxes of instances.                                                                                                       | ✔️  | ✔️  |
+| `draw_heatmap`            | Decides if the predicted heatmaps should be drawn.                                                                                                                | ✔️  | ❌  |
+| `black_background`        | Decides whether the estimated poses should be displayed on a black background.                                                                                    | ✔️  | ❌  |
+| `skeleton_style`          | Sets the skeleton style. Options include 'mmpose' (default) and 'openpose'.                                                                                       | ✔️  | ❌  |
+| `use_oks_tracking`        | Decides whether to use OKS as a similarity measure in tracking.                                                                                                   | ❌  | ✔️  |
+| `tracking_thr`            | Sets the similarity threshold for tracking.                                                                                                                       | ❌  | ✔️  |
+| `norm_pose_2d`            | Decides whether to scale the bounding box to the dataset's average bounding box scale and relocate the bounding box to the dataset's average bounding box center. | ❌  | ✔️  |
+| `disable_rebase_keypoint` | Decides whether to set the lowest keypoint with height 0.                                                                                                         | ❌  | ✔️  |
+| `num_instances`           | Sets the number of instances to visualize in the results. If set to a negative number, all detected instances will be visualized.                                 | ❌  | ✔️  |
+| `return_vis`              | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |
+| `vis_out_dir`             | Defines the folder path to save the visualization images. If unset, the visualization images will not be saved.                                                   | ✔️  | ✔️  |
+| `return_datasample`       | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
+| `pred_out_dir`            | Specifies the folder path to save the predictions. If unset, the predictions will not be saved.                                                                   | ✔️  | ✔️  |
+| `out_dir`                 | If `vis_out_dir` or `pred_out_dir` is unset, these will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively.                       | ✔️  | ✔️  |
 
 ### Model Alias
 
@@ -274,9 +275,9 @@ The MMPose library has predefined aliases for several frequently used models. Th
 
 The following table lists the available 3D model aliases and their corresponding configuration names:
 
-| Alias   | Configuration Name                                     | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
-| ------- | ------------------------------------------------------ | ------------------------ | ----------------- | ----------------- | -------- |
-| human3d | vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
+| Alias   | Configuration Name                                        | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | --------------------------------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 

@@ -21,7 +21,7 @@
 
 在本节中，我们将演示如何准备 PyTorch 相关的依赖环境。
 
-MMPose 适用于 Linux、Windows 和 macOS。它需要 Python 3.7+、CUDA 9.2+ 和 PyTorch 1.6+。
+MMPose 适用于 Linux、Windows 和 macOS。它需要 Python 3.7+、CUDA 9.2+ 和 PyTorch 1.8+。
 
 如果您对配置 PyTorch 环境已经很熟悉，并且已经完成了配置，可以直接进入下一节：[安装](#安装-mmpose)。否则，请依照以下步骤完成配置。
 
@@ -57,13 +57,22 @@ conda install pytorch torchvision cpuonly -c pytorch
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install "mmcv>=2.0.0"
+mim install "mmcv>=2.0.1"
 ```
 
 请注意，MMPose 中的一些推理示例脚本需要使用 [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet) 检测人体。如果您想运行这些示例脚本，可以通过运行以下命令安装 mmdet:
 
 ```shell
-mim install "mmdet>=3.0.0"
+mim install "mmdet>=3.1.0"
+```
+
+```{note}
+新旧版本 mmpose、mmdet、mmcv 的对应关系为：
+
+- mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
+- mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
+
+如果遇到版本不兼容的问题，请使用 `pip list | grep mm` 检查对应关系后，升级或降级相关依赖。
 ```
 
 ## 最佳实践
@@ -88,7 +97,7 @@ pip install -v -e .
 如果只是希望调用 MMPose 的接口，或者在自己的项目中导入 MMPose 中的模块。直接使用 mim 安装即可。
 
 ```shell
-mim install "mmpose>=1.0.0"
+mim install "mmpose>=1.1.0"
 ```
 
 ## 验证安装
@@ -141,6 +150,15 @@ results = inference_topdown(model, 'demo.jpg')
 示例图片 `demo.jpg` 可以从 [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/main/tests/data/coco/000000000785.jpg) 下载。
 推理结果是一个 `PoseDataSample` 列表，预测结果将会保存在 `pred_instances` 中，包括检测到的关键点位置和置信度。
 
+```{note}
+MMCV 版本与 PyTorch 版本需要严格对应，如果遇到如下问题：
+
+- No module named 'mmcv.ops'
+- No module named 'mmcv._ext'
+
+说明当前环境中的 PyTorch 版本与 CUDA 版本不匹配。你可以通过 `nvidia-smi` 查看 CUDA 版本，需要与 `pip list | grep torch` 中 PyTorch 的 `+cu1xx` 对应，否则，你需要先卸载 PyTorch 并重新安装，然后重新安装 MMCV（这里的安装顺序**不可以**交换）。
+```
+
 ## 自定义安装
 
 ### CUDA 版本
@@ -180,7 +198,7 @@ MMCV 包含 C++ 和 CUDA 扩展，因此其对 PyTorch 的依赖比较复杂。M
 举个例子，如下命令将会安装基于 PyTorch 1.10.x 和 CUDA 11.3 编译的 mmcv。
 
 ```shell
-pip install 'mmcv>=2.0.0' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
+pip install 'mmcv>=2.0.1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
 ### 在 CPU 环境中安装
@@ -198,7 +216,7 @@ MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训
 ```shell
 !pip3 install openmim
 !mim install mmengine
-!mim install "mmcv>=2.0.0"
+!mim install "mmcv>=2.0.1"
 ```
 
 **第 2 步** 从源码安装 mmpose
@@ -214,7 +232,7 @@ MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训
 ```python
 import mmpose
 print(mmpose.__version__)
-# 预期输出： 1.0.0
+# 预期输出： 1.1.0
 ```
 
 ```{note}

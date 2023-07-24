@@ -101,7 +101,7 @@ class TemporalRegressionHead(BaseHead):
         else:
             target_root = torch.stack([
                 torch.empty((0), dtype=torch.float32)
-                for _ in batch_data_samples[0].metainfo
+                for _ in batch_data_samples
             ])
 
         preds = self.decode((batch_coords, target_root))

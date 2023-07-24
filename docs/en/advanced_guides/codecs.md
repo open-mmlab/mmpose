@@ -8,7 +8,7 @@ MMPose 1.0 introduced a new module **Codec** to integrate the encoding and decod
 
 Here is a diagram to show where the `Codec` is:
 
-![codec-en](https://user-images.githubusercontent.com/13503330/187112635-c01f13d1-a07e-420f-be50-3b8818524dec.png)
+![pose_estimator_en](https://github.com/open-mmlab/mmpose/assets/13503330/0764baab-41c7-4a1d-ab64-5d7f9dfc8eec)
 
 A typical codec consists of two parts:
 

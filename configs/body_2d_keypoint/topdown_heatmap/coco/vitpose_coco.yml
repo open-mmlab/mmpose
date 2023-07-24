@@ -128,9 +128,9 @@ Models:
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.781
+      AP: 0.780
       AP@0.5: 0.914
-      AP@0.75: 0.853
+      AP@0.75: 0.851
       AR: 0.833
       AR@0.5: 0.952
     Task: Body 2D Keypoint

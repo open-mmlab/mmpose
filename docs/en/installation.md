@@ -23,7 +23,7 @@ We recommend that users follow our best practices to install MMPose. However, th
 
 In this section we demonstrate how to prepare an environment with PyTorch.
 
-MMPose works on Linux, Windows and macOS. It requires Python 3.7+, CUDA 9.2+ and PyTorch 1.6+.
+MMPose works on Linux, Windows and macOS. It requires Python 3.7+, CUDA 9.2+ and PyTorch 1.8+.
 
 If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose Installation](#install-mmpose). Otherwise, you can follow these steps for the preparation.
 
@@ -59,13 +59,22 @@ conda install pytorch torchvision cpuonly -c pytorch
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install "mmcv>=2.0.0"
+mim install "mmcv>=2.0.1"
 ```
 
 Note that some of the demo scripts in MMPose require [MMDetection](https://github.com/open-mmlab/mmdetection) (mmdet)  for human detection. If you want to run these demo scripts with mmdet, you can easily install mmdet as a dependency by running:
 
 ```shell
-mim install "mmdet>=3.0.0"
+mim install "mmdet>=3.1.0"
+```
+
+```{note}
+Here are the version correspondences between mmdet, mmpose and mmcv:
+
+- mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
+- mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
+
+If you encounter version incompatibility issues, please check the correspondence using `pip list | grep mm` and upgrade or downgrade the dependencies accordingly.
 ```
 
 ## Best Practices
@@ -89,7 +98,7 @@ pip install -v -e .
 To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
-mim install "mmpose>=1.0.0"
+mim install "mmpose>=1.1.0"
 ```
 
 ## Verify the installation
@@ -141,6 +150,15 @@ The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com
 
 The inference results will be a list of `PoseDataSample`, and the predictions are in the `pred_instances`, indicating the detected keypoint locations and scores.
 
+```{note}
+MMCV version should match PyTorch version strictly. If you encounter the following issues:
+
+- No module named 'mmcv.ops'
+- No module named 'mmcv._ext'
+
+It means that the current PyTorch version does not match the CUDA version. You can check the CUDA version using `nvidia-smi`, and it should match the `+cu1xx` in PyTorch version in `pip list | grep torch`. Otherwise, you need to uninstall PyTorch and reinstall it, then reinstall MMCV (the installation order **CAN NOT** be swapped).
+```
+
 ## Customize Installation
 
 ### CUDA versions
@@ -173,7 +191,7 @@ To install MMCV with pip instead of MIM, please follow [MMCV installation guides
 For example, the following command install mmcv built for PyTorch 1.10.x and CUDA 11.3.
 
 ```shell
-pip install 'mmcv>=2.0.0' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
+pip install 'mmcv>=2.0.1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
 ### Install on CPU-only platforms
@@ -192,7 +210,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```shell
 !pip3 install openmim
 !mim install mmengine
-!mim install "mmcv>=2.0.0"
+!mim install "mmcv>=2.0.1"
 ```
 
 **Step 2.** Install MMPose from the source.
@@ -208,7 +226,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 1.0.0
+# Example output: 1.1.0
 ```
 
 ```{note}

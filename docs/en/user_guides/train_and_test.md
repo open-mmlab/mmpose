@@ -14,7 +14,6 @@ python tools/train.py ${CONFIG_FILE} [ARGS]
 
 ```{note}
 By default, MMPose prefers GPU to CPU. If you want to train a model on CPU, please empty `CUDA_VISIBLE_DEVICES` or set it to -1 to make GPU invisible to the program.
-
 ```
 
 ```shell
@@ -214,6 +213,31 @@ python ./tools/train.py \
 
 - `randomness.deterministic=True`, set the deterministic option for `cuDNN` backend, i.e., set `torch.backends.cudnn.deterministic` to `True` and `torch.backends.cudnn.benchmark` to `False`. Defaults to `False`. See [Pytorch Randomness](https://pytorch.org/docs/stable/notes/randomness.html) for more details.
 
+## Training Log
+
+During training, the training log will be printed in the console as follows:
+
+```shell
+07/14 08:26:50 - mmengine - INFO - Epoch(train) [38][ 6/38]  base_lr: 5.148343e-04 lr: 5.148343e-04  eta: 0:15:34  time: 0.540754  data_time: 0.394292  memory: 3141  loss: 0.006220  loss_kpt: 0.006220  acc_pose: 1.000000
+```
+
+The training log contains the following information:
+
+- `07/14 08:26:50`: The current time.
+- `mmengine`: The name of the program.
+- `INFO` or `WARNING`: The log level.
+- `Epoch(train)`: The current training stage. `train` means the training stage, `val` means the validation stage.
+- `[38][ 6/38]`: The current epoch and the current iteration.
+- `base_lr`: The base learning rate.
+- `lr`: The current (real) learning rate.
+- `eta`: The estimated time of arrival.
+- `time`: The elapsed time (minutes) of the current iteration.
+- `data_time`: The elapsed time (minutes) of data processing (i/o and transforms).
+- `memory`: The GPU memory (MB) allocated by the program.
+- `loss`: The total loss value of the current iteration.
+- `loss_kpt`: The loss value you passed in head module.
+- `acc_pose`: The accuracy value you passed in head module.
+
 ## Visualize training process
 
 Monitoring the training process is essential for understanding the performance of your model and making necessary adjustments. In this section, we will introduce two methods to visualize the training process of your MMPose model: TensorBoard and the MMEngine Visualizer.
@@ -261,7 +285,6 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [ARGS]
 
 ```{note}
 By default, MMPose prefers GPU to CPU. If you want to test a model on CPU, please empty `CUDA_VISIBLE_DEVICES` or set it to -1 to make GPU invisible to the program.
-
 ```
 
 ```shell

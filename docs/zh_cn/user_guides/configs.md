@@ -1,6 +1,25 @@
-# 配置文件
+# 如何看懂配置文件
 
 MMPose 使用 Python 文件作为配置文件，将模块化设计和继承设计结合到配置系统中，便于进行各种实验。
+
+## 目录结构
+
+MMPose 的配置文件目录结构如下：
+
+```shell
+configs
+|----_base_
+     |----datasets
+     |----default_runtime.py
+|----animal_2d_keypoint
+|----body_2d_keypoint
+|----body_3d_keypoint
+|----face_2d_keypoint
+|----fashion_2d_keypoint
+|----hand_2d_keypoint
+|----hand_3d_keypoint
+|----wholebody_2d_keypoint
+```
 
 ## 简介
 
@@ -119,42 +138,61 @@ python tools/analysis/print_config.py /PATH/TO/CONFIG
 # 通用配置
 default_scope = 'mmpose'
 default_hooks = dict(
-    timer=dict(type='IterTimerHook'), # 迭代时间统计，包括数据耗时和模型耗时
-    logger=dict(type='LoggerHook', interval=50), # 日志打印间隔
-    param_scheduler=dict(type='ParamSchedulerHook'), # 用于调度学习率更新
+    # 迭代时间统计，包括数据耗时和模型耗时
+    timer=dict(type='IterTimerHook'),
+
+    # 日志打印间隔，默认每 50 iters 打印一次
+    logger=dict(type='LoggerHook', interval=50),
+
+    # 用于调度学习率更新的 Hook
+    param_scheduler=dict(type='ParamSchedulerHook'),
+
     checkpoint=dict(
-        type='CheckpointHook', interval=1, save_best='coco/AP', # ckpt保存间隔，最优ckpt参考指标
-        rule='greater'), # 最优ckpt指标评价规则
-    sampler_seed=dict(type='DistSamplerSeedHook')) # 分布式随机种子设置
+        # ckpt 保存间隔，最优 ckpt 参考指标。
+        # 例如：
+        # save_best='coco/AP' 代表以 coco/AP 作为最优指标，对应 CocoMetric 评测器的 AP 指标
+        # save_best='PCK' 代表以 PCK 作为最优指标，对应 PCKAccuracy 评测器的 PCK 指标
+        # 更多指标请前往 mmpose/evaluation/metrics/
+        type='CheckpointHook', interval=1, save_best='coco/AP',
+
+        # 最优 ckpt 保留规则，greater 代表越大越好，less 代表越小越好
+        rule='greater'),
+
+    # 分布式随机种子设置 Hook
+    sampler_seed=dict(type='DistSamplerSeedHook'))
 env_cfg = dict(
-    cudnn_benchmark=False, # cudnn benchmark开关
-    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0), # opencv多线程配置
-    dist_cfg=dict(backend='nccl')) # 分布式训练后端设置
-vis_backends = [dict(type='LocalVisBackend')] # 可视化器后端设置
-visualizer = dict( # 可视化器设置
+    # cudnn benchmark 开关，用于加速训练，但会增加显存占用
+    cudnn_benchmark=False,
+
+    # opencv 多线程配置，用于加速数据加载，但会增加显存占用
+    # 默认为 0，代表使用单线程
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0),
+
+    # 分布式训练后端设置，支持 nccl 和 gloo
+    dist_cfg=dict(backend='nccl'))
+
+# 可视化器后端设置，默认为本地可视化
+vis_backends = [dict(type='LocalVisBackend')]
+
+# 可视化器设置
+visualizer = dict(
     type='PoseLocalVisualizer',
     vis_backends=[dict(type='LocalVisBackend')],
     name='visualizer')
 log_processor = dict( # 训练日志格式、间隔
     type='LogProcessor', window_size=50, by_epoch=True, num_digits=6)
-log_level = 'INFO' # 日志记录等级
-```
-
-通用配置一般单独存放到`$MMPOSE/configs/_base_`目录下，通过如下方式进行继承：
-
-```Python
-_base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位置为相对路径起点
+# 日志记录等级，INFO 代表记录训练日志，WARNING 代表只记录警告信息，ERROR 代表只记录错误信息
+log_level = 'INFO'
 ```
 
 ```{note}
-CheckpointHook:
+可视化器后端设置支持 LocalVisBackend 和 TensorboardVisBackend，前者用于本地可视化，后者用于 Tensorboard 可视化，你可以根据需要进行选择。详情见 [训练与测试](./train_and_test.md) 的 【可视化训练进程】。
+```
 
-- save_best: `'coco/AP'` 用于 `CocoMetric`, `'PCK'` 用于 `PCKAccuracy`
-- max_keep_ckpts: 最大保留ckpt数量，默认为-1，代表不限制
+通用配置一般单独存放到 `$MMPOSE/configs/_base_` 目录下，通过如下方式进行继承：
 
-样例:
-
-`default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater', max_keep_ckpts=1))`
+```Python
+_base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位置为相对路径起点
 ```
 
 ### 数据配置
@@ -234,12 +272,10 @@ test_dataloader = val_dataloader # 默认情况下不区分验证集和测试集
 ```
 
 ```{note}
-
 常用功能可以参考以下教程:
-- [恢复训练](../common_usages/resume_training.md)
-- [自动混合精度训练](../common_usages/amp_training.md)
-- [设置随机种子](../common_usages/set_random_seed.md)
-
+- [恢复训练](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#id7)
+- [自动混合精度训练](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#amp)
+- [设置随机种子](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/train_and_test.html#id10)
 ```
 
 ### 训练配置

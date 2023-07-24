@@ -81,6 +81,29 @@ class TestCombinedDataset(TestCase):
         self.assertEqual(subset_idx, 0)
         self.assertEqual(sample_idx, lens[0] - 1)
 
+        # combiend dataset with resampling ratio
+        dataset = self.build_combined_dataset(sample_ratio_factor=[1, 0.3])
+        self.assertEqual(
+            len(dataset),
+            len(dataset.datasets[0]) + round(0.3 * len(dataset.datasets[1])))
+        lens = dataset._lens
+
+        index = lens[0]
+        subset_idx, sample_idx = dataset._get_subset_index(index)
+        self.assertEqual(subset_idx, 1)
+        self.assertIn(sample_idx, (0, 1, 2))
+
+        index = -lens[1] - 1
+        subset_idx, sample_idx = dataset._get_subset_index(index)
+        self.assertEqual(subset_idx, 0)
+        self.assertEqual(sample_idx, lens[0] - 1)
+
+        with self.assertRaises(AssertionError):
+            _ = self.build_combined_dataset(sample_ratio_factor=[1, 0.3, 0.1])
+
+        with self.assertRaises(AssertionError):
+            _ = self.build_combined_dataset(sample_ratio_factor=[1, -0.3])
+
     def test_prepare_data(self):
         dataset = self.build_combined_dataset()
         lens = dataset._lens

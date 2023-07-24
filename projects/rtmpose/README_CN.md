@@ -683,6 +683,7 @@ python demo/topdown_demo_with_mmdet.py \
 - [ONNX](https://mmdeploy.readthedocs.io/zh_CN/latest/05-supported-backends/onnxruntime.html)
 - [TensorRT](https://mmdeploy.readthedocs.io/zh_CN/latest/05-supported-backends/tensorrt.html)
 - [OpenVINO](https://mmdeploy.readthedocs.io/zh_CN/latest/05-supported-backends/openvino.html)
+- [TorchScript](https://mmdeploy.readthedocs.io/en/latest/05-supported-backends/torchscript.html)
 - [更多](https://github.com/open-mmlab/mmdeploy/tree/main/docs/en/05-supported-backends)
 
 ### 🛠️ 模型转换
@@ -702,6 +703,16 @@ python demo/topdown_demo_with_mmdet.py \
   \- RTMDet：[`detection_tensorrt_static-320x320.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmdet/detection/detection_tensorrt_static-320x320.py)
 
   \- RTMPose：[`pose-detection_simcc_tensorrt_dynamic-256x192.py`](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_tensorrt_dynamic-256x192.py)
+
+- 更多
+
+  |   Backend   |                                                                                Config                                                                                |
+  | :---------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+  |  ncnn-fp16  | [pose-detection_simcc_ncnn-fp16_static-256x192.py](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_ncnn-fp16_static-256x192.py) |
+  |   CoreML    |    [pose-detection_simcc_coreml_static-256x192.py](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_coreml_static-256x192.py)    |
+  |  OpenVINO   |  [pose-detection_simcc_openvino_static-256x192.py](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_openvino_static-256x192.py)  |
+  |    RKNN     | [pose-detection_simcc_rknn-fp16_static-256x192.py](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_simcc_rknn-fp16_static-256x192.py) |
+  | TorchScript |                    [pose-detection_torchscript.py](https://github.com/open-mmlab/mmdeploy/blob/main/configs/mmpose/pose-detection_torchscript.py)                    |
 
 如果你需要对部署配置进行修改，请参考 [MMDeploy config tutorial](https://mmdeploy.readthedocs.io/zh_CN/latest/02-how-to-run/write_config.html).
 
