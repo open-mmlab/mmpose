@@ -84,7 +84,7 @@ bash tools/dist_test.sh $CONFIG $CHECKPOINT $NUM_GPUs --amp
 
 ## Results
 
-Results on COCO val2017
+Here is the testing results on COCO val2017:
 
 |                                Model                                | Input Size |  AP  | AP<sup>50</sup> | AP<sup>75</sup> |  AR  | AR<sup>50</sup> |                                Download                                |
 | :-----------------------------------------------------------------: | :--------: | :--: | :-------------: | :-------------: | :--: | :-------------: | :--------------------------------------------------------------------: |
@@ -94,6 +94,17 @@ Results on COCO val2017
 | [UniFormer-B](./configs/td-hm_uniformer-b-8xb128-210e_coco-256x192.py) |  256x192   | 75.0 |      90.5       |      83.0       | 80.4 |      94.2       | [model](https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_256x192_global_base-1713bcd4_20230724.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_256x192_global_base-1713bcd4_20230724.log.json) |
 | [UniFormer-B](./configs/td-hm_uniformer-b-8xb32-210e_coco-384x288.py) |  384x288   | 76.7 |      90.8       |      84.1       | 81.9 |      94.6       | [model](https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_384x288_global_base-c650da38_20230724.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_384x288_global_base-c650da38_20230724.log.json) |
 | [UniFormer-B](./configs/td-hm_uniformer-b-8xb32-210e_coco-448x320.py) |  448x320   | 77.4 |      91.0       |      84.4       | 82.5 |      94.9       | [model](https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_448x320_global_base-a05c185f_20230724.pth) \| [log](https://download.openmmlab.com/mmpose/v1/projects/uniformer/top_down_448x320_global_base-a05c185f_20230724.log.json) |
+
+Here is the testing results on COCO val 2017 from the official UniFormer Pose Estimation repository for comparison:
+
+| Backbone    | Input Size | AP   | AP<sup>50</sup> | AP<sup>75</sup> | AR<sup>M</sup> | AR<sup>L</sup> | AR   | Model                                                     | Log                                                      |
+| :---------- | :--------- | :--- | :-------------- | :-------------- | :------------- | :------------- | :--- | :-------------------------------------------------------- | :------------------------------------------------------- |
+| UniFormer-S | 256x192    | 74.0 | 90.3            | 82.2            | 66.8           | 76.7           | 79.5 | [google](https://drive.google.com/file/d/162R0JuTpf3gpLe1IK6oxRoQK7JSj4ylx/view?usp=sharing) | [google](https://drive.google.com/file/d/15j40u97Db6TA2gMHdn0yFEsDFb5SMBy4/view?usp=sharing) |
+| UniFormer-S | 384x288    | 75.9 | 90.6            | 83.4            | 68.6           | 79.0           | 81.4 | [google](https://drive.google.com/file/d/163vuFkpcgVOthC05jCwjGzo78Nr0eikW/view?usp=sharing) | [google](https://drive.google.com/file/d/15X9M_5cq9RQMgs64Yn9YvV5k5f0zOBHo/view?usp=sharing) |
+| UniFormer-S | 448x320    | 76.2 | 90.6            | 83.2            | 68.6           | 79.4           | 81.4 | [google](https://drive.google.com/file/d/165nQRsT58SXJegcttksHwDn46Fme5dGX/view?usp=sharing) | [google](https://drive.google.com/file/d/15IJjSWp4R5OybMdV2CZEUx_TwXdTMOee/view?usp=sharing) |
+| UniFormer-B | 256x192    | 75.0 | 90.6            | 83.0            | 67.8           | 77.7           | 80.4 | [google](https://drive.google.com/file/d/15tzJaRyEzyWp2mQhpjDbBzuGoyCaJJ-2/view?usp=sharing) | [google](https://drive.google.com/file/d/15jJyTPcJKj_id0PNdytloqt7yjH2M8UR/view?usp=sharing) |
+| UniFormer-B | 384x288    | 76.7 | 90.8            | 84.0            | 69.3           | 79.7           | 81.4 | [google](https://drive.google.com/file/d/15qtUaOR_C7-vooheJE75mhA9oJQt3gSx/view?usp=sharing) | [google](https://drive.google.com/file/d/15L1Uxo_uRSMlGnOvWzAzkJLKX6Qh_xNw/view?usp=sharing) |
+| UniFormer-B | 448x320    | 77.4 | 91.1            | 84.4            | 70.2           | 80.6           | 82.5 | [google](https://drive.google.com/file/d/156iNxetiCk8JJz41aFDmFh9cQbCaMk3D/view?usp=sharing) | [google](https://drive.google.com/file/d/15aRpZc2Tie5gsn3_l-aXto1MrC9wyzMC/view?usp=sharing) |
 
 Note:
 
