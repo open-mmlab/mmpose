@@ -72,7 +72,7 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = '/media/xinli/External/Datasets/coco/'
+data_root = 'data/coco/'
 
 # pipelines
 train_pipeline = [
