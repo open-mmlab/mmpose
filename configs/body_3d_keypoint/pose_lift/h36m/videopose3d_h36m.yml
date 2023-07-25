@@ -6,13 +6,13 @@ Collections:
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
   README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/videopose3d.md
 Models:
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m.py
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-27frm-supv_8xb128-160e_h36m.py
   In Collection: VideoPose3D
   Metadata:
     Architecture: &id001
     - VideoPose3D
     Training Data: Human3.6M
-  Name: pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m
+  Name: pose-lift_videopose3d-27frm-supv_8xb128-160e_h36m
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -20,7 +20,7 @@ Models:
       P-MPJPE: 30.1
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-81frm-supv_8xb128-80e_h36m.py
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-81frm-supv_8xb128-160e_h36m.py
   In Collection: VideoPose3D
   Metadata:
     Architecture: *id001
@@ -33,7 +33,7 @@ Models:
       P-MPJPE: 29.2
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv_8xb128-80e_h36m.py
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv_8xb128-160e_h36mpy
   In Collection: VideoPose3D
   Metadata:
     Architecture: *id001
@@ -46,7 +46,7 @@ Models:
       P-MPJPE: 28.3
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised-880bea25_20210527.pth
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m.py
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-1frm-supv-cpn-ft_8xb128-160e_h36m.py
   In Collection: VideoPose3D
   Metadata:
     Architecture: *id001
