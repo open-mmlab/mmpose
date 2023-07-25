@@ -1,10 +1,18 @@
 # Just Dance - A Simple Implementation
 
+<sup>
+   <a href="https://openxlab.org.cn/apps/detail/mmpose/just_dance-mmpose">
+      <i>Try it on OpenXLab</i>
+   </a>
+</sup>
+
 This project presents a dance scoring system based on RTMPose. Users can compare the similarity between two dancers in different videos: one referred to as the "teacher video" and the other as the "student video."
 
-Here is an example of the output dance comparison:
+Here are examples of the output dance comparison:
 
-![output](https://github.com/open-mmlab/mmpose/assets/26127467/56d5c4d1-55d8-4222-b481-2418cc29a8d4)
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/56d5c4d1-55d8-4222-b481-2418cc29a8d4" width="600"/>
+
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/f93b94c7-529f-4704-8246-c3c812f4c31a" width="600"/>
 
 ## Usage
 
