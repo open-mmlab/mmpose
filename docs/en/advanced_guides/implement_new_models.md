@@ -82,7 +82,7 @@ Finally, please remember to import your new prediction head in `[__init__.py](ht
 
 ### Head with Keypoints Visibility Prediction
 
-Many models predict keypoint visibility based on confidence in coordinate predictions. However, this approach is suboptimal. Our `VisPredictHead` wrapper enables heads to directly predict keypoint visibility from ground truth training data, improving reliability. To add visibility prediction, wrap your head module with VisPredictHead in the config file.
+Many models predict keypoint visibility based on confidence in coordinate predictions. However, this approach is suboptimal. Our [`VisPredictHead`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/heads/hybrid_heads/vis_head.py) wrapper enables heads to directly predict keypoint visibility from ground truth training data, improving reliability. To add visibility prediction, wrap your head module with VisPredictHead in the config file.
 
 ```python
 model=dict(
