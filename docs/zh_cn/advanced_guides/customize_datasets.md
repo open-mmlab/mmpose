@@ -217,14 +217,14 @@ test_dataloader = dict(
 
 ## 数据集封装
 
-目前 [MMEngine](https://github.com/open-mmlab/mmengine) 支持以下数据集封装：
+在 MMPose 中，支持使用 MMPose 实现的数据集封装和 [MMEngine](https://github.com/open-mmlab/mmengine) 实现的数据集封装。目前 [MMEngine](https://github.com/open-mmlab/mmengine) 支持以下数据集封装：
 
 - [ConcatDataset](https://mmengine.readthedocs.io/zh_CN/latest/advanced_tutorials/basedataset.html#concatdataset)
 - [RepeatDataset](https://mmengine.readthedocs.io/zh_CN/latest/advanced_tutorials/basedataset.html#repeatdataset)
 
 ### CombinedDataset
 
-MMPose 提供了一个 `CombinedDataset` 类，它可以将多个数据集封装成一个数据集。它的使用方法如下：
+MMPose 提供了一个 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 类，它可以将多个数据集封装成一个数据集。它的使用方法如下：
 
 ```python
 dataset_1 = dict(

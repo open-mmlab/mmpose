@@ -9,11 +9,11 @@ In MMPose, a model is defined by a configuration file, while its pre-existing pa
 
 ## Inferencer: a Unified Inference Interface
 
-MMPose offers a comprehensive API for inference, known as `MMPoseInferencer`. This API enables users to perform inference on both images and videos using all the models supported by MMPose. Furthermore, the API provides automatic visualization of inference results and allows for the convenient saving of predictions.
+MMPose offers a comprehensive API for inference, known as [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24). This API enables users to perform inference on both images and videos using all the models supported by MMPose. Furthermore, the API provides automatic visualization of inference results and allows for the convenient saving of predictions.
 
 ### Basic Usage
 
-The `MMPoseInferencer` can be used in any Python program to perform pose estimation. Below is an example of inference on a given image using the pre-trained human pose estimator within the Python shell.
+The [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) can be used in any Python program to perform pose estimation. Below is an example of inference on a given image using the pre-trained human pose estimator within the Python shell.
 
 ```python
 from mmpose.apis import MMPoseInferencer
@@ -80,7 +80,7 @@ python demo/inferencer_demo.py 'tests/data/coco/000000000785.jpg' \
     --pose2d 'human' --show --pred-out-dir 'predictions'
 ```
 
-The predictions will be save in `predictions/000000000785.json`. The argument names correspond with the `MMPoseInferencer`, which serves as an API.
+The predictions will be save in `predictions/000000000785.json`. The argument names correspond with the [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24), which serves as an API.
 
 The inferencer is capable of processing a range of input types, which includes the following:
 
@@ -219,7 +219,7 @@ result = next(result_generator)
 
 ### Arguments of Inferencer
 
-The `MMPoseInferencer` offers a variety of arguments for customizing pose estimation, visualization, and saving predictions. Below is a list of the arguments available when initializing the inferencer and their descriptions:
+The [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) offers a variety of arguments for customizing pose estimation, visualization, and saving predictions. Below is a list of the arguments available when initializing the inferencer and their descriptions:
 
 | Argument         | Description                                                                                                      |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -233,7 +233,7 @@ The `MMPoseInferencer` offers a variety of arguments for customizing pose estima
 | `device`         | The device to perform the inference. If left `None`, the Inferencer will select the most suitable one.           |
 | `scope`          | The namespace where the model modules are defined.                                                               |
 
-The inferencer is designed for both visualization and saving predictions. The table below presents the list of arguments available when using the `MMPoseInferencer` for inference, along with their compatibility with 2D and 3D inferencing:
+The inferencer is designed for both visualization and saving predictions. The table below presents the list of arguments available when using the [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) for inference, along with their compatibility with 2D and 3D inferencing:
 
 | Argument                  | Description                                                                                                                                                       | 2D  | 3D  |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
@@ -258,7 +258,7 @@ The inferencer is designed for both visualization and saving predictions. The ta
 
 ### Model Alias
 
-The MMPose library has predefined aliases for several frequently used models. These aliases can be utilized as a shortcut when initializing the `MMPoseInferencer`, as an alternative to providing the full model configuration name. Here are the available 2D model aliases and their corresponding configuration names:
+The MMPose library has predefined aliases for several frequently used models. These aliases can be utilized as a shortcut when initializing the [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24), as an alternative to providing the full model configuration name. Here are the available 2D model aliases and their corresponding configuration names:
 
 | Alias     | Configuration Name                                 | Task                            | Pose Estimator | Detector            |
 | --------- | -------------------------------------------------- | ------------------------------- | -------------- | ------------------- |

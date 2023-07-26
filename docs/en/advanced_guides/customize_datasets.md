@@ -213,7 +213,7 @@ The following dataset wrappers are supported in [MMEngine](https://github.com/op
 
 ### CombinedDataset
 
-MMPose provides `CombinedDataset` to combine multiple datasets with different annotations. A combined dataset can be defined in config files as:
+MMPose provides [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) to combine multiple datasets with different annotations. A combined dataset can be defined in config files as:
 
 ```python
 dataset_1 = dict(
@@ -250,6 +250,6 @@ combined_dataset = dict(
 
 - **MetaInfo of combined dataset** determines the annotation format. Either metainfo of a sub-dataset or a customed dataset metainfo is valid here. To custom a dataset metainfo, please refer to [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset).
 
-- **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then `KeypointConverter` can be used to unify the keypoints number and order.
+- **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) can be used to unify the keypoints number and order.
 
-- More details about `CombinedDataset` and `KeypointConverter` can be found in Advanced Guides-[Training with Mixed Datasets](../user_guides/mixed_datasets.md).
+- More details about [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) and [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) can be found in [Advanced Guides - Training with Mixed Datasets](../user_guides/mixed_datasets.md).
