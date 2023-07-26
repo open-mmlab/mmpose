@@ -97,12 +97,12 @@ def parse_args():
         action='store_true',
         help='Whether to use OKS as similarity in tracking')
     parser.add_argument(
-        '--norm-pose-2d',
+        '--disable-norm-pose-2d',
         action='store_true',
-        help='Scale the bbox (along with the 2D pose) to the average bbox '
-        'scale of the dataset, and move the bbox (along with the 2D pose) to '
-        'the average bbox center of the dataset. This is useful when bbox '
-        'is small, especially in multi-person scenarios.')
+        help='Whether to scale the bbox (along with the 2D pose) to the '
+        'average bbox scale of the dataset, and move the bbox (along with the '
+        '2D pose) to the average bbox center of the dataset. This is useful '
+        'when bbox is small, especially in multi-person scenarios.')
     parser.add_argument(
         '--disable-rebase-keypoint',
         action='store_true',

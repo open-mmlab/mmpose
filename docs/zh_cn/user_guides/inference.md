@@ -235,7 +235,7 @@ result = next(result_generator)
 | `skeleton_style`          | 设置骨架样式。可选项包括 'mmpose'（默认）和 'openpose'。                                                                   | ✔️  | ❌  |
 | `use_oks_tracking`        | 决定是否在追踪中使用OKS作为相似度测量。                                                                                    | ❌  | ✔️  |
 | `tracking_thr`            | 设置追踪的相似度阈值。                                                                                                     | ❌  | ✔️  |
-| `norm_pose_2d`            | 决定是否将边界框缩放至数据集的平均边界框尺寸，并将边界框移至数据集的平均边界框中心。                                       | ❌  | ✔️  |
+| `disable_norm_pose_2d`    | 决定是否将边界框缩放至数据集的平均边界框尺寸，并将边界框移至数据集的平均边界框中心。                                       | ❌  | ✔️  |
 | `disable_rebase_keypoint` | 决定是否将最低关键点的高度置为 0。                                                                                         | ❌  | ✔️  |
 | `num_instances`           | 设置可视化结果中显示的实例数量。如果设置为负数，则所有实例的结果都会可视化。                                               | ❌  | ✔️  |
 | `return_vis`              | 决定是否在结果中包含可视化图像。                                                                                           | ✔️  | ✔️  |
