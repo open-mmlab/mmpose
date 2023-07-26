@@ -33,7 +33,7 @@ For single-person 3D pose estimation from a monocular camera, existing works can
 | Arch                                                           | MPJPE | Average MPJPE | P-MPJPE |                              ckpt                               | log |              Details and Download               |
 | :------------------------------------------------------------- | :---: | :-----------: | :-----: | :-------------------------------------------------------------: | :-: | :---------------------------------------------: |
 | [MotionBERT\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-240e_h36m-original.py) | 39.8  |     39.2      |  33.4   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_h36m-f554954f_20230531.pth) |  /  | [motionbert_h36m.md](./h36m/motionbert_h36m.md) |
-| [MotionBERT-finetuned\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-240e_h36m-original.py) | 37.7  |     37.2      |  32.2   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth) |  /  | [motionbert_h36m.md](./h36m/motionbert_h36m.md) |
+| [MotionBERT-finetuned\*](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-ft-243frm_8xb32-120e_h36m-original.py) | 37.7  |     37.2      |  32.2   | [ckpt](https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth) |  /  | [motionbert_h36m.md](./h36m/motionbert_h36m.md) |
 
 <sup>1</sup> Please refer to the [doc](./h36m/motionbert_h36m.md) for more details.
 
