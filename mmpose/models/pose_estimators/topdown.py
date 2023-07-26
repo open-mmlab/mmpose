@@ -153,6 +153,9 @@ class TopdownPoseEstimator(BasePoseEstimator):
 
             pred_instances.keypoints = pred_instances.keypoints / input_size \
                 * bbox_scales + bbox_centers - 0.5 * bbox_scales
+            if 'keypoints_visible' not in pred_instances:
+                pred_instances.keypoints_visible = \
+                    pred_instances.keypoint_scores
 
             if output_keypoint_indices is not None:
                 # select output keypoints with given indices

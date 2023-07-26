@@ -42,52 +42,23 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='HRNet',
-        in_channels=3,
-        extra=dict(
-            stage1=dict(
-                num_modules=1,
-                num_branches=1,
-                block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
-            stage2=dict(
-                num_modules=1,
-                num_branches=2,
-                block='BASIC',
-                num_blocks=(4, 4),
-                num_channels=(32, 64)),
-            stage3=dict(
-                num_modules=4,
-                num_branches=3,
-                block='BASIC',
-                num_blocks=(4, 4, 4),
-                num_channels=(32, 64, 128)),
-            stage4=dict(
-                num_modules=3,
-                num_branches=4,
-                block='BASIC',
-                num_blocks=(4, 4, 4, 4),
-                num_channels=(32, 64, 128, 256))),
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose/'
-            'pretrain_models/hrnet_w32-36af842e.pth'),
+        type='ResNet',
+        depth=50,
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
     ),
     head=dict(
         type='VisPredictHead',
+        override_bbox_score=True,
         loss=dict(
             type='BCELoss',
             use_target_weight=True,
             use_sigmoid=True,
-            loss_weight=1e-4,
+            loss_weight=1e-3,
         ),
-        use_sigmoid=False,
         pose_cfg=dict(
             type='HeatmapHead',
-            in_channels=32,
+            in_channels=2048,
             out_channels=17,
-            deconv_out_channels=None,
             loss=dict(type='KeypointMSELoss', use_target_weight=True),
             decoder=codec)),
     test_cfg=dict(
@@ -192,5 +163,6 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
+    # score_mode='bbox',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator

@@ -20,6 +20,9 @@ class VisPredictHead(BaseHead):
 
     Args:
         pose_cfg (Config): Config to construct keypoints prediction head
+        override_bbox_score (bool): Whether to override the bounding box
+            score using the keypoint scores predicted by the keypoints
+            prediction head. Defaults to False.
         loss (Config): Config for visibility loss. Defaults to use
             :class:`BCELoss`
         use_sigmoid (bool): Whether to use sigmoid activation function
@@ -29,16 +32,17 @@ class VisPredictHead(BaseHead):
 
     def __init__(self,
                  pose_cfg: ConfigType,
+                 override_bbox_score: bool = False,
                  loss: ConfigType = dict(
                      type='BCELoss', use_target_weight=False,
                      use_sigmoid=True),
-                 use_sigmoid: bool = False,
                  init_cfg: OptConfigType = None):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
 
         super().__init__(init_cfg)
+        self.override_bbox_score = override_bbox_score
 
         self.in_channels = pose_cfg['in_channels']
         if pose_cfg.get('num_joints', None) is not None:
@@ -54,12 +58,14 @@ class VisPredictHead(BaseHead):
         self.pose_head = MODELS.build(pose_cfg)
         self.pose_cfg = pose_cfg
 
+        self.use_sigmoid = loss.get('use_sigmoid', False)
+
         modules = [
             nn.AdaptiveAvgPool2d(1),
             nn.Flatten(),
             nn.Linear(self.in_channels, self.out_channels)
         ]
-        if self.loss_module.use_sigmoid:
+        if self.use_sigmoid:
             modules.append(nn.Sigmoid())
 
         self.vis_head = nn.Sequential(*modules)
@@ -111,7 +117,7 @@ class VisPredictHead(BaseHead):
 
         assert len(pose_pred_instances) == len(batch_vis_np)
         for index, _ in enumerate(pose_pred_instances):
-            pose_pred_instances[index].keypoint_scores = batch_vis_np[index]
+            pose_pred_instances[index].keypoints_visible = batch_vis_np[index]
 
         return pose_pred_instances, pose_pred_fields
 
@@ -166,7 +172,7 @@ class VisPredictHead(BaseHead):
 
         batch_vis.unsqueeze_(dim=1)  # (B, N, K, D)
 
-        if not self.loss_module.use_sigmoid:
+        if not self.use_sigmoid:
             batch_vis = torch.sigmoid(batch_vis)
 
         batch_pose = self.pose_head.predict(feats, batch_data_samples,
@@ -174,15 +180,20 @@ class VisPredictHead(BaseHead):
 
         return self.integrate(batch_vis, batch_pose)
 
-    def vis_accuracy(self, vis_pred_outputs, vis_labels):
+    @torch.no_grad()
+    def vis_accuracy(self, vis_pred_outputs, vis_labels, vis_weights=None):
         """Calculate visibility prediction accuracy."""
-        probabilities = torch.sigmoid(torch.flatten(vis_pred_outputs))
+        if not self.use_sigmoid:
+            vis_pred_outputs = torch.sigmoid(vis_pred_outputs)
         threshold = 0.5
-        predictions = (probabilities >= threshold).int()
-        labels = torch.flatten(vis_labels)
-        correct = torch.sum(predictions == labels).item()
-        accuracy = correct / len(labels)
-        return torch.tensor(accuracy)
+        predictions = (vis_pred_outputs >= threshold).float()
+        correct = (predictions == vis_labels).float()
+        if vis_weights is not None:
+            accuracy = (correct * vis_weights).sum(dim=1) / (
+                vis_weights.sum(dim=1, keepdims=True) + 1e-6)
+        else:
+            accuracy = correct.mean(dim=1)
+        return accuracy.mean()
 
     def loss(self,
              feats: Tuple[Tensor],
@@ -220,7 +231,7 @@ class VisPredictHead(BaseHead):
         losses.update(loss_vis=loss_vis)
 
         # calculate vis accuracy
-        acc_vis = self.vis_accuracy(vis_pred_outputs, vis_labels)
+        acc_vis = self.vis_accuracy(vis_pred_outputs, vis_labels, vis_weights)
         losses.update(acc_vis=acc_vis)
 
         # calculate keypoints losses
