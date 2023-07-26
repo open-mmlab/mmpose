@@ -1,10 +1,10 @@
 # 混合数据集训练
 
-MMPose 提供了一个灵活、便捷的工具 `CombinedDataset` 来进行混合数据集训练。它作为一个封装器，可以包含多个子数据集，并将来自不同子数据集的数据转换成一个统一的格式，以用于模型训练。使用 `CombinedDataset` 的数据处理流程如下图所示。
+MMPose 提供了一个灵活、便捷的工具 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 来进行混合数据集训练。它作为一个封装器，可以包含多个子数据集，并将来自不同子数据集的数据转换成一个统一的格式，以用于模型训练。使用 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 的数据处理流程如下图所示。
 
 ![combined_dataset_pipeline](https://user-images.githubusercontent.com/26127467/223333154-fb88e511-810a-423c-b755-c791d296bc43.jpg)
 
-本篇教程的后续部分将通过一个结合 COCO 和 AI Challenger (AIC) 数据集的例子详细介绍如何配置 `CombinedDataset`。
+本篇教程的后续部分将通过一个结合 COCO 和 AI Challenger (AIC) 数据集的例子详细介绍如何配置 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15)。
 
 ## COCO & AIC 数据集混合案例
 
@@ -39,7 +39,7 @@ dataset_coco = dict(
 )
 ```
 
-对于 AIC 数据集，需要转换关键点的顺序。MMPose 提供了一个 `KeypointConverter` 转换器来实现这一点。以下是配置 AIC 子数据集的示例：
+对于 AIC 数据集，需要转换关键点的顺序。MMPose 提供了一个 [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) 转换器来实现这一点。以下是配置 AIC 子数据集的示例：
 
 ```python
 dataset_aic = dict(
@@ -70,9 +70,9 @@ dataset_aic = dict(
 )
 ```
 
-`KeypointConverter` 会将原序号在 0 到 11 之间的关键点的序号转换为在 5 到 16 之间的对应序号。同时，在 AIC 中序号为为 12 和 13 的关键点将被删除。另外，目标序号在 0 到 4 之间的关键点在 `mapping` 参数中没有定义，这些点将被设为不可见，并且不会在训练中使用。
+[KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) 会将原序号在 0 到 11 之间的关键点的序号转换为在 5 到 16 之间的对应序号。同时，在 AIC 中序号为为 12 和 13 的关键点将被删除。另外，目标序号在 0 到 4 之间的关键点在 `mapping` 参数中没有定义，这些点将被设为不可见，并且不会在训练中使用。
 
-子数据集都完成配置后, 混合数据集 `CombinedDataset` 可以通过如下方式配置:
+子数据集都完成配置后, 混合数据集 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 可以通过如下方式配置:
 
 ```python
 dataset = dict(
@@ -98,7 +98,7 @@ MMPose 提供了一份完整的 [配置文件](https://github.com/open-mmlab/mmp
 
 <img src="https://user-images.githubusercontent.com/26127467/223356617-075e0ab1-0ed3-426d-bc88-4f16be93f0ba.png" height="200px" alt><br>
 
-在这种情况下，COCO 和 AIC 数据集都需要使用 `KeypointConverter` 来调整它们关键点的顺序：
+在这种情况下，COCO 和 AIC 数据集都需要使用 [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) 来调整它们关键点的顺序：
 
 ```python
 dataset_coco = dict(
@@ -145,7 +145,7 @@ dataset_aic = dict(
 - 在 `skeleton_info` 中添加了“头顶”和“颈部”间的连线；
 - 拓展 `joint_weights` 和 `sigmas` 以添加新增关键点的信息。
 
-完成以上步骤后，合并数据集 `CombinedDataset` 可以通过以下方式配置：
+完成以上步骤后，合并数据集 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 可以通过以下方式配置：
 
 ```python
 dataset = dict(
@@ -170,7 +170,7 @@ dataset = dict(
 
 ### 调整每个子数据集的采样比例
 
-在 `CombinedDataset` 中，我们提供了 `sample_ratio_factor` 参数来调整每个子数据集的采样比例。
+在 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15)  中，我们提供了 `sample_ratio_factor` 参数来调整每个子数据集的采样比例。
 
 例如：
 
