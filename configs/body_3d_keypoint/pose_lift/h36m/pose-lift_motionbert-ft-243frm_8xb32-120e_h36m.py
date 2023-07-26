@@ -15,7 +15,7 @@ optim_wrapper = dict(
 
 # learning policy
 param_scheduler = [
-    dict(type='ExponentialLR', gamma=0.99, end=120, by_epoch=True)
+    dict(type='ExponentialLR', gamma=0.99, end=60, by_epoch=True)
 ]
 
 auto_scale_lr = dict(base_batch_size=512)
@@ -57,7 +57,12 @@ model = dict(
         loss=dict(type='MPJPEVelocityJointLoss'),
         decoder=val_codec,
     ),
-    test_cfg=dict(flip_test=True))
+    test_cfg=dict(flip_test=True),
+    init_cfg=dict(
+        type='Pretrained',
+        checkpoint='https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/'
+        'pose_lift/h36m/motionbert_pretrain_h36m-29ffebf5_20230719.pth'),
+)
 
 # base dataset settings
 dataset_type = 'Human36mDataset'
@@ -94,7 +99,7 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
-        ann_file='annotation_body3d/fps50/h36m_train_original.npz',
+        ann_file='annotation_body3d/fps50/h36m_train.npz',
         seq_len=1,
         multiple_target=243,
         multiple_target_step=81,
@@ -113,8 +118,7 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
-        ann_file='annotation_body3d/fps50/h36m_test_original.npz',
-        factor_file='annotation_body3d/fps50/h36m_factors.npy',
+        ann_file='annotation_body3d/fps50/h36m_test.npz',
         seq_len=1,
         seq_step=1,
         multiple_target=243,
