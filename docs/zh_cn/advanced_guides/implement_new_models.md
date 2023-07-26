@@ -78,3 +78,27 @@ class YourNewHead(BaseHead):
 ```
 
 最后，请记得在 [heads/\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py) 中导入你的新预测头部。
+
+### 关键点可见性预测头部
+
+许多模型都是通过对关键点坐标预测的置信度来判断关键点的可见性的。然而，这种解决方案并非最优。我们提供了一个叫做 `VisPredictHead` 的头部模块包装器，使得头部模块能够直接预测关键点的可见性。这个包装器是用训练数据中关键点可见性真值来训练的。因此，其预测会更加可靠。用户可以通过修改配置文件来对自己的头部模块加上这个包装器。下面是一个例子:
+
+```python
+model=dict(
+     ...
+     head=dict(
+          type='VisPredictHead',
+          loss=dict(
+               type='BCELoss',
+               use_target_weight=True,
+               use_sigmoid=True,
+               loss_weight=1e-3),
+          pose_cfg=dict(
+               type='HeatmapHead',
+               in_channels=2048,
+               out_channels=17,
+               loss=dict(type='KeypointMSELoss', use_target_weight=True),
+               decoder=codec)),
+     ...
+)
+```

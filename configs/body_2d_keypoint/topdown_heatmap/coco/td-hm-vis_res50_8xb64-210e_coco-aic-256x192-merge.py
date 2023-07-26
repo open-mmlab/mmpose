@@ -48,7 +48,6 @@ model = dict(
     ),
     head=dict(
         type='VisPredictHead',
-        override_bbox_score=True,
         loss=dict(
             type='BCELoss',
             use_target_weight=True,

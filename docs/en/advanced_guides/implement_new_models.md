@@ -79,3 +79,27 @@ class YourNewHead(BaseHead):
 ```
 
 Finally, please remember to import your new prediction head in `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py)` .
+
+### Head with Keypoints Visibility Prediction
+
+Many models predict keypoint visibility based on confidence in coordinate predictions. However, this approach is suboptimal. Our `VisPredictHead` wrapper enables heads to directly predict keypoint visibility from ground truth training data, improving reliability. To add visibility prediction, wrap your head module with VisPredictHead in the config file.
+
+```python
+model=dict(
+     ...
+     head=dict(
+          type='VisPredictHead',
+          loss=dict(
+               type='BCELoss',
+               use_target_weight=True,
+               use_sigmoid=True,
+               loss_weight=1e-3),
+          pose_cfg=dict(
+               type='HeatmapHead',
+               in_channels=2048,
+               out_channels=17,
+               loss=dict(type='KeypointMSELoss', use_target_weight=True),
+               decoder=codec)),
+     ...
+)
+```

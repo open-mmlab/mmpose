@@ -20,9 +20,6 @@ class VisPredictHead(BaseHead):
 
     Args:
         pose_cfg (Config): Config to construct keypoints prediction head
-        override_bbox_score (bool): Whether to override the bounding box
-            score using the keypoint scores predicted by the keypoints
-            prediction head. Defaults to False.
         loss (Config): Config for visibility loss. Defaults to use
             :class:`BCELoss`
         use_sigmoid (bool): Whether to use sigmoid activation function
@@ -42,7 +39,6 @@ class VisPredictHead(BaseHead):
             init_cfg = self.default_init_cfg
 
         super().__init__(init_cfg)
-        self.override_bbox_score = override_bbox_score
 
         self.in_channels = pose_cfg['in_channels']
         if pose_cfg.get('num_joints', None) is not None:
