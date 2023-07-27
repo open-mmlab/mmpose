@@ -137,6 +137,45 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
                       visualize_frame, visualizer):
     """Visualize detected and predicted keypoints of one image.
 
+    Pipeline of this function:
+
+                              frame
+                                |
+                                V
+                        +-----------------+
+                        |     detector    |
+                        +-----------------+
+                                |  det_result
+                                V
+                        +-----------------+
+                        |  pose_estimator |
+                        +-----------------+
+                                |  pose_est_results
+                                V
+            +--------------------------------------------+
+            |  convert 2d kpts into pose-lifting format  |
+            +--------------------------------------------+
+                                |  pose_est_results_list
+                                V
+                    +-----------------------+
+                    | extract_pose_sequence |
+                    +-----------------------+
+                                |  pose_seq_2d
+                                V
+                         +-------------+
+                         | pose_lifter |
+                         +-------------+
+                                |  pose_lift_results
+                                V
+                       +-----------------+
+                       | post-processing |
+                       +-----------------+
+                                |  pred_3d_data_samples
+                                V
+                         +------------+
+                         | visualizer |
+                         +------------+
+
     Args:
         args (Argument): Custom command-line arguments.
         detector (mmdet.BaseDetector): The mmdet detector.
@@ -170,10 +209,13 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     """
     pose_lift_dataset = pose_lifter.cfg.test_dataloader.dataset
 
+    # First stage: conduct 2D pose detection in a Topdown manner
+    # use detector to obtain person bounding boxes
     det_result = inference_detector(detector, frame)
     pred_instance = det_result.pred_instances.cpu().numpy()
 
-    # First stage: 2D pose detection
+    # filter out the person instances with category and bbox threshold
+    # e.g. 0 for person in COCO
     bboxes = pred_instance.bboxes
     bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
                                    pred_instance.scores > args.bbox_thr)]
@@ -190,6 +232,8 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     pose_det_dataset = pose_estimator.cfg.test_dataloader.dataset
     pose_est_results_converted = []
 
+    # convert 2d pose estimation results into the format for pose-lifting
+    # such as changing the keypoint order, flipping the keypoint, etc.
     for i, data_sample in enumerate(pose_est_results):
         pred_instances = data_sample.pred_instances.cpu().numpy()
         keypoints = pred_instances.keypoints
@@ -256,7 +300,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         seq_len=pose_lift_dataset.get('seq_len', 1),
         step=pose_lift_dataset.get('seq_step', 1))
 
-    # 2D-to-3D pose lifting
+    # conduct 2D-to-3D pose lifting
     norm_pose_2d = not args.disable_norm_pose_2d
     pose_lift_results = inference_pose_lifter_model(
         pose_lifter,
