@@ -19,7 +19,7 @@ ${MMPOSE_CHECKPOINT_FILE_3D} \
 --input ${VIDEO_PATH or IMAGE_PATH or 'webcam'} \
 [--show] \
 [--disable-rebase-keypoint] \
-[--norm-pose-2d] \
+[--disable-norm-pose-2d] \
 [--num-instances ${NUM_INSTANCES}] \
 [--output-root ${OUT_VIDEO_ROOT}] \
 [--save-predictions] \

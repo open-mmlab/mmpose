@@ -247,7 +247,7 @@ The inferencer is designed for both visualization and saving predictions. The ta
 | `skeleton_style`          | Sets the skeleton style. Options include 'mmpose' (default) and 'openpose'.                                                                                       | ✔️  | ❌  |
 | `use_oks_tracking`        | Decides whether to use OKS as a similarity measure in tracking.                                                                                                   | ❌  | ✔️  |
 | `tracking_thr`            | Sets the similarity threshold for tracking.                                                                                                                       | ❌  | ✔️  |
-| `norm_pose_2d`            | Decides whether to scale the bounding box to the dataset's average bounding box scale and relocate the bounding box to the dataset's average bounding box center. | ❌  | ✔️  |
+| `disable_norm_pose_2d`    | Decides whether to scale the bounding box to the dataset's average bounding box scale and relocate the bounding box to the dataset's average bounding box center. | ❌  | ✔️  |
 | `disable_rebase_keypoint` | Decides whether to set the lowest keypoint with height 0.                                                                                                         | ❌  | ✔️  |
 | `num_instances`           | Sets the number of instances to visualize in the results. If set to a negative number, all detected instances will be visualized.                                 | ❌  | ✔️  |
 | `return_vis`              | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |

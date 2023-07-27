@@ -66,12 +66,13 @@ def parse_args():
         'is useful for visualization when the model do not predict the '
         'global position of the 3D pose.')
     parser.add_argument(
-        '--norm-pose-2d',
+        '--disable-norm-pose-2d',
         action='store_true',
-        help='Scale the bbox (along with the 2D pose) to the average bbox '
-        'scale of the dataset, and move the bbox (along with the 2D pose) to '
-        'the average bbox center of the dataset. This is useful when bbox '
-        'is small, especially in multi-person scenarios.')
+        default=False,
+        help='Whether to scale the bbox (along with the 2D pose) to the '
+        'average bbox scale of the dataset, and move the bbox (along with the '
+        '2D pose) to the average bbox center of the dataset. This is useful '
+        'when bbox is small, especially in multi-person scenarios.')
     parser.add_argument(
         '--num-instances',
         type=int,
@@ -256,11 +257,12 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         step=pose_lift_dataset.get('seq_step', 1))
 
     # 2D-to-3D pose lifting
+    norm_pose_2d = not args.disable_norm_pose_2d
     pose_lift_results = inference_pose_lifter_model(
         pose_lifter,
         pose_seq_2d,
         image_size=visualize_frame.shape[:2],
-        norm_pose_2d=args.norm_pose_2d)
+        norm_pose_2d=norm_pose_2d)
 
     # post-processing
     for idx, pose_lift_result in enumerate(pose_lift_results):
