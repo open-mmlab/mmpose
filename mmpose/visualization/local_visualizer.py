@@ -253,11 +253,6 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
             keypoints = instances.get('transformed_keypoints',
                                       instances.keypoints)
 
-            if 'keypoint_scores' in instances:
-                scores = instances.keypoint_scores
-            else:
-                scores = np.ones(keypoints.shape[:-1])
-
             if 'keypoints_visible' in instances:
                 keypoints_visible = instances.keypoints_visible
             else:
@@ -265,15 +260,13 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
 
             if skeleton_style == 'openpose':
                 keypoints_info = np.concatenate(
-                    (keypoints, scores[..., None], keypoints_visible[...,
-                                                                     None]),
-                    axis=-1)
+                    (keypoints, keypoints_visible[..., None]), axis=-1)
                 # compute neck joint
                 neck = np.mean(keypoints_info[:, [5, 6]], axis=1)
                 # neck score when visualizing pred
-                neck[:, 2:4] = np.logical_and(
-                    keypoints_info[:, 5, 2:4] > kpt_thr,
-                    keypoints_info[:, 6, 2:4] > kpt_thr).astype(int)
+                neck[:, 2:3] = np.logical_and(
+                    keypoints_info[:, 5, 2:3] > kpt_thr,
+                    keypoints_info[:, 6, 2:3] > kpt_thr).astype(int)
                 new_keypoints_info = np.insert(
                     keypoints_info, 17, neck, axis=1)
 
@@ -287,11 +280,10 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
                     new_keypoints_info[:, mmpose_idx]
                 keypoints_info = new_keypoints_info
 
-                keypoints, scores, keypoints_visible = keypoints_info[
-                    ..., :2], keypoints_info[..., 2], keypoints_info[..., 3]
+                keypoints, keypoints_visible = keypoints_info[
+                    ..., :2], keypoints_info[..., 2]
 
-            for kpts, score, visible in zip(keypoints, scores,
-                                            keypoints_visible):
+            for kpts, visible in zip(keypoints, keypoints_visible):
                 kpts = np.array(kpts, copy=False)
 
                 if self.kpt_color is None or isinstance(self.kpt_color, str):
@@ -320,17 +312,16 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
                     for sk_id, sk in enumerate(self.skeleton):
                         pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
                         pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
-                        if not (visible[sk[0]] and visible[sk[1]]):
-                            continue
 
                         if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
                                 or pos1[1] >= img_h or pos2[0] <= 0
                                 or pos2[0] >= img_w or pos2[1] <= 0
-                                or pos2[1] >= img_h or score[sk[0]] < kpt_thr
-                                or score[sk[1]] < kpt_thr
+                                or pos2[1] >= img_h or visible[sk[0]] < kpt_thr
+                                or visible[sk[1]] < kpt_thr
                                 or link_color[sk_id] is None):
                             # skip the link that should not be drawn
                             continue
+
                         X = np.array((pos1[0], pos2[0]))
                         Y = np.array((pos1[1], pos2[1]))
                         color = link_color[sk_id]
@@ -339,7 +330,9 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
                         transparency = self.alpha
                         if self.show_keypoint_weight:
                             transparency *= max(
-                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
+                                0,
+                                min(1,
+                                    0.5 * (visible[sk[0]] + visible[sk[1]])))
 
                         if skeleton_style == 'openpose':
                             mX = np.mean(X)
@@ -365,8 +358,7 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
 
                 # draw each point on image
                 for kid, kpt in enumerate(kpts):
-                    if score[kid] < kpt_thr or not visible[
-                            kid] or kpt_color[kid] is None:
+                    if visible[kid] < kpt_thr or kpt_color[kid] is None:
                         # skip the point that should not be drawn
                         continue
 
@@ -375,7 +367,7 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
                         color = tuple(int(c) for c in color)
                     transparency = self.alpha
                     if self.show_keypoint_weight:
-                        transparency *= max(0, min(1, score[kid]))
+                        transparency *= max(0, min(1, visible[kid]))
                     self.draw_circles(
                         kpt,
                         radius=np.array([self.radius]),

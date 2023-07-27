@@ -87,13 +87,18 @@ class KeypointConverter(BaseTransform):
         self.interpolation = interpolation
 
     def transform(self, results: dict) -> dict:
+        """Transforms the keypoint results to match the target keypoints."""
         num_instances = results['keypoints'].shape[0]
 
+        # Initialize output arrays
         keypoints = np.zeros((num_instances, self.num_keypoints, 2))
         keypoints_visible = np.zeros((num_instances, self.num_keypoints))
 
-        # When paired source_indexes are input,
-        # perform interpolation with self.source_index and self.source_index2
+        # Create a mask to weight visibility loss
+        keypoints_visible_weights = keypoints_visible.copy()
+        keypoints_visible_weights[:, self.target_index] = 1.0
+
+        # Interpolate keypoints if pairs of source indexes provided
         if self.interpolation:
             keypoints[:, self.target_index] = 0.5 * (
                 results['keypoints'][:, self.source_index] +
@@ -102,6 +107,8 @@ class KeypointConverter(BaseTransform):
             keypoints_visible[:, self.target_index] = results[
                 'keypoints_visible'][:, self.source_index] * \
                 results['keypoints_visible'][:, self.source_index2]
+
+        # Otherwise just copy from the source index
         else:
             keypoints[:,
                       self.target_index] = results['keypoints'][:, self.
@@ -109,8 +116,10 @@ class KeypointConverter(BaseTransform):
             keypoints_visible[:, self.target_index] = results[
                 'keypoints_visible'][:, self.source_index]
 
+        # Update the results dict
         results['keypoints'] = keypoints
-        results['keypoints_visible'] = keypoints_visible
+        results['keypoints_visible'] = np.stack(
+            [keypoints_visible, keypoints_visible_weights], axis=2)
         return results
 
     def __repr__(self) -> str:
