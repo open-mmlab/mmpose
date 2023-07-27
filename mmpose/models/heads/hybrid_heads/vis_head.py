@@ -29,7 +29,6 @@ class VisPredictHead(BaseHead):
 
     def __init__(self,
                  pose_cfg: ConfigType,
-                 override_bbox_score: bool = False,
                  loss: ConfigType = dict(
                      type='BCELoss', use_target_weight=False,
                      use_sigmoid=True),
