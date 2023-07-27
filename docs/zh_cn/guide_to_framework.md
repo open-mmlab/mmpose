@@ -697,3 +697,11 @@ def loss(self,
 
     return losses
 ```
+
+```{note}
+如果你想了解更多模型实现的内容，如：
+- 支持关键点可见性预测的头部
+- 2D-to-3D 模型实现
+
+请前往 [【进阶教程 - 实现新模型】](./advanced_guides/implement_new_models.md)
+```

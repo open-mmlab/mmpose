@@ -81,7 +81,7 @@ class YourNewHead(BaseHead):
 
 ### 关键点可见性预测头部
 
-许多模型都是通过对关键点坐标预测的置信度来判断关键点的可见性的。然而，这种解决方案并非最优。我们提供了一个叫做 [`VisPredictHead`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/heads/hybrid_heads/vis_head.py) 的头部模块包装器，使得头部模块能够直接预测关键点的可见性。这个包装器是用训练数据中关键点可见性真值来训练的。因此，其预测会更加可靠。用户可以通过修改配置文件来对自己的头部模块加上这个包装器。下面是一个例子:
+许多模型都是通过对关键点坐标预测的置信度来判断关键点的可见性的。然而，这种解决方案并非最优。我们提供了一个叫做 [VisPredictHead](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/heads/hybrid_heads/vis_head.py) 的头部模块包装器，使得头部模块能够直接预测关键点的可见性。这个包装器是用训练数据中关键点可见性真值来训练的。因此，其预测会更加可靠。用户可以通过修改配置文件来对自己的头部模块加上这个包装器。下面是一个例子:
 
 ```python
 model=dict(
@@ -101,4 +101,61 @@ model=dict(
                decoder=codec)),
      ...
 )
+```
+
+要实现这样一个预测头部模块包装器，我们只需要像定义正常的预测头部一样，继承 [BaseHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py)，然后在 `__init__()` 中传入关键点定位的头部配置，并通过 `MODELS.build()` 进行实例化。如下所示：
+
+```python
+@MODELS.register_module()
+class VisPredictHead(BaseHead):
+    """VisPredictHead must be used together with other heads. It can predict
+    keypoints coordinates of and their visibility simultaneously. In the
+    current version, it only supports top-down approaches.
+
+    Args:
+        pose_cfg (Config): Config to construct keypoints prediction head
+        loss (Config): Config for visibility loss. Defaults to use
+            :class:`BCELoss`
+        use_sigmoid (bool): Whether to use sigmoid activation function
+        init_cfg (Config, optional): Config to control the initialization. See
+            :attr:`default_init_cfg` for default settings
+    """
+
+    def __init__(self,
+                 pose_cfg: ConfigType,
+                 loss: ConfigType = dict(
+                     type='BCELoss', use_target_weight=False,
+                     use_sigmoid=True),
+                 init_cfg: OptConfigType = None):
+
+        if init_cfg is None:
+            init_cfg = self.default_init_cfg
+
+        super().__init__(init_cfg)
+
+        self.in_channels = pose_cfg['in_channels']
+        if pose_cfg.get('num_joints', None) is not None:
+            self.out_channels = pose_cfg['num_joints']
+        elif pose_cfg.get('out_channels', None) is not None:
+            self.out_channels = pose_cfg['out_channels']
+        else:
+            raise ValueError('VisPredictHead requires \'num_joints\' or'
+                             ' \'out_channels\' in the pose_cfg.')
+
+        self.loss_module = MODELS.build(loss)
+
+        self.pose_head = MODELS.build(pose_cfg)
+        self.pose_cfg = pose_cfg
+
+        self.use_sigmoid = loss.get('use_sigmoid', False)
+
+        modules = [
+            nn.AdaptiveAvgPool2d(1),
+            nn.Flatten(),
+            nn.Linear(self.in_channels, self.out_channels)
+        ]
+        if self.use_sigmoid:
+            modules.append(nn.Sigmoid())
+
+        self.vis_head = nn.Sequential(*modules)
 ```

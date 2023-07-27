@@ -82,7 +82,7 @@ Finally, please remember to import your new prediction head in `[__init__.py](ht
 
 ### Head with Keypoints Visibility Prediction
 
-Many models predict keypoint visibility based on confidence in coordinate predictions. However, this approach is suboptimal. Our [`VisPredictHead`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/heads/hybrid_heads/vis_head.py) wrapper enables heads to directly predict keypoint visibility from ground truth training data, improving reliability. To add visibility prediction, wrap your head module with VisPredictHead in the config file.
+Many models predict keypoint visibility based on confidence in coordinate predictions. However, this approach is suboptimal. Our [VisPredictHead](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/heads/hybrid_heads/vis_head.py) wrapper enables heads to directly predict keypoint visibility from ground truth training data, improving reliability. To add visibility prediction, wrap your head module with VisPredictHead in the config file.
 
 ```python
 model=dict(
@@ -103,3 +103,62 @@ model=dict(
      ...
 )
 ```
+
+To implement such a head module wrapper, we only need to inherit [BaseHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py), then pass the pose head configuration in `__init__()` and instantiate it through `MODELS.build()`. As shown below:
+
+```python
+@MODELS.register_module()
+class VisPredictHead(BaseHead):
+    """VisPredictHead must be used together with other heads. It can predict
+    keypoints coordinates of and their visibility simultaneously. In the
+    current version, it only supports top-down approaches.
+
+    Args:
+        pose_cfg (Config): Config to construct keypoints prediction head
+        loss (Config): Config for visibility loss. Defaults to use
+            :class:`BCELoss`
+        use_sigmoid (bool): Whether to use sigmoid activation function
+        init_cfg (Config, optional): Config to control the initialization. See
+            :attr:`default_init_cfg` for default settings
+    """
+
+    def __init__(self,
+                 pose_cfg: ConfigType,
+                 loss: ConfigType = dict(
+                     type='BCELoss', use_target_weight=False,
+                     use_sigmoid=True),
+                 init_cfg: OptConfigType = None):
+
+        if init_cfg is None:
+            init_cfg = self.default_init_cfg
+
+        super().__init__(init_cfg)
+
+        self.in_channels = pose_cfg['in_channels']
+        if pose_cfg.get('num_joints', None) is not None:
+            self.out_channels = pose_cfg['num_joints']
+        elif pose_cfg.get('out_channels', None) is not None:
+            self.out_channels = pose_cfg['out_channels']
+        else:
+            raise ValueError('VisPredictHead requires \'num_joints\' or'
+                             ' \'out_channels\' in the pose_cfg.')
+
+        self.loss_module = MODELS.build(loss)
+
+        self.pose_head = MODELS.build(pose_cfg)
+        self.pose_cfg = pose_cfg
+
+        self.use_sigmoid = loss.get('use_sigmoid', False)
+
+        modules = [
+            nn.AdaptiveAvgPool2d(1),
+            nn.Flatten(),
+            nn.Linear(self.in_channels, self.out_channels)
+        ]
+        if self.use_sigmoid:
+            modules.append(nn.Sigmoid())
+
+        self.vis_head = nn.Sequential(*modules)
+```
+
+Then you can implement other parts of the code as a normal head.

@@ -684,3 +684,11 @@ def loss(self,
 
     return losses
 ```
+
+```{note}
+If you wish to learn more about the implementation of Model, like:
+- Head with Keypoints Visibility Prediction
+- Pose Lifting Models
+
+please refer to [Advanced Guides - Implement New Model](./advanced_guides/implement_new_models.md) for more details.
+```
