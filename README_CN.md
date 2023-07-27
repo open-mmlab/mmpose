@@ -211,7 +211,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 各个模型的结果和设置都可以在对应的 config（配置）目录下的 **README.md** 中查看。
 整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo.html) 页面中查看。
 
-<details close>
+<details open>
 <summary><b>支持的算法</b></summary>
 
 - [x] [DeepPose](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
@@ -238,7 +238,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 
 </details>
 
-<details close>
+<details open>
 <summary><b>支持的技术</b></summary>
 
 - [x] [FPN](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
@@ -253,7 +253,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 
 </details>
 
-<details close>
+<details open>
 <summary><b>支持的数据集</b></summary>
 
 - [x] [AFLW](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[[主页](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
@@ -292,7 +292,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 
 </details>
 
-<details close>
+<details open>
 <summary><b>支持的骨干网络</b></summary>
 
 - [x] [AlexNet](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/backbones.html#alexnet-neurips-2012) (NeurIPS'2012)
