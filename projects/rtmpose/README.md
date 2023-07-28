@@ -44,6 +44,9 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Jul. 2023:
+  - Support 17-keypoint Body models trained on Human-Art.
+  - Support 133-keypoint WholeBody models trained on combined datasets.
 - Jun. 2023:
   - Release 26-keypoint Body models trained on combined datasets.
 - May. 2023:
@@ -203,7 +206,7 @@ Feel free to join our community group for more help:
 <details open>
 <summary><b>Human-Art</b></summary>
 
-- Details see [Human-Art](https://github.com/IDEA-Research/HumanArt)
+- RTMPose for Human-Centric Artificial Scenes is supported by  [Human-Art](https://github.com/IDEA-Research/HumanArt)
 - <img src="https://github.com/open-mmlab/mmpose/assets/13503330/685bc610-dd9e-4e6f-9c41-dbc8220584f4" height="300px">
 
 |                                     Config                                      | Input Size | AP<sup><br>(Human-Art GT) | Params<sup><br>(M) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                             Download                                                              |
@@ -248,12 +251,35 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 - Keypoints are defined as [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/). For details please refer to the [meta info](/configs/_base_/datasets/coco_wholebody.py).
 - <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
 
+<details open>
+<summary><b>COCO-WholeBody</b></summary>
+
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
 | [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   58.2   |   67.4   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody_pt-aic-coco_270e-256x192-cd5e845c_20230123.pth) |
 | [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   61.1   |   70.0   |       4.52        |                    23.41                    |                        5.67                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-256x192-6f206314_20230124.pth) |
 | [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   64.8   |   73.0   |       10.07       |                    44.58                    |                        7.68                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth) |
 | [RTMPose-x](./rtmpose/wholebody_2d_keypoint/rtmpose-x_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   65.3   |   73.3   |       18.1        |                      -                      |                         -                          | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-x_simcc-coco-wholebody_pt-body7_270e-384x288-401dfc90_20230629.pth) |
+
+</details>
+
+<details open>
+<summary><b>DWPose</b></summary>
+
+- DWPose Models are supported by [DWPose](https://github.com/IDEA-Research/DWPose)
+- Models are trained and distilled on:
+  - [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)
+  - [UBody](https://github.com/IDEA-Research/OSX)
+
+| Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
+| :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
+| [RTMPose-t](./rtmpose/wholebody_2d_keypoint/rtmpose-t_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   48.5   |   58.4   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-ucoco_dw-ucoco_270e-256x192-dcf277bf_20230728.pth) |
+| [RTMPose-s](./rtmpose/wholebody_2d_keypoint/rtmpose-s_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   53.8   |   63.2   |       4.52        |                    23.41                    |                        5.67                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-ucoco_dw-ucoco_270e-256x192-3fd922c8_20230728.pth) |
+| [RTMPose-m](./rtmpose/wholebody_2d_keypoint/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   60.6   |   69.5   |       2.22        |                    13.50                    |                        4.00                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ucoco_dw-ucoco_270e-256x192-c8b76419_20230728.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   63.1   |   71.7   |       4.52        |                    23.41                    |                        5.67                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-ucoco_dw-ucoco_270e-256x192-4d6dfc62_20230728.pth) |
+| [RTMPose-l](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   66.5   |   74.3   |       10.07       |                    44.58                    |                        7.68                        | [Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-ucoco_dw-ucoco_270e-384x288-2438fd99_20230728.pth) |
+
+</details>
 
 ### Animal 2d (17 Keypoints)
 
