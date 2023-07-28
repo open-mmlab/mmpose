@@ -40,7 +40,7 @@ The script will automatically simplify the model, save the simplified model to t
 
 MMDeploy is the OpenMMLab model deployment toolbox, providing a unified deployment experience for various algorithm libraries. With MMDeploy, developers can easily generate SDKs tailored to specific hardware from MMPose, saving a lot of adaptation time.
 
-- You can directly download SDK versions of models (ONNX, TensorRT, ncnn, etc.) from the [Hardware Model Library](https://platform.openmmlab.com/deploee).
+- You can directly download SDK versions of models (ONNX, TensorRT, ncnn, etc.) from the [ OpenMMLab Deploee](https://platform.openmmlab.com/deploee).
 - We also support [Online Model Conversion](https://platform.openmmlab.com/deploee/task-convert-list), so you don't need to install MMDeploy locally.
 
 For more information and usage guidelines, see the [MMDeploy documentation](https://mmdeploy.readthedocs.io/en/latest/get_started.html).
