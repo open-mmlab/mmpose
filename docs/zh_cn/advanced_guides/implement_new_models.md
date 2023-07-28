@@ -159,3 +159,5 @@ class VisPredictHead(BaseHead):
 
         self.vis_head = nn.Sequential(*modules)
 ```
+
+然后你只需要像一个普通的预测头一样继续实现其余部分即可。

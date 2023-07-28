@@ -1,8 +1,8 @@
-# Model Analysis
+# 模型统计与分析
 
 ## 统计模型参数量与计算量
 
-MMPose 提供了 `tools/analysis_tools/get_flops.py` 来统计模型的参数量与计算量。
+MMPose 提供了 [tools/analysis_tools/get_flops.py](https://github.com/open-mmlab/mmpose/blob/dev-1.x/tools/analysis_tools/get_flops.py) 来统计模型的参数量与计算量。
 
 ```shell
 python tools/analysis_tools/get_flops.py ${CONFIG_FILE} [--shape ${INPUT_SHAPE}] [--cfg-options ${CFG_OPTIONS}]
@@ -42,7 +42,7 @@ Params: 28.54 M
 
 ## 分析训练日志
 
-MMPose 提供了 `tools/analysis_tools/analyze_logs.py` 来对训练日志进行简单的分析，包括：
+MMPose 提供了 [tools/analysis_tools/analyze_logs.py](https://github.com/open-mmlab/mmpose/blob/dev-1.x/tools/analysis_tools/analyze_logs.py) 来对训练日志进行简单的分析，包括：
 
 - 将日志绘制成损失和精度曲线图
 - 统计训练速度

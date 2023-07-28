@@ -58,7 +58,7 @@ from .base_backbone import BaseBackbone
 class YourNewBackbone(BaseBackbone):
 ```
 
-Finally, please remember to import your new backbone network in `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py)` .
+Finally, please remember to import your new backbone network in [\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py) .
 
 ## Heads
 
@@ -78,7 +78,7 @@ from ..base_head import BaseHead
 class YourNewHead(BaseHead):
 ```
 
-Finally, please remember to import your new prediction head in `[__init__.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py)` .
+Finally, please remember to import your new prediction head in [\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/__init__.py).
 
 ### Head with Keypoints Visibility Prediction
 
