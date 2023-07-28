@@ -2,7 +2,7 @@
 
 ## Get Model Params & FLOPs
 
-MMPose provides `tools/analysis_tools/get_flops.py` to get model parameters and FLOPs.
+MMPose provides [tools/analysis_tools/get_flops.py](https://github.com/open-mmlab/mmpose/blob/dev-1.x/tools/analysis_tools/get_flops.py) to get model parameters and FLOPs.
 
 ```shell
 python tools/analysis_tools/get_flops.py ${CONFIG_FILE} [--shape ${INPUT_SHAPE}] [--cfg-options ${CFG_OPTIONS}]
@@ -42,7 +42,7 @@ This tool is still experimental and we do not guarantee that the number is absol
 
 ## Log Analysis
 
-MMPose provides `tools/analysis_tools/analyze_logs.py` to analyze the training log. The log file can be either a json file or a text file. The json file is recommended, because it is more convenient to parse and visualize.
+MMPose provides [tools/analysis_tools/analyze_logs.py](https://github.com/open-mmlab/mmpose/blob/dev-1.x/tools/analysis_tools/analyze_logs.py) to analyze the training log. The log file can be either a json file or a text file. The json file is recommended, because it is more convenient to parse and visualize.
 
 Currently, the following functions are supported:
 
