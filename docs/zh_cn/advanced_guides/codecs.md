@@ -10,6 +10,8 @@ MMPose 1.0 中引入了新模块 **编解码器（Codec）** ，将关键点数�
 
 ![pose_estimator_cn](https://github.com/open-mmlab/mmpose/assets/13503330/0c048f66-b889-4268-937f-71b8753b505f)
 
+## 基本概念
+
 一个编解码器主要包含两个部分：
 
 - 编码器
@@ -225,3 +227,225 @@ test_pipeline = [
     dict(type='PackPoseInputs')
 ]
 ```
+
+## 已支持编解码器列表
+
+编解码器相关的代码位于 [$MMPOSE/mmpose/codecs/](https://github.com/open-mmlab/mmpose/tree/dev-1.x/mmpose/codecs)。目前 MMPose 已支持的编解码器如下所示：
+
+- [RegressionLabel](#RegressionLabel)
+- [IntegralRegressionLabel](#IntegralRegressionLabel)
+- [MSRAHeatmap](#MSRAHeatmap)
+- [UDPHeatmap](#UDPHeatmap)
+- [MegviiHeatmap](#MegviiHeatmap)
+- [SPR](#SPR)
+- [SimCC](#SimCC)
+- [DecoupledHeatmap](#DecoupledHeatmap)
+- [ImagePoseLifting](#ImagePoseLifting)
+- [VideoPoseLifting](#VideoPoseLifting)
+- [MotionBERTLabel](#MotionBERTLabel)
+
+### RegressionLabel
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/regression_label.py#L12)
+
+RegressionLabel 编解码器主要用于 Regression-based 方法，适用于直接把坐标值作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为**归一化**的坐标值，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的归一化坐标值解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [DeepPose](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#deeppose-cvpr-2014)
+- [RLE](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#rle-iccv-2021)
+
+### IntegralRegressionLabel
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/integral_regression_label.py)
+
+IntegralRegressionLabel 编解码器主要用于 Integral Regression-based 方法，适用于把坐标值作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为**归一化**的坐标值，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的归一化坐标值解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [IPR](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#ipr-eccv-2018)
+- [DSNT](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#dsnt-2018)
+- [Debias IPR](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#debias-ipr-iccv-2021)
+
+### MSRAHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/msra_heatmap.py)
+
+MSRAHeatmap 编解码器主要用于 Heatmap-based 方法，适用于把高斯热图作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为 2D 离散高斯分布，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 2D 高斯分布解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [SimpleBaseline2D](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#simplebaseline2d-eccv-2018)
+- [CPM](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#cpm-cvpr-2016)
+- [HRNet](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#hrnet-cvpr-2019)
+- [DARK](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#darkpose-cvpr-2020)
+
+### UDPHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/udp_heatmap.py)
+
+UDPHeatmap 编解码器主要用于 Heatmap-based 方法，适用于把高斯热图作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为 2D 离散高斯分布，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 2D 高斯分布解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [UDP](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#udp-cvpr-2020)
+
+### MegviiHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/megvii_heatmap.py)
+
+MegviiHeatmap 编解码器主要用于 Megvii 提出的 Heatmap-based 方法，适用于把高斯热图作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为 2D 离散高斯分布，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 2D 高斯分布解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [MSPN](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#mspn-arxiv-2019)
+- [RSN](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#rsn-eccv-2020)
+
+### SPR
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/spr.py)
+
+SPR 编解码器主要用于 DEKR 方法，适用于同时使用中心 Heatmap 和偏移坐标值作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的中心关键点坐标值编码为 2D 离散高斯分布，以及相对于中心的偏移，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 2D 高斯分布与偏移进行组合，解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [DEKR](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#dekr-cvpr-2021)
+
+### SimCC
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/simcc_label.py)
+
+SimCC 编解码器主要用于 SimCC-based 方法，适用于两个 1D 离散分布表征的 x 和 y 坐标作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为水平和竖直方向 1D 离散分布，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 1D 离散分布解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [SimCC](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#simcc-eccv-2022)
+- [RTMPose](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#rtmpose-arxiv-2023)
+
+### DecoupledHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/decoupled_heatmap.py)
+
+DecoupledHeatmap 编解码器主要用于 CID 方法，适用于把高斯热图作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的人体中心坐标值和关键点坐标值编码为 2D 离散高斯分布，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的人体中心与关键点 2D 高斯分布解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [CID](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#cid-cvpr-2022)
+
+### ImagePoseLifting
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/image_pose_lifting.py)
+
+ImagePoseLifting 编解码器主要用于 2D-to-3D pose lifting 方法，适用于把单张图片的 2D 坐标值作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为 3D 坐标空间归一化的坐标值，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 3D 坐标空间归一化的坐标值解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [SimpleBaseline3D](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#simplebaseline3d-iccv-2017)
+
+### VideoPoseLifting
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/video_pose_lifting.py)
+
+VideoPoseLifting 编解码器主要用于 2D-to-3D pose lifting 方法，适用于把视频中一组 2D 坐标值作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为 3D 坐标空间归一化的坐标值，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 3D 坐标空间归一化的坐标值解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [VideoPose3D](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019)
+
+### MotionBERTLabel
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/motionbert_label.py)
+
+MotionBERTLabel 编解码器主要用于 2D-to-3D pose lifting 方法，适用于把视频中一组 2D 坐标值作为训练目标的场景。
+
+**输入：**
+
+- 将**输入图片尺度**的坐标值编码为 3D 坐标空间归一化的坐标值，用于训练目标的生成。
+
+**输出：**
+
+- 将模型输出的 3D 坐标空间归一化的坐标值解码为**输入图片尺度**的坐标值。
+
+常见的使用此编解码器的算法有：
+
+- [MotionBERT](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo/body_3d_keypoint.html#pose-lift-motionbert-on-h36m)
