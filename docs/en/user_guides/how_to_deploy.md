@@ -1,4 +1,4 @@
-# Model Publish and Deployment
+# Publish Model and Deployment
 
 This chapter will introduce how to export and deploy models trained with MMPose. It includes the following sections:
 
@@ -16,7 +16,7 @@ This chapter will introduce how to export and deploy models trained with MMPose.
   - [Model Profiling](#model-profiling)
   - [Accuracy Validation](#accuracy-validation)
 
-## Model Simplification
+## Publish Model
 
 By default, the checkpoint file saved during MMPose training contains all the information about the model, including the model structure, weights, optimizer states, etc. This information is redundant for model deployment. Therefore, we need to simplify the model. The simplified `.pth` file can even be less than half the size of the original.
 
