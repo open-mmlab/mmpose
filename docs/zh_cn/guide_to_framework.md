@@ -167,7 +167,7 @@ dataset_info = dict(
 - `joint_weights`：每个关键点的权重，用于损失函数计算。
 - `sigma`：标准差，用于计算 OKS 分数，详细信息请参考 [keypoints-eval](https://cocodataset.org/#keypoints-eval)。
 
-在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/\_base\_/datasets/custom.py`，指定方式如下：
+在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/_base_/datasets/custom.py`，指定方式如下：
 
 ```python
 # dataset and dataloader settings
