@@ -52,6 +52,29 @@ def parse_args():
         default='none',
         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument(
+        '--badcase',
+        action='store_true',
+        help='whether analyze badcase in test')
+    # parser.add_argument(
+    #     '--badcase-dir',
+    #     type=str,
+    #     default='badcase,
+    #     help='directory where the badcases visulization and list will be saved')
+    # parser.add_argument(
+    #     '--badcase-show',
+    #     action='store_true',
+    #     help='whether to display the badcases in a window.')
+    # parser.add_argument(
+    #     '--badcase-metric',
+    #     type=str,
+    #     default='wrong_num',
+    #     help='the metric to decide badcase.')
+    # parser.add_argument(
+    #     '--badcase-thr',
+    #     type=float,
+    #     default=5.0,
+    #     help='the min metric value to be a badcase.')
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -73,6 +96,9 @@ def merge_args(cfg, args):
         # use config filename as default work_dir if cfg.work_dir is None
         cfg.work_dir = osp.join('./work_dirs',
                                 osp.splitext(osp.basename(args.config))[0])
+        
+    # if args.show and args.badcase_show:
+    #     raise ValueError('Do not support pred and badcase visualization at the same time')
 
     # -------------------- visualization --------------------
     if args.show or (args.show_dir is not None):
@@ -87,6 +113,30 @@ def merge_args(cfg, args):
             cfg.default_hooks.visualization.wait_time = args.wait_time
         cfg.default_hooks.visualization.out_dir = args.show_dir
         cfg.default_hooks.visualization.interval = args.interval
+
+    # -------------------- badcase analyze --------------------
+    if args.badcase:
+        assert 'badcase' in cfg.default_hooks, \
+            'BadcaseAnalyzeHook is not set in the ' \
+            '`default_hooks` field of config. Please set ' \
+            '`badcase=dict(type="BadcaseAnalyzeHook")`'
+        
+        cfg.default_hooks.badcase.enable = True
+        badcase_show = cfg.default_hooks.badcase.get('show', 'False')
+        if badcase_show:
+            cfg.default_hooks.badcase.wait_time = args.wait_time
+        cfg.default_hooks.badcase.interval = args.interval
+
+        metric_type = cfg.default_hooks.badcase.get('metric_type', 'loss')
+        if metric_type not in ['loss', 'accuracy']:
+            raise ValueError("Only support badcase metric type in ['loss', 'accuracy']")
+        
+        if metric_type == 'loss':
+            if not cfg.default_hooks.badcase.get('metric'):
+                cfg.default_hooks.badcase.metric = cfg.model.head.loss
+        else:
+            if not cfg.default_hooks.badcase.get('metric'):
+                cfg.default_hooks.badcase.metric = cfg.test_evaluator
 
     # -------------------- Dump predictions --------------------
     if args.dump is not None:

@@ -1,7 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import json
+import torch
 import warnings
-from typing import Optional, Sequence
+import numpy as np
+from typing import Optional, Sequence, Dict
 
 import mmcv
 import mmengine
@@ -10,7 +13,7 @@ from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
 
-from mmpose.registry import HOOKS
+from mmpose.registry import HOOKS, MODELS, METRICS
 from mmpose.structures import PoseDataSample, merge_data_samples
 
 
@@ -49,12 +52,15 @@ class BadCaseAnalyzeHook(Hook):
     def __init__(
         self,
         enable: bool = False,
-        interval: int = 50,
-        kpt_thr: float = 0.3,
         show: bool = False,
         wait_time: float = 0.,
+        interval: int = 50,
+        kpt_thr: float = 0.3,
         out_dir: Optional[str] = None,
         backend_args: Optional[dict] = None,
+        metric_type: str = 'loss',
+        metric: dict = dict(type='KeypointMSELoss'),
+        badcase_thr: float = 5,
     ):
         self._visualizer: Visualizer = Visualizer.get_current_instance()
         self.interval = interval
@@ -74,46 +80,29 @@ class BadCaseAnalyzeHook(Hook):
         self._test_index = 0
         self.backend_args = backend_args
 
-    def after_val_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
-                       outputs: Sequence[PoseDataSample]) -> None:
-        """Run after every ``self.interval`` validation iterations.
+        self.metric_type = metric_type
+        self.metric = MODELS.build(metric) if metric_type == 'loss' else METRICS.build(metric)
+        self.metric_name = metric.type
+        self.badcase_thr = badcase_thr
+        self.results = []
+
+    def check_badcase(self, preds, gts):
+        """Check whether the sample is a badcase
 
         Args:
-            runner (:obj:`Runner`): The runner of the validation process.
-            batch_idx (int): The index of the current batch in the val loop.
-            data_batch (dict): Data from dataloader.
-            outputs (Sequence[:obj:`PoseDataSample`]): Outputs from model.
+            gts (np.ndarray): gts of the sample
+            preds (np.ndarray): preds of the sample
+        Return:
+            is_badcase (bool): whether the sample is a badcase or not 
+            metric_value (float)
         """
-        if self.enable is False:
-            return
-
-        self._visualizer.set_dataset_meta(runner.val_evaluator.dataset_meta)
-
-        # There is no guarantee that the same batch of images
-        # is visualized for each evaluation.
-        total_curr_iter = runner.iter + batch_idx
-
-        # Visualize only the first data
-        img_path = data_batch['data_samples'][0].get('img_path')
-        img_bytes = fileio.get(img_path, backend_args=self.backend_args)
-        img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
-        data_sample = outputs[0]
-
-        # revert the heatmap on the original image
-        data_sample = merge_data_samples([data_sample])
-
-        if total_curr_iter % self.interval == 0:
-            self._visualizer.add_datasample(
-                os.path.basename(img_path) if self.show else 'val_img',
-                img,
-                data_sample=data_sample,
-                draw_gt=False,
-                draw_bbox=True,
-                draw_heatmap=True,
-                show=self.show,
-                wait_time=self.wait_time,
-                kpt_thr=self.kpt_thr,
-                step=total_curr_iter)
+        if self.metric_type == 'loss':
+            with torch.no_grad():
+                metric_value = self.metric(torch.tensor(preds), torch.tensor(gts)).item()
+            is_badcase = metric_value >= self.badcase_thr
+        else:
+            is_badcase = metric_value <= self.badcase_thr
+        return is_badcase, metric_value
 
     def after_test_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
                         outputs: Sequence[PoseDataSample]) -> None:
@@ -143,26 +132,71 @@ class BadCaseAnalyzeHook(Hook):
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
             data_sample = merge_data_samples([data_sample])
 
-            out_file = None
-            if self.out_dir is not None:
-                out_file_name, postfix = os.path.basename(img_path).rsplit(
-                    '.', 1)
-                index = len([
-                    fname for fname in os.listdir(self.out_dir)
-                    if fname.startswith(out_file_name)
-                ])
-                out_file = f'{out_file_name}_{index}.{postfix}'
-                out_file = os.path.join(self.out_dir, out_file)
+            gts = data_sample.gt_instances.keypoints
+            preds = data_sample.pred_instances.keypoints
+            is_badcase, metric_value = self.check_badcase(gts, preds)
 
-            self._visualizer.add_datasample(
-                os.path.basename(img_path) if self.show else 'test_img',
-                img,
-                data_sample=data_sample,
-                show=self.show,
-                draw_gt=False,
-                draw_bbox=True,
-                draw_heatmap=True,
-                wait_time=self.wait_time,
-                kpt_thr=self.kpt_thr,
-                out_file=out_file,
-                step=self._test_index)
+            if is_badcase:
+                img_name, postfix = os.path.basename(img_path).rsplit(
+                    '.', 1)
+                bboxes = data_sample.gt_instances.bboxes.astype(int).tolist()
+                bbox_info = 'bbox' + str(bboxes)
+                metric_postfix = self.metric_name + str(round(metric_value, 2))
+
+                self.results.append({'img': img_name, 
+                                     'bbox': bboxes, 
+                                     self.metric_name: metric_value})
+                
+                badcase_name = f'{img_name}_{bbox_info}_{metric_postfix}'
+
+                out_file = None
+                if self.out_dir is not None:
+                    out_file = f'{badcase_name}.{postfix}'
+                    out_file = os.path.join(self.out_dir, out_file)
+
+                # draw gt keypoints in blue color
+                self._visualizer.kpt_color[:, 0:3] = np.array([0, 0, 255])
+                img_gt_drawn = self._visualizer.add_datasample(
+                    badcase_name if self.show else 'test_img',
+                    img,
+                    data_sample=data_sample,
+                    show=False,
+                    draw_pred=False,
+                    draw_gt=True,
+                    draw_bbox=False,
+                    draw_heatmap=False,
+                    wait_time=self.wait_time,
+                    kpt_thr=self.kpt_thr,
+                    out_file=None,
+                    step=self._test_index)
+                # draw pred keypoints in red color
+                self._visualizer.kpt_color[:, 0:3] = np.array([255, 0, 0])
+                self._visualizer.add_datasample(
+                    badcase_name if self.show else 'test_img',
+                    img_gt_drawn,
+                    data_sample=data_sample,
+                    show=self.show,
+                    draw_pred=True,
+                    draw_gt=False,
+                    draw_bbox=True,
+                    draw_heatmap=False,
+                    wait_time=self.wait_time,
+                    kpt_thr=self.kpt_thr,
+                    out_file=out_file,
+                    step=self._test_index)
+
+    def after_test_epoch(self,
+                         runner,
+                         metrics: Optional[Dict[str, float]] = None) -> None:
+        """All subclasses should override this method, if they need any
+        operations after each test epoch.
+
+        Args:
+            runner (Runner): The runner of the testing process.
+            metrics (Dict[str, float], optional): Evaluation results of all
+                metrics on test dataset. The keys are the names of the
+                metrics, and the values are corresponding results.
+        """
+        out_file = os.path.join(self.out_dir, 'results.json')
+        with open(out_file, 'w') as  f:
+            json.dump(self.results, f)
