@@ -58,7 +58,9 @@ class MotionBERTLabel(BaseKeypointCodec):
         self.save_index = save_index
         self.concat_vis = concat_vis
         self.rootrel = rootrel
-        assert mode.lower() in {'train', 'test'}
+        assert mode.lower() in {'train', 'test'
+                                }, (f'Unsupported mode {mode}, '
+                                    'mode should be one of ("train", "test").')
         self.mode = mode.lower()
 
     def encode(self,
@@ -119,13 +121,17 @@ class MotionBERTLabel(BaseKeypointCodec):
         lifting_target_label = lifting_target.copy()
         keypoint_labels = keypoints.copy()
 
-        assert keypoint_labels.ndim in {2, 3}
+        assert keypoint_labels.ndim in {
+            2, 3
+        }, (f'Keypoint labels should have 2 or 3 dimensions, '
+            f'but got {keypoint_labels.ndim}.')
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
         # Normalize the 2D keypoint coordinate with image width and height
         _camera_param = deepcopy(camera_param)
-        assert 'w' in _camera_param and 'h' in _camera_param
+        assert 'w' in _camera_param and 'h' in _camera_param, (
+            'Camera parameters should contain "w" and "h".')
         w, h = _camera_param['w'], _camera_param['h']
         keypoint_labels[
             ..., :2] = keypoint_labels[..., :2] / w * 2 - [1, h / w]
@@ -201,9 +207,14 @@ class MotionBERTLabel(BaseKeypointCodec):
             keypoints[..., 0, :] = 0
 
         if w is not None and w.size > 0:
-            assert w.shape == h.shape
-            assert w.shape[0] == keypoints.shape[0]
-            assert w.ndim in {1, 2}
+            assert w.shape == h.shape, (f'w and h should have the same shape, '
+                                        f'but got {w.shape} and {h.shape}.')
+            assert w.shape[0] == keypoints.shape[0], (
+                f'w and h should have the same batch size, '
+                f'but got {w.shape[0]} and {keypoints.shape[0]}.')
+            assert w.ndim in {1,
+                              2}, (f'w and h should have 1 or 2 dimensions, '
+                                   f'but got {w.ndim}.')
             if w.ndim == 1:
                 w = w[:, None]
                 h = h[:, None]
@@ -211,9 +222,13 @@ class MotionBERTLabel(BaseKeypointCodec):
                 np.ones((w.shape[0], 1)), h / w, axis=1)[:, None, :]
             keypoints[..., :2] = (keypoints[..., :2] + trans) * w[:, None] / 2
             keypoints[..., 2:] = keypoints[..., 2:] * w[:, None] / 2
+
         if factor is not None and factor.size > 0:
-            assert factor.shape[0] == keypoints.shape[0]
+            assert factor.shape[0] == keypoints.shape[0], (
+                f'factor should have the same batch size, '
+                f'but got {factor.shape[0]} and {keypoints.shape[0]}.')
             keypoints *= factor[..., None]
+
         keypoints[..., :, :] = keypoints[..., :, :] - keypoints[
             ..., self.root_index:self.root_index + 1, :]
         keypoints /= 1000.

@@ -151,7 +151,8 @@ class Human36mDataset(BaseMocapDataset):
         if factor_file:
             if not is_abs(factor_file):
                 factor_file = osp.join(data_root, factor_file)
-            assert exists(factor_file), 'Annotation file does not exist.'
+            assert exists(factor_file), (f'`factor_file`: {factor_file}'
+                                         'does not exist.')
         self.factor_file = factor_file
 
         if multiple_target > 0 and multiple_target_step == 0:
@@ -249,11 +250,19 @@ class Human36mDataset(BaseMocapDataset):
         kpts_3d = h36m_data['S']
 
         if self.keypoint_2d_src == 'detection':
-            assert exists(self.keypoint_2d_det_file)
+            assert exists(self.keypoint_2d_det_file), (
+                f'`keypoint_2d_det_file`: `{self.keypoint_2d_det_file}`'
+                'does not exist.')
             kpts_2d = self._load_keypoint_2d_detection(
                 self.keypoint_2d_det_file)
-            assert kpts_2d.shape[0] == kpts_3d.shape[0]
-            assert kpts_2d.shape[2] == 3
+            assert kpts_2d.shape[0] == kpts_3d.shape[0], (
+                f'Number of `kpts_2d` ({kpts_2d.shape[0]}) does not match '
+                f'number of `kpts_3d` ({kpts_3d.shape[0]}).')
+
+            assert kpts_2d.shape[2] == 3, (
+                f'Expect `kpts_2d.shape[2]` == 3, but got '
+                f'{kpts_2d.shape[2]}. Please check the format of '
+                f'{self.keypoint_2d_det_file}')
 
             for idx, frame_ids in enumerate(self.sequence_indices):
                 kpt_2d = kpts_2d[frame_ids].astype(np.float32)
@@ -270,7 +279,10 @@ class Human36mDataset(BaseMocapDataset):
                 factors = np.load(local_path).astype(np.float32)
         else:
             factors = np.zeros((kpts_3d.shape[0], ), dtype=np.float32)
-        assert factors.shape[0] == kpts_3d.shape[0]
+        assert factors.shape[0] == kpts_3d.shape[0], (
+            f'Number of `factors` ({factors.shape[0]}) does not match '
+            f'number of `kpts_3d` ({kpts_3d.shape[0]}).')
+
         for idx, frame_ids in enumerate(self.sequence_indices):
             factor = factors[frame_ids].astype(np.float32)
             instance_list[idx].update({'factor': factor})

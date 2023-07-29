@@ -61,21 +61,27 @@ class ImagePoseLifting(BaseKeypointCodec):
         self.reshape_keypoints = reshape_keypoints
         self.concat_vis = concat_vis
         if keypoints_mean is not None:
+            assert keypoints_std is not None, 'keypoints_std is None'
             keypoints_mean = np.array(
                 keypoints_mean,
                 dtype=np.float32).reshape(1, num_keypoints, -1)
             keypoints_std = np.array(
                 keypoints_std, dtype=np.float32).reshape(1, num_keypoints, -1)
-            assert keypoints_std is not None
-            assert keypoints_mean.shape == keypoints_std.shape
+
+            assert keypoints_mean.shape == keypoints_std.shape, (
+                f'keypoints_mean.shape {keypoints_mean.shape} != '
+                f'keypoints_std.shape {keypoints_std.shape}')
         if target_mean is not None:
+            assert target_std is not None, 'target_std is None'
             target_dim = num_keypoints - 1 if remove_root else num_keypoints
             target_mean = np.array(
                 target_mean, dtype=np.float32).reshape(1, target_dim, -1)
             target_std = np.array(
                 target_std, dtype=np.float32).reshape(1, target_dim, -1)
-            assert target_std is not None
-            assert target_mean.shape == target_std.shape
+
+            assert target_mean.shape == target_std.shape, (
+                f'target_mean.shape {target_mean.shape} != '
+                f'target_std.shape {target_std.shape}')
         self.keypoints_mean = keypoints_mean
         self.keypoints_std = keypoints_std
         self.target_mean = target_mean
@@ -158,7 +164,11 @@ class ImagePoseLifting(BaseKeypointCodec):
                 lifting_target_label, self.root_index, axis=-2)
             lifting_target_visible = np.delete(
                 lifting_target_visible, self.root_index, axis=-2)
-            assert lifting_target_weights.ndim in {2, 3}
+            assert lifting_target_weights.ndim in {
+                2, 3
+            }, (f'lifting_target_weights.ndim {lifting_target_weights.ndim} '
+                'is not in {2, 3}')
+
             axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
             lifting_target_weights = np.delete(
                 lifting_target_weights, self.root_index, axis=axis_to_remove)
@@ -173,14 +183,18 @@ class ImagePoseLifting(BaseKeypointCodec):
         # Normalize the 2D keypoint coordinate with mean and std
         keypoint_labels = keypoints.copy()
         if self.keypoints_mean is not None:
-            assert self.keypoints_mean.shape[1:] == keypoints.shape[1:]
+            assert self.keypoints_mean.shape[1:] == keypoints.shape[1:], (
+                f'self.keypoints_mean.shape[1:] {self.keypoints_mean.shape[1:]} '  # noqa
+                f'!= keypoints.shape[1:] {keypoints.shape[1:]}')
             encoded['keypoints_mean'] = self.keypoints_mean.copy()
             encoded['keypoints_std'] = self.keypoints_std.copy()
 
             keypoint_labels = (keypoint_labels -
                                self.keypoints_mean) / self.keypoints_std
         if self.target_mean is not None:
-            assert self.target_mean.shape == lifting_target_label.shape
+            assert self.target_mean.shape == lifting_target_label.shape, (
+                f'self.target_mean.shape {self.target_mean.shape} '
+                f'!= lifting_target_label.shape {lifting_target_label.shape}')
             encoded['target_mean'] = self.target_mean.copy()
             encoded['target_std'] = self.target_std.copy()
 
@@ -188,7 +202,9 @@ class ImagePoseLifting(BaseKeypointCodec):
                                     self.target_mean) / self.target_std
 
         # Generate reshaped keypoint coordinates
-        assert keypoint_labels.ndim in {2, 3}
+        assert keypoint_labels.ndim in {
+            2, 3
+        }, (f'keypoint_labels.ndim {keypoint_labels.ndim} is not in {2, 3}')
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
@@ -231,7 +247,9 @@ class ImagePoseLifting(BaseKeypointCodec):
         keypoints = encoded.copy()
 
         if self.target_mean is not None and self.target_std is not None:
-            assert self.target_mean.shape == keypoints.shape
+            assert self.target_mean.shape == keypoints.shape, (
+                f'self.target_mean.shape {self.target_mean.shape} '
+                f'!= keypoints.shape {keypoints.shape}')
             keypoints = keypoints * self.target_std + self.target_mean
 
         if target_root is not None and target_root.size > 0:
