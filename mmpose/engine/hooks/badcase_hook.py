@@ -9,6 +9,7 @@ from typing import Optional, Sequence, Dict
 import mmcv
 import mmengine
 import mmengine.fileio as fileio
+from mmengine.config import ConfigDict
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
@@ -47,7 +48,7 @@ class BadCaseAnalyzeHook(Hook):
         backend_args (dict, optional): Arguments to instantiate the preifx of
             uri corresponding backend. Defaults to None.
         metric_type (str): the mretic type to decide a badcase, loss or accuracy.
-        metric (dict): The config of metric.
+        metric (ConfigDict): The config of metric.
         metric_key (str): key of needed metric value in the return dict from class 'metric'.
         badcase_thr (float): min loss or max accuracy for a badcase.
     """
@@ -62,7 +63,7 @@ class BadCaseAnalyzeHook(Hook):
         out_dir: Optional[str] = None,
         backend_args: Optional[dict] = None,
         metric_type: str = 'loss',
-        metric: dict = dict(type='KeypointMSELoss'),
+        metric: ConfigDict = ConfigDict(type='KeypointMSELoss'),
         metric_key: str = 'PCK',
         badcase_thr: float = 5,
     ):
