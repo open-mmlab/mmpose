@@ -38,15 +38,18 @@ class BadCaseAnalyzeHook(Hook):
     Args:
         enable (bool): whether to draw prediction results. If it is False,
             it means that no drawing will be done. Defaults to False.
-        interval (int): The interval of visualization. Defaults to 50.
-        score_thr (float): The threshold to visualize the bboxes
-            and masks. Defaults to 0.3.
         show (bool): Whether to display the drawn image. Default to False.
         wait_time (float): The interval of show (s). Defaults to 0.
+        interval (int): The interval of visualization. Defaults to 50.
+        kpt_thr (float): The threshold to visualize the keypoints. Defaults to 0.3.
         out_dir (str, optional): directory where painted images
             will be saved in testing process.
         backend_args (dict, optional): Arguments to instantiate the preifx of
             uri corresponding backend. Defaults to None.
+        metric_type (str): the mretic type to decide a badcase, loss or accuracy.
+        metric (dict): The config of metric.
+        metric_key (str): key of needed metric value in the return dict from class 'metric'.
+        badcase_thr (float): min loss or max accuracy for a badcase.
     """
 
     def __init__(
@@ -60,6 +63,7 @@ class BadCaseAnalyzeHook(Hook):
         backend_args: Optional[dict] = None,
         metric_type: str = 'loss',
         metric: dict = dict(type='KeypointMSELoss'),
+        metric_key: str = 'PCK',
         badcase_thr: float = 5,
     ):
         self._visualizer: Visualizer = Visualizer.get_current_instance()
@@ -81,26 +85,41 @@ class BadCaseAnalyzeHook(Hook):
         self.backend_args = backend_args
 
         self.metric_type = metric_type
-        self.metric = MODELS.build(metric) if metric_type == 'loss' else METRICS.build(metric)
-        self.metric_name = metric.type
+        if metric_type not in ['loss', 'accuracy']:
+            raise KeyError(
+                f'The badcase metric type {metric_type} is not supported by '
+                f"{self.__class__.__name__}. Should be one of 'loss', "
+                f"'accuracy', but got {metric_type}.")
+        self.metric = MODELS.build(metric) if metric_type == 'loss'\
+            else METRICS.build(metric)
+        self.metric_name = metric.type if metric_type == 'loss'\
+            else metric_key
+        self.metric_key = metric_key
         self.badcase_thr = badcase_thr
         self.results = []
 
-    def check_badcase(self, preds, gts):
+    def check_badcase(self, data_batch, data_sample):
         """Check whether the sample is a badcase
 
         Args:
-            gts (np.ndarray): gts of the sample
-            preds (np.ndarray): preds of the sample
+            data_batch (Sequence[dict]): A batch of data
+                from the dataloader.
+            data_samples (Sequence[dict]): A batch of outputs from
+                the model.
         Return:
             is_badcase (bool): whether the sample is a badcase or not 
             metric_value (float)
         """
         if self.metric_type == 'loss':
+            gts = data_sample.gt_instances.keypoints
+            preds = data_sample.pred_instances.keypoints
             with torch.no_grad():
-                metric_value = self.metric(torch.tensor(preds), torch.tensor(gts)).item()
+                metric_value = self.metric(torch.tensor(preds),
+                                           torch.tensor(gts)).item()
             is_badcase = metric_value >= self.badcase_thr
         else:
+            self.metric.process([data_batch], [data_sample.to_dict()])
+            metric_value = self.metric.evaluate(1)[self.metric_key]
             is_badcase = metric_value <= self.badcase_thr
         return is_badcase, metric_value
 
@@ -132,9 +151,7 @@ class BadCaseAnalyzeHook(Hook):
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
             data_sample = merge_data_samples([data_sample])
 
-            gts = data_sample.gt_instances.keypoints
-            preds = data_sample.pred_instances.keypoints
-            is_badcase, metric_value = self.check_badcase(gts, preds)
+            is_badcase, metric_value = self.check_badcase(data_batch, data_sample)
 
             if is_badcase:
                 img_name, postfix = os.path.basename(img_path).rsplit(
@@ -156,6 +173,7 @@ class BadCaseAnalyzeHook(Hook):
 
                 # draw gt keypoints in blue color
                 self._visualizer.kpt_color[:, 0:3] = np.array([0, 0, 255])
+                self._visualizer.link_color[:, 0:3] = np.array([0, 0, 255])
                 img_gt_drawn = self._visualizer.add_datasample(
                     badcase_name if self.show else 'test_img',
                     img,
@@ -171,6 +189,7 @@ class BadCaseAnalyzeHook(Hook):
                     step=self._test_index)
                 # draw pred keypoints in red color
                 self._visualizer.kpt_color[:, 0:3] = np.array([255, 0, 0])
+                self._visualizer.link_color[:, 0:3] = np.array([255, 0, 0])
                 self._visualizer.add_datasample(
                     badcase_name if self.show else 'test_img',
                     img_gt_drawn,
@@ -198,5 +217,5 @@ class BadCaseAnalyzeHook(Hook):
                 metrics, and the values are corresponding results.
         """
         out_file = os.path.join(self.out_dir, 'results.json')
-        with open(out_file, 'w') as  f:
+        with open(out_file, 'w') as f:
             json.dump(self.results, f)
