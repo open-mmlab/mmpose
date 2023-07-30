@@ -173,8 +173,8 @@ class BadCaseAnalyzeHook(Hook):
                     out_file = os.path.join(self.out_dir, out_file)
 
                 # draw gt keypoints in blue color
-                self._visualizer.kpt_color[:, 0:3] = np.array([0, 0, 255])
-                self._visualizer.link_color[:, 0:3] = np.array([0, 0, 255])
+                self._visualizer.kpt_color = 'blue'
+                self._visualizer.link_color = 'blue'
                 img_gt_drawn = self._visualizer.add_datasample(
                     badcase_name if self.show else 'test_img',
                     img,
@@ -189,8 +189,8 @@ class BadCaseAnalyzeHook(Hook):
                     out_file=None,
                     step=self._test_index)
                 # draw pred keypoints in red color
-                self._visualizer.kpt_color[:, 0:3] = np.array([255, 0, 0])
-                self._visualizer.link_color[:, 0:3] = np.array([255, 0, 0])
+                self._visualizer.kpt_color = 'red'
+                self._visualizer.link_color = 'red'
                 self._visualizer.add_datasample(
                     badcase_name if self.show else 'test_img',
                     img_gt_drawn,
