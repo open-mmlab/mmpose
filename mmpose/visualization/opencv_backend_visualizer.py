@@ -358,7 +358,8 @@ class OpencvBackendVisualizer(Visualizer):
                 **kwargs)
 
         elif self.backend == 'opencv':
-
+            if isinstance(colors, str):
+                colors = mmcv.color_val(colors)
             self._image = cv2.line(
                 self._image, (x_datas[0], y_datas[0]),
                 (x_datas[1], y_datas[1]),
