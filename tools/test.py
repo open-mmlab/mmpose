@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
+import warnings
 import os.path as osp
 
 import mmengine
@@ -56,25 +57,6 @@ def parse_args():
         '--badcase',
         action='store_true',
         help='whether analyze badcase in test')
-    # parser.add_argument(
-    #     '--badcase-dir',
-    #     type=str,
-    #     default='badcase,
-    #     help='directory where the badcases visulization and list will be saved')
-    # parser.add_argument(
-    #     '--badcase-show',
-    #     action='store_true',
-    #     help='whether to display the badcases in a window.')
-    # parser.add_argument(
-    #     '--badcase-metric',
-    #     type=str,
-    #     default='wrong_num',
-    #     help='the metric to decide badcase.')
-    # parser.add_argument(
-    #     '--badcase-thr',
-    #     type=float,
-    #     default=5.0,
-    #     help='the min metric value to be a badcase.')
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -96,9 +78,6 @@ def merge_args(cfg, args):
         # use config filename as default work_dir if cfg.work_dir is None
         cfg.work_dir = osp.join('./work_dirs',
                                 osp.splitext(osp.basename(args.config))[0])
-        
-    # if args.show and args.badcase_show:
-    #     raise ValueError('Do not support pred and badcase visualization at the same time')
 
     # -------------------- visualization --------------------
     if args.show or (args.show_dir is not None):
@@ -125,11 +104,15 @@ def merge_args(cfg, args):
         badcase_show = cfg.default_hooks.badcase.get('show', 'False')
         if badcase_show:
             cfg.default_hooks.badcase.wait_time = args.wait_time
+            if args.show:
+                warnings.warn("Enabling both pred and badcase" 
+                              "visualiztion can be confusing")
         cfg.default_hooks.badcase.interval = args.interval
 
         metric_type = cfg.default_hooks.badcase.get('metric_type', 'loss')
         if metric_type not in ['loss', 'accuracy']:
-            raise ValueError("Only support badcase metric type in ['loss', 'accuracy']")
+            raise ValueError("Only support badcase metric type"
+                             "in ['loss', 'accuracy']")
         
         if metric_type == 'loss':
             if not cfg.default_hooks.badcase.get('metric'):
