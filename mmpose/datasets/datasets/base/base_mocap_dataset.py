@@ -1,15 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import itertools
+import logging
 import os.path as osp
 from copy import deepcopy
 from itertools import filterfalse, groupby
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
+import cv2
 import numpy as np
 from mmengine.dataset import BaseDataset, force_full_init
 from mmengine.fileio import exists, get_local_path, load
+from mmengine.logging import print_log
 from mmengine.utils import is_abs
-from PIL import Image
 
 from mmpose.registry import DATASETS
 from ..utils import parse_pose_metainfo
@@ -215,10 +217,13 @@ class BaseMocapDataset(BaseDataset):
         try:
             with get_local_path(osp.join(self.data_prefix['img'],
                                          img_name)) as local_path:
-                im = Image.open(local_path)
-                w, h = im.size
-                im.close()
+                im = cv2.imread(local_path)
+                h, w, _ = im.shape
         except:  # noqa: E722
+            print_log(
+                f'Failed to read image {img_name}.',
+                logger='current',
+                level=logging.DEBUG)
             return None
 
         img = {
@@ -293,9 +298,13 @@ class BaseMocapDataset(BaseDataset):
         image_list = []
 
         for idx, frame_ids in enumerate(self.sequence_indices):
-            assert len(frame_ids) == (self.multiple_target
-                                      if self.multiple_target else
-                                      self.seq_len), f'{len(frame_ids)}'
+            expected_num_frames = self.seq_len
+            if self.multiple_target:
+                expected_num_frames = self.multiple_target
+
+            assert len(frame_ids) == (expected_num_frames), (
+                f'Expected `frame_ids` == {expected_num_frames}, but '
+                f'got {len(frame_ids)} ')
 
             _img_names = img_names[frame_ids]
 

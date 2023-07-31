@@ -147,7 +147,11 @@ class VideoPoseLifting(BaseKeypointCodec):
                     lifting_target_label, self.root_index, axis=-2)
                 lifting_target_visible = np.delete(
                     lifting_target_visible, self.root_index, axis=-2)
-                assert lifting_target_weights.ndim in {2, 3}
+                assert lifting_target_weights.ndim in {
+                    2, 3
+                }, (f'Got invalid lifting target weights shape '
+                    f'{lifting_target_weights.shape}')
+
                 axis_to_remove = -2 if lifting_target_weights.ndim == 3 else -1
                 lifting_target_weights = np.delete(
                     lifting_target_weights,
@@ -163,19 +167,24 @@ class VideoPoseLifting(BaseKeypointCodec):
 
         # Normalize the 2D keypoint coordinate with image width and height
         _camera_param = deepcopy(camera_param)
-        assert 'w' in _camera_param and 'h' in _camera_param
+        assert 'w' in _camera_param and 'h' in _camera_param, (
+            'Camera parameter `w` and `h` should be provided.')
+
         center = np.array([0.5 * _camera_param['w'], 0.5 * _camera_param['h']],
                           dtype=np.float32)
         scale = np.array(0.5 * _camera_param['w'], dtype=np.float32)
 
         keypoint_labels = (keypoints - center) / scale
 
-        assert keypoint_labels.ndim in {2, 3}
+        assert keypoint_labels.ndim in {
+            2, 3
+        }, (f'Got invalid keypoint labels shape {keypoint_labels.shape}')
         if keypoint_labels.ndim == 2:
             keypoint_labels = keypoint_labels[None, ...]
 
         if self.normalize_camera:
-            assert 'f' in _camera_param and 'c' in _camera_param
+            assert 'f' in _camera_param and 'c' in _camera_param, (
+                'Camera parameter `f` and `c` should be provided.')
             _camera_param['f'] = _camera_param['f'] / scale
             _camera_param['c'] = (_camera_param['c'] - center[:, None]) / scale
             encoded['camera_param'] = _camera_param
