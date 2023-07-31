@@ -56,6 +56,8 @@ class BaseCocoStyleDataset(BaseDataset):
         max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
             None img. The maximum extra number of cycles to get a valid
             image. Default: 1000.
+        sample_interval (int, optional): The sample interval of the dataset.
+            Default: 1.
     """
 
     METAINFO: dict = dict()
@@ -73,7 +75,8 @@ class BaseCocoStyleDataset(BaseDataset):
                  pipeline: List[Union[dict, Callable]] = [],
                  test_mode: bool = False,
                  lazy_init: bool = False,
-                 max_refetch: int = 1000):
+                 max_refetch: int = 1000,
+                 sample_interval: int = 1):
 
         if data_mode not in {'topdown', 'bottomup'}:
             raise ValueError(
@@ -94,7 +97,8 @@ class BaseCocoStyleDataset(BaseDataset):
                     'while "bbox_file" is only '
                     'supported when `test_mode==True`.')
         self.bbox_file = bbox_file
-
+        self.sample_interval = sample_interval
+        
         super().__init__(
             ann_file=ann_file,
             metainfo=metainfo,
@@ -207,6 +211,8 @@ class BaseCocoStyleDataset(BaseDataset):
         image_list = []
 
         for img_id in self.coco.getImgIds():
+            if img_id % self.sample_interval != 0:
+                continue
             img = self.coco.loadImgs(img_id)[0]
             img.update({
                 'img_id':

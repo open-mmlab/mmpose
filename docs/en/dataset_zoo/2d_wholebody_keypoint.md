@@ -131,3 +131,85 @@ mmpose
 Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support Halpe evaluation:
 
 `pip install xtcocotools`
+
+## UBody
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2303.16160">UBody (CVPR'2023)</a></summary>
+
+```bibtex
+@article{lin2023one,
+  title={One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer},
+  author={Lin, Jing and Zeng, Ailing and Wang, Haoqian and Zhang, Lei and Li, Yu},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2023},
+}
+```
+
+</details>
+
+<div align="center">
+  <img src="https://github.com/IDEA-Research/OSX/blob/main/assets/demo_video.gif" height="300px">
+</div>
+
+For [Ubody](https://github.com/IDEA-Research/OSX) dataset, videos and annotations can be downloaded from [OSX homepage](https://github.com/IDEA-Research/OSX).
+
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── UBody
+        ├── annotations
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+        ├── splits
+        │   ├── inter_scene_test_list.npy
+        │   └── intra_scene_test_list.npy
+        ├── videos
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+```
+
+Convert videos to images then split them into train/val set:
+
+```shell
+python tools/dataset_converters/ubody_kpts_to_coco.py 
+```
+
+Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support COCO-WholeBody evaluation:
+
+`pip install xtcocotools`
