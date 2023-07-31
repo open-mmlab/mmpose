@@ -207,7 +207,7 @@ mmpose
 Convert videos to images then split them into train/val set:
 
 ```shell
-python tools/dataset_converters/ubody_kpts_to_coco.py 
+python tools/dataset_converters/ubody_kpts_to_coco.py
 ```
 
 Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support COCO-WholeBody evaluation:

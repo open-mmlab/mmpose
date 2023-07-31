@@ -8,8 +8,6 @@ import mmengine
 import numpy as np
 from pycocotools.coco import COCO
 
-from multiprocessing import Pool
-
 
 def findAllFile(base):
     file_path = []
@@ -89,7 +87,7 @@ def split_dataset(annotation_path: str, split_path: str):
                 scene_train_imgs.append(img)
                 ann_['id'] = t_id
                 ann_['image_id'] = t_id
-                img_['id'] =t_id
+                img_['id'] = t_id
                 train_annos.append(ann_)
                 train_imgs.append(img_)
                 t_id += 1
@@ -116,7 +114,6 @@ def split_dataset(annotation_path: str, split_path: str):
         images=train_imgs, annotations=train_annos, categories=categories)
     val_data = dict(
         images=val_imgs, annotations=val_annos, categories=categories)
-
 
     mmengine.dump(train_data,
                   os.path.join(annotation_path, 'train_annotation.json'))

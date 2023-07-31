@@ -2,7 +2,8 @@ dataset_info = dict(
     dataset_name='ubody2d',
     paper_info=dict(
         author='Jing Lin, Ailing Zeng, Haoqian Wang, Lei Zhang, Yu Li',
-        title='One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer',
+        title='One-Stage 3D Whole-Body Mesh Recovery with Component Aware'
+        'Transformer',
         container='IEEE Computer Society Conference on Computer Vision and '
         'Pattern Recognition (CVPR)',
         year='2023',

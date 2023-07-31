@@ -1,12 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import copy
-import os.path as osp
-from typing import Optional
-
-import numpy as np
-
 from mmpose.registry import DATASETS
-from ..base import BaseCocoStyleDataset
 from .coco_wholebody_dataset import CocoWholeBodyDataset
 
 
@@ -14,8 +7,8 @@ from .coco_wholebody_dataset import CocoWholeBodyDataset
 class UBody2dDataset(CocoWholeBodyDataset):
     """Ubody2d dataset for pose estimation.
 
-    "One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer", CVPR'2023.
-    More details can be found in the `paper
+    "One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer",
+    CVPR'2023. More details can be found in the `paper
     <https://arxiv.org/abs/2303.16160>`__ .
 
     Ubody2D keypoints::
@@ -65,5 +58,4 @@ class UBody2dDataset(CocoWholeBodyDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(
-        from_file='configs/_base_/datasets/ubody2d.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/ubody2d.py')

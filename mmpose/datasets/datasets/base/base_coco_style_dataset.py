@@ -98,7 +98,7 @@ class BaseCocoStyleDataset(BaseDataset):
                     'supported when `test_mode==True`.')
         self.bbox_file = bbox_file
         self.sample_interval = sample_interval
-        
+
         super().__init__(
             ann_file=ann_file,
             metainfo=metainfo,
