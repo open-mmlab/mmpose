@@ -109,7 +109,8 @@ for scene in scenes:
         data_mode=data_mode,
         ann_file=f'annotations/{scene}/train_annotations.json',
         data_prefix=dict(img='images/'),
-        pipeline=[])
+        pipeline=[],
+        sample_interval=10)
     train_datasets.append(train_dataset)
 
     val_dataset = dict(
@@ -164,7 +165,7 @@ val_dataloader = dict(
         data_prefix=dict(img=data_root + 'images/'),
         pipeline=val_pipeline,
         test_mode=True,
-    ))
+        sample_interval=10))
 test_dataloader = val_dataloader
 
 val_evaluator = dict(
