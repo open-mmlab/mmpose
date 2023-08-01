@@ -100,7 +100,6 @@ scenes = [
 ]
 
 train_datasets = []
-val_datasets = []
 
 for scene in scenes:
     train_dataset = dict(
@@ -112,15 +111,6 @@ for scene in scenes:
         pipeline=[],
         sample_interval=10)
     train_datasets.append(train_dataset)
-
-    val_dataset = dict(
-        type=dataset_type,
-        data_root=data_root,
-        data_mode=data_mode,
-        ann_file=f'annotations/{scene}/val_annotations.json',
-        data_prefix=dict(img='images/'),
-        pipeline=[])
-    val_datasets.append(val_dataset)
 
 # pipelines
 train_pipeline = [
