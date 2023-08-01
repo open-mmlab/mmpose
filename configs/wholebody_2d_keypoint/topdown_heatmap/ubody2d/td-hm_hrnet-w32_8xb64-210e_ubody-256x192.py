@@ -151,15 +151,14 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type='UBody2dDataset',
-        ann_file=data_root + 'annotations/val_annotation.json',
+        ann_file=data_root + 'annotations/val_annotations.json',
         data_prefix=dict(img=data_root + 'images/'),
         pipeline=val_pipeline,
-        test_mode=True,
-        sample_interval=10))
+        test_mode=True))
 test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoWholeBodyMetric',
     use_area=False,
-    ann_file=data_root + 'annotations/val_annotation.json')
+    ann_file=data_root + 'annotations/val_annotations.json')
 test_evaluator = val_evaluator

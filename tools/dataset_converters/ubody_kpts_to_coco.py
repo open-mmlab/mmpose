@@ -116,9 +116,9 @@ def split_dataset(annotation_path: str, split_path: str):
         images=val_imgs, annotations=val_annos, categories=categories)
 
     mmengine.dump(train_data,
-                  os.path.join(annotation_path, 'train_annotation.json'))
-    mmengine.dump(val_data, os.path.join(annotation_path,
-                                         'val_annotation.json'))
+                  os.path.join(annotation_path, 'train_annotations.json'))
+    mmengine.dump(val_data,
+                  os.path.join(annotation_path, 'val_annotations.json'))
 
 
 if __name__ == '__main__':
