@@ -8,6 +8,11 @@ default_hooks = dict(
     checkpoint=dict(type='CheckpointHook', interval=10),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     visualization=dict(type='PoseVisualizationHook', enable=False),
+    badcase=dict(type="BadCaseAnalyzeHook", 
+                 metric_type="loss",
+                 badcase_thr=100,
+                 show=True,
+                 out_dir='badcase')
 )
 
 # custom hooks
