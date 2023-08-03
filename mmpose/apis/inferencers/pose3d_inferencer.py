@@ -69,7 +69,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
     preprocess_kwargs: set = {
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
-        'disable_norm_pose_2d'
+        'disable_disable_norm_pose_2d'
     }
     forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
@@ -135,7 +135,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                                         np.ndarray] = [],
                           use_oks_tracking: bool = False,
                           tracking_thr: float = 0.3,
-                          norm_pose_2d: bool = False):
+                          disable_norm_pose_2d: bool = False):
         """Process a single input into a model-feedable format.
 
         Args:
@@ -152,8 +152,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 whether OKS-based tracking should be used. Defaults to False.
             tracking_thr (float, optional): The threshold for tracking.
                 Defaults to 0.3.
-            norm_pose_2d (bool, optional): A flag that indicates whether 2D
-                pose normalization should be used. Defaults to False.
+            disable_norm_pose_2d (bool, optional): A flag that indicates
+                whether 2D pose normalization should be used.
+                Defaults to False.
 
         Yields:
             Any: The data processed by the pipeline and collate_fn.
@@ -241,7 +242,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 keypoints = []
                 for k in range(len(kpts)):
                     kpt = kpts[k]
-                    if norm_pose_2d:
+                    if disable_norm_pose_2d:
                         bbox = bboxes[k]
                         center = np.array([[(bbox[0] + bbox[2]) / 2,
                                             (bbox[1] + bbox[3]) / 2]])
