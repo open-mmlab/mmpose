@@ -10,7 +10,7 @@ import numpy as np
 from mmengine.config import ConfigDict
 from mmengine.structures import InstanceData
 
-from mmpose.engine.hooks import BadCaseAnalyzeHook
+from mmpose.engine.hooks import BadCaseAnalysisHook
 from mmpose.structures import PoseDataSample
 from mmpose.visualization import PoseLocalVisualizer
 
@@ -62,11 +62,11 @@ class TestBadCaseHook(TestCase):
         out_dir = timestamp + '1'
         runner.work_dir = timestamp
         runner.timestamp = '1'
-        hook = BadCaseAnalyzeHook(enable=False, out_dir=out_dir)
+        hook = BadCaseAnalysisHook(enable=False, out_dir=out_dir)
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
         self.assertTrue(not osp.exists(f'{timestamp}/1/{out_dir}'))
 
-        hook = BadCaseAnalyzeHook(
+        hook = BadCaseAnalysisHook(
             enable=True,
             out_dir=out_dir,
             metric_type='loss',
@@ -83,7 +83,7 @@ class TestBadCaseHook(TestCase):
         self.assertTrue(osp.exists(f'{timestamp}/1/{out_dir}/results.json'))
         shutil.rmtree(f'{timestamp}')
 
-        hook = BadCaseAnalyzeHook(
+        hook = BadCaseAnalysisHook(
             enable=True,
             out_dir=out_dir,
             metric_type='accuracy',
