@@ -44,7 +44,7 @@ class TestBadCaseHook(TestCase):
         pred_instances = InstanceData()
         pred_instances.keypoints = _rand_poses(1, kpt_num, 10, 12)
         pred_det_data_sample.pred_instances = pred_instances
-        
+
         gt_instances = InstanceData()
         gt_instances.keypoints = _rand_poses(1, kpt_num, 10, 12)
         gt_instances.keypoints_visible = np.ones((1, kpt_num))
@@ -66,31 +66,37 @@ class TestBadCaseHook(TestCase):
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
         self.assertTrue(not osp.exists(f'{timestamp}/1/{out_dir}'))
 
-        hook = BadCaseAnalyzeHook(enable=True, metric_type="loss",
-                                  metric=ConfigDict(type='KeypointMSELoss'),
-                                  badcase_thr=-1,    # is_badcase = True
-                                  out_dir=out_dir)
+        hook = BadCaseAnalyzeHook(
+            enable=True,
+            out_dir=out_dir,
+            metric_type='loss',
+            metric=ConfigDict(type='KeypointMSELoss'),
+            badcase_thr=-1,  # is_badcase = True
+        )
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
         self.assertEqual(hook._test_index, 2)
         self.assertTrue(osp.exists(f'{timestamp}/1/{out_dir}'))
         # same image and preds/gts, so onlu one file
         self.assertTrue(len(os.listdir(f'{timestamp}/1/{out_dir}')) == 1)
-        
+
         hook.after_test_epoch(runner)
         self.assertTrue(osp.exists(f'{timestamp}/1/{out_dir}/results.json'))
         shutil.rmtree(f'{timestamp}')
 
-        hook = BadCaseAnalyzeHook(enable=True, metric_type="accuracy",
-                                  metric=ConfigDict(type='MpiiPCKAccuracy'),
-                                  badcase_thr=-1,    # is_badcase = False
-                                  out_dir=out_dir)
+        hook = BadCaseAnalyzeHook(
+            enable=True,
+            out_dir=out_dir,
+            metric_type='accuracy',
+            metric=ConfigDict(type='MpiiPCKAccuracy'),
+            badcase_thr=-1,  # is_badcase = False
+        )
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
         self.assertTrue(osp.exists(f'{timestamp}/1/{out_dir}'))
         self.assertTrue(len(os.listdir(f'{timestamp}/1/{out_dir}')) == 0)
         shutil.rmtree(f'{timestamp}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     test = TestBadCaseHook()
     test.setUp()
     test.test_after_test_iter()
