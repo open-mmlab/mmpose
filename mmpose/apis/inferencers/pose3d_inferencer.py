@@ -242,7 +242,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 keypoints = []
                 for k in range(len(kpts)):
                     kpt = kpts[k]
-                    if disable_norm_pose_2d:
+                    if not disable_norm_pose_2d:
                         bbox = bboxes[k]
                         center = np.array([[(bbox[0] + bbox[2]) / 2,
                                             (bbox[1] + bbox[3]) / 2]])
