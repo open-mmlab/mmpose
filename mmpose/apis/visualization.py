@@ -17,11 +17,9 @@ def visualize(
     keypoint_score: np.ndarray = None,
     metainfo: Union[str, dict] = None,
     visualizer: PoseLocalVisualizer = None,
-    draw_heatmap: bool = False,
     show_kpt_idx: bool = False,
     skeleton_style: str = 'mmpose',
     show: bool = False,
-    wait_time: int = 0,
     kpt_thr: float = 0.3,
 ):
     """Visualize 2d keypoints on an image.
@@ -32,7 +30,6 @@ def visualize(
         keypoint_score (np.ndarray): The score of each keypoint.
         metainfo (str | dict): The metainfo of dataset.
         visualizer (PoseLocalVisualizer): The visualizer.
-        draw_heatmap (bool): Whether to draw heatmap.
         show_kpt_idx (bool): Whether to show the index of keypoints.
         skeleton_style (str): Skeleton style. Options are 'mmpose' and
             'openpose'.
@@ -76,11 +73,10 @@ def visualize(
         'visualization',
         img,
         tmp_datasample,
-        draw_heatmap=draw_heatmap,
         show_kpt_idx=show_kpt_idx,
         skeleton_style=skeleton_style,
         show=show,
-        wait_time=wait_time,
+        wait_time=0,
         kpt_thr=kpt_thr)
 
     return visualizer.get_image()
