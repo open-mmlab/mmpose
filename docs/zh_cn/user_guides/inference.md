@@ -289,7 +289,7 @@ model_cfg = 'configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-25
 
 ckpt = 'https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-256x192-4d3e73dd_20230605.pth'
 
-device = 'cuda: 0'
+device = 'cuda'
 
 # 使用初始化接口构建模型
 model = init_model(model_cfg, ckpt, device=device)
