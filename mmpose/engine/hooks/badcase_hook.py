@@ -1,27 +1,26 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
 import json
-import torch
+import os
 import warnings
-import numpy as np
-from typing import Optional, Sequence, Dict
+from typing import Dict, Optional, Sequence
 
 import mmcv
 import mmengine
 import mmengine.fileio as fileio
+import torch
 from mmengine.config import ConfigDict
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
 
-from mmpose.registry import HOOKS, MODELS, METRICS
+from mmpose.registry import HOOKS, METRICS, MODELS
 from mmpose.structures import PoseDataSample, merge_data_samples
 
 
 @HOOKS.register_module()
-class BadCaseAnalyzeHook(Hook):
-    """Bad Case Analyze Hook. Used to visualize validation and
-    testing process prediction results.
+class BadCaseAnalysisHook(Hook):
+    """Bad Case Analyze Hook. Used to visualize validation and testing process
+    prediction results.
 
     In the testing phase:
 
@@ -42,14 +41,17 @@ class BadCaseAnalyzeHook(Hook):
         show (bool): Whether to display the drawn image. Default to False.
         wait_time (float): The interval of show (s). Defaults to 0.
         interval (int): The interval of visualization. Defaults to 50.
-        kpt_thr (float): The threshold to visualize the keypoints. Defaults to 0.3.
+        kpt_thr (float): The threshold to visualize the keypoints.
+            Defaults to 0.3.
         out_dir (str, optional): directory where painted images
             will be saved in testing process.
         backend_args (dict, optional): Arguments to instantiate the preifx of
             uri corresponding backend. Defaults to None.
-        metric_type (str): the mretic type to decide a badcase, loss or accuracy.
+        metric_type (str): the mretic type to decide a badcase,
+            loss or accuracy.
         metric (ConfigDict): The config of metric.
-        metric_key (str): key of needed metric value in the return dict from class 'metric'.
+        metric_key (str): key of needed metric value in the return dict
+            from class 'metric'.
         badcase_thr (float): min loss or max accuracy for a badcase.
     """
 
@@ -100,7 +102,7 @@ class BadCaseAnalyzeHook(Hook):
         self.results = []
 
     def check_badcase(self, data_batch, data_sample):
-        """Check whether the sample is a badcase
+        """Check whether the sample is a badcase.
 
         Args:
             data_batch (Sequence[dict]): A batch of data
@@ -108,15 +110,15 @@ class BadCaseAnalyzeHook(Hook):
             data_samples (Sequence[dict]): A batch of outputs from
                 the model.
         Return:
-            is_badcase (bool): whether the sample is a badcase or not 
+            is_badcase (bool): whether the sample is a badcase or not
             metric_value (float)
         """
         if self.metric_type == 'loss':
             gts = data_sample.gt_instances.keypoints
             preds = data_sample.pred_instances.keypoints
             with torch.no_grad():
-                metric_value = self.metric(torch.tensor(preds),
-                                           torch.tensor(gts)).item()
+                metric_value = self.metric(
+                    torch.tensor(preds), torch.tensor(gts)).item()
             is_badcase = metric_value >= self.badcase_thr
         else:
             self.metric.process([data_batch], [data_sample.to_dict()])
@@ -152,19 +154,21 @@ class BadCaseAnalyzeHook(Hook):
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
             data_sample = merge_data_samples([data_sample])
 
-            is_badcase, metric_value = self.check_badcase(data_batch, data_sample)
+            is_badcase, metric_value = self.check_badcase(
+                data_batch, data_sample)
 
             if is_badcase:
-                img_name, postfix = os.path.basename(img_path).rsplit(
-                    '.', 1)
+                img_name, postfix = os.path.basename(img_path).rsplit('.', 1)
                 bboxes = data_sample.gt_instances.bboxes.astype(int).tolist()
                 bbox_info = 'bbox' + str(bboxes)
                 metric_postfix = self.metric_name + str(round(metric_value, 2))
 
-                self.results.append({'img': img_name, 
-                                     'bbox': bboxes, 
-                                     self.metric_name: metric_value})
-                
+                self.results.append({
+                    'img': img_name,
+                    'bbox': bboxes,
+                    self.metric_name: metric_value
+                })
+
                 badcase_name = f'{img_name}_{bbox_info}_{metric_postfix}'
 
                 out_file = None
