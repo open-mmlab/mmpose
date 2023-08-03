@@ -102,7 +102,7 @@ class GenerateTarget(BaseTransform):
 
 旧版的数据归一化操作 `NormalizeTensor` 和 `ToTensor` 方法将由 **DataPreprocessor** 模块替代，不再作为流水线的一部分，而是作为模块加入到模型前向传播中。
 
-### 3d 姿态变换
+### 3D 姿态变换
 
 旧版用于训练标签生成的方法 `TopDownGenerateTarget` 、`TopDownGenerateTargetRegression`、`BottomUpGenerateHeatmapTarget`、`BottomUpGenerateTarget` 等将被合并为 `GenerateTarget`
 旧版的方法 `GetRootCenteredPose`, `NormalizeJointCoordinate` 和 `ImageCoordinateNormalization` 将被合入到编解码器中.

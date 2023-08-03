@@ -198,6 +198,14 @@ test_dataloader = val_dataloader
 
 To use custom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
 
+More details about using custom datasets can be found in [Customize Datasets](./advanced_guides/customize_datasets.md).
+
+```{note}
+If you wish to inherit from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to this [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
+```
+
+#### 2D Dataset
+
 Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like style**. Thus we provide a base class [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) for these datasets. We recommend that users subclass [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new custom 2D keypoint dataset.
 
 ```{note}
@@ -278,11 +286,9 @@ class CrowdPoseDataset(BaseCocoStyleDataset):
 
 For COCO-style datasets, we only need to inherit from [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) and specify `METAINFO`, then the dataset class is ready to use.
 
-More details about using custom datasets can be found in [Customize Datasets](./advanced_guides/customize_datasets.md).
+#### 3D Dataset
 
-```{note}
-If you wish to inherit from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to this [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
-```
+we provide a base class [BaseMocapDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py) for 3D datasets. We recommend that users subclass [BaseMocapDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py) and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new custom 3D keypoint dataset.
 
 ### Pipeline
 

@@ -111,7 +111,7 @@ class GenerateTarget(BaseTransform):
 
 The data normalization operations `NormalizeTensor` and `ToTensor` will be replaced by **DataPreprocessor** module, which will no longer be used as a preprocessing operation, but will be merged as a part of the model forward propagation.
 
-### 3d Pose Transformation
+### 3D Pose Transformation
 
 The transformation methods `GetRootCenteredPose`, `NormalizeJointCoordinate` and `ImageCoordinateNormalization` in old version, will be merged into codecs.
 

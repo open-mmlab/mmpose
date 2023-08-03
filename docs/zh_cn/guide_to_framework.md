@@ -201,11 +201,18 @@ test_dataloader = val_dataloader
 
 在 MMPose 中使用自定义数据集时，我们推荐将数据转化为已支持的格式（如 COCO 或 MPII），并直接使用我们提供的对应数据集实现。如果这种方式不可行，则用户需要实现自己的数据集类。
 
+更多自定义数据集的使用方式，请前往 [【进阶教程 - 自定义数据集】](./advanced_guides/customize_datasets.md)。
+
+````{note}
+如果你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)
+
+
+#### 2D 数据集
 MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了基类 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ```{note}
 关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
-```
+````
 
 在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在 [$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py)。
 
@@ -281,11 +288,11 @@ class CrowdPoseDataset(BaseCocoStyleDataset):
 
 对于使用 COCO 格式标注的数据集，只需要继承 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) 并指定 `METAINFO`，就可以十分轻松地集成到 MMPose 中参与训练。
 
-更多自定义数据集的使用方式，请前往 [【进阶教程 - 自定义数据集】](./advanced_guides/customize_datasets.md)。
+````
 
-```{note}
-如果你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)
-```
+
+#### 3D 数据集
+我们提供了基类 [BaseMocapStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ### 数据流水线
 
@@ -309,7 +316,7 @@ test_pipeline = [
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
-```
+````
 
 在关键点检测任务中，数据一般会在三个尺度空间中变换：
 
