@@ -69,7 +69,7 @@ class TestMotionBERTLabel(TestCase):
 
         self.assertEqual(encoded['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(encoded['lifting_target_label'].shape, (1, 17, 3))
-        self.assertEqual(encoded['lifting_target_weights'].shape, (
+        self.assertEqual(encoded['lifting_target_weight'].shape, (
             1,
             17,
         ))

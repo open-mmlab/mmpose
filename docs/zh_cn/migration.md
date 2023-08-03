@@ -102,6 +102,11 @@ class GenerateTarget(BaseTransform):
 
 旧版的数据归一化操作 `NormalizeTensor` 和 `ToTensor` 方法将由 **DataPreprocessor** 模块替代，不再作为流水线的一部分，而是作为模块加入到模型前向传播中。
 
+### 3d 姿态变换
+
+旧版用于训练标签生成的方法 `TopDownGenerateTarget` 、`TopDownGenerateTargetRegression`、`BottomUpGenerateHeatmapTarget`、`BottomUpGenerateTarget` 等将被合并为 `GenerateTarget`
+旧版的方法 `GetRootCenteredPose`, `NormalizeJointCoordinate` 和 `ImageCoordinateNormalization` 将被合入到编解码器中.
+
 ## 模型兼容
 
 我们对 model zoo 提供的模型权重进行了兼容性处理，确保相同的模型权重测试精度能够与 0.x 版本保持同等水平，但由于在这两个版本中存在大量处理细节的差异，推理结果可能会产生轻微的不同（精度误差小于 0.05%）。

@@ -164,15 +164,15 @@ class MotionRegressionHead(BaseHead):
             d.gt_instance_labels.lifting_target_label
             for d in batch_data_samples
         ])
-        lifting_target_weights = torch.stack([
-            d.gt_instance_labels.lifting_target_weights
+        lifting_target_weight = torch.stack([
+            d.gt_instance_labels.lifting_target_weight
             for d in batch_data_samples
         ])
 
         # calculate losses
         losses = dict()
         loss = self.loss_module(pred_outputs, lifting_target_label,
-                                lifting_target_weights.unsqueeze(-1))
+                                lifting_target_weight.unsqueeze(-1))
 
         losses.update(loss_pose3d=loss)
 
@@ -180,7 +180,7 @@ class MotionRegressionHead(BaseHead):
         mpjpe_err = keypoint_mpjpe(
             pred=to_numpy(pred_outputs),
             gt=to_numpy(lifting_target_label),
-            mask=to_numpy(lifting_target_weights) > 0)
+            mask=to_numpy(lifting_target_weight) > 0)
 
         mpjpe_pose = torch.tensor(
             mpjpe_err, device=lifting_target_label.device)

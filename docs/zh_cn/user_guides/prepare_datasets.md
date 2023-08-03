@@ -187,6 +187,7 @@ mim download mmpose --dataset coco2017
 | MPII          | `mim download mmpose --dataset mpii`      |
 | AI Challenger | `mim download mmpose --dataset aic`       |
 | CrowdPose     | `mim download mmpose --dataset crowdpose` |
+| Human3.6M     | `mim download mmpose --dataset h36m`      |
 
 #### 人脸数据集
 

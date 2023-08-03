@@ -122,7 +122,7 @@ class PackPoseInputs(BaseTransform):
     label_mapping_table = {
         'keypoint_labels': 'keypoint_labels',
         'lifting_target_label': 'lifting_target_label',
-        'lifting_target_weights': 'lifting_target_weights',
+        'lifting_target_weight': 'lifting_target_weight',
         'trajectory_weights': 'trajectory_weights',
         'keypoint_x_labels': 'keypoint_x_labels',
         'keypoint_y_labels': 'keypoint_y_labels',
