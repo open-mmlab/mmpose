@@ -91,6 +91,7 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
+        subset='lower',
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/fld_lower_train.json',

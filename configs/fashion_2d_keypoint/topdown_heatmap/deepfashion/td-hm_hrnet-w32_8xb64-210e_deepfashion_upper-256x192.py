@@ -119,7 +119,7 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
-        subset='full',
+        subset='upper',
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/fld_upper_train.json',
@@ -134,7 +134,7 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
-        subset='full',
+        subset='upper',
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/fld_upper_val.json',
@@ -150,7 +150,7 @@ test_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
-        subset='full',
+        subset='upper',
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/fld_upper_test.json',

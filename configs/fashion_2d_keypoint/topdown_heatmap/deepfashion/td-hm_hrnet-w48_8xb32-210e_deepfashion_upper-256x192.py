@@ -1,4 +1,4 @@
-_base_ = './deepfashion/td-hm_hrnet-w32_8xb64-210e_deepfashion_upper-256x192.py'  # noqa
+_base_ = './td-hm_hrnet-w32_8xb64-210e_deepfashion_upper-256x192.py'  # noqa
 
 # automatically scaling LR based on the actual training batch size
 auto_scale_lr = dict(base_batch_size=256)
