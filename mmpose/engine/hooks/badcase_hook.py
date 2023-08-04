@@ -116,6 +116,7 @@ class BadCaseAnalysisHook(Hook):
         if self.metric_type == 'loss':
             gts = data_sample.gt_instances.keypoints
             preds = data_sample.pred_instances.keypoints
+            weights = data_sample.gt_instances.keypoints_visible
             with torch.no_grad():
                 metric_value = self.metric(
                     torch.from_numpy(preds), torch.from_numpy(gts), torch.from_numpy(weights)).item()
