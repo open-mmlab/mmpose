@@ -118,7 +118,7 @@ class BadCaseAnalysisHook(Hook):
             preds = data_sample.pred_instances.keypoints
             with torch.no_grad():
                 metric_value = self.metric(
-                    torch.tensor(preds), torch.tensor(gts)).item()
+                    torch.from_numpy(preds), torch.from_numpy(gts), torch.from_numpy(weights)).item()
             is_badcase = metric_value >= self.badcase_thr
         else:
             self.metric.process([data_batch], [data_sample.to_dict()])
