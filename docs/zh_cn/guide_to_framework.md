@@ -346,7 +346,7 @@ test_pipeline = [
 
 #### ii. 数据变换
 
-我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) 完成，在 bottom-up 方法中则由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 完成。
+对于二维图片输入，我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) 完成，在 bottom-up 方法中则由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 完成。
 
 #### iii. 数据编码
 
@@ -361,7 +361,7 @@ test_pipeline = [
 - `keypoint_xy_label`: 单个坐标轴关键点标签
 - `heatmap+keypoint_label`: 同时生成高斯热图和关键点标签
 - `multiscale_heatmap`: 多尺度高斯热图
-- `lifting_target_label`: 提升目标的关键点标签
+- `lifting_target_label`: 3D 提升目标的关键点标签
 
 生成的监督目标会按以下关键字进行封装：
 
@@ -370,8 +370,8 @@ test_pipeline = [
 - `keypoint_x_labels`：x 轴关键点标签
 - `keypoint_y_labels`：y 轴关键点标签
 - `keypoint_weights`：关键点权重
-- `lifting_target_label`: 提升目标的关键点标签
-- `lifting_target_weight`: 提升目标的关键点权重
+- `lifting_target_label`: 3D 提升目标的关键点标签
+- `lifting_target_weight`: 3D 提升目标的关键点权重
 
 ```Python
 @TRANSFORMS.register_module()
@@ -387,15 +387,15 @@ class GenerateTarget(BaseTransform):
     """
 ```
 
-值得注意的是，我们对 top-down 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
+值得注意的是，我们对 top-down，pose-lifting 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
 ```
 
-- top-down：`[B, 1, K, D]`
+- top-down 和 pose-lifting：`[B, 1, K, D]`
 
-- Bottom-up: `[B, N, K, D]`
+- bottom-up: `[B, N, K, D]`
 
 当前已经支持的编解码器定义在 [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs) 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
 

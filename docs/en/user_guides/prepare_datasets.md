@@ -187,7 +187,6 @@ Here is the list of supported datasets, we will continue to update it in the fut
 | MPII          | `mim download mmpose --dataset mpii`      |
 | AI Challenger | `mim download mmpose --dataset aic`       |
 | CrowdPose     | `mim download mmpose --dataset crowdpose` |
-| Human3.6M     | `mim download mmpose --dataset h36m`      |
 
 #### Face
 

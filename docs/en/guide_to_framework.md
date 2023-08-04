@@ -342,7 +342,7 @@ Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obta
 
 #### ii. Transformation
 
-Affine transformation is used to convert images and annotations from the original image space to the input space. This is done by [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) for top-down methods and [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) for bottom-up methods.
+For 2D image inputs, affine transformation is used to convert images and annotations from the original image space to the input space. This is done by [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) for top-down methods and [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) for bottom-up methods.
 
 #### iii. Encoding
 
@@ -357,7 +357,7 @@ Currently we support the following types of Targets.
 - `keypoint_xy_label`: axis-wise keypoint representation
 - `heatmap+keypoint_label`: Gaussian heatmaps and keypoint representation
 - `multiscale_heatmap`: multi-scale Gaussian heatmaps
-- `lifting_target_label`: lifting target keypoint representation
+- `lifting_target_label`: 3D lifting target keypoint representation
 
 and the generated targets will be packed as follows.
 
@@ -366,18 +366,18 @@ and the generated targets will be packed as follows.
 - `keypoint_x_labels`: keypoint x-axis representation
 - `keypoint_y_labels`: keypoint y-axis representation
 - `keypoint_weights`: keypoint visibility and weights
-- `lifting_target_label`: lifting target representation
-- `lifting_target_weight`: lifting target visibility and weights
+- `lifting_target_label`: 3D lifting target representation
+- `lifting_target_weight`: 3D lifting target visibility and weights
 
-Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:
+Note that we unify the data format of top-down, pose-lifting and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
 ```
 
-- top-down: `[B, 1, K, D]`
+- top-down and pose-lifting: `[B, 1, K, D]`
 
-- Bottom-up: `[B, N, K, D]`
+- bottom-up: `[B, N, K, D]`
 
 The provided codecs are stored under [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs).
 
