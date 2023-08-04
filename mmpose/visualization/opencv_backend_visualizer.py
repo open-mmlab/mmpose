@@ -129,7 +129,7 @@ class OpencvBackendVisualizer(Visualizer):
                 **kwargs)
         elif self.backend == 'opencv':
             if isinstance(face_colors, str):
-                face_colors = mmcv.color_val(face_colors)
+                face_colors = mmcv.color_val(face_colors)[::-1]
 
             if alpha == 1.0:
                 self._image = cv2.circle(self._image,
@@ -247,7 +247,7 @@ class OpencvBackendVisualizer(Visualizer):
             if bboxes is not None:
                 bbox_color = bboxes[0]['facecolor']
                 if isinstance(bbox_color, str):
-                    bbox_color = mmcv.color_val(bbox_color)
+                    bbox_color = mmcv.color_val(bbox_color)[::-1]
 
                 y = y - text_baseline // 2
                 self._image = cv2.rectangle(
@@ -359,7 +359,7 @@ class OpencvBackendVisualizer(Visualizer):
 
         elif self.backend == 'opencv':
             if isinstance(colors, str):
-                colors = mmcv.color_val(colors)
+                colors = mmcv.color_val(colors)[::-1]
             self._image = cv2.line(
                 self._image, (x_datas[0], y_datas[0]),
                 (x_datas[1], y_datas[1]),
