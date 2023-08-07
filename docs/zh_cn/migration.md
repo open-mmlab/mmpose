@@ -104,8 +104,7 @@ class GenerateTarget(BaseTransform):
 
 ### 3D 姿态变换
 
-旧版用于训练标签生成的方法 `TopDownGenerateTarget` 、`TopDownGenerateTargetRegression`、`BottomUpGenerateHeatmapTarget`、`BottomUpGenerateTarget` 等将被合并为 `GenerateTarget`
-旧版的方法 `GetRootCenteredPose`, `NormalizeJointCoordinate` 和 `ImageCoordinateNormalization` 将被合入到编解码器中.
+旧版用于 3D 人类姿态数据变换的方法 `GetRootCenteredPose`, `ImageCoordinateNormalization` 和 `NormalizeJointCoordinate` 等方法，将被合并入编码器，比如 [`ImagePoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/image_pose_lifting.py#L11) 和 [`VideoPoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/video_pose_lifting.py#L13) 等。
 
 ## 模型兼容
 

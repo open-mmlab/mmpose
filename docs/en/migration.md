@@ -113,7 +113,7 @@ The data normalization operations `NormalizeTensor` and `ToTensor` will be repla
 
 ### 3D Pose Transformation
 
-The transformation methods `GetRootCenteredPose`, `NormalizeJointCoordinate` and `ImageCoordinateNormalization` in old version, will be merged into codecs.
+The transformation methods `GetRootCenteredPose`, `ImageCoordinateNormalization` and `NormalizeJointCoordinate` etc., will be merged into codecs, for example [`ImagePoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/image_pose_lifting.py#L11) and [`VideoPoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/video_pose_lifting.py#L13).
 
 ## Compatibility of Models
 
