@@ -99,7 +99,15 @@ scenes = [
     'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
 ]
 
-train_datasets = []
+train_datasets = [
+    dict(
+        type='CocoWholeBodyDataset',
+        data_root='data/coco/',
+        data_mode=data_mode,
+        ann_file='annotations/coco_wholebody_train_v1.0.json',
+        data_prefix=dict(img='train2017/'),
+        pipeline=[])
+]
 
 for scene in scenes:
     train_dataset = dict(
@@ -150,15 +158,16 @@ val_dataloader = dict(
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
-        type='UBody2dDataset',
-        ann_file=data_root + 'annotations/val_annotations.json',
-        data_prefix=dict(img=data_root + 'images/'),
+        type='CocoWholeBodyDataset',
+        ann_file='data/coco/annotations/coco_wholebody_val_v1.0.json',
+        data_prefix=dict(img='data/coco/val2017/'),
         pipeline=val_pipeline,
+        bbox_file='data/coco/person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
         test_mode=True))
 test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoWholeBodyMetric',
-    use_area=False,
-    ann_file=data_root + 'annotations/val_annotations.json')
+    ann_file='data/coco/annotations/coco_wholebody_val_v1.0.json')
 test_evaluator = val_evaluator

@@ -56,6 +56,8 @@ class UBody2dDataset(CocoWholeBodyDataset):
         max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
             None img. The maximum extra number of cycles to get a valid
             image. Default: 1000.
+        sample_interval (int, optional): The sample interval of the dataset.
+            Default: 1.
     """
 
     METAINFO: dict = dict(from_file='configs/_base_/datasets/ubody2d.py')
