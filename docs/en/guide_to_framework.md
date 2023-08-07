@@ -316,7 +316,7 @@ test_pipeline = [
 
 In a keypoint detection task, data will be transformed among three scale spaces:
 
-- **Original Image Space**: the space where the images are stored. The sizes of different images are not necessarily the same
+- **Original Image Space**: the space where the original images and annotations are stored. The sizes of different images are not necessarily the same
 
 - **Input Image Space**: the image space used for model input. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
 
@@ -343,6 +343,8 @@ Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obta
 #### ii. Transformation
 
 For 2D image inputs, affine transformation is used to convert images and annotations from the original image space to the input space. This is done by [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) for top-down methods and [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) for bottom-up methods.
+
+For pose lifting tasks, transformation is merged into [Encoding](./guide_to_framework.md#iii-encoding).
 
 #### iii. Encoding
 
