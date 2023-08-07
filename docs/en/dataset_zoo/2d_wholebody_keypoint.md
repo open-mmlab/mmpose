@@ -151,7 +151,7 @@ Please also install the latest version of [Extended COCO API](https://github.com
 </details>
 
 <div align="center">
-  <img src="https://github.com/IDEA-Research/OSX/blob/main/assets/demo_video.gif" height="300px">
+  <img src="https://github.com/open-mmlab/mmpose/assets/15952744/0c97e43a-46a9-46a3-a5dd-b84bf9d6d6f2" height="300px">
 </div>
 
 For [Ubody](https://github.com/IDEA-Research/OSX) dataset, videos and annotations can be downloaded from [OSX homepage](https://github.com/IDEA-Research/OSX).
