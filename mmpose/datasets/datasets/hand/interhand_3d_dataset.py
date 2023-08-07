@@ -73,11 +73,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         ann_file (str): Annotation file path. Default: ''.
         camera_param_file (str): Cameras' parameters file. Default: ''.
         joint_file (str): Path to the joint file. Default: ''.
-        image_size (list): Size of image. Default: ``[256, 256]``.
-        heatmap_size (list): Size of heatmap. Default: ``[64, 64, 64]``.
-        inference_channel (list): List of inference channels.
-        num_output_channels (int): Number of output channels. Default: 21.
-        dataset_channel (list): List of dataset channels.
         heatmap3d_depth_bound (float): Boundary for 3d heatmap depth.
             Default: 400.0.
         heatmap_size_root (int): Size of 3d heatmap root. Default: 64.
@@ -124,22 +119,9 @@ class InterHand3DDataset(BaseCocoStyleDataset):
                  ann_file: str = '',
                  camera_param_file: str = '',
                  joint_file: str = '',
-                 image_size=[256, 256],
-                 heatmap_size=[64, 64, 64],
                  heatmap3d_depth_bound=400.0,
                  heatmap_size_root=64,
                  root_depth_bound=400.0,
-                 inference_channel=[
-                     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                     17, 18, 19, 20
-                 ],
-                 num_output_channels=21,
-                 dataset_channel=[
-                     [
-                         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                         16, 17, 18, 19, 20
-                     ],
-                 ],
                  use_gt_root_depth: bool = True,
                  rootnet_result_file: Optional[str] = None,
                  data_mode: str = 'topdown',
@@ -155,14 +137,9 @@ class InterHand3DDataset(BaseCocoStyleDataset):
                  max_refetch: int = 1000):
 
         self.ann_info = {}
-        self.ann_info['image_size'] = np.array(image_size)
-        self.ann_info['heatmap_size'] = np.array(heatmap_size)
         self.ann_info['heatmap3d_depth_bound'] = heatmap3d_depth_bound
         self.ann_info['heatmap_size_root'] = heatmap_size_root
         self.ann_info['root_depth_bound'] = root_depth_bound
-        self.ann_info['inference_channel'] = inference_channel
-        self.ann_info['num_output_channels'] = num_output_channels
-        self.ann_info['dataset_channel'] = dataset_channel
         self.ann_info['use_different_joint_weights'] = False
 
         _ann_file = ann_file
@@ -174,13 +151,13 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         _camera_param_file = camera_param_file
         if not is_abs(_camera_param_file):
             _camera_param_file = osp.join(data_root, _camera_param_file)
-        assert exists(_camera_param_file)
+        assert exists(_camera_param_file), 'Camera file does not exist.'
         self.camera_param_file = _camera_param_file
 
         _joint_file = joint_file
         if not is_abs(_joint_file):
             _joint_file = osp.join(data_root, _joint_file)
-        assert exists(_joint_file)
+        assert exists(_joint_file), 'Joint file does not exist.'
         self.joint_file = _joint_file
 
         self.use_gt_root_depth = use_gt_root_depth
@@ -190,7 +167,8 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             if not is_abs(_rootnet_result_file):
                 _rootnet_result_file = osp.join(data_root,
                                                 _rootnet_result_file)
-            assert exists(_rootnet_result_file)
+            assert exists(
+                _rootnet_result_file), 'Rootnet result file does not exist.'
             self.rootnet_result_file = _rootnet_result_file
 
         super().__init__(
@@ -222,20 +200,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             if np.max(data_info['joints_3d']) <= 0:
                 return False
         return True
-
-    def load_data_list(self) -> List[dict]:
-        """Load data list from COCO annotation file or person detection result
-        file."""
-
-        instance_list, image_list = self._load_annotations()
-
-        if self.data_mode == 'topdown':
-            data_list = self._get_topdown_data_infos(instance_list)
-        else:
-            data_list = self._get_bottomup_data_infos(instance_list,
-                                                      image_list)
-
-        return data_list
 
     def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
         """Parse raw COCO annotation of an instance.
@@ -285,14 +249,12 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             cameras[capture_id]['princpt'][camera_name], dtype=np.float32)
         joint_world = np.array(
             joints[capture_id][frame_idx]['world_coord'], dtype=np.float32)
-        joint_cam = self._world2cam(
+        joint_valid = np.array(ann['joint_valid'], dtype=np.float32).flatten()
+
+        joint_cam = self.world2cam(
             joint_world.transpose(1, 0), camera_rot,
             camera_pos.reshape(3, 1)).transpose(1, 0)
         joint_img = self._cam2pixel(joint_cam, focal, principal_pt)[:, :2]
-
-        joint_valid = np.array(ann['joint_valid'], dtype=np.float32).flatten()
-        hand_type = self._encode_handtype(ann['hand_type'])
-        hand_type_valid = ann['hand_type_valid']
 
         if self.use_gt_root_depth:
             bbox = np.array(ann['bbox'], dtype=np.float32).reshape(1, 4)
@@ -315,11 +277,10 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         joint_valid[21:] *= joint_valid[41]
 
         joints_3d = np.zeros((num_keypoints, 3), dtype=np.float32)
-        joints_3d_visible = np.zeros((num_keypoints, 3), dtype=np.float32)
         joints_3d[:, :2] = joint_img
         joints_3d[:21, 2] = joint_cam[:21, 2] - joint_cam[20, 2]
         joints_3d[21:, 2] = joint_cam[21:, 2] - joint_cam[41, 2]
-        joints_3d_visible[...] = np.minimum(1, joint_valid.reshape(-1, 1))
+        joints_3d_visible = np.minimum(1, joint_valid.reshape(-1, 1))
 
         data_info = {
             'img_id': ann['image_id'],
@@ -327,8 +288,8 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             'rotation': 0,
             'joints_3d': joints_3d,
             'joints_3d_visible': joints_3d_visible,
-            'hand_type': hand_type,
-            'hand_type_valid': hand_type_valid,
+            'hand_type': self.encode_handtype(ann['hand_type']),
+            'hand_type_valid': ann['hand_type_valid'],
             'rel_root_depth': rel_root_depth,
             'rel_root_valid': rel_root_valid,
             'abs_depth': abs_depth,
@@ -349,7 +310,7 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         return data_info
 
     @staticmethod
-    def _encode_handtype(hand_type):
+    def encode_handtype(hand_type):
         if hand_type == 'right':
             return np.array([1, 0], dtype=np.float32)
         elif hand_type == 'left':
@@ -360,7 +321,7 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             assert 0, f'Not support hand type: {hand_type}'
 
     @staticmethod
-    def _world2cam(world_coord, R, T):
+    def world2cam(world_coord, R, T):
         """Transform the joints from their world coordinates to their camera
         coordinates.
 
@@ -368,14 +329,14 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             N: number of joints
 
         Args:
-            world_coord (ndarray[3, N]): 3D joints coordinates
-                in the world coordinate system
-            R (ndarray[3, 3]): camera rotation matrix
-            T (ndarray[3, 1]): camera position (x, y, z)
+            world_coord (np.ndarray): 3D joints coordinates in the world
+                coordinate system with shape (3, N)
+            R (np.ndarray): camera rotation matrix with shape (3, 3)
+            T (np.ndarray): camera position (x, y, z)
 
         Returns:
-            cam_coord (ndarray[3, N]): 3D joints coordinates
-                in the camera coordinate system
+            cam_coord (np.ndarray): 3D joints coordinates in the camera
+                coordinate system with shape (3, N)
         """
         cam_coord = np.dot(R, world_coord - T)
         return cam_coord
@@ -389,14 +350,14 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             N: number of joints
 
         Args:
-            cam_coord (ndarray[N, 3]): 3D joints coordinates
-                in the camera coordinate system
-            f (ndarray[2]): focal length of x and y axis
-            c (ndarray[2]): principal point of x and y axis
+            cam_coord (np.ndarray): 3D joints coordinates in the camera
+                coordinate system with shape (N, 3)
+            f (np.ndarray): focal length of x and y axis with shape (2, )
+            c (np.ndarray): principal point of x and y axis with shape (2, )
 
         Returns:
-            img_coord (ndarray[N, 3]): the coordinates (x, y, 0)
-                in the image plane.
+            img_coord (np.ndarray[N, 3]): the coordinates in the image plane
+                with shape (N, 3)
         """
         x = cam_coord[:, 0] / (cam_coord[:, 2] + 1e-8) * f[0] + c[0]
         y = cam_coord[:, 1] / (cam_coord[:, 2] + 1e-8) * f[1] + c[1]

@@ -139,3 +139,8 @@ class TestInterHand3DDataset(TestCase):
             data_mode='bottomup', test_mode=True)
         self.assertEqual(len(dataset), 4)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
+
+    def test_exceptions_and_warnings(self):
+
+        with self.assertRaisesRegex(ValueError, 'got invalid data_mode'):
+            _ = self.build_interhand3d_dataset(data_mode='invalid')
