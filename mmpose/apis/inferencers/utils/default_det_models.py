@@ -17,9 +17,10 @@ default_det_models = dict(
     hand=dict(
         model=osp.join(
             mmpose_path, '.mim', 'demo/mmdetection_cfg/'
-            'ssdlite_mobilenetv2_scratch_600e_onehand.py'),
-        weights='https://download.openmmlab.com/mmpose/mmdet_pretrained/'
-        'ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth',
+            'rtmdet-nano_8xb32-300e_multi-dataset-hand-320x320.py'),
+        weights='https://download.openmmlab.com/mmaction/v1.0/projects/'
+        'gesture_recognition/rtmdet-nano_8xb32-300e_multi-dataset-hand-'
+        '320x320_20230524-f6ffed6a.pth',
         cat_ids=(0, )),
     animal=dict(
         model='rtmdet-m',
