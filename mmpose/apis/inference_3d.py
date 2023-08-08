@@ -181,16 +181,11 @@ def collate_pose_sequence(pose_results_2d,
     pose_sequences = []
     for idx in range(N):
         pose_seq = PoseDataSample()
-        gt_instances = InstanceData()
         pred_instances = InstanceData()
 
-        for k in pose_results_2d[target_frame][idx].gt_instances.keys():
-            gt_instances.set_field(
-                pose_results_2d[target_frame][idx].gt_instances[k], k)
-        for k in pose_results_2d[target_frame][idx].pred_instances.keys():
-            if k != 'keypoints':
-                pred_instances.set_field(
-                    pose_results_2d[target_frame][idx].pred_instances[k], k)
+        gt_instances = pose_results_2d[target_frame][idx].gt_instances.clone()
+        pred_instances = pose_results_2d[target_frame][
+            idx].pred_instances.clone()
         pose_seq.pred_instances = pred_instances
         pose_seq.gt_instances = gt_instances
 
@@ -228,7 +223,7 @@ def collate_pose_sequence(pose_results_2d,
                     # replicate the right most frame
                     keypoints[:, frame_idx + 1:] = keypoints[:, frame_idx]
                     break
-            pose_seq.pred_instances.keypoints = keypoints
+            pose_seq.pred_instances.set_field(keypoints, 'keypoints')
         pose_sequences.append(pose_seq)
 
     return pose_sequences
@@ -276,8 +271,15 @@ def inference_pose_lifter_model(model,
             bbox_center = None
             bbox_scale = None
 
+    pose_results_2d_copy = []
     for i, pose_res in enumerate(pose_results_2d):
+        pose_res_copy = []
         for j, data_sample in enumerate(pose_res):
+            data_sample_copy = PoseDataSample()
+            data_sample_copy.gt_instances = data_sample.gt_instances.clone()
+            data_sample_copy.pred_instances = data_sample.pred_instances.clone(
+            )
+            data_sample_copy.track_id = data_sample.track_id
             kpts = data_sample.pred_instances.keypoints
             bboxes = data_sample.pred_instances.bboxes
             keypoints = []
@@ -292,11 +294,13 @@ def inference_pose_lifter_model(model,
                                      bbox_scale + bbox_center)
                 else:
                     keypoints.append(kpt[:, :2])
-            pose_results_2d[i][j].pred_instances.keypoints = np.array(
-                keypoints)
+            data_sample_copy.pred_instances.set_field(
+                np.array(keypoints), 'keypoints')
+            pose_res_copy.append(data_sample_copy)
+        pose_results_2d_copy.append(pose_res_copy)
 
-    pose_sequences_2d = collate_pose_sequence(pose_results_2d, with_track_id,
-                                              target_idx)
+    pose_sequences_2d = collate_pose_sequence(pose_results_2d_copy,
+                                              with_track_id, target_idx)
 
     if not pose_sequences_2d:
         return []

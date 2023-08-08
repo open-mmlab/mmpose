@@ -90,7 +90,7 @@ def parse_args():
         '--save-predictions',
         action='store_true',
         default=False,
-        help='whether to save predicted results')
+        help='Whether to save predicted results')
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
@@ -124,7 +124,14 @@ def parse_args():
         '--use-multi-frames',
         action='store_true',
         default=False,
-        help='whether to use multi frames for inference in the 2D pose'
+        help='Whether to use multi frames for inference in the 2D pose'
+        'detection stage. Default: False.')
+    parser.add_argument(
+        '--online',
+        action='store_true',
+        default=False,
+        help='Inference mode. If set to True, can not use future frame'
+        'information when using multi frames for inference in the 2D pose'
         'detection stage. Default: False.')
 
     args = parser.parse_args()
@@ -404,6 +411,10 @@ def main():
     assert isinstance(pose_lifter, PoseLifter), \
         'Only "PoseLifter" model is supported for the 2nd stage ' \
         '(2D-to-3D lifting)'
+
+    if args.use_multi_frames:
+        assert 'frame_indices_test' in pose_estimator.cfg.data.test.data_cfg
+        indices = pose_estimator.cfg.data.test.data_cfg['frame_indices_test']
 
     pose_lifter.cfg.visualizer.radius = args.radius
     pose_lifter.cfg.visualizer.line_width = args.thickness
