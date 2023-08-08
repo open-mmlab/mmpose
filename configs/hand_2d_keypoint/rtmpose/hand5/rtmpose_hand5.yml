@@ -7,6 +7,7 @@ Collections:
 Models:
 - Config: configs/hand_2d_keypoint/rtmpose/hand5/rtmpose-m_8xb256-210e_hand5-256x256.py
   In Collection: RTMPose
+  Alias: hand
   Metadata:
     Architecture: &id001
     - RTMPose
