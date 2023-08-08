@@ -32,7 +32,6 @@ ${MMPOSE_CHECKPOINT_FILE_3D} \
 [--show-interval ${INTERVAL}] \
 [--thickness ${THICKNESS}] \
 [--radius ${RADIUS}] \
-[--use-multi-frames] \
 [--online]
 ```
 
@@ -40,9 +39,7 @@ Note that
 
 1. `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
-2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference in the 2D pose detection stage.
-
-3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frames for inference in the 2D pose detection stage.
+2. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frames for inference in the 2D pose detection stage.
 
 Examples:
 
@@ -73,7 +70,7 @@ configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft
 https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth  \
 --input https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
 --output-root  vis_results  \
---use-multi-frames  --online
+--online
 ```
 
 ### 3D Human Pose Demo with Inferencer

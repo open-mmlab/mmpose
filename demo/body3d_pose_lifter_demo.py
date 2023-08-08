@@ -13,7 +13,7 @@ import mmengine
 import numpy as np
 from mmengine.logging import print_log
 
-from mmpose.apis import (_track_by_iou, _track_by_oks, collect_multi_frames,
+from mmpose.apis import (_track_by_iou, _track_by_oks,
                          convert_keypoint_definition, extract_pose_sequence,
                          inference_pose_lifter_model, inference_topdown,
                          init_model)
@@ -121,12 +121,6 @@ def parse_args():
         default=3,
         help='Keypoint radius for visualization')
     parser.add_argument(
-        '--use-multi-frames',
-        action='store_true',
-        default=False,
-        help='Whether to use multi frames for inference in the 2D pose'
-        'detection stage. Default: False.')
-    parser.add_argument(
         '--online',
         action='store_true',
         default=False,
@@ -139,9 +133,8 @@ def parse_args():
 
 
 def process_one_image(args, detector, frame, frame_idx, pose_estimator,
-                      pose_est_frame, pose_est_results_last,
-                      pose_est_results_list, next_id, pose_lifter,
-                      visualize_frame, visualizer):
+                      pose_est_results_last, pose_est_results_list, next_id,
+                      pose_lifter, visualize_frame, visualizer):
     """Visualize detected and predicted keypoints of one image.
 
     Pipeline of this function:
@@ -189,8 +182,6 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         frame (np.ndarray): The image frame read from input image or video.
         frame_idx (int): The index of current frame.
         pose_estimator (TopdownPoseEstimator): The pose estimator for 2d pose.
-        pose_est_frame (np.ndarray | list(np.ndarray)): The frames for pose
-            estimation.
         pose_est_results_last (list(PoseDataSample)): The results of pose
             estimation from the last frame for tracking instances.
         pose_est_results_list (list(list(PoseDataSample))): The list of all
@@ -228,8 +219,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
                                    pred_instance.scores > args.bbox_thr)]
 
     # estimate pose results for current image
-    pose_est_results = inference_topdown(pose_estimator, pose_est_frame,
-                                         bboxes)
+    pose_est_results = inference_topdown(pose_estimator, frame, bboxes)
 
     if args.use_oks_tracking:
         _track = partial(_track_by_oks)
@@ -397,12 +387,6 @@ def main():
     det_dataset_link_color = pose_estimator.dataset_meta.get(
         'skeleton_link_colors', None)
 
-    # frame index offsets for inference, used in multi-frame inference setting
-    if args.use_multi_frames:
-        assert 'frame_indices' in pose_estimator.cfg.test_dataloader.dataset
-        indices = pose_estimator.cfg.test_dataloader.dataset[
-            'frame_indices_test']
-
     pose_lifter = init_model(
         args.pose_lifter_config,
         args.pose_lifter_checkpoint,
@@ -411,10 +395,6 @@ def main():
     assert isinstance(pose_lifter, PoseLifter), \
         'Only "PoseLifter" model is supported for the 2nd stage ' \
         '(2D-to-3D lifting)'
-
-    if args.use_multi_frames:
-        assert 'frame_indices_test' in pose_estimator.cfg.data.test.data_cfg
-        indices = pose_estimator.cfg.data.test.data_cfg['frame_indices_test']
 
     pose_lifter.cfg.visualizer.radius = args.radius
     pose_lifter.cfg.visualizer.line_width = args.thickness
@@ -459,7 +439,6 @@ def main():
             frame=frame,
             frame_idx=0,
             pose_estimator=pose_estimator,
-            pose_est_frame=frame,
             pose_est_results_last=[],
             pose_est_results_list=pose_est_results_list,
             next_id=0,
@@ -503,12 +482,6 @@ def main():
             pose_est_results_last = pose_est_results
 
             # First stage: 2D pose detection
-            pose_est_frame = frame
-            if args.use_multi_frames:
-                frames = collect_multi_frames(video, frame_idx, indices,
-                                              args.online)
-                pose_est_frame = frames
-
             # make person results for current image
             (pose_est_results, pose_est_results_list, pred_3d_instances,
              next_id) = process_one_image(
@@ -517,7 +490,6 @@ def main():
                  frame=frame,
                  frame_idx=frame_idx,
                  pose_estimator=pose_estimator,
-                 pose_est_frame=pose_est_frame,
                  pose_est_results_last=pose_est_results_last,
                  pose_est_results_list=pose_est_results_list,
                  next_id=next_id,
