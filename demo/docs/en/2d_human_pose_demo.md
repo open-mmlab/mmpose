@@ -76,7 +76,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 Visualization result:
 
-<img src="https://user-images.githubusercontent.com/87690686/187824368-1f1631c3-52bf-4b45-bf9a-a70cd6551e1a.jpg" height="500px" alt><br>
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/f14e0129-1e5e-4d74-84fe-28cd62357211" height="500px" alt><br>
 
 To save the predicted results on disk, please specify `--save-predictions`.
 
