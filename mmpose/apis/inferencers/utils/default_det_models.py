@@ -15,12 +15,10 @@ default_det_models = dict(
         'yolo-x_8xb8-300e_coco-face_13274d7c.pth',
         cat_ids=(0, )),
     hand=dict(
-        model=osp.join(
-            mmpose_path, '.mim', 'demo/mmdetection_cfg/'
-            'rtmdet-nano_8xb32-300e_multi-dataset-hand-320x320.py'),
-        weights='https://download.openmmlab.com/mmaction/v1.0/projects/'
-        'gesture_recognition/rtmdet-nano_8xb32-300e_multi-dataset-hand-'
-        '320x320_20230524-f6ffed6a.pth',
+        model=osp.join(mmpose_path, '.mim', 'demo/mmdetection_cfg/'
+                       'rtmdet_nano_320-8xb32_hand.py'),
+        weights='https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/'
+        'rtmdet_nano_8xb32-300e_hand-267f9c8f.pth',
         cat_ids=(0, )),
     animal=dict(
         model='rtmdet-m',
