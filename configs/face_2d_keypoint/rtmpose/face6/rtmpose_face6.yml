@@ -42,6 +42,7 @@ Models:
     Architecture: *id001
     Training Data: *id002
   Name: rtmpose-m_8xb256-120e_face6-256x256
+  Alias: face
   Results:
   - Dataset: Face6
     Metrics:

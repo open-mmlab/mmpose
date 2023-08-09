@@ -206,6 +206,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         next_id (int): The next track id to be used.
     """
     pose_lift_dataset = pose_lifter.cfg.test_dataloader.dataset
+    pose_lift_dataset_name = pose_lifter.dataset_meta['dataset_name']
 
     # First stage: conduct 2D pose detection in a Topdown manner
     # use detector to obtain person bounding boxes
@@ -226,7 +227,7 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     else:
         _track = _track_by_iou
 
-    pose_det_dataset = pose_estimator.cfg.test_dataloader.dataset
+    pose_det_dataset_name = pose_estimator.dataset_meta['dataset_name']
     pose_est_results_converted = []
 
     # convert 2d pose estimation results into the format for pose-lifting
@@ -278,8 +279,8 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         pose_est_result_converted.set_field(
             pose_est_results[i].gt_instances.clone(), 'gt_instances')
         keypoints = convert_keypoint_definition(keypoints,
-                                                pose_det_dataset['type'],
-                                                pose_lift_dataset['type'])
+                                                pose_det_dataset_name,
+                                                pose_lift_dataset_name)
         pose_est_result_converted.pred_instances.set_field(
             keypoints, 'keypoints')
         pose_est_result_converted.set_field(pose_est_results[i].track_id,
@@ -348,8 +349,8 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
             data_sample=pred_3d_data_samples,
             det_data_sample=det_data_sample,
             draw_gt=False,
-            dataset_2d=pose_det_dataset['type'],
-            dataset_3d=pose_lift_dataset['type'],
+            dataset_2d=pose_det_dataset_name,
+            dataset_3d=pose_lift_dataset_name,
             show=args.show,
             draw_bbox=True,
             kpt_thr=args.kpt_thr,

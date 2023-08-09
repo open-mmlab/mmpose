@@ -23,18 +23,15 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
         ndarray[K, 2 or 3]: the transformed 2D keypoints.
     """
     assert pose_lift_dataset in [
-        'Human36mDataset'], '`pose_lift_dataset` should be ' \
-        f'`Human36mDataset`, but got {pose_lift_dataset}.'
+        'h36m'], '`pose_lift_dataset` should be ' \
+        f'`h36m`, but got {pose_lift_dataset}.'
 
-    coco_style_datasets = [
-        'CocoDataset', 'PoseTrack18VideoDataset', 'PoseTrack18Dataset'
-    ]
     keypoints_new = np.zeros((keypoints.shape[0], 17, keypoints.shape[2]),
                              dtype=keypoints.dtype)
-    if pose_lift_dataset == 'Human36mDataset':
-        if pose_det_dataset in ['Human36mDataset']:
+    if pose_lift_dataset == 'h36m':
+        if pose_det_dataset in ['h36m']:
             keypoints_new = keypoints
-        elif pose_det_dataset in coco_style_datasets:
+        elif pose_det_dataset in ['coco', 'posetrack18']:
             # pelvis (root) is in the middle of l_hip and r_hip
             keypoints_new[:, 0] = (keypoints[:, 11] + keypoints[:, 12]) / 2
             # thorax is in the middle of l_shoulder and r_shoulder
@@ -48,7 +45,7 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
             # rearrange other keypoints
             keypoints_new[:, [1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
                 keypoints[:, [12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
-        elif pose_det_dataset in ['AicDataset']:
+        elif pose_det_dataset in ['aic']:
             # pelvis (root) is in the middle of l_hip and r_hip
             keypoints_new[:, 0] = (keypoints[:, 9] + keypoints[:, 6]) / 2
             # thorax is in the middle of l_shoulder and r_shoulder
@@ -66,7 +63,7 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
 
             keypoints_new[:, [1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
                 keypoints[:, [6, 7, 8, 9, 10, 11, 3, 4, 5, 0, 1, 2]]
-        elif pose_det_dataset in ['CrowdPoseDataset']:
+        elif pose_det_dataset in ['crowdpose']:
             # pelvis (root) is in the middle of l_hip and r_hip
             keypoints_new[:, 0] = (keypoints[:, 6] + keypoints[:, 7]) / 2
             # thorax is in the middle of l_shoulder and r_shoulder

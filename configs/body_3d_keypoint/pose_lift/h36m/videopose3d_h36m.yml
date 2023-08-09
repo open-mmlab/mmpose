@@ -61,7 +61,6 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
 - Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py
   In Collection: VideoPose3D
-  Alias: human3d
   Metadata:
     Architecture: *id001
     Training Data: Human3.6M
