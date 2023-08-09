@@ -112,9 +112,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         # helper functions
         self._keypoint_converter = partial(
             convert_keypoint_definition,
-            pose_det_dataset=self.pose2d_model.cfg.test_dataloader.
-            dataset['type'],
-            pose_lift_dataset=self.cfg.test_dataloader.dataset['type'],
+            pose_det_dataset=self.pose2d_model.model.
+            dataset_meta['dataset_name'],
+            pose_lift_dataset=self.model.dataset_meta['dataset_name'],
         )
 
         self._pose_seq_extractor = partial(
@@ -504,6 +504,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
+                dataset_2d=self.pose2d_model.model.
+                dataset_meta['dataset_name'],
+                dataset_3d=self.model.dataset_meta['dataset_name'],
                 kpt_thr=kpt_thr,
                 num_instances=num_instances)
             results.append(visualization)
