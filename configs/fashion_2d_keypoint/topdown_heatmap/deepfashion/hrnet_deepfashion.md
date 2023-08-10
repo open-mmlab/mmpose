@@ -68,10 +68,10 @@
 
 Results on DeepFashion val set
 
-| Set   |                                        Arch                                        | Input Size | PCK@0.2 | AUC  | EPE  |    ckpt    |    log    |
-| :---- | :--------------------------------------------------------------------------------: | :--------: | :-----: | :--: | :--: | :--------: | :-------: |
-| upper | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_uppder-256x192.py) |  256x192   |  96.1   | 60.9 | 15.1 | [ckpt](<>) | [log](<>) |
-| lower | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192.py)  |  256x192   |  97.8   | 76.1 | 8.9  | [ckpt](<>) | [log](<>) |
-| full  |  [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192.py)  |  256x192   |  98.3   | 67.3 | 11.7 | [ckpt](<>) | [log](<>) |
+| Set   |                           Arch                            | Input Size | PCK@0.2 | AUC  | EPE  |                           ckpt                            |                           log                            |
+| :---- | :-------------------------------------------------------: | :--------: | :-----: | :--: | :--: | :-------------------------------------------------------: | :------------------------------------------------------: |
+| upper | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_uppder-256x192.py) |  256x192   |  96.1   | 60.9 | 15.1 | [ckpt](https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_upper-256x192-de7c0eb1_20230810.pth) | [log](https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_upper-256x192-de7c0eb1_20230810.log) |
+| lower | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192.py) |  256x192   |  97.8   | 76.1 | 8.9  | [ckpt](https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192-ddaf747d_20230810.pth) | [log](https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192-ddaf747d_20230810.log) |
+| full  | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192.py) |  256x192   |  98.3   | 67.3 | 11.7 | [ckpt](https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192-7ab504c7_20230810.pth) | [log](https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192-7ab504c7_20230810.log) |
 
 Note: Due to the time constraints, we have only trained resnet50 models. We warmly welcome any contributions if you can successfully reproduce the results from the paper!
