@@ -73,11 +73,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         ann_file (str): Annotation file path. Default: ''.
         camera_param_file (str): Cameras' parameters file. Default: ''.
         joint_file (str): Path to the joint file. Default: ''.
-        heatmap3d_depth_bound (float): Boundary for 3d heatmap depth.
-            Default: 400.0.
-        heatmap_size_root (int): Size of 3d heatmap root. Default: 64.
-        root_depth_bound (float): Boundary for 3d heatmap root depth.
-            Default: 400.0.
         use_gt_root_depth (bool): Using the ground truth depth of the wrist
             or given depth from rootnet_result_file. Default: ``True``.
         rootnet_result_file (str): Path to the wrist depth file.
@@ -119,9 +114,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
                  ann_file: str = '',
                  camera_param_file: str = '',
                  joint_file: str = '',
-                 heatmap3d_depth_bound=400.0,
-                 heatmap_size_root=64,
-                 root_depth_bound=400.0,
                  use_gt_root_depth: bool = True,
                  rootnet_result_file: Optional[str] = None,
                  data_mode: str = 'topdown',
@@ -135,12 +127,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
                  test_mode: bool = False,
                  lazy_init: bool = False,
                  max_refetch: int = 1000):
-
-        self.ann_info = {}
-        self.ann_info['heatmap3d_depth_bound'] = heatmap3d_depth_bound
-        self.ann_info['heatmap_size_root'] = heatmap_size_root
-        self.ann_info['root_depth_bound'] = root_depth_bound
-        self.ann_info['use_different_joint_weights'] = False
 
         _ann_file = ann_file
         if not is_abs(_ann_file):
@@ -276,24 +262,27 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         joint_valid[:20] *= joint_valid[20]
         joint_valid[21:] *= joint_valid[41]
 
-        joints_3d = np.zeros((num_keypoints, 3), dtype=np.float32)
-        joints_3d[:, :2] = joint_img
-        joints_3d[:21, 2] = joint_cam[:21, 2] - joint_cam[20, 2]
-        joints_3d[21:, 2] = joint_cam[21:, 2] - joint_cam[41, 2]
-        joints_3d_visible = np.minimum(1, joint_valid.reshape(-1, 1))
+        joints_3d = np.zeros((num_keypoints, 3),
+                             dtype=np.float32).reshape(1, -1, 3)
+        joints_3d[..., :2] = joint_img
+        joints_3d[..., :21, 2] = joint_cam[:21, 2] - joint_cam[20, 2]
+        joints_3d[..., 21:, 2] = joint_cam[21:, 2] - joint_cam[41, 2]
+        joints_3d_visible = np.minimum(1,
+                                       joint_valid.reshape(-1,
+                                                           1)).reshape(1, -1)
 
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img['img_path'],
             'rotation': 0,
-            'joints_3d': joints_3d,
-            'joints_3d_visible': joints_3d_visible,
+            'keypoints': joints_3d,
+            'keypoints_visible': joints_3d_visible,
             'hand_type': self.encode_handtype(ann['hand_type']),
             'hand_type_valid': ann['hand_type_valid'],
             'rel_root_depth': rel_root_depth,
             'rel_root_valid': rel_root_valid,
             'abs_depth': abs_depth,
-            'joint_cam': joint_cam,
+            'joint_cam': joint_cam.reshape(1, -1, 3),
             'focal': focal,
             'principal_pt': principal_pt,
             'dataset': self.metainfo['dataset_name'],
@@ -306,6 +295,11 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             # it is useful for evaluation without providing ann_file
             'raw_ann_info': copy.deepcopy(ann),
         }
+        for key, val in data_info.items():
+            if isinstance(val, np.ndarray):
+                print(key, val.shape)
+            else:
+                print(key, val)
 
         return data_info
 
