@@ -198,6 +198,14 @@ test_dataloader = val_dataloader
 
 To use custom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
 
+More details about using custom datasets can be found in [Customize Datasets](./advanced_guides/customize_datasets.md).
+
+```{note}
+If you wish to inherit from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to this [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
+```
+
+#### 2D Dataset
+
 Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like style**. Thus we provide a base class [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) for these datasets. We recommend that users subclass [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new custom 2D keypoint dataset.
 
 ```{note}
@@ -278,11 +286,9 @@ class CrowdPoseDataset(BaseCocoStyleDataset):
 
 For COCO-style datasets, we only need to inherit from [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) and specify `METAINFO`, then the dataset class is ready to use.
 
-More details about using custom datasets can be found in [Customize Datasets](./advanced_guides/customize_datasets.md).
+#### 3D Dataset
 
-```{note}
-If you wish to inherit from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to this [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
-```
+we provide a base class [BaseMocapDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py) for 3D datasets. We recommend that users subclass [BaseMocapDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py) and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new custom 3D keypoint dataset.
 
 ### Pipeline
 
@@ -310,7 +316,7 @@ test_pipeline = [
 
 In a keypoint detection task, data will be transformed among three scale spaces:
 
-- **Original Image Space**: the space where the images are stored. The sizes of different images are not necessarily the same
+- **Original Image Space**: the space where the original images and annotations are stored. The sizes of different images are not necessarily the same
 
 - **Input Image Space**: the image space used for model input. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
 
@@ -326,9 +332,9 @@ In MMPose, the modules used for data transformation are under [$MMPOSE/mmpose/da
 
 #### i. Augmentation
 
-Commonly used transforms are defined in [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py), such as [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94), [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263), etc.
+Commonly used transforms are defined in [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py), such as [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94), [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263), etc. For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433). For bottom-up methods, [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) is used.
 
-For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433). For bottom-up methods, [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) is used.
+Transforms for 3d pose data are defined in [$MMPOSE/mmpose/datasets/transforms/pose3d_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/pose3d_transforms.py)
 
 ```{note}
 Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by [GetBBoxCenterScale](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L31).
@@ -336,7 +342,9 @@ Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obta
 
 #### ii. Transformation
 
-Affine transformation is used to convert images and annotations from the original image space to the input space. This is done by [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) for top-down methods and [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) for bottom-up methods.
+For 2D image inputs, affine transformation is used to convert images and annotations from the original image space to the input space. This is done by [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) for top-down methods and [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) for bottom-up methods.
+
+For pose lifting tasks, transformation is merged into [Encoding](./guide_to_framework.md#iii-encoding).
 
 #### iii. Encoding
 
@@ -351,6 +359,7 @@ Currently we support the following types of Targets.
 - `keypoint_xy_label`: axis-wise keypoint representation
 - `heatmap+keypoint_label`: Gaussian heatmaps and keypoint representation
 - `multiscale_heatmap`: multi-scale Gaussian heatmaps
+- `lifting_target_label`: 3D lifting target keypoint representation
 
 and the generated targets will be packed as follows.
 
@@ -359,16 +368,18 @@ and the generated targets will be packed as follows.
 - `keypoint_x_labels`: keypoint x-axis representation
 - `keypoint_y_labels`: keypoint y-axis representation
 - `keypoint_weights`: keypoint visibility and weights
+- `lifting_target_label`: 3D lifting target representation
+- `lifting_target_weight`: 3D lifting target visibility and weights
 
-Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:
+Note that we unify the data format of top-down, pose-lifting and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
 ```
 
-- top-down: `[B, 1, K, D]`
+- top-down and pose-lifting: `[B, 1, K, D]`
 
-- Bottom-up: `[B, N, K, D]`
+- bottom-up: `[B, N, K, D]`
 
 The provided codecs are stored under [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs).
 
