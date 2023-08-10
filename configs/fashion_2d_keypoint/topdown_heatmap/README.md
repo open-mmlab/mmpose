@@ -25,18 +25,18 @@ Results on DeepFashion dataset with ResNet backbones:
 
 Results on DeepFashion2 dataset
 
-|              Model              | Input Size | PCK@0.2 |  AUC  | EPE  |                     Details and Download                     |
-| :-----------------------------: | :--------: | :-----: | :---: | :--: | :----------------------------------------------------------: |
-|  ResNet-50-Short-Sleeved-Shirt  |  256x192   |  0.988  | 0.703 | 10.2 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|  ResNet-50-Long-Sleeved-Shirt   |  256x192   |  0.973  | 0.587 | 16.6 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-| ResNet-50-Short-Sleeved-Outwear |  256x192   |  0.966  | 0.408 | 24.0 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-| ResNet-50-Long-Sleeved-Outwear  |  256x192   |  0.987  | 0.517 | 18.1 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|         ResNet-50-Vest          |  256x192   |  0.981  | 0.643 | 12.7 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|         ResNet-50-Sling         |  256x192   |  0.940  | 0.557 | 21.6 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|        ResNet-50-Shorts         |  256x192   |  0.975  | 0.682 | 12.4 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|       ResNet-50-Trousers        |  256x192   |  0.973  | 0.625 | 14.8 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|         ResNet-50-Skirt         |  256x192   |  0.952  | 0.653 | 16.6 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|  ResNet-50-Short-Sleeved-Dress  |  256x192   |  0.980  | 0.603 | 15.6 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|  ResNet-50-Long-Sleeved-Dress   |  256x192   |  0.976  | 0.518 | 20.1 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|      ResNet-50-Vest-Dress       |  256x192   |  0.980  | 0.600 | 16.0 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
-|      ResNet-50-Sling-Dress      |  256x192   |  0.967  | 0.544 | 19.5 | [res50_deepfashion.md](./deepfashion2/res50_deepfashion2.md) |
+|              Model              | Input Size | PCK@0.2 |  AUC  | EPE  |                     Details and Download                      |
+| :-----------------------------: | :--------: | :-----: | :---: | :--: | :-----------------------------------------------------------: |
+|  ResNet-50-Short-Sleeved-Shirt  |  256x192   |  0.988  | 0.703 | 10.2 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|  ResNet-50-Long-Sleeved-Shirt   |  256x192   |  0.973  | 0.587 | 16.6 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+| ResNet-50-Short-Sleeved-Outwear |  256x192   |  0.966  | 0.408 | 24.0 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+| ResNet-50-Long-Sleeved-Outwear  |  256x192   |  0.987  | 0.517 | 18.1 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|         ResNet-50-Vest          |  256x192   |  0.981  | 0.643 | 12.7 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|         ResNet-50-Sling         |  256x192   |  0.940  | 0.557 | 21.6 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|        ResNet-50-Shorts         |  256x192   |  0.975  | 0.682 | 12.4 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|       ResNet-50-Trousers        |  256x192   |  0.973  | 0.625 | 14.8 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|         ResNet-50-Skirt         |  256x192   |  0.952  | 0.653 | 16.6 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|  ResNet-50-Short-Sleeved-Dress  |  256x192   |  0.980  | 0.603 | 15.6 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|  ResNet-50-Long-Sleeved-Dress   |  256x192   |  0.976  | 0.518 | 20.1 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|      ResNet-50-Vest-Dress       |  256x192   |  0.980  | 0.600 | 16.0 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
+|      ResNet-50-Sling-Dress      |  256x192   |  0.967  | 0.544 | 19.5 | [res50_deepfashion2.md](./deepfashion2/res50_deepfashion2.md) |
