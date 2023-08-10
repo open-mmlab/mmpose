@@ -11,174 +11,47 @@ Collections:
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
   README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/udp.md
 Models:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w32_8xb64-210e_deepfashion_upper-256x192.py
-  In Collection: HRNet
-  Metadata:
-    Architecture: &id001
-    - HRNet
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w32_8xb64-210e_deepfashion_upper-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_upper-256x192.py
-  In Collection: HRNet, UDP
-  Metadata:
-    Architecture: &id002
-    - HRNet
-    - UDP
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_upper-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w32_8xb64-210e_deepfashion_lower-256x192.py
-  In Collection: HRNet
-  Metadata:
-    Architecture: *id001
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w32_8xb64-210e_deepfashion_lower-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_lower-256x192.py
-  In Collection: HRNet, UDP
-  Metadata:
-    Architecture: *id002
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_lower-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w32_8xb64-210e_deepfashion_full-256x192.py
-  In Collection: HRNet
-  Metadata:
-    Architecture: *id001
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w32_8xb64-210e_deepfashion_full-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_full-256x192.py
-  In Collection: HRNet, UDP
-  Metadata:
-    Architecture: *id002
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_full-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_8xb32-210e_deepfashion_upper-256x192.py
-  In Collection: HRNet
-  Metadata:
-    Architecture: *id001
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w48_8xb32-210e_deepfashion_upper-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_uppder-256x192.py
-  In Collection: HRNet, UDP
-  Metadata:
-    Architecture: *id002
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_uppder-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_8xb32-210e_deepfashion_lower-256x192.py
-  In Collection: HRNet
-  Metadata:
-    Architecture: *id001
-    Training Data: DeepFashion
-  Name: td-hm_hrnet-w48_8xb32-210e_deepfashion_lower-256x192
-  Results:
-  - Dataset: DeepFashion
-    Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
-    Task: Fashion 2D Keypoint
-  Weights:
 - Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192.py
   In Collection: HRNet, UDP
   Metadata:
-    Architecture: *id002
+    Architecture: &id001
+    - HRNet
+    - UDP
     Training Data: DeepFashion
   Name: td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192
   Results:
   - Dataset: DeepFashion
     Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
+      AUC: 76.1
+      EPE: 8.9
+      PCK@0.2: 97.8
     Task: Fashion 2D Keypoint
   Weights:
-- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_8xb32-210e_deepfashion_full-256x192.py
-  In Collection: HRNet
+- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_upper-256x192.py
+  In Collection: HRNet, UDP
   Metadata:
     Architecture: *id001
     Training Data: DeepFashion
-  Name: td-hm_hrnet-w48_8xb32-210e_deepfashion_full-256x192
+  Name: td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_upper-256x192
   Results:
   - Dataset: DeepFashion
     Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
+      AUC: 60.9
+      EPE: 15.1
+      PCK@0.2: 96.1
     Task: Fashion 2D Keypoint
   Weights:
 - Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192.py
   In Collection: HRNet, UDP
   Metadata:
-    Architecture: *id002
+    Architecture: *id001
     Training Data: DeepFashion
   Name: td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192
   Results:
   - Dataset: DeepFashion
     Metrics:
-      AUC:
-      EPE:
-      PCK@0.2:
+      AUC: 67.3
+      EPE: 11.7
+      PCK@0.2: 98.3
     Task: Fashion 2D Keypoint
   Weights:

@@ -68,17 +68,10 @@
 
 Results on DeepFashion val set
 
-| Set   |                                        Arch                                        | Input Size | PCK@0.2 | AUC | EPE |    ckpt    |    log    |
-| :---- | :--------------------------------------------------------------------------------: | :--------: | :-----: | :-: | :-: | :--------: | :-------: |
-| upper |     [pose_hrnet_w32](td-hm_hrnet-w32_8xb64-210e_deepfashion_upper-256x192.py)      |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| lower |     [pose_hrnet_w32](td-hm_hrnet-w32_8xb64-210e_deepfashion_lower-256x192.py)      |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| full  |      [pose_hrnet_w32](td-hm_hrnet-w32_8xb64-210e_deepfashion_full-256x192.py)      |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| upper | [pose_hrnet_w32_udp](td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_upper-256x192.py)  |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| lower | [pose_hrnet_w32_udp](td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_lower-256x192.py)  |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| full  |  [pose_hrnet_w32_udp](td-hm_hrnet-w32_udp_8xb64-210e_deepfashion_full-256x192.py)  |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| upper |     [pose_hrnet_w48](td-hm_hrnet-w48_8xb32-210e_deepfashion_upper-256x192.py)      |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| lower |     [pose_hrnet_w48](td-hm_hrnet-w48_8xb32-210e_deepfashion_lower-256x192.py)      |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| full  |      [pose_hrnet_w48](td-hm_hrnet-w48_8xb32-210e_deepfashion_full-256x192.py)      |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| upper | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_uppder-256x192.py) |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| lower | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192.py)  |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
-| full  |  [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192.py)  |  256x192   |         |     |     | [ckpt](<>) | [log](<>) |
+| Set   |                                        Arch                                        | Input Size | PCK@0.2 | AUC  | EPE  |    ckpt    |    log    |
+| :---- | :--------------------------------------------------------------------------------: | :--------: | :-----: | :--: | :--: | :--------: | :-------: |
+| upper | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_uppder-256x192.py) |  256x192   |  96.1   | 60.9 | 15.1 | [ckpt](<>) | [log](<>) |
+| lower | [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192.py)  |  256x192   |  97.8   | 76.1 | 8.9  | [ckpt](<>) | [log](<>) |
+| full  |  [pose_hrnet_w48_udp](td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192.py)  |  256x192   |  98.3   | 67.3 | 11.7 | [ckpt](<>) | [log](<>) |
+
+Note: Due to the time constraints, we have only trained resnet50 models. We warmly welcome any contributions if you can successfully reproduce the results from the paper!

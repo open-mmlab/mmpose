@@ -80,6 +80,7 @@ model = dict(
         type='HeatmapHead',
         in_channels=32,
         out_channels=8,
+        deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(

@@ -8,8 +8,7 @@ codec = dict(
     type='UDPHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
 
 model = dict(
-    test_cfg=dict(
-        flip_test=True, flip_mode='udp_combined', shift_heatmap=False))
+    test_cfg=dict(flip_test=True, flip_mode='heatmap', shift_heatmap=False))
 
 # pipelines
 train_pipeline = [
