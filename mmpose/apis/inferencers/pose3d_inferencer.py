@@ -112,9 +112,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         # helper functions
         self._keypoint_converter = partial(
             convert_keypoint_definition,
-            pose_det_dataset=self.pose2d_model.cfg.test_dataloader.
-            dataset['type'],
-            pose_lift_dataset=self.cfg.test_dataloader.dataset['type'],
+            pose_det_dataset=self.pose2d_model.model.
+            dataset_meta['dataset_name'],
+            pose_lift_dataset=self.model.dataset_meta['dataset_name'],
         )
 
         self._pose_seq_extractor = partial(
@@ -135,7 +135,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                                         np.ndarray] = [],
                           use_oks_tracking: bool = False,
                           tracking_thr: float = 0.3,
-                          norm_pose_2d: bool = False):
+                          disable_norm_pose_2d: bool = False):
         """Process a single input into a model-feedable format.
 
         Args:
@@ -152,8 +152,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 whether OKS-based tracking should be used. Defaults to False.
             tracking_thr (float, optional): The threshold for tracking.
                 Defaults to 0.3.
-            norm_pose_2d (bool, optional): A flag that indicates whether 2D
-                pose normalization should be used. Defaults to False.
+            disable_norm_pose_2d (bool, optional): A flag that indicates
+                whether 2D pose normalization should be used.
+                Defaults to False.
 
         Yields:
             Any: The data processed by the pipeline and collate_fn.
@@ -241,7 +242,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 keypoints = []
                 for k in range(len(kpts)):
                     kpt = kpts[k]
-                    if norm_pose_2d:
+                    if not disable_norm_pose_2d:
                         bbox = bboxes[k]
                         center = np.array([[(bbox[0] + bbox[2]) / 2,
                                             (bbox[1] + bbox[3]) / 2]])
@@ -503,6 +504,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
+                dataset_2d=self.pose2d_model.model.
+                dataset_meta['dataset_name'],
+                dataset_3d=self.model.dataset_meta['dataset_name'],
                 kpt_thr=kpt_thr,
                 num_instances=num_instances)
             results.append(visualization)

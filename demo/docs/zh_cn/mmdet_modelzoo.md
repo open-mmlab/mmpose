@@ -13,6 +13,7 @@ MMDetection 提供了基于 COCO 的包括 `person` 在内的 80 个类别的预
 | Arch                                                              | Box AP |                               ckpt                                |                               log                                |
 | :---------------------------------------------------------------- | :----: | :---------------------------------------------------------------: | :--------------------------------------------------------------: |
 | [Cascade_R-CNN X-101-64x4d-FPN-1class](/demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py) | 0.817  | [ckpt](https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth) | [log](https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k_20201030.log.json) |
+| [RTMDet-nano](/demo/mmdetection_cfg/rtmdet_nano_320-8xb32_hand.py) | 0.760  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth) |                                -                                 |
 
 ### 脸部 Bounding Box 检测模型
 

@@ -209,17 +209,19 @@ def flip_bbox(bbox: np.ndarray,
         if bbox_format == 'xywh' or bbox_format == 'center':
             bbox_flipped[..., 0] = w - bbox[..., 0] - 1
         elif bbox_format == 'xyxy':
-            bbox_flipped[..., ::2] = w - bbox[..., ::2] - 1
+            bbox_flipped[..., ::2] = w - bbox[..., -2::-2] - 1
     elif direction == 'vertical':
         if bbox_format == 'xywh' or bbox_format == 'center':
             bbox_flipped[..., 1] = h - bbox[..., 1] - 1
         elif bbox_format == 'xyxy':
-            bbox_flipped[..., 1::2] = h - bbox[..., 1::2] - 1
+            bbox_flipped[..., 1::2] = h - bbox[..., ::-2] - 1
     elif direction == 'diagonal':
         if bbox_format == 'xywh' or bbox_format == 'center':
             bbox_flipped[..., :2] = [w, h] - bbox[..., :2] - 1
         elif bbox_format == 'xyxy':
             bbox_flipped[...] = [w, h, w, h] - bbox - 1
+            bbox_flipped = np.concatenate(
+                (bbox_flipped[..., 2:], bbox_flipped[..., :2]), axis=-1)
 
     return bbox_flipped
 

@@ -106,7 +106,6 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth
 - Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py
   In Collection: RTMPose
-  Alias: human
   Metadata:
     Architecture: *id001
     Training Data: *id002

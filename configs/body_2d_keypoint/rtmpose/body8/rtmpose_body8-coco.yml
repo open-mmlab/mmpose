@@ -41,6 +41,10 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-body7_pt-body7_420e-256x192-acd4a1ef_20230504.pth
 - Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-m_8xb256-420e_body8-256x192.py
   In Collection: RTMPose
+  Alias:
+    - human
+    - body
+    - body17
   Metadata:
     Architecture: *id001
     Training Data: *id002

@@ -66,17 +66,17 @@ Example:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py \
-    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth \
+    demo/mmdetection_cfg/rtmdet_m_640-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth \
+    configs/body_2d_keypoint/rtmpose/body8/rtmpose-m_8xb256-420e_body8-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-256x192-e48f03d0_20230504.pth \
     --input tests/data/coco/000000197388.jpg --show --draw-heatmap \
     --output-root vis_results/
 ```
 
 Visualization result:
 
-<img src="https://user-images.githubusercontent.com/87690686/187824368-1f1631c3-52bf-4b45-bf9a-a70cd6551e1a.jpg" height="500px" alt><br>
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/f14e0129-1e5e-4d74-84fe-28cd62357211" height="500px" alt><br>
 
 To save the predicted results on disk, please specify `--save-predictions`.
 
@@ -90,10 +90,10 @@ Example:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py \
-    https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth \
+    demo/mmdetection_cfg/rtmdet_m_640-8xb32_coco-person.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth \
+    configs/body_2d_keypoint/rtmpose/body8/rtmpose-m_8xb256-420e_body8-256x192.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-256x192-e48f03d0_20230504.pth \
     --input tests/data/posetrack18/videos/000001_mpiinew_test/000001_mpiinew_test.mp4 \
     --output-root=vis_results/demo --show --draw-heatmap
 ```

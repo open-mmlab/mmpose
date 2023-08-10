@@ -1,14 +1,17 @@
 # 使用现有模型进行推理
 
-MMPose 为姿态估计提供了大量可以从 [模型库](https://mmpose.readthedocs.io/en/latest/model_zoo.html) 中找到的预测训练模型。本指南将演示**如何执行推理**，或使用训练过的模型对提供的图像或视频运行姿态估计。
+MMPose 为姿态估计提供了大量可以从 [模型库](https://mmpose.readthedocs.io/en/latest/model_zoo.html) 中找到的预测训练模型。
 
-有关在标准数据集上测试现有模型的说明，请参阅本指南。
+本指南将演示**如何执行推理**，或使用训练过的模型对提供的图像或视频运行姿态估计。
 
-在 MMPose，模型由配置文件定义，而其已计算好的参数存储在权重文件（checkpoint file）中。您可以在 [模型库](https://mmpose.readthedocs.io/en/latest/model_zoo.html) 中找到模型配置文件和相应的权重文件的 URL。我们建议从使用 HRNet 模型的[配置文件](https://github.com/open-mmlab/mmpose/blob/main/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py)和 [权重文件](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth) 开始。
+MMPose 提供了两种推理接口：
+
+1. 推理器：统一的推理接口
+2. 推理 API：用于更加灵活的自定义推理
 
 ## 推理器：统一的推理接口
 
-MMPose提供了一个被称为 [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 的、全面的推理 API。这个 API 使得用户得以使用所有 MMPose 支持的模型来对图像和视频进行模型推理。此外，该API可以完成推理结果自动化，并方便用户保存预测结果。
+MMPose 提供了一个被称为 [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 的、全面的推理 API。这个 API 使得用户得以使用所有 MMPose 支持的模型来对图像和视频进行模型推理。此外，该API可以完成推理结果自动化，并方便用户保存预测结果。
 
 ### 基本用法
 
@@ -251,9 +254,10 @@ MMPose 为常用模型提供了一组预定义的别名。在初始化 [MMPoseIn
 | 别名      | 配置文件名称                                       | 对应任务                        | 姿态估计模型  | 检测模型            |
 | --------- | -------------------------------------------------- | ------------------------------- | ------------- | ------------------- |
 | animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | Animal pose estimation          | RTMPose-m     | RTMDet-m            |
-| human     | rtmpose-m_8xb256-420e_aic-coco-256x192             | Human pose estimation           | RTMPose-m     | RTMDet-m            |
-| face      | rtmpose-m_8xb64-60e_wflw-256x256                   | Face keypoint detection         | RTMPose-m     | yolox-s             |
-| hand      | rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256   | Hand keypoint detection         | RTMPose-m     | ssdlite_mobilenetv2 |
+| human     | rtmpose-m_8xb256-420e_body8-256x192                | Human pose estimation           | RTMPose-m     | RTMDet-m            |
+| body26    | rtmpose-m_8xb512-700e_body8-halpe26-256x192        | Human pose estimation           | RTMPose-m     | RTMDet-m            |
+| face      | rtmpose-m_8xb256-120e_face6-256x256                | Face keypoint detection         | RTMPose-m     | yolox-s             |
+| hand      | rtmpose-m_8xb256-210e_hand5-256x256                | Hand keypoint detection         | RTMPose-m     | ssdlite_mobilenetv2 |
 | wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | Human wholebody pose estimation | RTMPose-m     | RTMDet-m            |
 | vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base  | RTMDet-m            |
 | vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-small | RTMDet-m            |
@@ -261,8 +265,171 @@ MMPose 为常用模型提供了一组预定义的别名。在初始化 [MMPoseIn
 | vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large | RTMDet-m            |
 | vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge  | RTMDet-m            |
 
+下表列出了可用的 3D 姿态估计模型别名及其对应的配置文件：
+
+| Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
+
 此外，用户可以使用命令行界面工具显示所有可用的别名，使用以下命令:
 
 ```shell
 python demo/inferencer_demo.py --show-alias
+```
+
+## 推理 API：用于更加灵活的自定义推理
+
+MMPose 提供了单独的 Python API 用于不同模型的推理，这种推理方式更加灵活，但是需要用户自己处理输入和输出，因此适合于**熟悉 MMPose** 的用户。
+
+MMPose 提供的 Python 推理接口存放于 [$MMPOSE/mmpose/apis](https://github.com/open-mmlab/mmpose/tree/dev-1.x/mmpose/apis) 目录下，以下是一个构建 topdown 模型并进行推理的示例：
+
+### 构建模型
+
+```python
+from mmcv.image import imread
+
+from mmpose.apis import inference_topdown, init_model
+from mmpose.registry import VISUALIZERS
+from mmpose.structures import merge_data_samples
+
+model_cfg = 'configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-256x192.py'
+
+ckpt = 'https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-256x192-4d3e73dd_20230605.pth'
+
+device = 'cuda'
+
+# 使用初始化接口构建模型
+model = init_model(model_cfg, ckpt, device=device)
+```
+
+### 推理
+
+```python
+img_path = 'tests/data/coco/000000000785.jpg'
+
+# 单张图片推理
+batch_results = inference_topdown(model, img_path)
+```
+
+推理接口返回的结果是一个 PoseDataSample 列表，每个 PoseDataSample 对应一张图片的推理结果。PoseDataSample 的结构如下所示：
+
+```python
+[
+    <PoseDataSample(
+
+        ori_shape: (425, 640)
+        img_path: 'tests/data/coco/000000000785.jpg'
+        input_size: (192, 256)
+        flip_indices: [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
+        img_shape: (425, 640)
+
+        gt_instances: <InstanceData(
+                bboxes: array([[  0.,   0., 640., 425.]], dtype=float32)
+                bbox_centers: array([[320. , 212.5]], dtype=float32)
+                bbox_scales: array([[ 800.    , 1066.6666]], dtype=float32)
+                bbox_scores: array([1.], dtype=float32)
+            )>
+
+        gt_instance_labels: <InstanceData()>
+
+        pred_instances: <InstanceData(
+                keypoints: array([[[365.83333333,  87.50000477],
+                            [372.08333333,  79.16667175],
+                            [361.66666667,  81.25000501],
+                            [384.58333333,  85.41667151],
+                            [357.5       ,  85.41667151],
+                            [407.5       , 112.50000381],
+                            [363.75      , 125.00000334],
+                            [438.75      , 150.00000238],
+                            [347.08333333, 158.3333354 ],
+                            [451.25      , 170.83333492],
+                            [305.41666667, 177.08333468],
+                            [432.5       , 214.58333325],
+                            [401.25      , 218.74999976],
+                            [430.41666667, 285.41666389],
+                            [370.        , 274.99999762],
+                            [470.        , 356.24999452],
+                            [403.33333333, 343.74999499]]])
+                bbox_scores: array([1.], dtype=float32)
+                bboxes: array([[  0.,   0., 640., 425.]], dtype=float32)
+                keypoint_scores: array([[0.8720184 , 0.9068178 , 0.89255375, 0.94684595, 0.83111566,
+                            0.9929208 , 1.0862956 , 0.9265839 , 0.9781244 , 0.9008082 ,
+                            0.9043166 , 1.0150217 , 1.1122335 , 1.0207931 , 1.0099326 ,
+                            1.0480015 , 1.0897669 ]], dtype=float32)
+                keypoints_visible: array([[0.8720184 , 0.9068178 , 0.89255375, 0.94684595, 0.83111566,
+                            0.9929208 , 1.0862956 , 0.9265839 , 0.9781244 , 0.9008082 ,
+                            0.9043166 , 1.0150217 , 1.1122335 , 1.0207931 , 1.0099326 ,
+                            1.0480015 , 1.0897669 ]], dtype=float32)
+            )>
+    )>
+]
+```
+
+用户可以通过 `.` 来访问 PoseDataSample 中的数据，例如：
+
+```python
+pred_instances = batch_results[0].pred_instances
+
+pred_instances.keypoints
+# array([[[365.83333333,  87.50000477],
+#         [372.08333333,  79.16667175],
+#         [361.66666667,  81.25000501],
+#         [384.58333333,  85.41667151],
+#         [357.5       ,  85.41667151],
+#         [407.5       , 112.50000381],
+#         [363.75      , 125.00000334],
+#         [438.75      , 150.00000238],
+#         [347.08333333, 158.3333354 ],
+#         [451.25      , 170.83333492],
+#         [305.41666667, 177.08333468],
+#         [432.5       , 214.58333325],
+#         [401.25      , 218.74999976],
+#         [430.41666667, 285.41666389],
+#         [370.        , 274.99999762],
+#         [470.        , 356.24999452],
+#         [403.33333333, 343.74999499]]])
+```
+
+### 可视化
+
+在 MMPose 中，大部分可视化基于可视化器实现。可视化器是一个类，它接受数据样本并将其可视化。MMPose 提供了一个可视化器注册表，用户可以使用 `VISUALIZERS` 来实例化它。以下是一个使用可视化器可视化推理结果的示例：
+
+```python
+# 将推理结果打包
+results = merge_data_samples(batch_results)
+
+# 初始化可视化器
+visualizer = VISUALIZERS.build(model.cfg.visualizer)
+
+# 设置数据集元信息
+visualizer.set_dataset_meta(model.dataset_meta)
+
+img = imread(img_path, channel_order='rgb')
+
+# 可视化
+visualizer.add_datasample(
+    'result',
+    img,
+    data_sample=results,
+    show=True)
+```
+
+MMPose 也提供了更简洁的可视化接口：
+
+```python
+from mmpose.apis import visualize
+
+pred_instances = batch_results[0].pred_instances
+
+keypoints = pred_instances.keypoints
+keypoint_scores = pred_instances.keypoint_scores
+
+metainfo = 'config/_base_/datasets/coco.py'
+
+visualize(
+    img_path,
+    keypoints,
+    keypoint_scores,
+    metainfo=metainfo,
+    show=True)
 ```

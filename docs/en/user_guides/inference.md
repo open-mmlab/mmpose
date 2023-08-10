@@ -5,7 +5,10 @@ This guide will demonstrate **how to perform inference**, or running pose estima
 
 For instructions on testing existing models on standard datasets, refer to this [guide](./train_and_test.md#test).
 
-In MMPose, a model is defined by a configuration file, while its pre-existing parameters are stored in a checkpoint file. You can find the model configuration files and corresponding checkpoint URLs in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html). We recommend starting with the HRNet model, using [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth).
+In MMPose, we provide two ways to perform inference:
+
+1. Inferencer: a Unified Inference Interface
+2. Python API: more flexible and customizable
 
 ## Inferencer: a Unified Inference Interface
 
@@ -263,9 +266,10 @@ The MMPose library has predefined aliases for several frequently used models. Th
 | Alias     | Configuration Name                                 | Task                            | Pose Estimator | Detector            |
 | --------- | -------------------------------------------------- | ------------------------------- | -------------- | ------------------- |
 | animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | Animal pose estimation          | RTMPose-m      | RTMDet-m            |
-| human     | rtmpose-m_8xb256-420e_aic-coco-256x192             | Human pose estimation           | RTMPose-m      | RTMDet-m            |
-| face      | rtmpose-m_8xb64-60e_wflw-256x256                   | Face keypoint detection         | RTMPose-m      | yolox-s             |
-| hand      | rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256   | Hand keypoint detection         | RTMPose-m      | ssdlite_mobilenetv2 |
+| human     | rtmpose-m_8xb256-420e_body8-256x192                | Human pose estimation           | RTMPose-m      | RTMDet-m            |
+| body26    | rtmpose-m_8xb512-700e_body8-halpe26-256x192        | Human pose estimation           | RTMPose-m      | RTMDet-m            |
+| face      | rtmpose-m_8xb256-120e_face6-256x256                | Face keypoint detection         | RTMPose-m      | yolox-s             |
+| hand      | rtmpose-m_8xb256-210e_hand5-256x256                | Hand keypoint detection         | RTMPose-m      | ssdlite_mobilenetv2 |
 | wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | Human wholebody pose estimation | RTMPose-m      | RTMDet-m            |
 | vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base   | RTMDet-m            |
 | vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-small  | RTMDet-m            |
@@ -275,12 +279,171 @@ The MMPose library has predefined aliases for several frequently used models. Th
 
 The following table lists the available 3D model aliases and their corresponding configuration names:
 
-| Alias   | Configuration Name                                        | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
-| ------- | --------------------------------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
-| human3d | pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
+| Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 
 ```shell
 python demo/inferencer_demo.py --show-alias
+```
+
+## Python API: more flexible and customizable
+
+MMPose provides a separate Python API for inference, which is more flexible but requires users to handle inputs and outputs themselves. Therefore, this API is suitable for users who are **familiar with MMPose**.
+
+The Python inference interface provided by MMPose is located in [$MMPOSE/mmpose/apis](https://github.com/open-mmlab/mmpose/tree/dev-1.x/mmpose/apis) directory. Here is an example of building a topdown model and performing inference:
+
+### Build a model
+
+```python
+from mmcv.image import imread
+
+from mmpose.apis import inference_topdown, init_model
+from mmpose.registry import VISUALIZERS
+from mmpose.structures import merge_data_samples
+
+model_cfg = 'configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-256x192.py'
+
+ckpt = 'https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7-halpe26_700e-256x192-4d3e73dd_20230605.pth'
+
+device = 'cuda'
+
+# init model
+model = init_model(model_cfg, ckpt, device=device)
+```
+
+### Inference
+
+```python
+img_path = 'tests/data/coco/000000000785.jpg'
+
+# inference on a single image
+batch_results = inference_topdown(model, img_path)
+```
+
+The inference interface returns a list of PoseDataSample, each of which corresponds to the inference result of an image. The structure of PoseDataSample is as follows:
+
+```python
+[
+    <PoseDataSample(
+
+        ori_shape: (425, 640)
+        img_path: 'tests/data/coco/000000000785.jpg'
+        input_size: (192, 256)
+        flip_indices: [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
+        img_shape: (425, 640)
+
+        gt_instances: <InstanceData(
+                bboxes: array([[  0.,   0., 640., 425.]], dtype=float32)
+                bbox_centers: array([[320. , 212.5]], dtype=float32)
+                bbox_scales: array([[ 800.    , 1066.6666]], dtype=float32)
+                bbox_scores: array([1.], dtype=float32)
+            )>
+
+        gt_instance_labels: <InstanceData()>
+
+        pred_instances: <InstanceData(
+                keypoints: array([[[365.83333333,  87.50000477],
+                            [372.08333333,  79.16667175],
+                            [361.66666667,  81.25000501],
+                            [384.58333333,  85.41667151],
+                            [357.5       ,  85.41667151],
+                            [407.5       , 112.50000381],
+                            [363.75      , 125.00000334],
+                            [438.75      , 150.00000238],
+                            [347.08333333, 158.3333354 ],
+                            [451.25      , 170.83333492],
+                            [305.41666667, 177.08333468],
+                            [432.5       , 214.58333325],
+                            [401.25      , 218.74999976],
+                            [430.41666667, 285.41666389],
+                            [370.        , 274.99999762],
+                            [470.        , 356.24999452],
+                            [403.33333333, 343.74999499]]])
+                bbox_scores: array([1.], dtype=float32)
+                bboxes: array([[  0.,   0., 640., 425.]], dtype=float32)
+                keypoint_scores: array([[0.8720184 , 0.9068178 , 0.89255375, 0.94684595, 0.83111566,
+                            0.9929208 , 1.0862956 , 0.9265839 , 0.9781244 , 0.9008082 ,
+                            0.9043166 , 1.0150217 , 1.1122335 , 1.0207931 , 1.0099326 ,
+                            1.0480015 , 1.0897669 ]], dtype=float32)
+                keypoints_visible: array([[0.8720184 , 0.9068178 , 0.89255375, 0.94684595, 0.83111566,
+                            0.9929208 , 1.0862956 , 0.9265839 , 0.9781244 , 0.9008082 ,
+                            0.9043166 , 1.0150217 , 1.1122335 , 1.0207931 , 1.0099326 ,
+                            1.0480015 , 1.0897669 ]], dtype=float32)
+            )>
+    )>
+]
+```
+
+You can obtain the predicted keypoints via `.`:
+
+```python
+pred_instances = batch_results[0].pred_instances
+
+pred_instances.keypoints
+# array([[[365.83333333,  87.50000477],
+#         [372.08333333,  79.16667175],
+#         [361.66666667,  81.25000501],
+#         [384.58333333,  85.41667151],
+#         [357.5       ,  85.41667151],
+#         [407.5       , 112.50000381],
+#         [363.75      , 125.00000334],
+#         [438.75      , 150.00000238],
+#         [347.08333333, 158.3333354 ],
+#         [451.25      , 170.83333492],
+#         [305.41666667, 177.08333468],
+#         [432.5       , 214.58333325],
+#         [401.25      , 218.74999976],
+#         [430.41666667, 285.41666389],
+#         [370.        , 274.99999762],
+#         [470.        , 356.24999452],
+#         [403.33333333, 343.74999499]]])
+```
+
+### Visualization
+
+In MMPose, most visualizations are implemented based on visualizers. A visualizer is a class that takes a data sample and visualizes it.
+
+MMPose provides a visualizer registry, which users can instantiate using `VISUALIZERS`. Here is an example of using a visualizer to visualize the inference results:
+
+```python
+# merge results as a single data sample
+results = merge_data_samples(batch_results)
+
+# build the visualizer
+visualizer = VISUALIZERS.build(model.cfg.visualizer)
+
+# set skeleton, colormap and joint connection rule
+visualizer.set_dataset_meta(model.dataset_meta)
+
+img = imread(img_path, channel_order='rgb')
+
+# visualize the results
+visualizer.add_datasample(
+    'result',
+    img,
+    data_sample=results,
+    show=True)
+```
+
+MMPose also provides a simpler interface for visualization:
+
+```python
+from mmpose.apis import visualize
+
+pred_instances = batch_results[0].pred_instances
+
+keypoints = pred_instances.keypoints
+keypoint_scores = pred_instances.keypoint_scores
+
+metainfo = 'config/_base_/datasets/coco.py'
+
+visualize(
+    img_path,
+    keypoints,
+    keypoint_scores,
+    metainfo=metainfo,
+    show=True)
 ```

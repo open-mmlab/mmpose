@@ -396,3 +396,81 @@ For example,
 ```shell
 python tools/dataset_converters/labelstudio2coco.py config.xml project-1-at-2023-05-13-09-22-91b53efa.json output/result.json
 ```
+
+## UBody2D
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2303.16160">UBody (CVPR'2023)</a></summary>
+
+```bibtex
+@article{lin2023one,
+  title={One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer},
+  author={Lin, Jing and Zeng, Ailing and Wang, Haoqian and Zhang, Lei and Li, Yu},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2023},
+}
+```
+
+</details>
+
+For [Ubody](https://github.com/IDEA-Research/OSX) dataset, videos and annotations can be downloaded from [OSX homepage](https://github.com/IDEA-Research/OSX).
+
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── UBody
+        ├── annotations
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+        ├── splits
+        │   ├── inter_scene_test_list.npy
+        │   └── intra_scene_test_list.npy
+        ├── videos
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+```
+
+We provide a script to convert vidoes to images and split annotations to train/val sets. It can be used by running the following command:
+
+```shell
+python tools/dataset_converters/ubody_kpts_to_coco.py --data-root ${UBODY_DATA_ROOT}
+```
+
+For example,
+
+```shell
+python tools/dataset_converters/ubody_kpts_to_coco.py --data-root data/UBody
+```
