@@ -125,3 +125,5 @@ Import:
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/vipnas_dark_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/cspnext_udp_coco-wholebody.yml
 - configs/fashion_2d_keypoint/topdown_heatmap/deepfashion2/res50_deepfasion2.yml
+- configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/hrnet_deepfashion.yml
+- configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/resnet_deepfashion.yml
