@@ -295,11 +295,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             # it is useful for evaluation without providing ann_file
             'raw_ann_info': copy.deepcopy(ann),
         }
-        for key, val in data_info.items():
-            if isinstance(val, np.ndarray):
-                print(key, val.shape)
-            else:
-                print(key, val)
 
         return data_info
 
