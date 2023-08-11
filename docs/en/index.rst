@@ -25,6 +25,8 @@ You can change the documentation language at the lower-left corner of the page.
    user_guides/prepare_datasets.md
    user_guides/train_and_test.md
    user_guides/how_to_deploy.md
+   user_guides/model_analysis.md
+   user_guides/dataset_tools.md
 
 .. toctree::
    :maxdepth: 1
@@ -37,7 +39,6 @@ You can change the documentation language at the lower-left corner of the page.
    advanced_guides/customize_transforms.md
    advanced_guides/customize_optimizer.md
    advanced_guides/customize_logging.md
-   advanced_guides/model_analysis.md
 
 .. toctree::
    :maxdepth: 1
@@ -79,7 +80,6 @@ You can change the documentation language at the lower-left corner of the page.
    dataset_zoo/2d_animal_keypoint.md
    dataset_zoo/3d_body_keypoint.md
    dataset_zoo/3d_hand_keypoint.md
-   dataset_zoo/dataset_tools.md
 
 .. toctree::
    :maxdepth: 1
