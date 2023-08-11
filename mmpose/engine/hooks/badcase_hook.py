@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
+import logging
 import os
 import warnings
 from typing import Dict, Optional, Sequence
@@ -10,6 +11,7 @@ import mmengine.fileio as fileio
 import torch
 from mmengine.config import ConfigDict
 from mmengine.hooks import Hook
+from mmengine.logging import print_log
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
 
@@ -138,7 +140,7 @@ class BadCaseAnalysisHook(Hook):
             data_batch (dict): Data from dataloader.
             outputs (Sequence[:obj:`PoseDataSample`]): Outputs from model.
         """
-        if self.enable is False:
+        if not self.enable:
             return
 
         if self.out_dir is not None:
@@ -223,6 +225,15 @@ class BadCaseAnalysisHook(Hook):
                 metrics on test dataset. The keys are the names of the
                 metrics, and the values are corresponding results.
         """
+        if not self.enable or not self.results:
+            return
+
+        mmengine.mkdir_or_exist(self.out_dir)
         out_file = os.path.join(self.out_dir, 'results.json')
         with open(out_file, 'w') as f:
             json.dump(self.results, f)
+
+        print_log(
+            f'the bad cases are saved under {self.out_dir}',
+            logger='current',
+            level=logging.INFO)
