@@ -128,7 +128,9 @@ class PackPoseInputs(BaseTransform):
         'keypoint_y_labels': 'keypoint_y_labels',
         'keypoint_weights': 'keypoint_weights',
         'instance_coords': 'instance_coords',
-        'keypoints_visible_weights': 'keypoints_visible_weights'
+        'keypoints_visible_weights': 'keypoints_visible_weights',
+        'data_infos': 'data_infos',
+        'data_infos_valid': 'data_infos_valid'
     }
 
     # items in `field_mapping_table` will be packed into

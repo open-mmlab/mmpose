@@ -1,0 +1,163 @@
+# Copyright (c) OpenMMLab. All rights reserved.
+from typing import Optional, Tuple
+
+import numpy as np
+
+from mmpose.registry import KEYPOINT_CODECS
+from .base import BaseKeypointCodec
+from .utils.gaussian_heatmap import generate_3d_gaussian_heatmaps
+from .utils.post_processing import get_heatmap_3d_maximum
+
+
+@KEYPOINT_CODECS.register_module()
+class Hand3DHeatmap(BaseKeypointCodec):
+    r"""Generate target 3d heatmap and relative root depth for hand datasets.
+
+    Note:
+
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: D
+
+    Args:
+        image_size (tuple): Size of image. Default: ``[256, 256]``.
+        heatmap_size (tuple): Size of heatmap. Default: ``[64, 64, 64]``.
+        heatmap3d_depth_bound (float): Boundary for 3d heatmap depth.
+            Default: 400.0.
+        heatmap_size_root (int): Size of 3d heatmap root. Default: 64.
+        root_depth_bound (float): Boundary for 3d heatmap root depth.
+            Default: 400.0.
+        use_different_joint_weights (bool): Whether to use different joint
+            weights. Default: ``False``.
+        sigma (int): Sigma of heatmap gaussian. Default: 2.
+        joint_indices (list, optional): Indices of joints used for heatmap
+            generation. If None (default) is given, all joints will be used.
+            Default: ``None``.
+        max_bound (float): The maximal value of heatmap. Default: 1.0.
+    """
+
+    auxiliary_encode_keys = {
+        'dataset_keypoint_weights', 'rel_root_depth', 'rel_root_valid',
+        'hand_type', 'hand_type_valid'
+    }
+
+    def __init__(self,
+                 image_size: Tuple[int, int] = [256, 256],
+                 heatmap_size: Tuple[int, int, int] = [64, 64, 64],
+                 heatmap3d_depth_bound: float = 400.0,
+                 heatmap_size_root: int = 64,
+                 root_depth_bound: float = 400.0,
+                 use_different_joint_weights: bool = False,
+                 sigma: int = 2,
+                 joint_indices: Optional[list] = None,
+                 max_bound: float = 1.0):
+        super().__init__()
+
+        self.image_size = np.array(image_size)
+        self.heatmap_size = np.array(heatmap_size)
+        self.heatmap3d_depth_bound = heatmap3d_depth_bound
+        self.heatmap_size_root = heatmap_size_root
+        self.root_depth_bound = root_depth_bound
+        self.use_different_joint_weights = use_different_joint_weights
+
+        self.sigma = sigma
+        self.joint_indices = joint_indices
+        self.max_bound = max_bound
+        self.scale_factor = (np.array(image_size) /
+                             heatmap_size[:-1]).astype(np.float32)
+
+    def encode(self,
+               keypoints: np.ndarray,
+               keypoints_visible: Optional[np.ndarray] = None,
+               dataset_keypoint_weights: Optional[np.ndarray] = None,
+               rel_root_depth: np.float32 = 0.,
+               rel_root_valid: np.float32 = 1.,
+               hand_type: np.ndarray = np.array([1, 0]),
+               hand_type_valid: int = 1) -> dict:
+        """Encoding keypoints from input image space to input image space.
+
+        Args:
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D).
+            keypoints_visible (np.ndarray, optional): Keypoint visibilities in
+                shape (N, K).
+            dataset_keypoint_weights (np.ndarray, optional): Keypoints weight
+                in shape (K, ).
+            rel_root_depth (np.float32): Relative root depth.
+            rel_root_valid (float): Validity of relative root depth.
+            hand_type (np.ndarray): Type of hand encoded as a array.
+            hand_type_valid: Validity of hand type.
+
+        Returns:
+            encoded (dict): Contains the following items:
+
+                - heatmaps (np.ndarray): The generated heatmap in shape
+                  (K, D, H, W) where [W, H, D] is the `heatmap_size`
+                - keypoint_weights (np.ndarray): The target weights in shape
+                  (N, K)
+                - data_infos (list): Other data information for computing
+                  losses
+                - data_infos_valid (list): Validity of corresponding data
+                  information
+        """
+        if keypoints_visible is None:
+            keypoints_visible = np.ones(keypoints.shape[:-1], dtype=np.float32)
+
+        if self.use_different_joint_weights:
+            assert dataset_keypoint_weights is not None, 'To use different ' \
+                'joint weights,`dataset_keypoint_weights` cannot be None.'
+
+        heatmaps, keypoint_weights = generate_3d_gaussian_heatmaps(
+            heatmap_size=self.heatmap_size,
+            keypoints=keypoints,
+            keypoints_visible=keypoints_visible,
+            sigma=self.sigma,
+            image_size=self.image_size,
+            heatmap3d_depth_bound=self.heatmap3d_depth_bound,
+            joint_indices=self.joint_indices,
+            max_bound=self.max_bound,
+            use_different_joint_weights=self.use_different_joint_weights,
+            dataset_keypoint_weights=dataset_keypoint_weights)
+
+        rel_root_depth = (rel_root_depth / self.root_depth_bound +
+                          0.5) * self.heatmap_size_root
+        rel_root_valid = rel_root_valid * (rel_root_depth >= 0) * (
+            rel_root_depth <= self.heatmap_size_root)
+
+        data_infos = [rel_root_depth * np.ones(1, dtype=np.float32), hand_type]
+        data_infos_valid = [
+            rel_root_valid * np.ones(1, dtype=np.float32), hand_type_valid
+        ]
+
+        encoded = dict(
+            heatmaps=heatmaps,
+            keypoint_weights=keypoint_weights,
+            data_infos=data_infos,
+            data_infos_valid=data_infos_valid)
+        return encoded
+
+    def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Decode keypoint coordinates from heatmaps. The decoded keypoint
+        coordinates are in the input image space.
+
+        Args:
+            encoded (np.ndarray): Heatmaps in shape (K, D, H, W)
+
+        Returns:
+            tuple:
+            - keypoints (np.ndarray): Decoded keypoint coordinates in shape
+                (N, K, D)
+            - scores (np.ndarray): The keypoint scores in shape (N, K). It
+                usually represents the confidence of the keypoint prediction
+        """
+        heatmap3d = encoded.copy()
+        K, D, H, W = heatmap3d.shape
+
+        keypoints, scores = get_heatmap_3d_maximum(heatmap3d)
+
+        # Unsqueeze the instance dimension for single-instance results
+        keypoints, scores = keypoints[None], scores[None]
+
+        # Restore the keypoint scale
+        keypoints[..., :2] = keypoints[..., :2] * self.scale_factor
+
+        return keypoints, scores

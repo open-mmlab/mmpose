@@ -7,6 +7,7 @@ from .common_transforms import (Albumentation, GenerateTarget,
                                 RandomHalfBody)
 from .converting import KeypointConverter
 from .formatting import PackPoseInputs
+from .hand_transforms import HandRandomFlip
 from .loading import LoadImage
 from .pose3d_transforms import RandomFlipAroundRoot
 from .topdown_transforms import TopdownAffine
@@ -16,5 +17,6 @@ __all__ = [
     'RandomHalfBody', 'TopdownAffine', 'Albumentation',
     'PhotometricDistortion', 'PackPoseInputs', 'LoadImage',
     'BottomupGetHeatmapMask', 'BottomupRandomAffine', 'BottomupResize',
-    'GenerateTarget', 'KeypointConverter', 'RandomFlipAroundRoot'
+    'GenerateTarget', 'KeypointConverter', 'RandomFlipAroundRoot',
+    'HandRandomFlip'
 ]
