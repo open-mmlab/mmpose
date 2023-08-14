@@ -130,43 +130,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 0.x / 1.x Migration
 
-MMPose v1.0.0 is a major update, including many API and config file changes. Currently, a part of the algorithms have been migrated to v1.0.0, and the remaining algorithms will be completed in subsequent versions. We will show the migration progress in the following list.
-
-<details close>
-<summary><b>Migration Progress</b></summary>
-
-| Algorithm                         |   Status    |
-| :-------------------------------- | :---------: |
-| MTUT (CVPR 2019)                  |             |
-| MSPN (ArXiv 2019)                 |    done     |
-| InterNet (ECCV 2020)              |             |
-| DEKR (CVPR 2021)                  |    done     |
-| HigherHRNet (CVPR 2020)           |             |
-| DeepPose (CVPR 2014)              |    done     |
-| RLE (ICCV 2021)                   |    done     |
-| SoftWingloss (TIP 2021)           |    done     |
-| VideoPose3D (CVPR 2019)           |    done     |
-| Hourglass (ECCV 2016)             |    done     |
-| LiteHRNet (CVPR 2021)             |    done     |
-| AdaptiveWingloss (ICCV 2019)      |    done     |
-| SimpleBaseline2D (ECCV 2018)      |    done     |
-| PoseWarper (NeurIPS 2019)         |             |
-| SimpleBaseline3D (ICCV 2017)      |    done     |
-| HMR (CVPR 2018)                   |             |
-| UDP (CVPR 2020)                   |    done     |
-| VIPNAS (CVPR 2021)                |    done     |
-| Wingloss (CVPR 2018)              |    done     |
-| DarkPose (CVPR 2020)              |    done     |
-| Associative Embedding (NIPS 2017) | in progress |
-| VoxelPose (ECCV 2020)             |             |
-| RSN (ECCV 2020)                   |    done     |
-| CID (CVPR 2022)                   |    done     |
-| CPM (CVPR 2016)                   |    done     |
-| HRNet (CVPR 2019)                 |    done     |
-| HRNetv2 (TPAMI 2019)              |    done     |
-| SCNet (CVPR 2020)                 |    done     |
-
-</details>
+MMPose v1.0.0 is a major update, including many API and config file changes. Currently, a part of the algorithms have been migrated to v1.0.0, and the remaining algorithms will be completed in subsequent versions. We will show the migration progress in this [Roadmap](https://github.com/open-mmlab/mmpose/issues/2258).
 
 If your algorithm has not been migrated, you can continue to use the [0.x branch](https://github.com/open-mmlab/mmpose/tree/0.x) and [old documentation](https://mmpose.readthedocs.io/en/0.x/).
 
@@ -186,6 +150,9 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
    - [Configs](https://mmpose.readthedocs.io/en/latest/user_guides/configs.html)
    - [Prepare Datasets](https://mmpose.readthedocs.io/en/latest/user_guides/prepare_datasets.html)
    - [Train and Test](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html)
+   - [Deployment](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/how_to_deploy.html)
+   - [Model Analysis](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/model_analysis.html)
+   - [Dataset Annotation and Preprocessing](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/dataset_tools.html)
 
 2. For developers who wish to develop based on MMPose:
 

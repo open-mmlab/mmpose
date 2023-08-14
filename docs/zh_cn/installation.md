@@ -72,7 +72,7 @@ mim install "mmdet>=3.1.0"
 - mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
 - mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
 
-如果遇到版本不兼容的问题，请使用 `pip list | grep mm` 检查对应关系后，升级或降级相关依赖。
+如果遇到版本不兼容的问题，请使用 `pip list | grep mm` 检查对应关系后，升级或降级相关依赖。注意，`mmcv-full` 只对应旧版本 `mmcv 1.x`，所以请先卸载它后，再通过 `mim install mmcv` 来安装 `mmcv 2.x`。
 ```
 
 ## 最佳实践
