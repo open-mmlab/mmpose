@@ -43,8 +43,8 @@ MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs�
    - [配置文件](./user_guides/configs.md)
    - [准备数据集](./user_guides/prepare_datasets.md)
    - [训练与测试](./user_guides/train_and_test.md)
-   - [模型部署](./advanced_guides/how_to_deploy.md)
-   - [模型分析工具](./advanced_guides/model_analysis.md)
+   - [模型部署](./user_guides/how_to_deploy.md)
+   - [模型分析工具](./user_guides/model_analysis.md)
    - [数据集标注与预处理脚本](./user_guides/dataset_tools.md)
 
 3. 对于希望基于 MMPose 进行开发的研究者和开发者：

@@ -74,7 +74,7 @@ Here are the version correspondences between mmdet, mmpose and mmcv:
 - mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
 - mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
 
-If you encounter version incompatibility issues, please check the correspondence using `pip list | grep mm` and upgrade or downgrade the dependencies accordingly.
+If you encounter version incompatibility issues, please check the correspondence using `pip list | grep mm` and upgrade or downgrade the dependencies accordingly. Please note that `mmcv-full` is only for `mmcv 1.x`, so please uninstall it first, and then use `mim install mmcv` to install `mmcv 2.x`.
 ```
 
 ## Best Practices
