@@ -278,7 +278,7 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             'keypoints': joints_3d,
             'keypoints_visible': joints_3d_visible,
             'hand_type': self.encode_handtype(ann['hand_type']),
-            'hand_type_valid': ann['hand_type_valid'],
+            'hand_type_valid': np.array([ann['hand_type_valid']]),
             'rel_root_depth': rel_root_depth,
             'rel_root_valid': rel_root_valid,
             'abs_depth': abs_depth,

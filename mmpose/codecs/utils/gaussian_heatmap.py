@@ -42,7 +42,7 @@ def generate_3d_gaussian_heatmaps(
     Returns:
         tuple:
         - heatmaps (np.ndarray): The generated heatmap in shape
-            (K, D, H, W) where [W, H] is the `heatmap_size`
+            (K * D, H, W) where [W, H, D] is the `heatmap_size`
         - keypoint_weights (np.ndarray): The target weights in shape
             (N, K)
     """
@@ -111,7 +111,7 @@ def generate_3d_gaussian_heatmaps(
             heatmaps[idx[:, 0], idx[:, 1], idx[:, 2], idx[:, 3]],
             gaussian.reshape(-1))
 
-    heatmaps = heatmaps * max_bound
+    heatmaps = (heatmaps * max_bound).reshape(-1, H, W)
 
     return heatmaps, keypoint_weights
 

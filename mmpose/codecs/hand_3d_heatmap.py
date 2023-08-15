@@ -21,6 +21,8 @@ class Hand3DHeatmap(BaseKeypointCodec):
 
     Args:
         image_size (tuple): Size of image. Default: ``[256, 256]``.
+        root_heatmap_size (int): Size of heatmap of root head.
+            Default: 64.
         heatmap_size (tuple): Size of heatmap. Default: ``[64, 64, 64]``.
         heatmap3d_depth_bound (float): Boundary for 3d heatmap depth.
             Default: 400.0.
@@ -43,6 +45,7 @@ class Hand3DHeatmap(BaseKeypointCodec):
 
     def __init__(self,
                  image_size: Tuple[int, int] = [256, 256],
+                 root_heatmap_size: int = 64,
                  heatmap_size: Tuple[int, int, int] = [64, 64, 64],
                  heatmap3d_depth_bound: float = 400.0,
                  heatmap_size_root: int = 64,
@@ -54,6 +57,7 @@ class Hand3DHeatmap(BaseKeypointCodec):
         super().__init__()
 
         self.image_size = np.array(image_size)
+        self.root_heatmap_size = root_heatmap_size
         self.heatmap_size = np.array(heatmap_size)
         self.heatmap3d_depth_bound = heatmap3d_depth_bound
         self.heatmap_size_root = heatmap_size_root
@@ -66,14 +70,16 @@ class Hand3DHeatmap(BaseKeypointCodec):
         self.scale_factor = (np.array(image_size) /
                              heatmap_size[:-1]).astype(np.float32)
 
-    def encode(self,
-               keypoints: np.ndarray,
-               keypoints_visible: Optional[np.ndarray] = None,
-               dataset_keypoint_weights: Optional[np.ndarray] = None,
-               rel_root_depth: np.float32 = 0.,
-               rel_root_valid: np.float32 = 1.,
-               hand_type: np.ndarray = np.array([1, 0]),
-               hand_type_valid: int = 1) -> dict:
+    def encode(
+        self,
+        keypoints: np.ndarray,
+        keypoints_visible: Optional[np.ndarray] = None,
+        dataset_keypoint_weights: Optional[np.ndarray] = None,
+        rel_root_depth: np.float32 = 0.,
+        rel_root_valid: np.float32 = 1.,
+        hand_type: np.ndarray = np.array([1, 0]),
+        hand_type_valid: np.ndarray = np.array([1])
+    ) -> dict:
         """Encoding keypoints from input image space to input image space.
 
         Args:
@@ -85,13 +91,13 @@ class Hand3DHeatmap(BaseKeypointCodec):
             rel_root_depth (np.float32): Relative root depth.
             rel_root_valid (float): Validity of relative root depth.
             hand_type (np.ndarray): Type of hand encoded as a array.
-            hand_type_valid: Validity of hand type.
+            hand_type_valid (np.ndarray): Validity of hand type.
 
         Returns:
             encoded (dict): Contains the following items:
 
                 - heatmaps (np.ndarray): The generated heatmap in shape
-                  (K, D, H, W) where [W, H, D] is the `heatmap_size`
+                  (K * D, H, W) where [W, H, D] is the `heatmap_size`
                 - keypoint_weights (np.ndarray): The target weights in shape
                   (N, K)
                 - data_infos (list): Other data information for computing
@@ -123,24 +129,24 @@ class Hand3DHeatmap(BaseKeypointCodec):
         rel_root_valid = rel_root_valid * (rel_root_depth >= 0) * (
             rel_root_depth <= self.heatmap_size_root)
 
-        data_infos = [rel_root_depth * np.ones(1, dtype=np.float32), hand_type]
-        data_infos_valid = [
-            rel_root_valid * np.ones(1, dtype=np.float32), hand_type_valid
-        ]
-
         encoded = dict(
             heatmaps=heatmaps,
             keypoint_weights=keypoint_weights,
-            data_infos=data_infos,
-            data_infos_valid=data_infos_valid)
+            root_depth=rel_root_depth * np.ones(1, dtype=np.float32),
+            type=hand_type.reshape(1, -1),
+            type_weight=hand_type_valid,
+            root_depth_weight=rel_root_valid * np.ones(1, dtype=np.float32))
         return encoded
 
-    def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def decode(self, heatmaps: np.ndarray, root_depth: np.ndarray,
+               hand_type: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from heatmaps. The decoded keypoint
         coordinates are in the input image space.
 
         Args:
-            encoded (np.ndarray): Heatmaps in shape (K, D, H, W)
+            heatmaps (np.ndarray): Heatmaps in shape (K, D, H, W)
+            root_depth (np.ndarray): Root depth prediction.
+            hand_type (np.ndarray): Hand type prediction.
 
         Returns:
             tuple:
@@ -149,8 +155,7 @@ class Hand3DHeatmap(BaseKeypointCodec):
             - scores (np.ndarray): The keypoint scores in shape (N, K). It
                 usually represents the confidence of the keypoint prediction
         """
-        heatmap3d = encoded.copy()
-        K, D, H, W = heatmap3d.shape
+        heatmap3d = heatmaps.copy()
 
         keypoints, scores = get_heatmap_3d_maximum(heatmap3d)
 
@@ -160,4 +165,11 @@ class Hand3DHeatmap(BaseKeypointCodec):
         # Restore the keypoint scale
         keypoints[..., :2] = keypoints[..., :2] * self.scale_factor
 
-        return keypoints, scores
+        # decode relative hand root depth
+        # transform relative root depth to camera space
+        rel_root_depth = ((root_depth / self.root_heatmap_size - 0.5) *
+                          self.root_depth_bound)
+
+        hand_type = (hand_type > 0.5).reshape(1, -1)
+
+        return keypoints, scores, rel_root_depth, hand_type

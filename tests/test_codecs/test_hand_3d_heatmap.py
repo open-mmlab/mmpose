@@ -38,7 +38,7 @@ class TestHand3DHeatmap(TestCase):
 
         encoded = codec.encode(keypoints, keypoints_visible)
 
-        self.assertEqual(encoded['heatmaps'].shape, (17, 64, 64, 64))
+        self.assertEqual(encoded['heatmaps'].shape, (17 * 64, 64, 64))
         self.assertEqual(encoded['keypoint_weights'].shape, (
             1,
             17,
@@ -52,7 +52,7 @@ class TestHand3DHeatmap(TestCase):
             keypoints_visible,
             dataset_keypoint_weights=np.ones(17, ))
 
-        self.assertEqual(encoded['heatmaps'].shape, (17, 64, 64, 64))
+        self.assertEqual(encoded['heatmaps'].shape, (17 * 64, 64, 64))
         self.assertEqual(encoded['keypoint_weights'].shape, (
             1,
             17,
@@ -61,7 +61,7 @@ class TestHand3DHeatmap(TestCase):
         # test joint_indices
         codec = self.build_hand_3d_heatmap(joint_indices=[0, 8, 16])
         encoded = codec.encode(keypoints, keypoints_visible)
-        self.assertEqual(encoded['heatmaps'].shape, (3, 64, 64, 64))
+        self.assertEqual(encoded['heatmaps'].shape, (3 * 64, 64, 64))
         self.assertEqual(encoded['keypoint_weights'].shape, (
             1,
             3,
@@ -73,7 +73,8 @@ class TestHand3DHeatmap(TestCase):
         # test default settings
         codec = self.build_hand_3d_heatmap()
 
-        keypoints, scores = codec.decode(heatmaps)
+        keypoints, scores, _, _ = codec.decode(heatmaps, np.ones((1, )),
+                                               np.ones((1, 2)))
 
         self.assertEqual(keypoints.shape, (1, 17, 3))
         self.assertEqual(scores.shape, (1, 17))
@@ -85,7 +86,9 @@ class TestHand3DHeatmap(TestCase):
         codec = self.build_hand_3d_heatmap()
 
         encoded = codec.encode(keypoints, keypoints_visible)
-        _keypoints, _ = codec.decode(encoded['heatmaps'])
+        _keypoints, _, _, _ = codec.decode(
+            encoded['heatmaps'].reshape(17, 64, 64, 64), np.ones((1, )),
+            np.ones((1, 2)))
 
         self.assertTrue(
             np.allclose(keypoints[..., :2], _keypoints[..., :2], atol=5.))
