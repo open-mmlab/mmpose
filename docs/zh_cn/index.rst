@@ -37,6 +37,7 @@ You can change the documentation language at the lower-left corner of the page.
    advanced_guides/implement_new_models.md
    advanced_guides/customize_datasets.md
    advanced_guides/customize_transforms.md
+   advanced_guides/customize_evaluation.md
    advanced_guides/customize_optimizer.md
    advanced_guides/customize_logging.md
 

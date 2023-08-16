@@ -93,7 +93,9 @@ class BaseMocapDataset(BaseDataset):
         _ann_file = ann_file
         if not is_abs(_ann_file):
             _ann_file = osp.join(data_root, _ann_file)
-        assert exists(_ann_file), 'Annotation file does not exist.'
+        assert exists(_ann_file), (
+            f'Annotation file `{_ann_file}` does not exist.')
+
         with get_local_path(_ann_file) as local_path:
             self.ann_data = np.load(local_path)
 
@@ -102,7 +104,9 @@ class BaseMocapDataset(BaseDataset):
             if not is_abs(self.camera_param_file):
                 self.camera_param_file = osp.join(data_root,
                                                   self.camera_param_file)
-            assert exists(self.camera_param_file)
+            assert exists(self.camera_param_file), (
+                f'Camera parameters file `{self.camera_param_file}` does not '
+                'exist.')
             self.camera_param = load(self.camera_param_file)
 
         self.seq_len = seq_len
@@ -110,7 +114,8 @@ class BaseMocapDataset(BaseDataset):
 
         self.multiple_target = multiple_target
         if self.multiple_target:
-            assert (self.seq_len == 1)
+            assert (self.seq_len == 1), (
+                'Multi-target data sample only supports seq_len=1.')
 
         assert 0 < subset_frac <= 1, (
             f'Unsupported `subset_frac` {subset_frac}. Supported range '

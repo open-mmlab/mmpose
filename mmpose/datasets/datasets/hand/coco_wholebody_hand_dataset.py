@@ -87,7 +87,8 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in COCO format."""
 
-        assert exists(self.ann_file), 'Annotation file does not exist'
+        assert exists(self.ann_file), (
+            f'Annotation file `{self.ann_file}` does not exist')
 
         with get_local_path(self.ann_file) as local_path:
             self.coco = COCO(local_path)
