@@ -137,13 +137,17 @@ class MpiiDataset(BaseCocoStyleDataset):
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         """Load data from annotations in MPII format."""
 
-        assert exists(self.ann_file), 'Annotation file does not exist'
+        assert exists(self.ann_file), (
+            f'Annotation file `{self.ann_file}` does not exist')
+
         with get_local_path(self.ann_file) as local_path:
             with open(local_path) as anno_file:
                 self.anns = json.load(anno_file)
 
         if self.headbox_file:
-            assert exists(self.headbox_file), 'Headbox file does not exist'
+            assert exists(self.headbox_file), (
+                f'Headbox file `{self.headbox_file}` does not exist')
+
             with get_local_path(self.headbox_file) as local_path:
                 self.headbox_dict = loadmat(local_path)
             headboxes_src = np.transpose(self.headbox_dict['headboxes_src'],

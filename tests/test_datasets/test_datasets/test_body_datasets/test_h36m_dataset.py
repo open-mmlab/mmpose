@@ -177,7 +177,7 @@ class TestH36MDataset(TestCase):
                 keypoint_2d_src='invalid')
 
         with self.assertRaisesRegex(AssertionError,
-                                    'Annotation file does not exist'):
+                                    'Annotation file `(.+?)` does not exist'):
             _ = self.build_h36m_dataset(
                 data_mode='topdown', test_mode=False, ann_file='invalid')
 
