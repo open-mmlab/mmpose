@@ -84,7 +84,7 @@ class VideoProcessor:
         """Extract keypoints from a single video frame."""
 
         det_results = self.pose_estimator.detector(
-            image, return_datasample=True)['predictions']
+            image, return_datasamples=True)['predictions']
         pred_instance = det_results[0].pred_instances
 
         if len(pred_instance) == 0:
