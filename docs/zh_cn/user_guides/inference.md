@@ -243,7 +243,7 @@ result = next(result_generator)
 | `num_instances`           | 设置可视化结果中显示的实例数量。如果设置为负数，则所有实例的结果都会可视化。                                               | ❌  | ✔️  |
 | `return_vis`              | 决定是否在结果中包含可视化图像。                                                                                           | ✔️  | ✔️  |
 | `vis_out_dir`             | 定义保存可视化图像的文件夹路径。如果未设置，将不保存可视化图像。                                                           | ✔️  | ✔️  |
-| `return_datasample`       | 决定是否以 `PoseDataSample` 格式返回预测。                                                                                 | ✔️  | ✔️  |
+| `return_datasamples`      | 决定是否以 `PoseDataSample` 格式返回预测。                                                                                 | ✔️  | ✔️  |
 | `pred_out_dir`            | 指定保存预测的文件夹路径。如果未设置，将不保存预测。                                                                       | ✔️  | ✔️  |
 | `out_dir`                 | 如果 `vis_out_dir` 或 `pred_out_dir` 未设置，它们将分别设置为 `f'{out_dir}/visualization'` 或 `f'{out_dir}/predictions'`。 | ✔️  | ✔️  |
 

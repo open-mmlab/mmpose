@@ -184,7 +184,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         if self.cfg.data_mode == 'topdown':
             if self.detector is not None:
                 det_results = self.detector(
-                    input, return_datasample=True)['predictions']
+                    input, return_datasamples=True)['predictions']
                 pred_instance = det_results[0].pred_instances.cpu().numpy()
                 bboxes = np.concatenate(
                     (pred_instance.bboxes, pred_instance.scores[:, None]),
@@ -257,7 +257,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
     def __call__(
         self,
         inputs: InputsType,
-        return_datasample: bool = False,
+        return_datasamples: bool = False,
         batch_size: int = 1,
         out_dir: Optional[str] = None,
         **kwargs,
@@ -266,7 +266,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         Args:
             inputs (InputsType): Inputs for the inferencer.
-            return_datasample (bool): Whether to return results as
+            return_datasamples (bool): Whether to return results as
                 :obj:`BaseDataElement`. Defaults to False.
             batch_size (int): Batch size. Defaults to 1.
             out_dir (str, optional): directory to save visualization
@@ -327,7 +327,8 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
             visualization = self.visualize(ori_inputs, preds,
                                            **visualize_kwargs)
-            results = self.postprocess(preds, visualization, return_datasample,
+            results = self.postprocess(preds, visualization,
+                                       return_datasamples,
                                        **postprocess_kwargs)
             yield results
 
