@@ -384,7 +384,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         self,
         preds: List[PoseDataSample],
         visualization: List[np.ndarray],
-        return_datasample=False,
+        return_datasamples=False,
         pred_out_dir: str = '',
     ) -> dict:
         """Process the predictions and visualization results from ``forward``
@@ -399,7 +399,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         Args:
             preds (List[Dict]): Predictions of the model.
             visualization (np.ndarray): Visualized predictions.
-            return_datasample (bool): Whether to return results as
+            return_datasamples (bool): Whether to return results as
                 datasamples. Defaults to False.
             pred_out_dir (str): Directory to save the inference results w/o
                 visualization. If left as empty, no file will be saved.
@@ -412,7 +412,7 @@ class BaseMMPoseInferencer(BaseInferencer):
             - ``visualization (Any)``: Returned by :meth:`visualize`
             - ``predictions`` (dict or DataSample): Returned by
               :meth:`forward` and processed in :meth:`postprocess`.
-              If ``return_datasample=False``, it usually should be a
+              If ``return_datasamples=False``, it usually should be a
               json-serializable dict containing only basic data elements such
               as strings and numbers.
         """
@@ -421,7 +421,7 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         result_dict['visualization'] = visualization
         for pred in preds:
-            if not return_datasample:
+            if not return_datasamples:
                 # convert datasamples to list of instance predictions
                 pred = split_instances(pred.pred_instances)
             result_dict['predictions'].append(pred)

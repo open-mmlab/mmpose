@@ -49,7 +49,7 @@ class TestGetBBoxCenterScale(TestCase):
         results.update(bbox_center=center, bbox_scale=scale)
         results = transform(results)
         self.assertTrue(np.allclose(results['bbox_center'], center))
-        self.assertTrue(np.allclose(results['bbox_scale'], scale))
+        self.assertTrue(np.allclose(results['bbox_scale'], scale * padding))
 
     def test_repr(self):
         transform = GetBBoxCenterScale(padding=1.25)

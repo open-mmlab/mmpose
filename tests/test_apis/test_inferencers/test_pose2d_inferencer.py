@@ -122,7 +122,7 @@ class TestPose2DInferencer(TestCase):
             len(results1['predictions'][0]), len(results2['predictions'][0]))
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
                                  results2['predictions'][0][0]['keypoints'])
-        results2 = next(inferencer(inputs, return_datasample=True))
+        results2 = next(inferencer(inputs, return_datasamples=True))
         self.assertIsInstance(results2['predictions'][0], PoseDataSample)
 
         # `inputs` is path to a directory

@@ -255,7 +255,7 @@ The inferencer is designed for both visualization and saving predictions. The ta
 | `num_instances`           | Sets the number of instances to visualize in the results. If set to a negative number, all detected instances will be visualized.                                 | ❌  | ✔️  |
 | `return_vis`              | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |
 | `vis_out_dir`             | Defines the folder path to save the visualization images. If unset, the visualization images will not be saved.                                                   | ✔️  | ✔️  |
-| `return_datasample`       | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
+| `return_datasamples`      | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
 | `pred_out_dir`            | Specifies the folder path to save the predictions. If unset, the predictions will not be saved.                                                                   | ✔️  | ✔️  |
 | `out_dir`                 | If `vis_out_dir` or `pred_out_dir` is unset, these will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively.                       | ✔️  | ✔️  |
 
