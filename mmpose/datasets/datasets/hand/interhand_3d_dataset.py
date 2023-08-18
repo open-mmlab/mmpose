@@ -10,6 +10,7 @@ from mmengine.utils import is_abs
 
 from mmpose.datasets.datasets import BaseCocoStyleDataset
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_xywh2xyxy
 
 
 @DATASETS.register_module()
@@ -236,24 +237,24 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         joint_world = np.array(
             joints[capture_id][frame_idx]['world_coord'], dtype=np.float32)
         joint_valid = np.array(ann['joint_valid'], dtype=np.float32).flatten()
-
-        joint_cam = self.world2cam(
-            joint_world.transpose(1, 0), camera_rot,
+        keypoints_cam = np.dot(
+            camera_rot,
+            joint_world.transpose(1, 0) -
             camera_pos.reshape(3, 1)).transpose(1, 0)
-        joint_img = self._cam2pixel(joint_cam, focal, principal_pt)[:, :2]
 
         if self.use_gt_root_depth:
-            bbox = np.array(ann['bbox'], dtype=np.float32).reshape(1, 4)
-            abs_depth = [joint_cam[20, 2], joint_cam[41, 2]]
+            bbox_xywh = np.array(ann['bbox'], dtype=np.float32).reshape(1, 4)
+            abs_depth = [keypoints_cam[20, 2], keypoints_cam[41, 2]]
         else:
             rootnet_ann_data = rootnet_result[str(ann['id'])]
-            bbox = np.array(
+            bbox_xywh = np.array(
                 rootnet_ann_data['bbox'], dtype=np.float32).reshape(1, 4)
             abs_depth = rootnet_ann_data['abs_depth']
+        bbox = bbox_xywh2xyxy(bbox_xywh)
 
         # 41: 'l_wrist', left hand root
         # 20: 'r_wrist', right hand root
-        rel_root_depth = joint_cam[41, 2] - joint_cam[20, 2]
+        rel_root_depth = keypoints_cam[41, 2] - keypoints_cam[20, 2]
         # if root is not valid, root-relative 3D depth is also invalid.
         rel_root_valid = joint_valid[20] * joint_valid[41]
 
@@ -262,11 +263,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         joint_valid[:20] *= joint_valid[20]
         joint_valid[21:] *= joint_valid[41]
 
-        joints_3d = np.zeros((num_keypoints, 3),
-                             dtype=np.float32).reshape(1, -1, 3)
-        joints_3d[..., :2] = joint_img
-        joints_3d[..., :21, 2] = joint_cam[:21, 2] - joint_cam[20, 2]
-        joints_3d[..., 21:, 2] = joint_cam[21:, 2] - joint_cam[41, 2]
         joints_3d_visible = np.minimum(1,
                                        joint_valid.reshape(-1,
                                                            1)).reshape(1, -1)
@@ -275,14 +271,13 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             'img_id': ann['image_id'],
             'img_path': img['img_path'],
             'rotation': 0,
-            'keypoints': joints_3d,
+            'keypoints': keypoints_cam.reshape(1, -1, 3),
             'keypoints_visible': joints_3d_visible,
             'hand_type': self.encode_handtype(ann['hand_type']),
             'hand_type_valid': np.array([ann['hand_type_valid']]),
             'rel_root_depth': rel_root_depth,
             'rel_root_valid': rel_root_valid,
             'abs_depth': abs_depth,
-            'joint_cam': joint_cam.reshape(1, -1, 3),
             'focal': focal,
             'principal_pt': principal_pt,
             'dataset': self.metainfo['dataset_name'],
@@ -301,55 +296,10 @@ class InterHand3DDataset(BaseCocoStyleDataset):
     @staticmethod
     def encode_handtype(hand_type):
         if hand_type == 'right':
-            return np.array([1, 0], dtype=np.float32)
+            return np.array([[1, 0]], dtype=np.float32)
         elif hand_type == 'left':
-            return np.array([0, 1], dtype=np.float32)
+            return np.array([[0, 1]], dtype=np.float32)
         elif hand_type == 'interacting':
-            return np.array([1, 1], dtype=np.float32)
+            return np.array([[1, 1]], dtype=np.float32)
         else:
             assert 0, f'Not support hand type: {hand_type}'
-
-    @staticmethod
-    def world2cam(world_coord, R, T):
-        """Transform the joints from their world coordinates to their camera
-        coordinates.
-
-        Note:
-            N: number of joints
-
-        Args:
-            world_coord (np.ndarray): 3D joints coordinates in the world
-                coordinate system with shape (3, N)
-            R (np.ndarray): camera rotation matrix with shape (3, 3)
-            T (np.ndarray): camera position (x, y, z)
-
-        Returns:
-            cam_coord (np.ndarray): 3D joints coordinates in the camera
-                coordinate system with shape (3, N)
-        """
-        cam_coord = np.dot(R, world_coord - T)
-        return cam_coord
-
-    @staticmethod
-    def _cam2pixel(cam_coord, f, c):
-        """Transform the joints from their camera coordinates to their pixel
-        coordinates.
-
-        Note:
-            N: number of joints
-
-        Args:
-            cam_coord (np.ndarray): 3D joints coordinates in the camera
-                coordinate system with shape (N, 3)
-            f (np.ndarray): focal length of x and y axis with shape (2, )
-            c (np.ndarray): principal point of x and y axis with shape (2, )
-
-        Returns:
-            img_coord (np.ndarray[N, 3]): the coordinates in the image plane
-                with shape (N, 3)
-        """
-        x = cam_coord[:, 0] / (cam_coord[:, 2] + 1e-8) * f[0] + c[0]
-        y = cam_coord[:, 1] / (cam_coord[:, 2] + 1e-8) * f[1] + c[1]
-        z = np.zeros_like(x)
-        img_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
-        return img_coord

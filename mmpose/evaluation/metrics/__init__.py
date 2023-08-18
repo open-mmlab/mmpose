@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .coco_metric import CocoMetric
 from .coco_wholebody_metric import CocoWholeBodyMetric
+from .hand_metric import HandMetric
 from .keypoint_2d_metrics import (AUC, EPE, NME, JhmdbPCKAccuracy,
                                   MpiiPCKAccuracy, PCKAccuracy)
 from .keypoint_3d_metrics import MPJPE
@@ -10,5 +11,5 @@ from .posetrack18_metric import PoseTrack18Metric
 __all__ = [
     'CocoMetric', 'PCKAccuracy', 'MpiiPCKAccuracy', 'JhmdbPCKAccuracy', 'AUC',
     'EPE', 'NME', 'PoseTrack18Metric', 'CocoWholeBodyMetric',
-    'KeypointPartitionMetric', 'MPJPE'
+    'KeypointPartitionMetric', 'MPJPE', 'HandMetric'
 ]
