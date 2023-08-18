@@ -7,6 +7,8 @@
 from typing import List, Optional
 
 import numpy as np
+import torch
+from torch import Tensor
 
 
 def nms(dets: np.ndarray, thr: float) -> List[int]:
@@ -325,3 +327,41 @@ def nearby_joints_nms(
         keep_pose_inds = [keep_pose_inds[i] for i in sub_inds]
 
     return keep_pose_inds
+
+
+def compute_iou(bbox, bboxes):
+
+    bboxes_overlap = torch.stack((
+        bboxes[:, 0].clip(min=bbox[0]),
+        bboxes[:, 1].clip(min=bbox[1]),
+        bboxes[:, 2].clip(max=bbox[2]),
+        bboxes[:, 3].clip(max=bbox[3]),
+    ),
+                                 dim=1)
+    a0 = torch.prod(bbox[2:] - bbox[:2])
+    a1 = torch.prod(bboxes[:, 2:] - bboxes[:, :2], dim=1)
+    a2 = torch.prod(
+        (bboxes_overlap[:, 2:] - bboxes_overlap[:, :2]).clip(min=0), dim=1)
+    iou = a2 / (a1 + a0 - a2)
+    return iou
+
+
+def nms_torch(bboxes: Tensor,
+              scores: Tensor,
+              threshold: float = 0.65,
+              iou_calculator=compute_iou,
+              return_group: bool = False):
+    _, indices = scores.sort(descending=True)
+    groups = []
+    while len(indices):
+        idx, indices = indices[0], indices[1:]
+        bbox = bboxes[idx]
+        ious = iou_calculator(bbox, bboxes[indices])
+        close_indices = torch.where(ious > threshold)[0]
+        groups.append(torch.cat((idx[None], indices[close_indices])))
+        indices = indices[~torch.isin(indices, indices[close_indices])]
+
+    if return_group:
+        return groups
+    else:
+        return torch.cat([g[:1] for g in groups])

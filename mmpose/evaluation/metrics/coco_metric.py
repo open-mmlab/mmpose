@@ -13,6 +13,7 @@ from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
 from mmpose.registry import METRICS, TRANSFORMS
+from mmpose.structures.bbox import bbox_xyxy2xywh
 from ..functional import oks_nms, soft_oks_nms
 
 
@@ -201,6 +202,8 @@ class CocoMetric(BaseMetric):
             pred = dict()
             pred['id'] = data_sample['id']
             pred['img_id'] = data_sample['img_id']
+            pred['bboxes'] = bbox_xyxy2xywh(
+                data_sample['pred_instances']['bboxes'])
             pred['keypoints'] = keypoints
             pred['keypoint_scores'] = keypoint_scores
             pred['category_id'] = data_sample.get('category_id', 1)
@@ -389,6 +392,7 @@ class CocoMetric(BaseMetric):
                     'id': pred['id'],
                     'img_id': pred['img_id'],
                     'category_id': pred['category_id'],
+                    'bbox': pred['bboxes'][idx],
                     'keypoints': pred['keypoints'][idx],
                     'keypoint_scores': pred['keypoint_scores'][idx],
                     'bbox_score': pred['bbox_scores'][idx],
@@ -501,6 +505,7 @@ class CocoMetric(BaseMetric):
             result = [{
                 'image_id': img_kpt['img_id'],
                 'category_id': img_kpt['category_id'],
+                'bbox': img_kpt['bbox'].tolist(),
                 'keypoints': keypoint.tolist(),
                 'score': float(img_kpt['score']),
             } for img_kpt, keypoint in zip(img_kpts, _keypoints)]
