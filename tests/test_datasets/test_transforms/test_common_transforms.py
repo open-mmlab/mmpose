@@ -4,15 +4,17 @@ import os.path as osp
 from copy import deepcopy
 from unittest import TestCase
 
+import mmcv
 import numpy as np
 from mmcv.transforms import Compose, LoadImageFromFile
 from mmengine.utils import is_list_of
 
-from mmpose.datasets.transforms import (Albumentation, GenerateTarget,
-                                        GetBBoxCenterScale,
+from mmpose.datasets.transforms import (Albumentation, FilterAnnotations,
+                                        GenerateTarget, GetBBoxCenterScale,
                                         PhotometricDistortion,
                                         RandomBBoxTransform, RandomFlip,
-                                        RandomHalfBody, TopdownAffine)
+                                        RandomHalfBody, TopdownAffine,
+                                        YOLOXHSVRandomAug)
 from mmpose.testing import get_coco_sample
 
 
@@ -600,3 +602,134 @@ class TestGenerateTarget(TestCase):
         with self.assertWarnsRegex(DeprecationWarning,
                                    '`target_type` is deprecated'):
             _ = GenerateTarget(encoder=encoder, target_type='heatmap')
+
+
+class TestFilterAnnotations(TestCase):
+
+    def setUp(self):
+        """Setup the model and optimizer which are used in every test
+        method."""
+        self.results = {
+            'img':
+            np.random.random((224, 224, 3)),
+            'img_shape': (224, 224),
+            'bbox':
+            np.array([[10, 10, 20, 20], [20, 20, 40, 40], [40, 40, 80, 80]]),
+            'bbox_score':
+            np.array([0.9, 0.8, 0.7]),
+            'category_id':
+            np.array([1, 2, 3]),
+            'keypoints':
+            np.array([[15, 15, 1], [25, 25, 1], [45, 45, 1]]),
+            'keypoints_visible':
+            np.array([[1, 1, 0], [1, 1, 1], [1, 1, 1]]),
+            'area':
+            np.array([300, 600, 1200]),
+        }
+
+    def test_transform(self):
+        # Test keep_empty = True
+        transform = FilterAnnotations(
+            min_gt_bbox_wh=(50, 50),
+            keep_empty=True,
+            by_box=True,
+        )
+        results = transform(copy.deepcopy(self.results))
+        self.assertIsNone(results)
+
+        # Test keep_empty = False
+        transform = FilterAnnotations(
+            min_gt_bbox_wh=(50, 50),
+            keep_empty=False,
+        )
+        results = transform(copy.deepcopy(self.results))
+        self.assertTrue(isinstance(results, dict))
+
+        # Test filter annotations by bbox
+        transform = FilterAnnotations(min_gt_bbox_wh=(15, 15), by_box=True)
+        results = transform(copy.deepcopy(self.results))
+        print((results['bbox'] == np.array([[20, 20, 40, 40], [40, 40, 80,
+                                                               80]])).all())
+        self.assertTrue((results['bbox'] == np.array([[20, 20, 40, 40],
+                                                      [40, 40, 80,
+                                                       80]])).all())
+        self.assertTrue((results['bbox_score'] == np.array([0.8, 0.7])).all())
+        self.assertTrue((results['category_id'] == np.array([2, 3])).all())
+        self.assertTrue((results['keypoints'] == np.array([[25, 25, 1],
+                                                           [45, 45,
+                                                            1]])).all())
+        self.assertTrue(
+            (results['keypoints_visible'] == np.array([[1, 1, 1], [1, 1,
+                                                                   1]])).all())
+        self.assertTrue((results['area'] == np.array([600, 1200])).all())
+
+        # Test filter annotations by area
+        transform = FilterAnnotations(min_gt_area=1000, by_area=True)
+        results = transform(copy.deepcopy(self.results))
+        self.assertIsInstance(results, dict)
+        self.assertTrue((results['bbox'] == np.array([[40, 40, 80,
+                                                       80]])).all())
+        self.assertTrue((results['bbox_score'] == np.array([0.7])).all())
+        self.assertTrue((results['category_id'] == np.array([3])).all())
+        self.assertTrue((results['keypoints'] == np.array([[45, 45,
+                                                            1]])).all())
+        self.assertTrue(
+            (results['keypoints_visible'] == np.array([[1, 1, 1]])).all())
+        self.assertTrue((results['area'] == np.array([1200])).all())
+
+        # Test filter annotations by keypoints visibility
+        transform = FilterAnnotations(min_kpt_vis=3, by_kpt=True)
+        results = transform(copy.deepcopy(self.results))
+        self.assertIsInstance(results, dict)
+        self.assertTrue((results['bbox'] == np.array([[20, 20, 40, 40],
+                                                      [40, 40, 80,
+                                                       80]])).all())
+        self.assertTrue((results['bbox_score'] == np.array([0.8, 0.7])).all())
+        self.assertTrue((results['category_id'] == np.array([2, 3])).all())
+        self.assertTrue((results['keypoints'] == np.array([[25, 25, 1],
+                                                           [45, 45,
+                                                            1]])).all())
+        self.assertTrue(
+            (results['keypoints_visible'] == np.array([[1, 1, 1], [1, 1,
+                                                                   1]])).all())
+        self.assertTrue((results['area'] == np.array([600, 1200])).all())
+
+
+class TestYOLOXHSVRandomAug(TestCase):
+
+    def setUp(self):
+        """Setup the model and optimizer which are used in every test method.
+
+        TestCase calls functions in this order: setUp() -> testMethod() ->
+        tearDown() -> cleanUp()
+        """
+        img = mmcv.imread(
+            osp.join(
+                osp.dirname(__file__), '../../data/coco/000000000785.jpg'),
+            'color')
+        self.results = {
+            'img':
+            img,
+            'img_shape': (640, 425),
+            'category_id':
+            np.array([1, 2, 3], dtype=np.int64),
+            'bbox':
+            np.array([[10, 10, 20, 20], [20, 20, 40, 40], [40, 40, 80, 80]],
+                     dtype=np.float32),
+        }
+
+    def test_transform(self):
+        transform = YOLOXHSVRandomAug()
+        results = transform(copy.deepcopy(self.results))
+        self.assertTrue(
+            results['img'].shape[:2] == self.results['img'].shape[:2])
+        self.assertTrue(
+            results['category_id'].shape[0] == results['bbox'].shape[0])
+        self.assertTrue(results['bbox'].dtype == np.float32)
+
+    def test_repr(self):
+        transform = YOLOXHSVRandomAug()
+        self.assertEqual(
+            repr(transform), ('YOLOXHSVRandomAug(hue_delta=5, '
+                              'saturation_delta=30, '
+                              'value_delta=30)'))

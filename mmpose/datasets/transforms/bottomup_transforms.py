@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Dict, List, Optional, Tuple
+from functools import partial
+from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -10,7 +11,10 @@ from mmcv.transforms.utils import cache_randomness
 from scipy.stats import truncnorm
 
 from mmpose.registry import TRANSFORMS
-from mmpose.structures.bbox import get_udp_warp_matrix, get_warp_matrix
+from mmpose.structures.bbox import (bbox_clip_border, bbox_corner2xyxy,
+                                    bbox_xyxy2corner, get_pers_warp_matrix,
+                                    get_udp_warp_matrix, get_warp_matrix)
+from mmpose.structures.keypoint import keypoint_clip_border
 
 
 @TRANSFORMS.register_module()
@@ -30,6 +34,10 @@ class BottomupGetHeatmapMask(BaseTransform):
 
         - heatmap_mask
     """
+
+    def __init__(self, get_invalid: bool = False):
+        super().__init__()
+        self.get_invalid = get_invalid
 
     def _segs_to_mask(self, segs: list, img_shape: Tuple[int,
                                                          int]) -> np.ndarray:
@@ -83,10 +91,12 @@ class BottomupGetHeatmapMask(BaseTransform):
         invalid_segs = results.get('invalid_segs', [])
         img_shape = results['img_shape']  # (img_h, img_w)
         input_size = results['input_size']
+        mask = self._segs_to_mask(invalid_segs, img_shape)
 
-        # Calculate the mask of the valid region by negating the segmentation
-        # mask of invalid objects
-        mask = 1 - self._segs_to_mask(invalid_segs, img_shape)
+        if not self.get_invalid:
+            # Calculate the mask of the valid region by negating the
+            # segmentation mask of invalid objects
+            mask = np.logical_not(mask)
 
         # Apply an affine transform to the mask if the image has been
         # transformed
@@ -176,7 +186,7 @@ class BottomupRandomAffine(BaseTransform):
     """
 
     def __init__(self,
-                 input_size: Tuple[int, int],
+                 input_size: Optional[Tuple[int, int]] = None,
                  shift_factor: float = 0.2,
                  shift_prob: float = 1.,
                  scale_factor: Tuple[float, float] = (0.75, 1.5),
@@ -184,8 +194,19 @@ class BottomupRandomAffine(BaseTransform):
                  scale_type: str = 'short',
                  rotate_factor: float = 30.,
                  rotate_prob: float = 1,
-                 use_udp: bool = False) -> None:
+                 shear_factor: float = 2.0,
+                 shear_prob: float = 1.0,
+                 pad_val: Union[float, Tuple[float]] = 0,
+                 border: Tuple[int, int] = (0, 0),
+                 distribution='trunc_norm',
+                 transform_mode='affine',
+                 bbox_keep_corner: bool = True,
+                 clip_border: bool = False) -> None:
         super().__init__()
+
+        assert transform_mode in ('affine', 'affine_udp', 'perspective'), \
+            f'the argument transform_mode should be either \'affine\', ' \
+            f'\'affine_udp\' or \'perspective\', but got \'{transform_mode}\''
 
         self.input_size = input_size
         self.shift_factor = shift_factor
@@ -195,14 +216,38 @@ class BottomupRandomAffine(BaseTransform):
         self.scale_type = scale_type
         self.rotate_factor = rotate_factor
         self.rotate_prob = rotate_prob
-        self.use_udp = use_udp
+        self.shear_factor = shear_factor
+        self.shear_prob = shear_prob
 
-    @staticmethod
-    def _truncnorm(low: float = -1.,
-                   high: float = 1.,
-                   size: tuple = ()) -> np.ndarray:
-        """Sample from a truncated normal distribution."""
-        return truncnorm.rvs(low, high, size=size).astype(np.float32)
+        self.distribution = distribution
+        self.clip_border = clip_border
+        self.bbox_keep_corner = bbox_keep_corner
+
+        self.transform_mode = transform_mode
+
+        if isinstance(pad_val, (int, float)):
+            pad_val = (pad_val, pad_val, pad_val)
+
+        if 'affine' in transform_mode:
+            self._transform = partial(
+                cv2.warpAffine, flags=cv2.INTER_LINEAR, borderValue=pad_val)
+        else:
+            self._transform = partial(cv2.warpPerspective, borderValue=pad_val)
+
+    def _random(self,
+                low: float = -1.,
+                high: float = 1.,
+                size: tuple = ()) -> np.ndarray:
+        if self.distribution == 'trunc_norm':
+            """Sample from a truncated normal distribution."""
+            return truncnorm.rvs(low, high, size=size).astype(np.float32)
+        elif self.distribution == 'uniform':
+            x = np.random.rand(*size)
+            return x * (high - low) + low
+        else:
+            raise ValueError(f'the argument `distribution` should be either'
+                             f'\'trunc_norn\' or \'uniform\', but got '
+                             f'{self.distribution}.')
 
     def _fix_aspect_ratio(self, scale: np.ndarray, aspect_ratio: float):
         """Extend the scale to match the given aspect ratio.
@@ -243,7 +288,7 @@ class BottomupRandomAffine(BaseTransform):
         """
         # get offset
         if np.random.rand() < self.shift_prob:
-            offset = self._truncnorm(size=(2, )) * self.shift_factor
+            offset = self._random(size=(2, )) * self.shift_factor
         else:
             offset = np.zeros((2, ), dtype=np.float32)
 
@@ -251,17 +296,24 @@ class BottomupRandomAffine(BaseTransform):
         if np.random.rand() < self.scale_prob:
             scale_min, scale_max = self.scale_factor
             scale = scale_min + (scale_max - scale_min) * (
-                self._truncnorm(size=(1, )) + 1) / 2
+                self._random(size=(1, )) + 1) / 2
         else:
             scale = np.ones(1, dtype=np.float32)
 
         # get rotation
         if np.random.rand() < self.rotate_prob:
-            rotate = self._truncnorm() * self.rotate_factor
+            rotate = self._random() * self.rotate_factor
         else:
             rotate = 0
 
-        return offset, scale, rotate
+        # get shear
+        if 'perspective' in self.transform_mode and np.random.rand(
+        ) < self.shear_prob:
+            shear = self._random(size=(2, )) * self.shear_factor
+        else:
+            shear = np.zeros((2, ), dtype=np.float32)
+
+        return offset, scale, rotate, shear
 
     def transform(self, results: Dict) -> Optional[dict]:
         """The transform function of :class:`BottomupRandomAffine` to perform
@@ -277,45 +329,77 @@ class BottomupRandomAffine(BaseTransform):
             dict: Result dict with images distorted.
         """
 
-        img_h, img_w = results['img_shape']
+        img_h, img_w = results['img_shape'][:2]
         w, h = self.input_size
 
-        offset_rate, scale_rate, rotate = self._get_transform_params()
-        offset = offset_rate * [img_w, img_h]
-        scale = scale_rate * [img_w, img_h]
-        # adjust the scale to match the target aspect ratio
-        scale = self._fix_aspect_ratio(scale, aspect_ratio=w / h)
+        offset_rate, scale_rate, rotate, shear = self._get_transform_params()
 
-        if self.use_udp:
-            center = np.array([(img_w - 1.0) / 2, (img_h - 1.0) / 2],
-                              dtype=np.float32)
-            warp_mat = get_udp_warp_matrix(
-                center=center + offset,
-                scale=scale,
-                rot=rotate,
-                output_size=(w, h))
+        if 'affine' in self.transform_mode:
+            offset = offset_rate * [img_w, img_h]
+            scale = scale_rate * [img_w, img_h]
+            # adjust the scale to match the target aspect ratio
+            scale = self._fix_aspect_ratio(scale, aspect_ratio=w / h)
+
+            if self.transform_mode == 'affine_udp':
+                center = np.array([(img_w - 1.0) / 2, (img_h - 1.0) / 2],
+                                  dtype=np.float32)
+                warp_mat = get_udp_warp_matrix(
+                    center=center + offset,
+                    scale=scale,
+                    rot=rotate,
+                    output_size=(w, h))
+            else:
+                center = np.array([img_w / 2, img_h / 2], dtype=np.float32)
+                warp_mat = get_warp_matrix(
+                    center=center + offset,
+                    scale=scale,
+                    rot=rotate,
+                    output_size=(w, h))
+
         else:
-            center = np.array([img_w / 2, img_h / 2], dtype=np.float32)
-            warp_mat = get_warp_matrix(
-                center=center + offset,
-                scale=scale,
+            offset = offset_rate * [w, h]
+            center = np.array([w / 2, h / 2], dtype=np.float32)
+            warp_mat = get_pers_warp_matrix(
+                center=center,
+                translate=offset,
+                scale=scale_rate[0],
                 rot=rotate,
-                output_size=(w, h))
+                shear=shear)
 
         # warp image and keypoints
-        results['img'] = cv2.warpAffine(
-            results['img'], warp_mat, (int(w), int(h)), flags=cv2.INTER_LINEAR)
+        results['img'] = self._transform(results['img'], warp_mat,
+                                         (int(w), int(h)))
 
         if 'keypoints' in results:
             # Only transform (x, y) coordinates
-            results['keypoints'][..., :2] = cv2.transform(
-                results['keypoints'][..., :2], warp_mat)
+            kpts = cv2.transform(results['keypoints'], warp_mat)
+            if kpts.shape[-1] == 3:
+                kpts = kpts[..., :2] / kpts[..., 2:3]
+            results['keypoints'] = kpts
+
+            if self.clip_border:
+                results['keypoints'], results[
+                    'keypoints_visible'] = keypoint_clip_border(
+                        results['keypoints'], results['keypoints_visible'],
+                        (w, h))
 
         if 'bbox' in results:
-            bbox = np.tile(results['bbox'], 2).reshape(-1, 4, 2)
-            # corner order: left_top, left_bottom, right_top, right_bottom
-            bbox[:, 1:3, 0] = bbox[:, 0:2, 0]
-            results['bbox'] = cv2.transform(bbox, warp_mat).reshape(-1, 8)
+            bbox = bbox_xyxy2corner(results['bbox'])
+            bbox = cv2.transform(bbox, warp_mat)
+            if bbox.shape[-1] == 3:
+                bbox = bbox[..., :2] / bbox[..., 2:3]
+            if not self.bbox_keep_corner:
+                bbox = bbox_corner2xyxy(bbox)
+            if self.clip_border:
+                bbox = bbox_clip_border(bbox, (w, h))
+            results['bbox'] = bbox
+
+        if 'area' in results:
+            warp_mat_for_area = warp_mat
+            if warp_mat.shape[0] == 2:
+                aux_row = np.array([[0.0, 0.0, 1.0]], dtype=warp_mat.dtype)
+                warp_mat_for_area = np.concatenate((warp_mat, aux_row))
+            results['area'] *= np.linalg.det(warp_mat_for_area)
 
         results['input_size'] = self.input_size
         results['warp_mat'] = warp_mat
@@ -380,6 +464,7 @@ class BottomupResize(BaseTransform):
                  aug_scales: Optional[List[float]] = None,
                  size_factor: int = 32,
                  resize_mode: str = 'fit',
+                 pad_val: tuple = (0, 0, 0),
                  use_udp: bool = False):
         super().__init__()
 
@@ -388,6 +473,7 @@ class BottomupResize(BaseTransform):
         self.resize_mode = resize_mode
         self.size_factor = size_factor
         self.use_udp = use_udp
+        self.pad_val = pad_val
 
     @staticmethod
     def _ceil_to_multiple(size: Tuple[int, int], base: int):
@@ -496,7 +582,11 @@ class BottomupResize(BaseTransform):
                     output_size=padded_input_size)
 
             _img = cv2.warpAffine(
-                img, warp_mat, padded_input_size, flags=cv2.INTER_LINEAR)
+                img,
+                warp_mat,
+                padded_input_size,
+                flags=cv2.INTER_LINEAR,
+                borderValue=self.pad_val)
 
             imgs.append(_img)
 
