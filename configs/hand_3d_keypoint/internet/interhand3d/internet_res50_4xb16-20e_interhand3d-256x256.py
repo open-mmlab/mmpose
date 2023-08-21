@@ -143,7 +143,7 @@ val_dataloader = dict(
         test_mode=True,
     ))
 test_dataloader = dict(
-    batch_size=1,
+    batch_size=16,
     num_workers=1,
     persistent_workers=True,
     drop_last=False,
