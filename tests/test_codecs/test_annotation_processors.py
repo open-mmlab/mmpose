@@ -4,13 +4,13 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.codecs import YOLOPoseAnnotationProcessor
+from mmpose.codecs import YOLOXPoseAnnotationProcessor
 
 
-class TestYOLOPoseAnnotationProcessor(TestCase):
+class TestYOLOXPoseAnnotationProcessor(TestCase):
 
     def test_encode(self):
-        processor = YOLOPoseAnnotationProcessor(expand_bbox=True)
+        processor = YOLOXPoseAnnotationProcessor(expand_bbox=True)
 
         keypoints = np.array([[[0, 1], [2, 6], [4, 5]], [[5, 6], [7, 8],
                                                          [8, 9]]])
@@ -31,5 +31,5 @@ class TestYOLOPoseAnnotationProcessor(TestCase):
 
     def test_decode(self):
         # make sure the `decode` method has been defined
-        processor = YOLOPoseAnnotationProcessor()
+        processor = YOLOXPoseAnnotationProcessor()
         _ = processor.decode(dict())
