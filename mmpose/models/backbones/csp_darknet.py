@@ -153,7 +153,7 @@ class CSPDarknet(BaseModule):
         init_cfg (dict or list[dict], optional): Initialization config dict.
             Default: None.
     Example:
-        >>> from mmdet.models import CSPDarknet
+        >>> from mmpose.models import CSPDarknet
         >>> import torch
         >>> self = CSPDarknet(depth=53)
         >>> self.eval()
