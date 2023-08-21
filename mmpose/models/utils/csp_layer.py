@@ -6,7 +6,7 @@ from mmengine.model import BaseModule
 from mmengine.utils import digit_version
 from torch import Tensor
 
-from mmpose.utils import ConfigType, OptConfigType, OptMultiConfig
+from mmpose.utils.typing import ConfigType, OptConfigType, OptMultiConfig
 
 
 class ChannelAttention(BaseModule):

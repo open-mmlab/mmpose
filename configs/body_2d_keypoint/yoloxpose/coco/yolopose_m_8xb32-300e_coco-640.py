@@ -12,8 +12,5 @@ model = dict(
         widen_factor=widen_factor,
         init_cfg=dict(checkpoint=checkpoint),
     ),
-    neck=dict(
-        deepen_factor=deepen_factor,
-        widen_factor=widen_factor,
-    ),
-    bbox_head=dict(head_module=dict(widen_factor=widen_factor)))
+    neck=dict(in_channels=[192, 384, 768], out_channels=192, num_csp_blocks=2),
+    head=dict(head_module_cfg=dict(widen_factor=widen_factor)))

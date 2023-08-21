@@ -19,16 +19,13 @@ model = dict(
         widen_factor=widen_factor,
         init_cfg=dict(checkpoint=checkpoint),
     ),
-    neck=dict(
-        deepen_factor=deepen_factor,
-        widen_factor=widen_factor,
-    ),
-    bbox_head=dict(head_module=dict(widen_factor=widen_factor)))
+    neck=dict(in_channels=[96, 192, 384], out_channels=96),
+    head=dict(head_module_cfg=dict(widen_factor=widen_factor)))
 
 # dataset settings
 input_size = (416, 416)
 
-codec = dict(type='YOLOPoseAnnotationProcessor', input_size=input_size)
+codec = dict(type='YOLOXPoseAnnotationProcessor', input_size=input_size)
 
 train_pipeline_stage1 = [
     dict(type='LoadImage', backend_args=None),
@@ -109,7 +106,7 @@ test_dataloader = val_dataloader
 
 custom_hooks = [
     dict(
-        type='YOLOPoseModeSwitchHook',
+        type='YOLOXPoseModeSwitchHook',
         num_last_epochs=20,
         new_train_pipeline=train_pipeline_stage2,
         priority=48),
