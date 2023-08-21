@@ -10,13 +10,21 @@ from mmengine.optim import LinearLR, MultiStepLR
 from torch.optim import Adam
 
 from mmpose.codecs import MSRAHeatmap
-from mmpose.datasets import (OneHand10KDataset, GenerateTarget, GetBBoxCenterScale,
-                             LoadImage, PackPoseInputs, RandomFlip,
-                             TopdownAffine)
+from mmpose.datasets import OneHand10KDataset
+from mmpose.datasets import GenerateTarget
+from mmpose.datasets import GetBBoxCenterScale
+from mmpose.datasets import LoadImage
+from mmpose.datasets import PackPoseInputs 
+from mmpose.datasets import RandomFlip
+from mmpose.datasets import TopdownAffine
 from mmpose.datasets.transforms.common_transforms import RandomBBoxTransform
 from mmpose.evaluation import PCKAccuracy, AUC, EPE
-from mmpose.models import (HeatmapHead, HRNet, KeypointMSELoss, FeatureMapProcessor,
-                           PoseDataPreprocessor, TopdownPoseEstimator)
+from mmpose.models import HeatmapHead
+from mmpose.models import HRNet
+from mmpose.models import KeypointMSELoss
+from mmpose.models import FeatureMapProcessor
+from mmpose.models import PoseDataPreprocessor
+from mmpose.models import TopdownPoseEstimator
 #
 
 # runtime
@@ -49,7 +57,12 @@ default_hooks.update(checkpoint=dict(save_best='AUC', rule='greater'))
 
 # codec settings
 codec = dict(
-    type=MSRAHeatmap, input_size=(256, 256), heatmap_size=(64, 64), sigma=2, unbiased=True)
+    type=MSRAHeatmap, 
+    input_size=(256, 256), 
+    heatmap_size=(64, 64), 
+    sigma=2, 
+    unbiased=True
+)
 
 # model settings
 model = dict(
