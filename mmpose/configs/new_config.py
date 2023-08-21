@@ -14,7 +14,7 @@ from mmpose.datasets import OneHand10KDataset
 from mmpose.datasets import GenerateTarget
 from mmpose.datasets import GetBBoxCenterScale
 from mmpose.datasets import LoadImage
-from mmpose.datasets import PackPoseInputs 
+from mmpose.datasets import PackPoseInputs
 from mmpose.datasets import RandomFlip
 from mmpose.datasets import TopdownAffine
 from mmpose.datasets.transforms.common_transforms import RandomBBoxTransform
@@ -57,10 +57,10 @@ default_hooks.update(checkpoint=dict(save_best='AUC', rule='greater'))
 
 # codec settings
 codec = dict(
-    type=MSRAHeatmap, 
-    input_size=(256, 256), 
-    heatmap_size=(64, 64), 
-    sigma=2, 
+    type=MSRAHeatmap,
+    input_size=(256, 256),
+    heatmap_size=(64, 64),
+    sigma=2,
     unbiased=True
 )
 
