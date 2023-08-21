@@ -18,8 +18,8 @@ class AnnotationProcessor(BaseKeypointCodec):
 
 
 @KEYPOINT_CODECS.register_module()
-class YOLOPoseAnnotationProcessor(AnnotationProcessor):
-    """Processor for YOLOPose dataset annotations.
+class YOLOXPoseAnnotationProcessor(AnnotationProcessor):
+    """Processor for YOLOXPose dataset annotations.
 
     This processor expands bounding boxes and converts category IDs to labels.
 

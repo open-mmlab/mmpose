@@ -196,6 +196,7 @@ class BottomupRandomAffine(BaseTransform):
                  rotate_prob: float = 1,
                  shear_factor: float = 2.0,
                  shear_prob: float = 1.0,
+                 use_udp: bool = False,
                  pad_val: Union[float, Tuple[float]] = 0,
                  border: Tuple[int, int] = (0, 0),
                  distribution='trunc_norm',
@@ -219,6 +220,7 @@ class BottomupRandomAffine(BaseTransform):
         self.shear_factor = shear_factor
         self.shear_prob = shear_prob
 
+        self.use_udp = use_udp
         self.distribution = distribution
         self.clip_border = clip_border
         self.bbox_keep_corner = bbox_keep_corner

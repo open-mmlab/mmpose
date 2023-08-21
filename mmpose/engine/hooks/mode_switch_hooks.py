@@ -10,8 +10,8 @@ from mmpose.registry import HOOKS
 
 
 @HOOKS.register_module()
-class YOLOPoseModeSwitchHook(Hook):
-    """Switch the mode of YOLO-Pose during training.
+class YOLOXPoseModeSwitchHook(Hook):
+    """Switch the mode of YOLOX-Pose during training.
 
     This hook:
     1) Turns off mosaic and mixup data augmentation.

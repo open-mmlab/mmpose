@@ -202,11 +202,13 @@ class CocoMetric(BaseMetric):
             pred = dict()
             pred['id'] = data_sample['id']
             pred['img_id'] = data_sample['img_id']
-            pred['bboxes'] = bbox_xyxy2xywh(
-                data_sample['pred_instances']['bboxes'])
+
             pred['keypoints'] = keypoints
             pred['keypoint_scores'] = keypoint_scores
             pred['category_id'] = data_sample.get('category_id', 1)
+            if 'bbox' in data_sample['pred_instances']:
+                pred['bboxes'] = bbox_xyxy2xywh(
+                    data_sample['pred_instances']['bboxes'])
 
             if 'bbox_scores' in data_sample['pred_instances']:
                 # some one-stage models will predict bboxes and scores
@@ -392,11 +394,12 @@ class CocoMetric(BaseMetric):
                     'id': pred['id'],
                     'img_id': pred['img_id'],
                     'category_id': pred['category_id'],
-                    'bbox': pred['bboxes'][idx],
                     'keypoints': pred['keypoints'][idx],
                     'keypoint_scores': pred['keypoint_scores'][idx],
                     'bbox_score': pred['bbox_scores'][idx],
                 }
+                if 'bbox' in pred:
+                    instance['bbox'] = pred['bboxes'][idx]
 
                 if 'areas' in pred:
                     instance['area'] = pred['areas'][idx]
@@ -502,13 +505,17 @@ class CocoMetric(BaseMetric):
             # collect all the person keypoints in current image
             _keypoints = _keypoints.reshape(-1, num_keypoints * 3)
 
-            result = [{
-                'image_id': img_kpt['img_id'],
-                'category_id': img_kpt['category_id'],
-                'bbox': img_kpt['bbox'].tolist(),
-                'keypoints': keypoint.tolist(),
-                'score': float(img_kpt['score']),
-            } for img_kpt, keypoint in zip(img_kpts, _keypoints)]
+            result = []
+            for img_kpt, keypoint in zip(img_kpts, _keypoints):
+                res = {
+                    'image_id': img_kpt['img_id'],
+                    'category_id': img_kpt['category_id'],
+                    'keypoints': keypoint.tolist(),
+                    'score': float(img_kpt['score']),
+                }
+                if 'bbox' in img_kpt:
+                    res['bbox'] = img_kpt['bbox'].tolist(),
+                result.append(res)
 
             cat_results.extend(result)
 
