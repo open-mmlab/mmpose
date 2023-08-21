@@ -7,7 +7,7 @@ from mmengine.config import Config
 from mmengine.runner import Runner
 from torch.utils.data import Dataset
 
-from mmpose.engine.hooks import YOLOPoseModeSwitchHook
+from mmpose.engine.hooks import YOLOXPoseModeSwitchHook
 from mmpose.utils import register_all_modules
 
 
@@ -37,7 +37,7 @@ pipeline2 = [
 register_all_modules()
 
 
-class TestYOLOPoseModeSwitchHook(TestCase):
+class TestYOLOXPoseModeSwitchHook(TestCase):
 
     def test(self):
         train_dataloader = dict(
@@ -55,7 +55,7 @@ class TestYOLOPoseModeSwitchHook(TestCase):
         runner.train_dataloader = Runner.build_dataloader(train_dataloader)
         runner.train_dataloader.dataset.pipeline = pipeline1
 
-        hook = YOLOPoseModeSwitchHook(
+        hook = YOLOXPoseModeSwitchHook(
             num_last_epochs=15, new_train_pipeline=pipeline2)
 
         # test after change mode
