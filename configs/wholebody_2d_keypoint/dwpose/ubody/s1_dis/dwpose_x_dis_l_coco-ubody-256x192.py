@@ -1,5 +1,5 @@
 _base_ = [
-    '../../../rtmpose/ubody/rtmpose-l_8xb64-270e_coco-ubody-wholebody-256x192.py'  # noqa
+    '../../../rtmpose/ubody/rtmpose-l_8xb64-270e_coco-ubody-wholebody-256x192.py'  # noqa: E501
 ]
 
 # model settings
@@ -13,9 +13,12 @@ logit = True
 model = dict(
     _delete_=True,
     type='DWPoseDistiller',
-    teacher_pretrained='https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-x_ucoco_256x192-05f5bcb7_20230822.pth',  # noqa
-    teacher_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-x_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa
-    student_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-l_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa
+    teacher_pretrained='https://download.openmmlab.com/mmpose/v1/projects/'
+    'rtmposev1/rtmpose-x_ucoco_256x192-05f5bcb7_20230822.pth',  # noqa: E501
+    teacher_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/'
+    'rtmpose-x_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa: E501
+    student_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/'
+    'rtmpose-l_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa: E501
     distill_cfg=[
         dict(methods=[
             dict(

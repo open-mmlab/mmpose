@@ -1,5 +1,5 @@
 _base_ = [
-    '../../../rtmpose/ubody/rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py'  # noqa
+    '../../../rtmpose/ubody/rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py'  # noqa: E501
 ]
 
 # model settings
@@ -18,9 +18,12 @@ model = dict(
     _delete_=True,
     type='DWPoseDistiller',
     two_dis=second_dis,
-    teacher_pretrained='work_dirs/dwpose_l_dis_t__coco-ubody-256x192/dw-l-t_ucoco_256.pth',  # noqa
-    teacher_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa
-    student_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa
+    teacher_pretrained='work_dirs/'
+    'dwpose_l_dis_t_coco-ubody-256x192/dw-l-t_ucoco_256.pth',  # noqa: E501
+    teacher_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/'
+    'rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa: E501
+    student_cfg='configs/wholebody_2d_keypoint/rtmpose/ubody/'
+    'rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py',  # noqa: E501
     distill_cfg=[
         dict(methods=[
             dict(
