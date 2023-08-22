@@ -404,7 +404,9 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 我们提供了两种途径来让用户尝试 RTMPose 模型：
 
-- MMPose demo 脚本
+- [在线 RTMPose Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
+- [Examples](https://github.com/open-mmlab/mmpose/tree/dev-1.x/projects/rtmpose/examples/onnxruntime) 基于 Python 和 ONNXRuntime （无 MMCV 依赖）
+- MMPose demo 脚本 （基于 Pytorch）
 - MMDeploy SDK 预编译包 （推荐，速度提升6-10倍）
 
 ### MMPose demo 脚本

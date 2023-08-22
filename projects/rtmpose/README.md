@@ -413,8 +413,10 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 
 We provide two appoaches to try RTMPose:
 
-- MMPose demo scripts
-- Pre-compiled MMDeploy SDK (Recommend, 6-10 times faster)
+- [Online RTMPose Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
+- [Examples](https://github.com/open-mmlab/mmpose/tree/dev-1.x/projects/rtmpose/examples/onnxruntime) based on Python and ONNXRuntime (without mmcv)
+- MMPose demo scripts (based on Pytorch)
+- Pre-compiled MMDeploy SDK (Recommended, 6-10 times faster)
 
 ### MMPose demo scripts
 
