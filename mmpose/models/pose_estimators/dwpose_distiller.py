@@ -1,24 +1,26 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
 from typing import Tuple, Union
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-from torch import Tensor
-
-from .base import BasePoseEstimator
-from mmengine.model import BaseModel
-from mmpose.models import build_pose_estimator, build_head
-from mmpose.registry import MODELS
 from mmengine.config import Config
 from mmengine.logging import MessageHub
-from mmpose.utils.typing import (ConfigType, ForwardResults, InstanceList, OptConfigType,
-                                 Optional, OptMultiConfig, PixelDataList, OptSampleList,
-                                 SampleList)
+from mmengine.model import BaseModel
+from mmengine.runner.checkpoint import (_load_checkpoint, load_checkpoint,
+                                        load_state_dict)
+from torch import Tensor
+
 from mmpose.evaluation.functional import simcc_pck_accuracy
-from mmengine.runner.checkpoint import  load_checkpoint, _load_checkpoint, load_state_dict
+from mmpose.models import build_head, build_pose_estimator
+from mmpose.registry import MODELS
 from mmpose.utils.tensor_utils import to_numpy
+from mmpose.utils.typing import (ConfigType, ForwardResults, InstanceList,
+                                 OptConfigType, Optional, OptMultiConfig,
+                                 OptSampleList, PixelDataList, SampleList)
+from .base import BasePoseEstimator
 
 
 @MODELS.register_module()
@@ -27,36 +29,39 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
 
     It typically consists of teacher_model and student_model.
     """
+
     def __init__(self,
                  teacher_cfg,
                  student_cfg,
-                 two_dis = False,
-                 distill_cfg = None,
-                 teacher_pretrained = None,
+                 two_dis=False,
+                 distill_cfg=None,
+                 teacher_pretrained=None,
                  train_cfg: OptConfigType = None,
                  data_preprocessor: OptConfigType = None,
                  init_cfg: OptMultiConfig = None):
         super().__init__(
-            data_preprocessor=data_preprocessor,
-            init_cfg=init_cfg)
-        
-        self.teacher = build_pose_estimator((Config.fromfile(teacher_cfg)).model)
+            data_preprocessor=data_preprocessor, init_cfg=init_cfg)
+
+        self.teacher = build_pose_estimator(
+            (Config.fromfile(teacher_cfg)).model)
         self.teacher_pretrained = teacher_pretrained
         self.teacher.eval()
         for param in self.teacher.parameters():
             param.requires_grad = False
 
-        self.student = build_pose_estimator((Config.fromfile(student_cfg)).model)
-            
-        self.distill_cfg = distill_cfg   
+        self.student = build_pose_estimator(
+            (Config.fromfile(student_cfg)).model)
+
+        self.distill_cfg = distill_cfg
         self.distill_losses = nn.ModuleDict()
-        if self.distill_cfg is not None:  
+        if self.distill_cfg is not None:
             for item_loc in distill_cfg:
                 for item_loss in item_loc.methods:
                     loss_name = item_loss.name
                     use_this = item_loss.use_this
                     if use_this:
-                        self.distill_losses[loss_name] = MODELS.build(item_loss)
+                        self.distill_losses[loss_name] = MODELS.build(
+                            item_loss)
 
         self.two_dis = two_dis
         self.train_cfg = train_cfg if train_cfg else self.student.train_cfg
@@ -65,7 +70,8 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
 
     def init_weights(self):
         if self.teacher_pretrained is not None:
-            load_checkpoint(self.teacher, self.teacher_pretrained, map_location='cpu')
+            load_checkpoint(
+                self.teacher, self.teacher_pretrained, map_location='cpu')
         self.student.init_weights()
 
     def set_epoch(self):
@@ -105,7 +111,7 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
         self.set_epoch()
 
         losses = dict()
-        
+
         with torch.no_grad():
             fea_t = self.teacher.extract_feat(inputs)
             lt_x, lt_y = self.teacher.head(fea_t)
@@ -113,34 +119,41 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
 
         if not self.two_dis:
             fea_s = self.student.extract_feat(inputs)
-            ori_loss, pred, gt, target_weight = self.head_loss(fea_s, data_samples, train_cfg=self.train_cfg)
+            ori_loss, pred, gt, target_weight = self.head_loss(
+                fea_s, data_samples, train_cfg=self.train_cfg)
             losses.update(ori_loss)
         else:
-            ori_loss, pred, gt, target_weight = self.head_loss(fea_t, data_samples, train_cfg=self.train_cfg)
+            ori_loss, pred, gt, target_weight = self.head_loss(
+                fea_t, data_samples, train_cfg=self.train_cfg)
 
         all_keys = self.distill_losses.keys()
 
         if 'loss_fea' in all_keys:
             loss_name = 'loss_fea'
-            losses[loss_name] = self.distill_losses[loss_name](fea_s[-1], fea_t[-1])
+            losses[loss_name] = self.distill_losses[loss_name](fea_s[-1],
+                                                               fea_t[-1])
             if not self.two_dis:
-                losses[loss_name] = (1-self.epoch/self.max_epochs)*losses[loss_name]
+                losses[loss_name] = (
+                    1 - self.epoch / self.max_epochs) * losses[loss_name]
 
         if 'loss_logit' in all_keys:
             loss_name = 'loss_logit'
-            losses[loss_name] = self.distill_losses[loss_name](pred, pred_t, self.student.head.loss_module.beta, target_weight)
+            losses[loss_name] = self.distill_losses[loss_name](
+                pred, pred_t, self.student.head.loss_module.beta,
+                target_weight)
             if not self.two_dis:
-                losses[loss_name] = (1-self.epoch/self.max_epochs)*losses[loss_name]
+                losses[loss_name] = (
+                    1 - self.epoch / self.max_epochs) * losses[loss_name]
 
         return losses
 
-    def predict(self, inputs,
-                data_samples):
+    def predict(self, inputs, data_samples):
         if self.two_dis:
             assert self.student.with_head, (
                 'The model must have head to perform prediction.')
 
-            multiscale_test = self.student.test_cfg.get('multiscale_test', False)
+            multiscale_test = self.student.test_cfg.get(
+                'multiscale_test', False)
             flip_test = self.student.test_cfg.get('flip_test', False)
 
             # enable multi-scale test
@@ -169,7 +182,8 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
             if not multiscale_test:
                 feats = feats[0]
 
-            preds = self.student.head.predict(feats, data_samples, test_cfg=self.student.test_cfg)
+            preds = self.student.head.predict(
+                feats, data_samples, test_cfg=self.student.test_cfg)
 
             if isinstance(preds, tuple):
                 batch_pred_instances, batch_pred_fields = preds
@@ -177,8 +191,8 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
                 batch_pred_instances = preds
                 batch_pred_fields = None
 
-            results = self.student.add_pred_to_datasample(batch_pred_instances,
-                                                batch_pred_fields, data_samples)
+            results = self.student.add_pred_to_datasample(
+                batch_pred_instances, batch_pred_fields, data_samples)
 
             return results
         else:
@@ -222,7 +236,8 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
 
         # calculate losses
         losses = dict()
-        loss = self.student.head.loss_module(pred_simcc, gt_simcc, keypoint_weights)
+        loss = self.student.head.loss_module(pred_simcc, gt_simcc,
+                                             keypoint_weights)
 
         losses.update(loss_kpt=loss)
 
@@ -240,6 +255,5 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
         return losses, pred_simcc, gt_simcc, keypoint_weights
 
     def _forward(self, inputs: Tensor):
-        
-        return self.student._forward(inputs)
 
+        return self.student._forward(inputs)

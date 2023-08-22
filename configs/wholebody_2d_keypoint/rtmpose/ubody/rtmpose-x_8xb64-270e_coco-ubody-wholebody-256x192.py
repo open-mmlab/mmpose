@@ -51,7 +51,7 @@ codec = dict(
     simcc_split_ratio=2.0,
     normalize=False,
     use_dark=False)
-    
+
 # model settings
 model = dict(
     type='TopdownPoseEstimator',
