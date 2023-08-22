@@ -1,26 +1,21 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from abc import ABCMeta, abstractmethod
-from typing import Tuple, Union
+from abc import ABCMeta
+from typing import Tuple
 
-import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from mmengine.config import Config
 from mmengine.logging import MessageHub
 from mmengine.model import BaseModel
-from mmengine.runner.checkpoint import (_load_checkpoint, load_checkpoint,
-                                        load_state_dict)
+from mmengine.runner.checkpoint import  load_checkpoint
 from torch import Tensor
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
-from mmpose.models import build_head, build_pose_estimator
+from mmpose.models import build_pose_estimator
 from mmpose.registry import MODELS
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (ConfigType, ForwardResults, InstanceList,
-                                 OptConfigType, Optional, OptMultiConfig,
-                                 OptSampleList, PixelDataList, SampleList)
-from .base import BasePoseEstimator
+from mmpose.utils.typing import (ConfigType, ForwardResults, OptMultiConfig,
+                                 OptSampleList, SampleList)
 
 
 @MODELS.register_module()
@@ -152,35 +147,12 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
             assert self.student.with_head, (
                 'The model must have head to perform prediction.')
 
-            multiscale_test = self.student.test_cfg.get(
-                'multiscale_test', False)
-            flip_test = self.student.test_cfg.get('flip_test', False)
-
-            # enable multi-scale test
-            aug_scales = data_samples[0].metainfo.get('aug_scales', None)
-            if multiscale_test:
-                assert isinstance(aug_scales, list)
-                assert is_list_of(inputs, Tensor)
-                # `inputs` includes images in original and augmented scales
-                assert len(inputs) == len(aug_scales) + 1
+            if self.test_cfg.get('flip_test', False):
+                _feats = self.extract_feat(inputs)
+                _feats_flip = self.extract_feat(inputs.flip(-1))
+                feats = [_feats, _feats_flip]
             else:
-                assert isinstance(inputs, Tensor)
-                # single-scale test
-                inputs = [inputs]
-
-            feats = []
-            for _inputs in inputs:
-                if flip_test:
-                    _feats_orig = self.extract_feat(_inputs)
-                    _feats_flip = self.extract_feat(_inputs.flip(-1))
-                    _feats = [_feats_orig, _feats_flip]
-                else:
-                    _feats = self.extract_feat(_inputs)
-
-                feats.append(_feats)
-
-            if not multiscale_test:
-                feats = feats[0]
+                feats = self.extract_feat(inputs)
 
             preds = self.student.head.predict(
                 feats, data_samples, test_cfg=self.student.test_cfg)
