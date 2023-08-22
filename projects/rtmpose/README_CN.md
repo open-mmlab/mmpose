@@ -40,13 +40,22 @@ ______________________________________________________________________
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
+- 2023 年 8 月：
+  - 支持基于 RTMPose 模型蒸馏的 133 点 WholeBody 模型（由 [DWPose](https://github.com/IDEA-Research/DWPose/tree/main) 提供）。
+    - 你可以在 [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) 中使用 DWPose/RTMPose 作为姿态估计后端进行人物图像生成。升级 sd-webui-controlnet >= v1.1237 并选择 `dw_openpose_full` 即可使用。
+    - [在线 Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose) 已支持 DWPose，试玩请选择 `wholebody`。
 - 2023 年 7 月：
+  - 在线 RTMPose 试玩 [Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)。
   - 支持面向艺术图片人体姿态估计的 17 点 Body 模型。
-  - 支持混合数据集蒸馏训练的 133 点 WholeBody 模型。
 - 2023 年 6 月：
   - 发布混合数据集训练的 26 点 Body 模型。
 - 2023 年 5 月：
-  - 添加 [代码示例](./examples/)
+  - 已导出的 SDK 模型（ONNX、TRT、ncnn 等）可以从 [OpenMMLab Deploee](https://platform.openmmlab.com/deploee) 直接下载。
+  - [在线导出](https://platform.openmmlab.com/deploee/task-convert-list) SDK 模型（ONNX、TRT、ncnn 等）。
+  - 添加 [代码示例](./examples/)，包括：
+    - 纯 Python 推理代码示例，无 MMDeploy、MMCV 依赖
+    - C++ 代码示例：ONNXRuntime、TensorRT
+    - Android 项目示例：基于 ncnn
   - 发布混合数据集训练的 Hand, Face, Body 模型。
 - 2023 年 3 月：发布 RTMPose。RTMPose-m 取得 COCO 验证集 75.8 mAP，推理速度达到 430+ FPS 。
 

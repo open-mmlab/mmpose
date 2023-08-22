@@ -44,13 +44,22 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Aug. 2023:
+  - Support distilled 133-keypoint WholeBody models powered by [DWPose](https://github.com/IDEA-Research/DWPose/tree/main).
+    - You can try DWPose/RTMPose with [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) now! Just update your sd-webui-controlnet >= v1.1237, then choose `dw_openpose_full` as preprocessor.
+    - You can try our DWPose with this [Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose) by choosing `wholebody`!
 - Jul. 2023:
+  - Add [Online RTMPose Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose).
   - Support 17-keypoint Body models trained on Human-Art.
-  - Support 133-keypoint WholeBody models trained on combined datasets.
 - Jun. 2023:
   - Release 26-keypoint Body models trained on combined datasets.
 - May. 2023:
-  - Add [code examples](./examples/) of RTMPose.
+  - Exported SDK models (ONNX, TRT, ncnn, etc.) can be downloaded from [OpenMMLab Deploee](https://platform.openmmlab.com/deploee).
+  - [Online Conversion](https://platform.openmmlab.com/deploee/task-convert-list) of `.pth` models into SDK models (ONNX, TensorRT, ncnn, etc.).
+  - Add [code examples](./examples/) of RTMPose, such as:
+    - Pure Python inference without MMDeploy, MMCV etc.
+    - C++ examples with ONNXRuntime and TensorRT backends.
+    - Android examples with ncnn backend.
   - Release Hand, Face, Body models trained on combined datasets.
 - Mar. 2023: RTMPose is released. RTMPose-m runs at 430+ FPS and achieves 75.8 mAP on COCO val set.
 
