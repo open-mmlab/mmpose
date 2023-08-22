@@ -96,9 +96,9 @@ python ./tools/deploy.py \
 
 Parameter descriptions:
 
-- `deploy_cfg`: Deployment configuration specific to mmdeploy, including inference framework type, quantization, and whether the input shape is dynamic or static. The configuration files may have reference relationships, and `configs/mmpretrain/classification_ncnn_static.py` is an example.
+- `deploy_cfg`: Deployment configuration specific to mmdeploy, including inference framework type, quantization, and whether the input shape is dynamic or static. The configuration files may have reference relationships, and `configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py` is an example.
 
-- `model_cfg`: Model configuration specific to the mm algorithm library, e.g., `mmpose/configs/pose-detection_simcc_onnxruntime_dynamic.py`, independent of mmdeploy path.
+- `model_cfg`: Model configuration specific to the mm algorithm library, e.g., `mmpose/configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py`, independent of mmdeploy path.
 
 - `checkpoint`: Path to the torch model. It can be a local file path or a download link (e.g., `http/https`).
 

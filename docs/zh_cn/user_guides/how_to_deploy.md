@@ -96,9 +96,9 @@ python ./tools/deploy.py \
 
 参数描述：
 
-- `deploy_cfg` : mmdeploy 针对此模型的部署配置，包含推理框架类型、是否量化、输入 shape 是否动态等。配置文件之间可能有引用关系，configs/mmpretrain/classification_ncnn_static.py 是一个示例。
+- `deploy_cfg` : mmdeploy 针对此模型的部署配置，包含推理框架类型、是否量化、输入 shape 是否动态等。配置文件之间可能有引用关系，`configs/mmpose/pose-detection_simcc_onnxruntime_dynamic.py` 是一个示例。
 
-- `model_cfg` : mm 算法库的模型配置，例如 mmpretrain/configs/vision_transformer/vit-base-p32_ft-64xb64_in1k-384.py，与 mmdeploy 的路径无关。
+- `model_cfg` : mm 算法库的模型配置，例如 `mmpose/configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py`，与 mmdeploy 的路径无关。
 
 - `checkpoint` : torch 模型路径。可以 http/https 开头，详见 mmcv.FileClient 的实现。
 
