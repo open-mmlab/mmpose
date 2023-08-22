@@ -4,6 +4,8 @@ _base_ = ['../../../_base_/default_runtime.py']
 max_epochs = 270
 stage2_num_epochs = 30
 base_lr = 4e-3
+train_batch_size = 64
+val_batch_size = 32
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)

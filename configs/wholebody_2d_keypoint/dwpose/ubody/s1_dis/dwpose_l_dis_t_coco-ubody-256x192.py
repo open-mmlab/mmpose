@@ -10,7 +10,7 @@ logit = True
 # method details
 model = dict(
     _delete_ = True,
-    type='PoseEstimatorDistiller',
+    type='DWPoseDistiller',
     teacher_pretrained = 'https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_ucoco_256x192-95bb32f5_20230822.pth',
     teacher_cfg = 'configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-l_8xb64-270e_coco-ubody-wholebody-256x192.py',
     student_cfg = 'configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-t_8xb64-270e_coco-ubody-wholebody-256x192.py',

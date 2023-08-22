@@ -22,7 +22,7 @@ from mmpose.utils.tensor_utils import to_numpy
 
 
 @MODELS.register_module()
-class PoseEstimatorDistiller(BaseModel, metaclass=ABCMeta):
+class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
     """Base distiller for detectors.
 
     It typically consists of teacher_model and student_model.

@@ -14,7 +14,7 @@ train_cfg = dict(max_epochs=60, val_interval=10)
 # method details
 model = dict(
     _delete_ = True,
-    type='PoseEstimatorDistiller',
+    type='DWPoseDistiller',
     two_dis = second_dis,
     teacher_pretrained = 'work_dirs/dwpose_l_dis_m_coco-256x192/dw-l-m_coco_256.pth',
     teacher_cfg = 'configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-m_8xb64-270e_coco-wholebody-256x192.py',

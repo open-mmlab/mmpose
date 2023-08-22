@@ -1,0 +1,2 @@
+Requirement already satisfied: xdoctest in /home/yangzhendong/anaconda3/envs/pose/lib/python3.8/site-packages (1.1.1)
+Requirement already satisfied: six in /home/yangzhendong/anaconda3/envs/pose/lib/python3.8/site-packages (from xdoctest) (1.16.0)
