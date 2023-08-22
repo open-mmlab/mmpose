@@ -7,15 +7,15 @@ import torch.nn as nn
 from mmengine.config import Config
 from mmengine.logging import MessageHub
 from mmengine.model import BaseModel
-from mmengine.runner.checkpoint import  load_checkpoint
+from mmengine.runner.checkpoint import load_checkpoint
 from torch import Tensor
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
 from mmpose.models import build_pose_estimator
 from mmpose.registry import MODELS
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (ConfigType, ForwardResults, OptMultiConfig,
-                                 OptSampleList, SampleList)
+from mmpose.utils.typing import (OptConfigType, CForwardResults, OptMultiConfig,
+                                 OptSampleList,  SampleList)
 
 
 @MODELS.register_module()
