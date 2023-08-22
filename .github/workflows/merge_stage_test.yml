@@ -211,7 +211,7 @@ jobs:
           python -m pip install git+https://github.com/open-mmlab/mmengine.git@main
           python -m pip install -U openmim
           mim install 'mmcv >= 2.0.0'
-          mim install 'mmdet >= 3.1.0'
+          mim install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           python -m pip install -r requirements/tests.txt
           python -m pip install -r requirements/runtime.txt
           python -m pip install -r requirements/albu.txt
