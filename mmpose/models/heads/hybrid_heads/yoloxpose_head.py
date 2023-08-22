@@ -417,7 +417,8 @@ class YOLOXPoseHead(BaseModule):
                     losses['loss_kpt_aux'] = self.loss_kpt_aux(
                         kpt_preds_raw, kpt_aux_targets, kpt_weights)
 
-        return losses | extra_info
+        losses.update(extra_info)
+        return losses
 
     @torch.no_grad()
     def _get_targets(

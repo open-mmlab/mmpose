@@ -330,6 +330,16 @@ def nearby_joints_nms(
 
 
 def compute_iou(bbox, bboxes):
+    """Compute the Intersection-over-Union (IoU) for a bounding box with a list
+    of bounding boxes.
+
+    Args:
+        bbox (Tensor): the bounding box (4 elements for x1, y1, x2, y2).
+        param (bboxes): Tensor, list of bounding boxes with the same format
+            as bbox.
+        return (Tensor): the IoU value between bbox and each of the bounding
+            boxes in bboxes.
+    """
 
     bboxes_overlap = torch.stack((
         bboxes[:, 0].clip(min=bbox[0]),
@@ -351,6 +361,20 @@ def nms_torch(bboxes: Tensor,
               threshold: float = 0.65,
               iou_calculator=compute_iou,
               return_group: bool = False):
+    """Perform Non-Maximum Suppression (NMS) on a set of bounding boxes using
+    their corresponding scores.
+
+    Args:
+
+        bboxes (Tensor): list of bounding boxes (each containing 4 elements
+            for x1, y1, x2, y2).
+        scores (Tensor): scores associated with each bounding box.
+        threshold (float): IoU threshold to determine overlap.
+        iou_calculator (function): method to calculate IoU.
+        return_group (bool): if True, returns groups of overlapping bounding
+            boxes, otherwise returns the main bounding boxes.
+    """
+
     _, indices = scores.sort(descending=True)
     groups = []
     while len(indices):
@@ -358,8 +382,10 @@ def nms_torch(bboxes: Tensor,
         bbox = bboxes[idx]
         ious = iou_calculator(bbox, bboxes[indices])
         close_indices = torch.where(ious > threshold)[0]
+        keep_indices = torch.ones_like(indices, dtype=torch.bool)
+        keep_indices[close_indices] = 0
         groups.append(torch.cat((idx[None], indices[close_indices])))
-        indices = indices[~torch.isin(indices, indices[close_indices])]
+        indices = indices[keep_indices]
 
     if return_group:
         return groups

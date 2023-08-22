@@ -2,8 +2,9 @@ _base_ = './yolopose_s_8xb32-300e_coco-640.py'
 
 widen_factor = 0.75
 deepen_factor = 0.67
-checkpoint = 'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_' \
-    'l_8x8_300e_coco/yolox_l_8x8_300e_coco_20211126_140236-d3bd2b23.pth'
+checkpoint = 'https://download.openmmlab.com/mmyolo/v0/yolox/' \
+             'yolox_m_fast_8xb32-300e-rtmdet-hyp_coco/yolox_m_fast_8xb32' \
+             '-300e-rtmdet-hyp_coco_20230210_144328-e657e182.pth'
 
 # model settings
 model = dict(
