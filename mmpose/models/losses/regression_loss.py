@@ -5,9 +5,306 @@ from functools import partial
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.autograd import Variable
 
 from mmpose.registry import MODELS
 from ..utils.realnvp import RealNVP
+
+
+@MODELS.register_module()
+class ReductedWingLoss(nn.Module):
+    """Wing Loss. paper ref: 'Wing Loss for Robust Facial Landmark Localisation
+    with Convolutional Neural Networks' Feng et al. CVPR'2018.
+
+    ReductedWingLoss is a WingLoss with reduction parameter
+
+    Args:
+        omega (float): Also referred to as width.
+                       omega of WingLoss in mmpose is 10.0,
+                       while that of original setting is 0.01.
+        epsilon (float): Also referred to as curvature.
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
+        reduction (string): reduction method for distribution loss calculation.
+                            Default: 'none'.
+    """
+
+    def __init__(self,
+                 omega=0.01,
+                 epsilon=2.0,
+                 use_target_weight=False,
+                 loss_weight=1.,
+                 reduction='none'):
+        super().__init__()
+        self.omega = omega
+        self.epsilon = epsilon
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
+        self.reduction = reduction
+
+        # constant that smoothly links the piecewise-defined linear
+        # and nonlinear parts
+        self.C = self.omega * (1.0 - math.log(1.0 + self.omega / self.epsilon))
+
+    def criterion(self, pred, target, reduction='none'):
+        """Criterion of wingloss.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            pred (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+        """
+
+        delta_2 = (target - pred).pow(2).sum(dim=-1, keepdim=True)
+        delta = delta_2.clamp(min=1e-6).sqrt()
+
+        losses = torch.where(
+            delta < self.omega,
+            self.omega * torch.log(1.0 + delta / self.epsilon), delta - self.C)
+
+        # In pytorch, _Reduction.legacy_get_string with three parameters
+        # (size_average, reduce, reduction) are used to
+        # config the value of reduction (such as mse_loss)，
+        # here we just use str to config reduction simply
+
+        # if size_average is not None or reduce is not None:
+        #      reduction = _Reduction.legacy_get_string(size_average, reduce)
+
+        if reduction == 'none' or reduction is None:
+            return losses
+        elif reduction == 'mean':
+            return losses.mean()
+
+    def forward(self, output, target, reduction='none', target_weight=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            output (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+            target_weight (torch.Tensor[N,K,D]):
+                Weights across different joint types.
+            reduction (string): reduction parameter used in criterion
+        """
+        if self.use_target_weight:
+            assert target_weight is not None
+            loss = self.criterion(output * target_weight,
+                                  target * target_weight, reduction)
+        else:
+            loss = self.criterion(output, target, reduction)
+
+        return loss * self.loss_weight
+
+
+@MODELS.register_module()
+class STARLoss(nn.Module):
+    """STAR Loss: Reducing Semantic Ambiguity in Facial Landmark Detection.'
+    Zhou et al. CVPR 2023. Original implementation:
+    https://github.com/ZhenglinZhou/STAR/blob/master/lib/loss/starLoss_v2.py.
+
+    Args:
+        w (float): The detach restriction with a constant value. Default: 1.0
+        dist (string): The distribution loss calculation method,
+             optional values include
+             'smoothl1', 'l1', 'l2', and 'wing'.
+              The 'wing' denotes ReductedWingLoss().
+        num_dim_image (int): A parameter
+             to construct the unbiased weighted covariance in
+             unbiased_weighted_covariance() function. Default: 2.
+        EPSILON (float): A small positive value
+             to keep calculation results as non-negative value or real number.
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+    """
+
+    def __init__(self,
+                 w=1.0,
+                 dist='wing',
+                 num_dim_image=2,
+                 EPSILON=1e-5,
+                 use_target_weight=False):
+        super(STARLoss, self).__init__()
+        self.w = w
+        self.num_dim_image = num_dim_image
+        self.EPSILON = EPSILON
+        self.use_target_weight = use_target_weight,
+        self.dist = dist
+        if self.dist == 'smoothl1':
+            self.dist_func = SmoothL1Loss()
+        elif self.dist == 'l1':
+            self.dist_func = F.l1_loss
+        elif self.dist == 'l2':
+            self.dist_func = F.mse_loss
+        elif self.dist == 'wing':
+            self.dist_func = ReductedWingLoss()
+        else:
+            raise NotImplementedError
+
+    def __repr__(self):
+        return 'STARLoss()'
+
+    def _make_grid(self, h, w):
+        yy, xx = torch.meshgrid(
+            torch.arange(h).float() / (h - 1) * 2 - 1,
+            torch.arange(w).float() / (w - 1) * 2 - 1)
+        return yy, xx
+
+    def expand_two_dimensions_at_end(self, input, dim1, dim2):
+        input = input.unsqueeze(-1).unsqueeze(-1)
+        input = input.expand(-1, -1, dim1, dim2)
+        return input
+
+    def weighted_mean(self, heatmap):
+        batch, npoints, h, w = heatmap.shape
+
+        yy, xx = self._make_grid(h, w)
+        yy = yy.view(1, 1, h, w).to(heatmap)
+        xx = xx.view(1, 1, h, w).to(heatmap)
+
+        yy_coord = (yy * heatmap).sum([2, 3])  # batch x npoints
+        xx_coord = (xx * heatmap).sum([2, 3])  # batch x npoints
+        coords = torch.stack([xx_coord, yy_coord], dim=-1)
+        return coords
+
+    def unbiased_weighted_covariance(self,
+                                     htp,
+                                     means,
+                                     num_dim_image=2,
+                                     EPSILON=1e-5):
+        batch_size, num_points, height, width = htp.shape
+
+        yv, xv = self._make_grid(height, width)
+        xv = Variable(xv)
+        yv = Variable(yv)
+
+        if htp.is_cuda:
+            xv = xv.cuda()
+            yv = yv.cuda()
+
+        xmean = means[:, :, 0]
+        xv_minus_mean = (
+            xv.expand(batch_size, num_points, -1, -1) -
+            self.expand_two_dimensions_at_end(xmean, height, width))
+        ymean = means[:, :, 1]
+        yv_minus_mean = (
+            yv.expand(batch_size, num_points, -1, -1) -
+            self.expand_two_dimensions_at_end(ymean, height, width))
+        wt_xv_minus_mean = xv_minus_mean
+        wt_yv_minus_mean = yv_minus_mean
+
+        wt_xv_minus_mean = wt_xv_minus_mean.view(batch_size * num_points,
+                                                 height * width)
+        wt_xv_minus_mean = wt_xv_minus_mean.view(batch_size * num_points, 1,
+                                                 height * width)
+        wt_yv_minus_mean = wt_yv_minus_mean.view(batch_size * num_points,
+                                                 height * width)
+        wt_yv_minus_mean = wt_yv_minus_mean.view(batch_size * num_points, 1,
+                                                 height * width)
+        vec_concat = torch.cat((wt_xv_minus_mean, wt_yv_minus_mean), 1)
+
+        htp_vec = htp.view(batch_size * num_points, 1, height * width)
+        htp_vec = htp_vec.expand(-1, 2, -1)
+
+        covariance = torch.bmm(htp_vec * vec_concat,
+                               vec_concat.transpose(1, 2))
+
+        covariance = covariance.view(batch_size, num_points, num_dim_image,
+                                     num_dim_image)
+
+        V_1 = htp.sum([2, 3]) + EPSILON
+        V_2 = torch.pow(htp, 2).sum([2, 3]) + EPSILON
+
+        denominator = V_1 - (V_2 / V_1)
+        covariance = covariance / self.expand_two_dimensions_at_end(
+            denominator, num_dim_image, num_dim_image)
+
+        return covariance
+
+    def ambiguity_guided_decompose(self, error, evalues, evectors):
+
+        bs, npoints = error.shape[:2]
+        normal_vector = evectors[:, :, 0]
+        tangent_vector = evectors[:, :, 1]
+
+        normal_error = torch.matmul(
+            normal_vector.unsqueeze(-2), error.unsqueeze(-1))
+        tangent_error = torch.matmul(
+            tangent_vector.unsqueeze(-2), error.unsqueeze(-1))
+
+        normal_error = normal_error.squeeze(dim=-1)
+        tangent_error = tangent_error.squeeze(dim=-1)
+        normal_dist = self.dist_func(
+            normal_error,
+            torch.zeros_like(normal_error).to(normal_error),
+            reduction='none')
+        tangent_dist = self.dist_func(
+            tangent_error,
+            torch.zeros_like(tangent_error).to(tangent_error),
+            reduction='none')
+
+        normal_dist = normal_dist.reshape(bs, npoints, 1)
+        tangent_dist = tangent_dist.reshape(bs, npoints, 1)
+
+        dist = torch.cat((normal_dist, tangent_dist), dim=-1)
+        scale_dist = dist / torch.sqrt(evalues + self.EPSILON)
+
+        scale_dist = scale_dist.sum(-1)
+        return scale_dist
+
+    def eigenvalue_restriction(self, evalues, batch, npoints):
+        eigen_loss = torch.abs(evalues.view(batch, npoints, 2)).sum(-1)
+        return eigen_loss
+
+    def forward(self, heatmap, groundtruth, target_weight=None):
+
+        # normalize
+        bs, npoints, h, w = heatmap.shape
+
+        heatmap = torch.clamp(
+            heatmap, min=self.EPSILON
+        )  # add this line to keep the sum value as non-negative
+        heatmap_sum = torch.clamp(heatmap.sum([2, 3]), min=self.EPSILON)
+
+        heatmap = heatmap / heatmap_sum.view(bs, npoints, 1, 1)
+
+        means = self.weighted_mean(heatmap)
+        covars = self.unbiased_weighted_covariance(heatmap, means)
+
+        # TODO: GPU-based eigen-decomposition
+        # https://github.com/pytorch/pytorch/issues/60537
+        _covars = covars.view(bs * npoints, 2, 2).cpu()
+
+        # In original implementation, they use syseig() function to calculate
+        # but it is deprecated by new version pytorch
+        # evalues, evectors = _covars.symeig(eigenvectors=True)
+        evalues, evectors = torch.linalg.eigh(_covars, 'U')
+        evalues = torch.clamp(evalues, min=self.EPSILON)
+
+        evalues = evalues.view(bs, npoints, 2).to(heatmap)
+        evectors = evectors.view(bs, npoints, 2, 2).to(heatmap)
+
+        # STAR Loss
+        # Ambiguity-guided Decomposition
+        loss_trans = self.ambiguity_guided_decompose(groundtruth - means,
+                                                     evalues, evectors)
+
+        loss_eigen = self.eigenvalue_restriction(evalues, bs, npoints)
+        star_loss = loss_trans + self.w * loss_eigen
+
+        if self.use_target_weight:
+            assert target_weight is not None
+            star_loss *= target_weight
+
+        return star_loss.mean()
 
 
 @MODELS.register_module()
