@@ -14,8 +14,8 @@ from mmpose.evaluation.functional import simcc_pck_accuracy
 from mmpose.models import build_pose_estimator
 from mmpose.registry import MODELS
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (OptConfigType, CForwardResults, OptMultiConfig,
-                                 OptSampleList,  SampleList)
+from mmpose.utils.typing import (OptConfigType, ForwardResults, SampleList,
+                                 OptSampleList,  OptMultiConfig)
 
 
 @MODELS.register_module()
