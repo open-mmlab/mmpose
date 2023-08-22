@@ -17,7 +17,7 @@ def cast_tensor_type(x, scale=1., dtype=None):
 
 
 @TASK_UTILS.register_module()
-class BboxOverlaps2D:
+class BBoxOverlaps2D:
     """2D Overlaps (e.g. IoUs, GIoUs) Calculator."""
 
     def __init__(self, scale=1., dtype=None):

@@ -7,7 +7,7 @@ from mmpose.structures.bbox import (bbox_clip_border, bbox_corner2xyxy,
                                     bbox_xyxy2corner, get_pers_warp_matrix)
 
 
-class TestBboxClipBorder(TestCase):
+class TestBBoxClipBorder(TestCase):
 
     def test_bbox_clip_border_2D(self):
         bbox = np.array([[10, 20], [60, 80], [-5, 25], [100, 120]])
@@ -34,7 +34,7 @@ class TestBboxClipBorder(TestCase):
         self.assertTrue(np.array_equal(clipped_bbox, expected_bbox))
 
 
-class TestBboxXYXY2Corner(TestCase):
+class TestBBoxXYXY2Corner(TestCase):
 
     def test_bbox_xyxy2corner_single(self):
         bbox = np.array([0, 0, 100, 50])
@@ -55,7 +55,7 @@ class TestBboxXYXY2Corner(TestCase):
         self.assertTrue(np.array_equal(corners, expected_corners))
 
 
-class TestBboxCorner2XYXY(TestCase):
+class TestBBoxCorner2XYXY(TestCase):
 
     def test_bbox_corner2xyxy_single(self):
 

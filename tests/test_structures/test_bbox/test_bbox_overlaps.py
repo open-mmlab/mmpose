@@ -6,7 +6,7 @@ import torch
 from mmpose.structures.bbox import bbox_overlaps  # Import your function here
 
 
-class TestBboxOverlaps(TestCase):
+class TestBBoxOverlaps(TestCase):
 
     def test_bbox_overlaps_iou(self):
         bboxes1 = torch.FloatTensor([

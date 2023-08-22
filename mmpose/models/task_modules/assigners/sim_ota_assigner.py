@@ -27,7 +27,7 @@ class SimOTAAssigner:
         cls_weight (float): The scale factor for classification
             cost. Defaults to 1.0.
         iou_calculator (ConfigType): Config of overlaps Calculator.
-            Defaults to dict(type='BboxOverlaps2D').
+            Defaults to dict(type='BBoxOverlaps2D').
     """
 
     def __init__(self,
@@ -38,7 +38,7 @@ class SimOTAAssigner:
                  oks_weight: float = 3.0,
                  vis_weight: float = 0.0,
                  dynamic_k_indicator: str = 'iou',
-                 iou_calculator: ConfigType = dict(type='BboxOverlaps2D'),
+                 iou_calculator: ConfigType = dict(type='BBoxOverlaps2D'),
                  oks_calculator: ConfigType = dict(type='PoseOKS')):
         self.center_radius = center_radius
         self.candidate_topk = candidate_topk
