@@ -75,7 +75,7 @@ model = dict(
             type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
-            'rtmposev1/cspnext-x_udp-body7_210e-384x288-d28b58e6_20230529.pth'  # noqa
+            'rtmposev1/cspnext-x_udp-body7_210e-384x288-d28b58e6_20230529.pth'  # noqa: E501
         )),
     head=dict(
         type='RTMCCHead',
