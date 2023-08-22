@@ -2,11 +2,12 @@
 import copy
 import json
 import os.path as osp
-from typing import Callable, Dict, List, Optional, Sequence, Union
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from mmengine.fileio import exists, get_local_path
 from mmengine.utils import is_abs
+from xtcocotools.coco import COCO
 
 from mmpose.datasets.datasets import BaseCocoStyleDataset
 from mmpose.registry import DATASETS
@@ -172,21 +173,51 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             lazy_init=lazy_init,
             max_refetch=max_refetch)
 
-    @staticmethod
-    def _is_valid_instance(data_info: Dict) -> bool:
-        """Check a data info is an instance with valid bbox and keypoint
-        annotations."""
-        # crowd annotation
-        if 'iscrowd' in data_info and data_info['iscrowd']:
-            return False
-        # invalid keypoints
-        if 'num_keypoints' in data_info and data_info['num_keypoints'] == 0:
-            return False
-        # invalid keypoints
-        if 'joints_3d' in data_info:
-            if np.max(data_info['joints_3d']) <= 0:
-                return False
-        return True
+    def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
+        """Load data from annotations in COCO format."""
+
+        assert exists(self.ann_file), 'Annotation file does not exist'
+
+        with get_local_path(self.ann_file) as local_path:
+            self.coco = COCO(local_path)
+        # set the metainfo about categories, which is a list of dict
+        # and each dict contains the 'id', 'name', etc. about this category
+        if 'categories' in self.coco.dataset:
+            self._metainfo['CLASSES'] = self.coco.loadCats(
+                self.coco.getCatIds())
+
+        with get_local_path(self.camera_param_file) as local_path:
+            with open(local_path, 'r') as f:
+                self.cameras = json.load(f)
+        with get_local_path(self.joint_file) as local_path:
+            with open(local_path, 'r') as f:
+                self.joints = json.load(f)
+
+        instance_list = []
+        image_list = []
+
+        for idx, img_id in enumerate(self.coco.getImgIds()):
+            img = self.coco.loadImgs(img_id)[0]
+            img.update({
+                'img_id':
+                img_id,
+                'img_path':
+                osp.join(self.data_prefix['img'], img['file_name']),
+            })
+            image_list.append(img)
+
+            ann_ids = self.coco.getAnnIds(imgIds=img_id)
+            ann = self.coco.loadAnns(ann_ids)[0]
+
+            instance_info = self.parse_data_info(
+                dict(raw_ann_info=ann, raw_img_info=img))
+
+            # skip invalid instance annotation.
+            if not instance_info:
+                continue
+
+            instance_list.append(instance_info)
+        return instance_list, image_list
 
     def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
         """Parse raw COCO annotation of an instance.
@@ -206,13 +237,6 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        with get_local_path(self.camera_param_file) as local_path:
-            with open(local_path, 'r') as f:
-                cameras = json.load(f)
-        with get_local_path(self.joint_file) as local_path:
-            with open(local_path, 'r') as f:
-                joints = json.load(f)
-
         if not self.use_gt_root_depth:
             rootnet_result = {}
             with get_local_path(self.rootnet_result_file) as local_path:
@@ -227,15 +251,16 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         camera_name = img['camera']
         frame_idx = str(img['frame_idx'])
         camera_pos = np.array(
-            cameras[capture_id]['campos'][camera_name], dtype=np.float32)
+            self.cameras[capture_id]['campos'][camera_name], dtype=np.float32)
         camera_rot = np.array(
-            cameras[capture_id]['camrot'][camera_name], dtype=np.float32)
+            self.cameras[capture_id]['camrot'][camera_name], dtype=np.float32)
         focal = np.array(
-            cameras[capture_id]['focal'][camera_name], dtype=np.float32)
+            self.cameras[capture_id]['focal'][camera_name], dtype=np.float32)
         principal_pt = np.array(
-            cameras[capture_id]['princpt'][camera_name], dtype=np.float32)
+            self.cameras[capture_id]['princpt'][camera_name], dtype=np.float32)
         joint_world = np.array(
-            joints[capture_id][frame_idx]['world_coord'], dtype=np.float32)
+            self.joints[capture_id][frame_idx]['world_coord'],
+            dtype=np.float32)
         joint_valid = np.array(ann['joint_valid'], dtype=np.float32).flatten()
         keypoints_cam = np.dot(
             camera_rot,
