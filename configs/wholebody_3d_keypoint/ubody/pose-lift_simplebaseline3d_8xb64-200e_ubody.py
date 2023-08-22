@@ -112,8 +112,39 @@ model = dict(
     ))
 
 # base dataset settings
-dataset_type = 'Human36mDataset'
-data_root = 'data/h36m/'
+dataset_type = 'UBody3dDataset'
+data_mode = 'topdown'
+data_root = 'data/UBody/'
+
+scenes = [
+    'Magic_show', 'Entertainment', 'ConductMusic', 'Online_class', 'TalkShow',
+    'Speech', 'Fitness', 'Interview', 'Olympic', 'TVShow', 'Singing',
+    'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
+]
+
+train_datasets = []
+val_datasets = []
+
+for scene in scenes:
+    train_dataset = dict(
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file=f'annotations/{scene}/train_3dkeypoint_annotation.json',
+        seq_len=1,
+        causal=True,
+        keypoint_2d_src='gt',
+        data_prefix=dict(img='images/'),
+        pipeline=[])
+    val_dataset = dict(
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file=f'annotations/{scene}/val_3dkeypoint_annotation.json',
+        data_prefix=dict(img='images/'),
+        pipeline=[])
+    train_datasets.append(train_dataset)
+    val_datasets.append(val_dataset)
 
 # pipelines
 train_pipeline = [
@@ -133,30 +164,23 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
-        type=dataset_type,
-        ann_file='annotation_body3d/fps50/h36m_train.npz',
-        seq_len=1,
-        causal=True,
-        keypoint_2d_src='gt',
-        data_root=data_root,
-        data_prefix=dict(img='images/'),
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/ubody3d.py'),
+        datasets=train_datasets,
         pipeline=train_pipeline,
+        test_mode=False,
     ))
 val_dataloader = dict(
     batch_size=64,
     num_workers=2,
     persistent_workers=True,
-    drop_last=False,
-    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
-        type=dataset_type,
-        ann_file='annotation_body3d/fps50/h36m_test.npz',
-        seq_len=1,
-        causal=True,
-        keypoint_2d_src='gt',
-        data_root=data_root,
-        data_prefix=dict(img='images/'),
-        pipeline=train_pipeline,
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/ubody3d.py'),
+        datasets=val_datasets,
+        pipeline=val_pipeline,
+        test_mode=True,
     ))
 test_dataloader = val_dataloader
 
