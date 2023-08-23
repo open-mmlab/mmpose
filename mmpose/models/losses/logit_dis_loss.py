@@ -2,18 +2,26 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from mmpose.registry import MODELS
+
 
 @MODELS.register_module()
 class KDLoss(nn.Module):
+    """PyTorch version of logit-based distillation from DWPose Modified from
+    the official implementation.
 
-    """ PyTorch version of KD for Pose """
+    <https://github.com/IDEA-Research/DWPose>
+    Args:
+        weight (float, optional): Weight of dis_loss. Defaults to 1.0
+    """
 
-    def __init__(self,
-                 name,
-                 use_this,
-                 weight=1.0,
-                 ):
+    def __init__(
+        self,
+        name,
+        use_this,
+        weight=1.0,
+    ):
         super(KDLoss, self).__init__()
 
         self.log_softmax = nn.LogSoftmax(dim=1)
@@ -30,17 +38,14 @@ class KDLoss(nn.Module):
         num_joints = ls_x.size(1)
         loss = 0
 
-        loss += (
-            self.loss(ls_x, lt_x, beta, target_weight))
-        loss += (
-            self.loss(ls_y, lt_y, beta, target_weight))
+        loss += (self.loss(ls_x, lt_x, beta, target_weight))
+        loss += (self.loss(ls_y, lt_y, beta, target_weight))
 
         return loss / num_joints
 
     def loss(self, logit_s, logit_t, beta, weight):
-        
+
         N = logit_s.shape[0]
-        Bins = logit_s.shape[-1]
 
         if len(logit_s.shape) == 3:
             K = logit_s.shape[1]
