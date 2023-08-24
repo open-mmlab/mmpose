@@ -52,6 +52,11 @@ class SimCCLabel(BaseKeypointCodec):
     Estimation`: https://arxiv.org/abs/2107.03332
     """
 
+    label_mapping_table = dict(
+        keypoint_weights='keypoint_weights',
+        keypoint_x_labels='keypoint_x_labels',
+        keypoint_y_labels='keypoint_y_labels')
+
     def __init__(self,
                  input_size: Tuple[int, int],
                  smoothing_type: str = 'gaussian',
