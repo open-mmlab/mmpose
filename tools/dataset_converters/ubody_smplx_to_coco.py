@@ -214,11 +214,12 @@ def cam2pixel(cam_coord, f, c):
 
 
 def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
-                       human_model: SMPLX):
+                       human_model_path: str):
     annos = read_annotation_file(
         osp.join(annotation_root, scene, 'smplx_annotation.json'))
     keypoint_annos = COCO(
         osp.join(annotation_root, scene, 'keypoint_annotation.json'))
+    human_model = SMPLX(human_model_path)
 
     train_annos = []
     val_annos = []
@@ -294,15 +295,15 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
 
         # init human model inputs
         device = torch.device(
-            'cuda') if torch.cuda.is_available() else torch.device('cpu')
-        root_pose = torch.FloatTensor(root_pose, device=device).view(1, 3)
-        body_pose = torch.FloatTensor(body_pose, device=device).view(-1, 3)
-        lhand_pose = torch.FloatTensor(lhand_pose, device=device).view(-1, 3)
-        rhand_pose = torch.FloatTensor(rhand_pose, device=device).view(-1, 3)
-        jaw_pose = torch.FloatTensor(jaw_pose, device=device).view(-1, 3)
-        shape = torch.FloatTensor(shape, device=device).view(1, -1)
-        expr = torch.FloatTensor(expr, device=device).view(1, -1)
-        trans = torch.FloatTensor(trans, device=device).view(1, -1)
+            'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+        root_pose = torch.FloatTensor(root_pose).to(device).view(1, 3)
+        body_pose = torch.FloatTensor(body_pose).to(device).view(-1, 3)
+        lhand_pose = torch.FloatTensor(lhand_pose).to(device).view(-1, 3)
+        rhand_pose = torch.FloatTensor(rhand_pose).to(device).view(-1, 3)
+        jaw_pose = torch.FloatTensor(jaw_pose).to(device).view(-1, 3)
+        shape = torch.FloatTensor(shape).to(device).view(1, -1)
+        expr = torch.FloatTensor(expr).to(device).view(1, -1)
+        trans = torch.FloatTensor(trans).to(device).view(1, -1)
         zero_pose = torch.zeros((1, 3), dtype=torch.float32, device=device)
 
         with torch.no_grad():
@@ -318,7 +319,7 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
                 reye_pose=zero_pose,
                 expression=expr)
 
-        joint_cam = output.joints[0].numpy()[human_model.joint_idx, :]
+        joint_cam = output.joints[0].cpu().numpy()[human_model.joint_idx, :]
         joint_img = cam2pixel(joint_cam, cam_param['focal'],
                               cam_param['princpt'])
 
@@ -351,6 +352,7 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
                   2] = ((joint_cam[human_model.joint_part['face'], 2].copy() /
                          (body_3d_size / 2) + 1) / 2.0 * output_hm_shape[0])
 
+        coord_valid = coord_valid.reshape((-1, 1))
         keypoints_2d = np.concatenate([joint_img[:, :2].copy(), coord_valid],
                                       axis=1)
         keypoints_3d = np.concatenate([joint_img, coord_valid], axis=1)
@@ -403,7 +405,7 @@ if __name__ == '__main__':
     annotation_path = f'{args.data_root}/annotations'
 
     folders = os.listdir(annotation_path)
-    human_model = SMPLX(args.human_model_path)
+    human_model_path = args.human_model_path
     splits = np.load(split_path)
 
     if args.nproc > 1:
@@ -412,11 +414,11 @@ if __name__ == '__main__':
                 process_scene_anno,
                 annotation_root=annotation_path,
                 splits=splits,
-                human_model=human_model), folders, args.nproc)
+                human_model_path=human_model_path), folders, args.nproc)
     else:
         mmengine.track_progress(
             partial(
                 process_scene_anno,
                 annotation_root=annotation_path,
                 splits=splits,
-                human_model=human_model), folders)
+                human_model_path=human_model_path), folders)
