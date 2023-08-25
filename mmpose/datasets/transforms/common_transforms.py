@@ -1028,8 +1028,6 @@ class GenerateTarget(BaseTransform):
                     encoded['keypoint_weights'] = keypoint_weights
 
         encoded['label_mapping_table'] = self.encoder.label_mapping_table
-        encoded['field_mapping_table'] = self.encoder.field_mapping_table
-        encoded['instance_mapping_table'] = self.encoder.instance_mapping_table
 
         if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
             if isinstance(encoded['keypoint_weights'], list):

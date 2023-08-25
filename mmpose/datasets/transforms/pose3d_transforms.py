@@ -110,9 +110,9 @@ class RandomFlipAroundRoot(BaseTransform):
                 lifting_target, lifting_target_visible, flip_indices,
                 **self.target_flip_cfg)
 
-            results[keypoints_key] = keypoints
-            results[keypoints_visible_key] = keypoints_visible
-            results[target_key] = lifting_target
+            results['keypoints_key'] = keypoints
+            results['keypoints_visible_key'] = keypoints_visible
+            results['target_key'] = lifting_target
             results['lifting_target_visible'] = lifting_target_visible
 
             # flip horizontal distortion coefficients

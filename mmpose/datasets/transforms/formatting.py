@@ -102,6 +102,30 @@ class PackPoseInputs(BaseTransform):
             'flip_direction', 'flip_indices', 'raw_ann_info')``
     """
 
+    # items in `instance_mapping_table` will be directly packed into
+    # PoseDataSample.gt_instances without converting to Tensor
+    instance_mapping_table = dict(
+        bbox='bboxes',
+        head_size='head_size',
+        bbox_center='bbox_centers',
+        bbox_scale='bbox_scales',
+        bbox_score='bbox_scores',
+        keypoints='keypoints',
+        keypoints_visible='keypoints_visible',
+        lifting_target='lifting_target',
+        lifting_target_visible='lifting_target_visible')
+
+    # items in `field_mapping_table` will be packed into
+    # PoseDataSample.gt_fields and converted to Tensor. These items will be
+    # used for computing losses
+    field_mapping_table = dict(
+        heatmaps='heatmaps',
+        instance_heatmaps='instance_heatmaps',
+        heatmap_mask='heatmap_mask',
+        heatmap_weights='heatmap_weights',
+        displacements='displacements',
+        displacement_weights='displacement_weights')
+
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'category_id',
                             'crowd_index', 'ori_shape', 'img_shape',
@@ -141,7 +165,12 @@ class PackPoseInputs(BaseTransform):
 
         # pack instance data
         gt_instances = InstanceData()
-        for key, packed_key in results['instance_mapping_table'].items():
+        for key, packed_key in self.instance_mapping_table.items():
+            # skip 2d keypoints if the task is pose-lifting
+            if 'lifting_target' in results and key in {
+                    'keypoints', 'keypoints_visible'
+            }:
+                continue
             if key in results:
                 gt_instances.set_field(results[key], packed_key)
 
@@ -171,7 +200,7 @@ class PackPoseInputs(BaseTransform):
 
         # pack fields
         gt_fields = None
-        for key, packed_key in results['field_mapping_table'].items():
+        for key, packed_key in self.field_mapping_table.items():
             if key in results:
                 if isinstance(results[key], list):
                     if gt_fields is None:

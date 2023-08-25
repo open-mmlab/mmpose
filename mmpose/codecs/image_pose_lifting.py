@@ -46,11 +46,6 @@ class ImagePoseLifting(BaseKeypointCodec):
         lifting_target_label='lifting_target_label',
         lifting_target_weight='lifting_target_weight')
 
-    instance_mapping_table = dict(
-        lifting_target='lifting_target',
-        lifting_target_visible='lifting_target_visible',
-    )
-
     def __init__(self,
                  num_keypoints: int,
                  root_index: int,

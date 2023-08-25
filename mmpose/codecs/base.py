@@ -26,28 +26,6 @@ class BaseKeypointCodec(metaclass=ABCMeta):
         keypoint_weights='keypoint_weights',
         keypoints_visible_weights='keypoints_visible_weights')
 
-    # items in `field_mapping_table` will be packed into
-    # PoseDataSample.gt_fields and converted to Tensor. These items will be
-    # used for computing losses
-    field_mapping_table = dict(
-        heatmaps='heatmaps',
-        instance_heatmaps='instance_heatmaps',
-        heatmap_mask='heatmap_mask',
-        heatmap_weights='heatmap_weights',
-        displacements='displacements',
-        displacement_weights='displacement_weights')
-
-    # items in `instance_mapping_table` will be directly packed into
-    # PoseDataSample.gt_instances without converting to Tensor
-    instance_mapping_table = dict(
-        bbox='bboxes',
-        head_size='head_size',
-        bbox_center='bbox_centers',
-        bbox_scale='bbox_scales',
-        bbox_score='bbox_scores',
-        keypoints='keypoints',
-        keypoints_visible='keypoints_visible')
-
     @abstractmethod
     def encode(self,
                keypoints: np.ndarray,
