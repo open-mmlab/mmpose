@@ -244,6 +244,9 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
         if not os.path.exists(img_path):
             progress_bar.update()
             continue
+        if aid not in annos:
+            progress_bar.update()
+            continue
 
         smplx_param = annos[str(aid)]
         human_model_param = smplx_param['smplx_param']
