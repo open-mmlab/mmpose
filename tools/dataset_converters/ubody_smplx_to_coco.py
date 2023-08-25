@@ -37,6 +37,8 @@ class SMPLX(object):
             use_pca=False,
             use_face_contour=True,
             **self.layer_args)
+        if torch.cuda.is_available():
+            self.neutral_model = self.neutral_model.to('cuda:0')
 
         self.vertex_num = 10475
         self.face = self.neutral_model.faces
@@ -254,10 +256,10 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
                                  dtype=np.float32)
         coord_valid = np.ones((human_model.joint_num), dtype=np.float32)
 
-        root_pose, body_pose, shape, trans = (human_model_param['root_pose'],
-                                              human_model_param['body_pose'],
-                                              human_model_param['shape'],
-                                              human_model_param['trans'])
+        root_pose = human_model_param['root_pose']
+        body_pose = human_model_param['body_pose']
+        shape = human_model_param['shape']
+        trans = human_model_param['trans']
 
         if 'lhand_pose' in human_model_param and human_model_param.get(
                 'lhand_valid', False):
@@ -291,15 +293,18 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
             coord_valid[human_model.orig_joint_part['face']] = 0
 
         # init human model inputs
-        root_pose = torch.FloatTensor(root_pose).view(1, 3)
-        body_pose = torch.FloatTensor(body_pose).view(-1, 3)
-        lhand_pose = torch.FloatTensor(lhand_pose).view(-1, 3)
-        rhand_pose = torch.FloatTensor(rhand_pose).view(-1, 3)
-        jaw_pose = torch.FloatTensor(jaw_pose).view(-1, 3)
-        shape = torch.FloatTensor(shape).view(1, -1)
-        expr = torch.FloatTensor(expr).view(1, -1)
-        trans = torch.FloatTensor(trans).view(1, -1)
-        zero_pose = torch.zeros((1, 3), dtype=torch.float32)
+        device = torch.device(
+            'cuda') if torch.cuda.is_available() else torch.device('cpu')
+        root_pose = torch.FloatTensor(root_pose, device=device).view(1, 3)
+        body_pose = torch.FloatTensor(body_pose, device=device).view(-1, 3)
+        lhand_pose = torch.FloatTensor(lhand_pose, device=device).view(-1, 3)
+        rhand_pose = torch.FloatTensor(rhand_pose, device=device).view(-1, 3)
+        jaw_pose = torch.FloatTensor(jaw_pose, device=device).view(-1, 3)
+        shape = torch.FloatTensor(shape, device=device).view(1, -1)
+        expr = torch.FloatTensor(expr, device=device).view(1, -1)
+        trans = torch.FloatTensor(trans, device=device).view(1, -1)
+        zero_pose = torch.zeros((1, 3), dtype=torch.float32, device=device)
+
         with torch.no_grad():
             output = human_model.neutral_model(
                 betas=shape,
@@ -346,23 +351,21 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
                   2] = ((joint_cam[human_model.joint_part['face'], 2].copy() /
                          (body_3d_size / 2) + 1) / 2.0 * output_hm_shape[0])
 
-        keypoints_2d = joint_img[:, :2].copy()
-        ann_3d = {
-            **ann,
-            'keypoints_3d': joint_cam.tolist(),
-        }
-        ann_3d['keypoints'] = keypoints_2d.tolist()
-
+        keypoints_2d = np.concatenate([joint_img[:, :2].copy(), coord_valid],
+                                      axis=1)
+        keypoints_3d = np.concatenate([joint_img, coord_valid], axis=1)
+        ann['keypoints'] = keypoints_2d.tolist()
+        ann['keypoints_3d'] = keypoints_3d.tolist()
         img['file_name'] = os.path.join(scene, file_name)
         if video_name in splits:
-            val_annos.append(ann_3d)
+            val_annos.append(ann)
             val_imgs.append(img)
         else:
-            train_annos.append(ann_3d)
+            train_annos.append(ann)
             train_imgs.append(img)
         progress_bar.update()
 
-    categoreis = [{
+    categories = [{
         'supercategory': 'person',
         'id': 1,
         'name': 'person',
@@ -372,12 +375,12 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
     train_data = {
         'images': train_imgs,
         'annotations': train_annos,
-        'categories': categoreis
+        'categories': categories
     }
     val_data = {
         'images': val_imgs,
         'annotations': val_annos,
-        'categories': categoreis
+        'categories': categories
     }
 
     mmengine.dump(
