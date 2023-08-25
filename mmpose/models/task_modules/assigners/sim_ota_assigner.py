@@ -35,7 +35,7 @@ class SimOTAAssigner:
                  candidate_topk: int = 10,
                  iou_weight: float = 3.0,
                  cls_weight: float = 1.0,
-                 oks_weight: float = 3.0,
+                 oks_weight: float = 0.0,
                  vis_weight: float = 0.0,
                  dynamic_k_indicator: str = 'iou',
                  iou_calculator: ConfigType = dict(type='BBoxOverlaps2D'),
@@ -129,16 +129,20 @@ class SimOTAAssigner:
         if self.iou_weight > 0:
             iou_cost = -torch.log(pairwise_ious + EPS)
             cost_matrix = cost_matrix + iou_cost * self.iou_weight
-        # calculate oks
-        pairwise_oks = self.oks_calculator(
-            valid_pred_kpts.unsqueeze(1),  # [num_valid, 1, k, 2]
-            target=gt_keypoints.unsqueeze(0),  # [1, num_gt, k, 2]
-            target_weights=gt_keypoints_visible.unsqueeze(0),  # [1, num_gt, k]
-            areas=gt_areas.unsqueeze(0),  # [1, num_gt]
-        )  # -> [num_valid, num_gt]
 
-        oks_cost = -torch.log(pairwise_oks + EPS)
-        cost_matrix = cost_matrix + oks_cost * self.oks_weight
+        # calculate oks
+        if self.oks_weight > 0 or self.dynamic_k_indicator == 'oks':
+            pairwise_oks = self.oks_calculator(
+                valid_pred_kpts.unsqueeze(1),  # [num_valid, 1, k, 2]
+                target=gt_keypoints.unsqueeze(0),  # [1, num_gt, k, 2]
+                target_weights=gt_keypoints_visible.unsqueeze(
+                    0),  # [1, num_gt, k]
+                areas=gt_areas.unsqueeze(0),  # [1, num_gt]
+            )  # -> [num_valid, num_gt]
+
+            oks_cost = -torch.log(pairwise_oks + EPS)
+            cost_matrix = cost_matrix + oks_cost * self.oks_weight
+
         # calculate cls
         if self.cls_weight > 0:
             gt_onehot_label = (

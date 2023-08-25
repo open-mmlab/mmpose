@@ -104,7 +104,7 @@ model = dict(
             act_cfg=dict(type='Swish')),
         prior_generator=dict(
             type='MlvlPointGenerator', offset=0, strides=[8, 16, 32]),
-        assigner=dict(type='SimOTAAssigner', dynamic_k_indicator='oks'),
+        assigner=dict(type='SimOTAAssigner'),
         overlaps_power=0.5,
         loss_cls=dict(type='BCELoss', reduction='sum', loss_weight=1.0),
         loss_bbox=dict(
@@ -122,6 +122,7 @@ model = dict(
             type='OKSLoss',
             reduction='none',
             metainfo='configs/_base_/datasets/coco.py',
+            norm_target_weight=True,
             loss_weight=30.0),
         loss_vis=dict(
             type='BCELoss',
@@ -129,11 +130,6 @@ model = dict(
             reduction='mean',
             loss_weight=1.0),
         loss_bbox_aux=dict(type='L1Loss', reduction='sum', loss_weight=1.0),
-        loss_kpt_aux=dict(
-            type='L1Loss',
-            reduction='sum',
-            use_target_weight=True,
-            loss_weight=1.0),
     ),
     test_cfg=dict(
         score_thr=0.001,
@@ -198,7 +194,6 @@ train_pipeline_stage2 = [
     ),
     dict(type='YOLOXHSVRandomAug'),
     dict(type='RandomFlip'),
-    dict(type='BottomupGetHeatmapMask', get_invalid=True),
     dict(type='FilterAnnotations', by_kpt=True, by_box=True, keep_empty=False),
     dict(type='GenerateTarget', encoder=codec),
     dict(

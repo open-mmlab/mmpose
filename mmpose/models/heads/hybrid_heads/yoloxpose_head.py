@@ -91,9 +91,6 @@ class YOLOXPoseHeadModule(BaseModule):
 
         self._init_layers()
 
-        # Register the hook to automatically convert old version state dicts
-        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
-
     def _init_layers(self):
         """Initialize heads for all level feature maps."""
         self._init_cls_branch()
@@ -224,35 +221,6 @@ class YOLOXPoseHeadModule(BaseModule):
 
         return cls_scores, objectnesses, bbox_preds, kpt_offsets, kpt_vis
 
-    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
-                                  **kwargs):
-        """A hook function to convert old-version state dict of
-        :class:`DeepposeRegressionHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`RegressionHead`.
-
-        The hook will be automatically registered during initialization.
-        """
-
-        # convert old-version state dict
-        keys = list(state_dict.keys())
-        for _k in keys:
-
-            if 'bbox_head' not in _k:
-                continue
-
-            v = state_dict.pop(_k)
-            _k = _k.replace('bbox_head.', 'head.')
-            _k = _k.replace('multi_level_cls_convs', 'conv_cls')
-            _k = _k.replace('multi_level_reg_convs', 'conv_reg')
-            _k = _k.replace('multi_level_pose_convs', 'conv_pose')
-            _k = _k.replace('multi_level_conv_cls', 'out_cls')
-            _k = _k.replace('multi_level_conv_reg', 'out_bbox')
-            _k = _k.replace('multi_level_conv_obj', 'out_obj')
-            _k = _k.replace('multi_level_conv_offsets', 'out_kpt')
-            _k = _k.replace('multi_level_conv_vis', 'out_kpt_vis')
-
-            state_dict[_k] = v
-
 
 @MODELS.register_module()
 class YOLOXPoseHead(BaseModule):
@@ -369,7 +337,6 @@ class YOLOXPoseHead(BaseModule):
 
         # 3. calculate loss
         # 3.1 objectness loss
-        extra_info = dict(num_samples=num_total_samples)
         losses = dict()
 
         obj_preds = flatten_objectness.view(-1, 1)
@@ -397,7 +364,6 @@ class YOLOXPoseHead(BaseModule):
             # 3.5 classification loss
             cls_preds = flatten_cls_scores.view(-1,
                                                 self.num_classes)[pos_masks]
-            extra_info['overlaps'] = cls_targets
             cls_targets = cls_targets.pow(self.overlaps_power).detach()
             losses['loss_cls'] = self.loss_cls(cls_preds,
                                                cls_targets) / num_total_samples
@@ -417,7 +383,6 @@ class YOLOXPoseHead(BaseModule):
                     losses['loss_kpt_aux'] = self.loss_kpt_aux(
                         kpt_preds_raw, kpt_aux_targets, kpt_weights)
 
-        losses.update(extra_info)
         return losses
 
     @torch.no_grad()
@@ -527,7 +492,6 @@ class YOLOXPoseHead(BaseModule):
         # TODO: change the shape of objectness to [num_priors]
         num_priors = priors.size(0)
         gt_instances = data_sample.gt_instance_labels
-        gt_fields = data_sample.get('gt_fields', dict())
         num_gts = len(gt_instances)
 
         # No target
@@ -586,23 +550,7 @@ class YOLOXPoseHead(BaseModule):
         # obj target
         obj_target = torch.zeros_like(objectness)
         obj_target[pos_inds] = 1
-
-        invalid_mask = gt_fields.get('heatmap_mask', None)
-        if invalid_mask is not None and (invalid_mask != 0.0).any():
-            # do not consider the tokens which predict the attributes
-            # of unlabeled instances
-            pred_vis = (kpt_vis.unsqueeze(-1) > 0.3).float()
-            mean_kpts = (decoded_kpts * pred_vis).sum(dim=1) / pred_vis.sum(
-                dim=1).clamp(min=EPS)
-            mean_kpts = mean_kpts.reshape(1, -1, 1, 2)
-            wh = invalid_mask.shape[-1]
-            grids = mean_kpts / (wh - 1) * 2 - 1
-            mask = invalid_mask.unsqueeze(0).float()
-            weight = F.grid_sample(
-                mask, grids, mode='bilinear', padding_mode='zeros')
-            obj_weight = 1.0 - weight.reshape(num_priors, 1)
-        else:
-            obj_weight = obj_target.new_ones(obj_target.shape)
+        obj_weight = obj_target.new_ones(obj_target.shape)
 
         # misc
         foreground_mask = torch.zeros_like(objectness.squeeze()).to(torch.bool)

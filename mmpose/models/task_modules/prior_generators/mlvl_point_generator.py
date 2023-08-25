@@ -131,14 +131,12 @@ class MlvlPointGenerator:
         # keep featmap_size as Tensor instead of int, so that we
         # can convert to ONNX correctly
         shift_x = shift_x.to(dtype)
-        shift_x = shift_x + float(stride_w - 1) / 2.0
 
         shift_y = (torch.arange(0, feat_h, device=device) +
                    self.offset) * stride_h
         # keep featmap_size as Tensor instead of int, so that we
         # can convert to ONNX correctly
         shift_y = shift_y.to(dtype)
-        shift_y = shift_y + float(stride_h - 1) / 2.0
 
         shift_xx, shift_yy = self._meshgrid(shift_x, shift_y)
         if not with_stride:

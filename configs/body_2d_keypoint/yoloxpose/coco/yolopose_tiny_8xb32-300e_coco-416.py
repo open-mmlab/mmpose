@@ -75,7 +75,6 @@ train_pipeline_stage2 = [
     ),
     dict(type='YOLOXHSVRandomAug'),
     dict(type='RandomFlip'),
-    dict(type='BottomupGetHeatmapMask', get_invalid=True),
     dict(type='FilterAnnotations', by_kpt=True, by_box=True, keep_empty=False),
     dict(type='GenerateTarget', encoder=codec),
     dict(
@@ -89,7 +88,7 @@ train_pipeline_stage2 = [
         }),
 ]
 
-train_dataloader = dict(dataset=dict(pipeline=train_pipeline_stage1, ))
+train_dataloader = dict(dataset=dict(pipeline=train_pipeline_stage1))
 
 val_pipeline = [
     dict(type='LoadImage'),
