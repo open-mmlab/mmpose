@@ -35,7 +35,7 @@ class SimOTAAssigner:
                  candidate_topk: int = 10,
                  iou_weight: float = 3.0,
                  cls_weight: float = 1.0,
-                 oks_weight: float = 0.0,
+                 oks_weight: float = 3.0,
                  vis_weight: float = 0.0,
                  dynamic_k_indicator: str = 'iou',
                  iou_calculator: ConfigType = dict(type='BBoxOverlaps2D'),
