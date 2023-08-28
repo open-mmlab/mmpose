@@ -208,17 +208,17 @@ jobs:
       - name: Install mmpose dependencies
         run: |
           python -m pip install -U numpy
+          python -m pip install --upgrade pip setuptools wheel
           python -m pip install git+https://github.com/open-mmlab/mmengine.git@main
           python -m pip install -U openmim
           mim install 'mmcv >= 2.0.0'
-          python -m pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
+          mim install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
           python -m pip install -r requirements/tests.txt
           python -m pip install -r requirements/runtime.txt
           python -m pip install -r requirements/albu.txt
           python -m pip install -r requirements/poseval.txt
       - name: Build and install
         run: |
-          python -m pip install --upgrade pip setuptools wheel
           python -m pip install -e . -v
       - name: Run unittests and generate coverage report
         run: |
