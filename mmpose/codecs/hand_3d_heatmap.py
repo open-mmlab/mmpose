@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 
 import numpy as np
 
-from mmpose.codecs.utils import camera_to_pixel
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
 from .utils.gaussian_heatmap import generate_3d_gaussian_heatmaps
@@ -121,22 +120,9 @@ class Hand3DHeatmap(BaseKeypointCodec):
             assert dataset_keypoint_weights is not None, 'To use different ' \
                 'joint weights,`dataset_keypoint_weights` cannot be None.'
 
-        keypoints_img = camera_to_pixel(
-            keypoints,
-            focal[0],
-            focal[1],
-            principal_pt[0],
-            principal_pt[1],
-            shift=True)[..., :2]
-        joints_3d = np.zeros((keypoints.shape[-2], 3),
-                             dtype=np.float32).reshape(1, -1, 3)
-        joints_3d[..., :2] = keypoints_img
-        joints_3d[..., :21, 2] = keypoints[..., :21, 2] - keypoints[..., 20, 2]
-        joints_3d[..., 21:, 2] = keypoints[..., 21:, 2] - keypoints[..., 41, 2]
-
         heatmaps, keypoint_weights = generate_3d_gaussian_heatmaps(
             heatmap_size=self.heatmap_size,
-            keypoints=joints_3d,
+            keypoints=keypoints,
             keypoints_visible=keypoints_visible,
             sigma=self.sigma,
             image_size=self.image_size,

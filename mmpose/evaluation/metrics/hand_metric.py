@@ -47,7 +47,7 @@ class HandMetric(BaseMetric):
             # ground truth data_info
             gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['keypoints']
+            gt_coords = gt['keypoints_cam']
 
             keypoints_cam = gt_coords.copy()
             # ground truth keypoints_visible, [1, K, 1]

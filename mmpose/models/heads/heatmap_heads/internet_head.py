@@ -7,6 +7,7 @@ from mmengine.model import normal_init
 from mmengine.structures import InstanceData
 from torch import Tensor, nn
 
+from mmpose.evaluation.functional import multilabel_classification_accuracy
 from mmpose.models.necks import GlobalAveragePooling
 from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
@@ -212,9 +213,9 @@ class InternetHead(BaseHead):
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  loss_root_depth: ConfigType = dict(
-                     type='SmoothL1Loss', use_target_weight=True),
+                     type='L1Loss', use_target_weight=True),
                  loss_hand_type: ConfigType = dict(
-                     type='BCELoss', use_target_weight=True),
+                     type='BCELoss', use_sigmoid=True, use_target_weight=True),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -376,6 +377,16 @@ class InternetHead(BaseHead):
         loss_type = self.hand_loss_module(pred_fields[2], gt_types,
                                           type_weights)
         losses.update(loss_hand_type=loss_type)
+
+        # calculate accuracy
+        if train_cfg.get('compute_acc', True):
+            acc = multilabel_classification_accuracy(
+                pred=to_numpy(pred_fields[2]),
+                gt=to_numpy(gt_types),
+                mask=to_numpy(type_weights))
+
+            acc_pose = torch.tensor(acc, device=gt_types.device)
+            losses.update(acc_pose=acc_pose)
 
         return losses
 

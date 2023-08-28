@@ -102,3 +102,26 @@ class TestHand3DHeatmap(TestCase):
 
         self.assertEqual(keypoints.shape, (1, 42, 3))
         self.assertEqual(scores.shape, (1, 42))
+
+    def test_cicular_verification(self):
+        keypoints = self.data['keypoints']
+        keypoints_visible = self.data['keypoints_visible']
+
+        codec = self.build_hand_3d_heatmap()
+
+        encoded = codec.encode(
+            keypoints,
+            keypoints_visible,
+            dataset_keypoint_weights=np.ones(42, ),
+            rel_root_depth=np.float32(1.),
+            rel_root_valid=0.,
+            hand_type=np.array([[1, 0]]),
+            hand_type_valid=np.array([1]),
+            focal=np.array([1000., 1000.]),
+            principal_pt=np.array([200., 200.]))
+        _keypoints, _, _, _ = codec.decode(
+            encoded['heatmaps'].reshape(42, 64, 64, 64), np.ones((1, )),
+            np.ones((1, 2)))
+
+        self.assertTrue(
+            np.allclose(keypoints[..., :2], _keypoints[..., :2], atol=5.))

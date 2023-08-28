@@ -35,6 +35,8 @@ codec = dict(
     image_size=[256, 256],
     root_heatmap_size=64,
     heatmap_size=[64, 64, 64],
+    sigma=2.5,
+    max_bound=255,
     depth_size=64)
 
 # model settings
@@ -81,7 +83,7 @@ train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='HandRandomFlip', prob=0.5),
-    dict(type='RandomBBoxTransform'),
+    dict(type='RandomBBoxTransform', rotate_factor=90.0),
     dict(type='TopdownAffine', input_size=codec['image_size']),
     dict(type='GenerateTarget', encoder=codec),
     dict(

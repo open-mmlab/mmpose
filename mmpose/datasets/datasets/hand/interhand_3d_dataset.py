@@ -9,6 +9,7 @@ from mmengine.fileio import exists, get_local_path
 from mmengine.utils import is_abs
 from xtcocotools.coco import COCO
 
+from mmpose.codecs.utils import camera_to_pixel
 from mmpose.datasets.datasets import BaseCocoStyleDataset
 from mmpose.registry import DATASETS
 from mmpose.structures.bbox import bbox_xywh2xyxy
@@ -262,6 +263,7 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             self.joints[capture_id][frame_idx]['world_coord'],
             dtype=np.float32)
         joint_valid = np.array(ann['joint_valid'], dtype=np.float32).flatten()
+
         keypoints_cam = np.dot(
             camera_rot,
             joint_world.transpose(1, 0) -
@@ -291,12 +293,30 @@ class InterHand3DDataset(BaseCocoStyleDataset):
         joints_3d_visible = np.minimum(1,
                                        joint_valid.reshape(-1,
                                                            1)).reshape(1, -1)
+        keypoints_img = camera_to_pixel(
+            keypoints_cam,
+            focal[0],
+            focal[1],
+            principal_pt[0],
+            principal_pt[1],
+            shift=True)[..., :2]
+        # print('keypoints_img', keypoints_img)
+        joints_3d = np.zeros((keypoints_cam.shape[-2], 3),
+                             dtype=np.float32).reshape(1, -1, 3)
+        joints_3d[..., :2] = keypoints_img
+        # print('joint_img', keypoints_img)
+        joints_3d[..., :21,
+                  2] = keypoints_cam[..., :21, 2] - keypoints_cam[..., 20, 2]
+        joints_3d[..., 21:,
+                  2] = keypoints_cam[..., 21:, 2] - keypoints_cam[..., 41, 2]
+        # print('before topdown', joints_3d)
 
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img['img_path'],
             'rotation': 0,
-            'keypoints': keypoints_cam.reshape(1, -1, 3),
+            'keypoints': joints_3d,
+            'keypoints_cam': keypoints_cam.reshape(1, -1, 3),
             'keypoints_visible': joints_3d_visible,
             'hand_type': self.encode_handtype(ann['hand_type']),
             'hand_type_valid': np.array([ann['hand_type_valid']]),

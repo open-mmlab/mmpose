@@ -90,6 +90,7 @@ def generate_3d_gaussian_heatmaps(
         mu_z = np.expand_dims(mu_z, axis=(-1, -2, -3))
 
         xx, yy, zz = xx + mu_x, yy + mu_y, zz + mu_z
+        local_size = xx.shape[1]
 
         # round the coordinates
         xx = xx.round().clip(0, W - 1)
@@ -103,7 +104,7 @@ def generate_3d_gaussian_heatmaps(
         # put the local target value to the full target heatmap
         idx_joints = np.tile(
             np.expand_dims(np.arange(K), axis=(-1, -2, -3)),
-            [1, gaussian_size, gaussian_size, gaussian_size])
+            [1, local_size, local_size, local_size])
         idx = np.stack([idx_joints, zz, yy, xx],
                        axis=-1).astype(int).reshape(-1, 4)
 

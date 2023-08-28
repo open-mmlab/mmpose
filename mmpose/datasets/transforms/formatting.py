@@ -114,6 +114,7 @@ class PackPoseInputs(BaseTransform):
         'keypoints_visible': 'keypoints_visible',
         'lifting_target': 'lifting_target',
         'lifting_target_visible': 'lifting_target_visible',
+        'keypoints_cam': 'keypoints_cam',
     }
 
     # items in `label_mapping_table` will be packed into
