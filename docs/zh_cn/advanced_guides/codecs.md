@@ -62,7 +62,23 @@ def encode(self,
     return encoded
 ```
 
-编码后的数据会在 `PackPoseInputs` 中被转换为 Tensor 格式，并封装到 `data_sample.gt_instance_labels` 中供模型调用，一般主要用于 loss 计算，下面以 `RegressionHead` 中的 `loss()` 为例：
+编码后的数据会在 `PackPoseInputs` 中被转换为 Tensor 格式，并封装到 `data_sample.gt_instance_labels` 中供模型调用，默认包含以下的字段：
+
+- `keypoint_labels`
+- `keypoint_weights`
+- `keypoints_visible_weights`
+
+如要指定要打包的数据字段，可以在编解码器中定义 `label_mapping_table` 属性。例如，在 `VideoPoseLifting` 中：
+
+```Python
+label_mapping_table = dict(
+        trajectory_weights='trajectory_weights',
+        lifting_target_label='lifting_target_label',
+        lifting_target_weight='lifting_target_weight',
+)
+```
+
+`data_sample.gt_instance_labels` 一般主要用于 loss 计算，下面以 `RegressionHead` 中的 `loss()` 为例：
 
 ```Python
 def loss(self,
