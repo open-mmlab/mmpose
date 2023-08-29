@@ -121,7 +121,7 @@ class TestHandMetric(TestCase):
             joints_3d_visible = joints_3d_visible.reshape(1, -1)
 
             gt_instances = {
-                'keypoints': keypoints_cam.reshape(1, -1, 3),
+                'keypoints_cam': keypoints_cam.reshape(1, -1, 3),
                 'keypoints_visible': joints_3d_visible,
             }
             pred_instances = {
