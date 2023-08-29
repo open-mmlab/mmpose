@@ -206,8 +206,8 @@ class CocoMetric(BaseMetric):
             pred['keypoints'] = keypoints
             pred['keypoint_scores'] = keypoint_scores
             pred['category_id'] = data_sample.get('category_id', 1)
-            if 'bbox' in data_sample['pred_instances']:
-                pred['bboxes'] = bbox_xyxy2xywh(
+            if 'bboxes' in data_sample['pred_instances']:
+                pred['bbox'] = bbox_xyxy2xywh(
                     data_sample['pred_instances']['bboxes'])
 
             if 'bbox_scores' in data_sample['pred_instances']:
@@ -399,7 +399,7 @@ class CocoMetric(BaseMetric):
                     'bbox_score': pred['bbox_scores'][idx],
                 }
                 if 'bbox' in pred:
-                    instance['bbox'] = pred['bboxes'][idx]
+                    instance['bbox'] = pred['bbox'][idx]
 
                 if 'areas' in pred:
                     instance['area'] = pred['areas'][idx]

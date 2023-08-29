@@ -51,6 +51,11 @@ def bbox_overlaps(bboxes1,
     assert (bboxes1.size(-1) == 4 or bboxes1.size(0) == 0)
     assert (bboxes2.size(-1) == 4 or bboxes2.size(0) == 0)
 
+    if bboxes1.ndim == 1:
+        bboxes1 = bboxes1.unsqueeze(0)
+    if bboxes2.ndim == 1:
+        bboxes2 = bboxes2.unsqueeze(0)
+
     assert bboxes1.shape[:-2] == bboxes2.shape[:-2]
     batch_shape = bboxes1.shape[:-2]
 

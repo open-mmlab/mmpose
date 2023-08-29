@@ -24,8 +24,6 @@ class BottomupPoseEstimator(BasePoseEstimator):
         test_cfg (dict, optional): The runtime config for testing process.
             Defaults to ``None``
         use_syncbn (bool): whether to use SyncBatchNorm. Defaults to False.
-        switch_to_deploy (bool): whether to switch the sub-modules to deploy
-            mode. Defaults to False.
         data_preprocessor (dict, optional): The data preprocessing config to
             build the instance of :class:`BaseDataPreprocessor`. Defaults to
             ``None``.
@@ -40,7 +38,6 @@ class BottomupPoseEstimator(BasePoseEstimator):
                  train_cfg: OptConfigType = None,
                  test_cfg: OptConfigType = None,
                  use_syncbn: bool = False,
-                 switch_to_deploy: bool = False,
                  data_preprocessor: OptConfigType = None,
                  init_cfg: OptMultiConfig = None):
         super().__init__(
@@ -50,11 +47,8 @@ class BottomupPoseEstimator(BasePoseEstimator):
             train_cfg=train_cfg,
             test_cfg=test_cfg,
             use_syncbn=use_syncbn,
-            switch_to_deploy=switch_to_deploy,
             data_preprocessor=data_preprocessor,
             init_cfg=init_cfg)
-
-        self.head.test_cfg = self.test_cfg.copy()
 
     def loss(self, inputs: Tensor, data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and data samples.

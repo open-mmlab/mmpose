@@ -18,16 +18,20 @@ class SimOTAAssigner:
     """Computes matching between predictions and ground truth.
 
     Args:
-        center_radius (float): Ground truth center size
-            to judge whether a prior is in center. Defaults to 2.5.
-        candidate_topk (int): The candidate top-k which used to
-            get top-k ious to calculate dynamic-k. Defaults to 10.
-        iou_weight (float): The scale factor for regression
-            iou cost. Defaults to 3.0.
-        cls_weight (float): The scale factor for classification
-            cost. Defaults to 1.0.
-        iou_calculator (ConfigType): Config of overlaps Calculator.
+        center_radius (float): Radius of center area to determine
+            if a prior is in the center of a gt. Defaults to 2.5.
+        candidate_topk (int): Top-k ious candidates to calculate dynamic-k.
+            Defaults to 10.
+        iou_weight (float): Weight of bbox iou cost. Defaults to 3.0.
+        cls_weight (float): Weight of classification cost. Defaults to 1.0.
+        oks_weight (float): Weight of keypoint OKS cost. Defaults to 3.0.
+        vis_weight (float): Weight of keypoint visibility cost. Defaults to 0.0
+        dynamic_k_indicator (str): Cost type for calculating dynamic-k,
+            either 'iou' or 'oks'. Defaults to 'iou'.
+        iou_calculator (dict): Config of IoU calculation method.
             Defaults to dict(type='BBoxOverlaps2D').
+        oks_calculator (dict): Config of OKS calculation method.
+            Defaults to dict(type='PoseOKS').
     """
 
     def __init__(self,
@@ -70,7 +74,8 @@ class SimOTAAssigner:
                 annotations. It usually includes ``bboxes``, with shape (k, 4),
                 and ``labels``, with shape (k, ).
         Returns:
-            obj:`AssignResult`: The assigned result.
+            dict: Assignment result containing assigned gt indices,
+                max iou overlaps, assigned labels, etc.
         """
         gt_bboxes = gt_instances.bboxes
         gt_labels = gt_instances.labels

@@ -10,6 +10,8 @@ import numpy as np
 import torch
 from torch import Tensor
 
+from mmpose.structures.bbox import bbox_overlaps
+
 
 def nms(dets: np.ndarray, thr: float) -> List[int]:
     """Greedily select boxes with high confidence and overlap <= thr.
@@ -329,37 +331,10 @@ def nearby_joints_nms(
     return keep_pose_inds
 
 
-def compute_iou(bbox, bboxes):
-    """Compute the Intersection-over-Union (IoU) for a bounding box with a list
-    of bounding boxes.
-
-    Args:
-        bbox (Tensor): the bounding box (4 elements for x1, y1, x2, y2).
-        param (bboxes): Tensor, list of bounding boxes with the same format
-            as bbox.
-        return (Tensor): the IoU value between bbox and each of the bounding
-            boxes in bboxes.
-    """
-
-    bboxes_overlap = torch.stack((
-        bboxes[:, 0].clip(min=bbox[0]),
-        bboxes[:, 1].clip(min=bbox[1]),
-        bboxes[:, 2].clip(max=bbox[2]),
-        bboxes[:, 3].clip(max=bbox[3]),
-    ),
-                                 dim=1)
-    a0 = torch.prod(bbox[2:] - bbox[:2])
-    a1 = torch.prod(bboxes[:, 2:] - bboxes[:, :2], dim=1)
-    a2 = torch.prod(
-        (bboxes_overlap[:, 2:] - bboxes_overlap[:, :2]).clip(min=0), dim=1)
-    iou = a2 / (a1 + a0 - a2)
-    return iou
-
-
 def nms_torch(bboxes: Tensor,
               scores: Tensor,
               threshold: float = 0.65,
-              iou_calculator=compute_iou,
+              iou_calculator=bbox_overlaps,
               return_group: bool = False):
     """Perform Non-Maximum Suppression (NMS) on a set of bounding boxes using
     their corresponding scores.

@@ -25,8 +25,6 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         init_cfg (dict | ConfigDict): The model initialization config.
             Defaults to ``None``
         use_syncbn (bool): whether to use SyncBatchNorm. Defaults to False.
-        switch_to_deploy (bool): whether to switch the sub-modules to deploy
-            mode. Defaults to False.
         metainfo (dict): Meta information for dataset, such as keypoints
             definition and properties. If set, the metainfo of the input data
             batch will be overridden. For more details, please refer to
@@ -44,12 +42,13 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
                  test_cfg: OptConfigType = None,
                  data_preprocessor: OptConfigType = None,
                  use_syncbn: bool = False,
-                 switch_to_deploy: bool = False,
                  init_cfg: OptMultiConfig = None,
                  metainfo: Optional[dict] = None):
         super().__init__(
             data_preprocessor=data_preprocessor, init_cfg=init_cfg)
         self.metainfo = self._load_metainfo(metainfo)
+        self.train_cfg = train_cfg if train_cfg else {}
+        self.test_cfg = test_cfg if test_cfg else {}
 
         self.backbone = MODELS.build(backbone)
 
@@ -64,18 +63,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
         if head is not None:
             self.head = MODELS.build(head)
-
-        self.train_cfg = train_cfg if train_cfg else {}
-        self.test_cfg = test_cfg if test_cfg else {}
-
-        # adjust model structure in deploy mode
-        if switch_to_deploy:
-            for name, layer in self.named_modules():
-                if callable(getattr(layer, 'switch_to_deploy', None)):
-                    print_log(
-                        f'module {name} has been switched to deploy mode',
-                        'current')
-                    layer.switch_to_deploy()
+            self.head.test_cfg = self.test_cfg.copy()
 
         # Register the hook to automatically convert old version state dicts
         self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)

@@ -10,7 +10,7 @@ INF = 1e6
 NEG_INF = -1e6
 
 
-class AnnotationProcessor(BaseKeypointCodec):
+class BaseAnnotationProcessor(BaseKeypointCodec):
     """Base class for annotation processors."""
 
     def decode(self, *args, **kwargs):
@@ -18,8 +18,8 @@ class AnnotationProcessor(BaseKeypointCodec):
 
 
 @KEYPOINT_CODECS.register_module()
-class YOLOXPoseAnnotationProcessor(AnnotationProcessor):
-    """Processor for YOLOXPose dataset annotations.
+class YOLOXPoseAnnotationProcessor(BaseAnnotationProcessor):
+    """Convert dataset annotations to the input format of YOLOX-Pose.
 
     This processor expands bounding boxes and converts category IDs to labels.
 
