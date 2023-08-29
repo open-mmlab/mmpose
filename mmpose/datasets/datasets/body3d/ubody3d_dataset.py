@@ -86,7 +86,7 @@ class UBody3dDataset(BaseCocoStyleDataset):
         for img_id in self.coco.getImgIds():
             if img_id % self.sample_interval != 0:
                 continue
-            img = self.coco_loadImgs(img_id)[0]
+            img = self.coco.loadImgs(img_id)[0]
             img.update({
                 'img_id':
                 img_id,
@@ -119,7 +119,7 @@ class UBody3dDataset(BaseCocoStyleDataset):
         """
 
         ann = raw_data_info['raw_ann_info']
-        if 'bbox' not in ann or 'keypoints3d' not in ann:
+        if 'bbox' not in ann or 'keypoints_3d' not in ann:
             return None
 
         img = raw_data_info['raw_img_info']
@@ -141,7 +141,7 @@ class UBody3dDataset(BaseCocoStyleDataset):
         keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
         _keypoints_3d = np.array(
-            ann['keypoints3d'], dtype=np.float32).reshape(1, -1, 4)
+            ann['keypoints_3d'], dtype=np.float32).reshape(1, -1, 4)
         keypoints_3d = _keypoints_3d[..., :3]
         keypoints_3d_visible = keypoints_visible
 

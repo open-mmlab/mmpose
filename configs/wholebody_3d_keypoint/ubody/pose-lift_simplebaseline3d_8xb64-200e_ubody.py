@@ -45,7 +45,7 @@ model = dict(
     head=dict(
         type='TemporalRegressionHead',
         in_channels=1024,
-        num_joints=137,
+        num_joints=136,
         loss=dict(type='MSELoss'),
         decoder=codec,
     ))
@@ -124,7 +124,7 @@ test_dataloader = val_dataloader
 
 # evaluators
 val_evaluator = [
-    dict(type='MPJPE', mode='mpjpe'),
-    dict(type='MPJPE', mode='p-mpjpe')
+    dict(type='SimpleMPJPE', mode='mpjpe'),
+    dict(type='SimpleMPJPE', mode='p-mpjpe')
 ]
 test_evaluator = val_evaluator

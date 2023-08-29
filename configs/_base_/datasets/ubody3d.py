@@ -937,4 +937,6 @@ dataset_info = dict(
         58: dict(link=('Face_61', 'Face_67'), id=58, color=[255, 255, 255]),
         59: dict(link=('Face_62', 'Face_66'), id=59, color=[255, 255, 255]),
         60: dict(link=('Face_63', 'Face_65'), id=60, color=[255, 255, 255]),
-    })
+    },
+    joint_weights=[1.] * 137,
+    sigmas=[])
