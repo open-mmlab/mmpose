@@ -104,6 +104,10 @@ def loss(self,
     ### 后续内容省略 ###
 ```
 
+```{note}
+解码器亦会定义封装在 `data_sample.gt_instances` 和 `data_sample.gt_fields` 中的字段。修改编码器中的 `instance_mapping_table` 和 `field_mapping_table` 的值将分别指定封装的字段，其中默认值定义在 [BaseKeypointCodec](https://github.com/open-mmlab/mmpose/blob/main/mmpose/codecs/base.py) 中。
+```
+
 ### 解码器
 
 解码器主要负责将模型的输出解码为输入图片尺度的坐标值，处理过程与编码器相反。

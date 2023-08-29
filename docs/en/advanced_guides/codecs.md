@@ -78,7 +78,7 @@ label_mapping_table = dict(
 )
 ```
 
-`data_sample.gt_instance_labels` is generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
+`data_sample.gt_instance_labels` are generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
 
 ```Python
 def loss(self,
@@ -102,6 +102,10 @@ def loss(self,
 
     losses.update(loss_kpt=loss)
     ### Omitted ###
+```
+
+```{note}
+Encoder also defines data to be packed in `data_sample.gt_instances` and `data_sample.gt_fields`. Modify `instance_mapping_table` and `field_mapping_table` in the codec will specify values to be packed respectively. For default values, please check [BaseKeypointCodec](https://github.com/open-mmlab/mmpose/blob/main/mmpose/codecs/base.py).
 ```
 
 ### Decoder

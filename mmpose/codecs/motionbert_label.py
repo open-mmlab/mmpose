@@ -42,6 +42,10 @@ class MotionBERTLabel(BaseKeypointCodec):
         'lifting_target', 'lifting_target_visible', 'camera_param', 'factor'
     }
 
+    instance_mapping_table = dict(
+        lifting_target='lifting_target',
+        lifting_target_visible='lifting_target_visible',
+    )
     label_mapping_table = dict(
         trajectory_weights='trajectory_weights',
         lifting_target_label='lifting_target_label',
