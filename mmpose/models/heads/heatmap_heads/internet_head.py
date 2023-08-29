@@ -175,7 +175,7 @@ class MultilabelClassificationHead(nn.Module):
 
     def forward(self, x):
         """Forward function."""
-        labels = torch.sigmoid(self.fc(x))
+        labels = self.fc(x)
         return labels
 
 
@@ -215,7 +215,7 @@ class InternetHead(BaseHead):
                  loss_root_depth: ConfigType = dict(
                      type='L1Loss', use_target_weight=True),
                  loss_hand_type: ConfigType = dict(
-                     type='BCELoss', use_sigmoid=True, use_target_weight=True),
+                     type='BCELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 

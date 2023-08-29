@@ -182,6 +182,6 @@ class Hand3DHeatmap(BaseKeypointCodec):
         rel_root_depth = ((root_depth / self.root_heatmap_size - 0.5) *
                           self.root_depth_bound)
 
-        hand_type = (hand_type > 0.5).reshape(1, -1).astype(int)
+        hand_type = (hand_type > 0).reshape(1, -1).astype(int)
 
         return keypoints, scores, rel_root_depth, hand_type
