@@ -300,16 +300,13 @@ class InterHand3DDataset(BaseCocoStyleDataset):
             principal_pt[0],
             principal_pt[1],
             shift=True)[..., :2]
-        # print('keypoints_img', keypoints_img)
         joints_3d = np.zeros((keypoints_cam.shape[-2], 3),
                              dtype=np.float32).reshape(1, -1, 3)
         joints_3d[..., :2] = keypoints_img
-        # print('joint_img', keypoints_img)
         joints_3d[..., :21,
                   2] = keypoints_cam[..., :21, 2] - keypoints_cam[..., 20, 2]
         joints_3d[..., 21:,
                   2] = keypoints_cam[..., 21:, 2] - keypoints_cam[..., 41, 2]
-        # print('before topdown', joints_3d)
 
         data_info = {
             'img_id': ann['image_id'],
