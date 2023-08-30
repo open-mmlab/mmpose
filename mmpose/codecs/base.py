@@ -33,9 +33,6 @@ class BaseKeypointCodec(metaclass=ABCMeta):
     # PoseDataSample.gt_instances without converting to Tensor
     instance_mapping_table = dict(
         bbox='bboxes',
-        head_size='head_size',
-        bbox_center='bbox_centers',
-        bbox_scale='bbox_scales',
         bbox_score='bbox_scores',
         keypoints='keypoints',
         keypoints_visible='keypoints_visible')

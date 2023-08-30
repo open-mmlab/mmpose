@@ -102,6 +102,13 @@ class PackPoseInputs(BaseTransform):
             'flip_direction', 'flip_indices', 'raw_ann_info')``
     """
 
+    # default items in `instance_mapping_table`
+    instance_mapping_table = dict(
+        bbox='bboxes',
+        bbox_score='bbox_scores',
+        keypoints='keypoints',
+        keypoints_visible='keypoints_visible')
+
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'category_id',
                             'crowd_index', 'ori_shape', 'img_shape',
@@ -141,7 +148,10 @@ class PackPoseInputs(BaseTransform):
 
         # pack instance data
         gt_instances = InstanceData()
-        for key, packed_key in results['instance_mapping_table'].items():
+        instance_mapping_table = results.get('instance_mapping_table', None)
+        if instance_mapping_table is not None:
+            self.instance_mapping_table = instance_mapping_table
+        for key, packed_key in self.instance_mapping_table.items():
             if key in results:
                 gt_instances.set_field(results[key], packed_key)
 
