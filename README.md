@@ -196,8 +196,8 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
    - [Customize Data Transforms](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_transforms.html)
    - [Customize Optimizer](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_optimizer.html)
    - [Customize Logging](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_logging.html)
-   - [How to Deploy](https://mmpose.readthedocs.io/en/latest/advanced_guides/how_to_deploy.html)
-   - [Model Analysis](https://mmpose.readthedocs.io/en/latest/advanced_guides/model_analysis.html)
+   - [How to Deploy](https://mmpose.readthedocs.io/en/latest/user_guides/how_to_deploy.html)
+   - [Model Analysis](https://mmpose.readthedocs.io/en/latest/user_guides/model_analysis.html)
    - [Migration Guide](https://mmpose.readthedocs.io/en/latest/migration.html)
 
 3. For researchers and developers who are willing to contribute to MMPose:
