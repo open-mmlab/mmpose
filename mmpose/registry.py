@@ -98,7 +98,9 @@ METRICS = Registry(
     'metric', parent=MMENGINE_METRICS, locations=['mmpose.evaluation.metrics'])
 # manage all kinds of evaluators
 EVALUATORS = Registry(
-    'evaluator', parent=MMENGINE_EVALUATOR, locations=['mmpose.evaluation'])
+    'evaluator',
+    parent=MMENGINE_EVALUATOR,
+    locations=['mmpose.evaluation.evaluators'])
 
 # manage task-specific modules like anchor generators and box coders
 TASK_UTILS = Registry(

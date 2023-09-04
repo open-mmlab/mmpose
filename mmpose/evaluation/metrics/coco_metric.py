@@ -12,7 +12,7 @@ from mmengine.logging import MMLogger
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
-from mmpose.registry import METRICS
+from mmpose.registry import METRICS, TRANSFORMS
 from ..functional import oks_nms, soft_oks_nms
 
 
@@ -94,6 +94,7 @@ class CocoMetric(BaseMetric):
                  nms_mode: str = 'oks_nms',
                  nms_thr: float = 0.9,
                  format_only: bool = False,
+                 gt_converter: Optional[dict] = None,
                  outfile_prefix: Optional[str] = None,
                  collect_device: str = 'cpu',
                  prefix: Optional[str] = None) -> None:
@@ -139,6 +140,23 @@ class CocoMetric(BaseMetric):
 
         self.format_only = format_only
         self.outfile_prefix = outfile_prefix
+
+        if gt_converter is not None:
+            self.gt_converter = TRANSFORMS.build(gt_converter)
+
+    @property
+    def dataset_meta(self) -> Optional[dict]:
+        """Optional[dict]: Meta info of the dataset."""
+        return self._dataset_meta
+
+    @dataset_meta.setter
+    def dataset_meta(self, dataset_meta: dict) -> None:
+        """Set the dataset meta info to the metric."""
+        if hasattr(self, 'gt_converter'):
+            dataset_meta['sigmas'] = self.gt_converter.transform_sigmas(
+                dataset_meta['sigmas'])
+            dataset_meta['num_keypoints'] = len(dataset_meta['sigmas'])
+        self._dataset_meta = dataset_meta
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
@@ -349,6 +367,9 @@ class CocoMetric(BaseMetric):
             coco_json_path = self.gt_to_coco_json(
                 gt_dicts=gts, outfile_prefix=outfile_prefix)
             self.coco = COCO(coco_json_path)
+        if hasattr(self, 'gt_converter'):
+            for id_, ann in self.coco.anns.items():
+                self.coco.anns[id_] = self.gt_converter.transform_ann(ann)
 
         kpts = defaultdict(list)
 
