@@ -422,8 +422,8 @@ val_evaluator = dict(
             use_area=False,
             prefix='aic')
     ],
-    # the number of datasets must match metrics
-    datasets=val_dataset['datasets'],
+    # the number and order of datasets must align with metrics
+    datasets=[coco_val, aic_val],
     )
 ```
 

@@ -410,8 +410,8 @@ val_evaluator = dict(
             use_area=False,
             prefix='aic')
     ],
-    # 数据集个数和度量个数必须一致
-    datasets=val_dataset['datasets'],
+    # 数据集个数和顺序与度量必须匹配
+    datasets=[coco_val, aic_val],
     )
 ```
 
