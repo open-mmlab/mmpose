@@ -26,7 +26,7 @@ class MultiDatasetEvaluator(Evaluator):
     ):
 
         assert len(metrics) == len(datasets), 'the argument ' \
-            'dataset_names should have same length as metrics'
+            'datasets should have same length as metrics'
 
         super().__init__(metrics)
 
@@ -61,7 +61,7 @@ class MultiDatasetEvaluator(Evaluator):
             data_batch (Any, optional): A batch of data from the dataloader.
         """
         _data_samples = defaultdict(list)
-        _data_batches = dict(
+        _data_batch = dict(
             inputs=defaultdict(list),
             data_samples=defaultdict(list),
         )
@@ -75,14 +75,14 @@ class MultiDatasetEvaluator(Evaluator):
             dataset_name = data_sample.get('dataset_name',
                                            self.dataset_meta['dataset_name'])
             _data_samples[dataset_name].append(data_sample)
-            _data_batches['inputs'][dataset_name].append(inputs)
-            _data_batches['data_samples'][dataset_name].append(data_ds)
+            _data_batch['inputs'][dataset_name].append(inputs)
+            _data_batch['data_samples'][dataset_name].append(data_ds)
 
         for dataset_name, metric in self.metrics_dict.items():
             if dataset_name in _data_samples:
                 data_batch = dict(
-                    inputs=_data_batches['inputs'][dataset_name],
-                    data_samples=_data_batches['data_samples'][dataset_name])
+                    inputs=_data_batch['inputs'][dataset_name],
+                    data_samples=_data_batch['data_samples'][dataset_name])
                 metric.process(data_batch, _data_samples[dataset_name])
             else:
                 continue
