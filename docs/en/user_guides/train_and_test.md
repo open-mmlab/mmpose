@@ -390,3 +390,121 @@ Here are the environment variables that can be used to configure the slurm job.
 | `GPUS_PER_NODE` | The number of GPUs to be allocated per node. Defaults to 8.                                                |
 | `CPUS_PER_TASK` | The number of CPUs to be allocated per task (Usually one GPU corresponds to one task). Defaults to 5.      |
 | `SRUN_ARGS`     | The other arguments of `srun`. Available options can be found [here](https://slurm.schedmd.com/srun.html). |
+
+## Custom Testing Features
+
+### Test with Custom Metrics
+
+If you're looking to assess models using unique metrics not already supported by MMPose, you'll need to code these metrics yourself and include them in your config file. For guidance on how to accomplish this, check out our [customized evaluation guide](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_evaluation.html).
+
+### Evaluating Across Multiple Datasets
+
+MMPose offers a handy tool known as `MultiDatasetEvaluator` for streamlined assessment across multiple datasets. Setting up this evaluator in your config file is a breeze. Below is a quick example demonstrating how to evaluate a model using both the COCO and AIC datasets:
+
+```python
+# Set up validation datasets
+coco_val = dict(type='CocoDataset', ...)
+aic_val = dict(type='AicDataset', ...)
+val_dataset = dict(
+        type='CombinedDataset',
+        datasets=[coco_val, aic_val],
+        pipeline=val_pipeline,
+        ...)
+
+# configurate the evaluator
+val_evaluator = dict(
+    type='MultiDatasetEvaluator',
+    metrics=[  # metrics for each dataset
+        dict(type='CocoMetric',
+             ann_file='data/coco/annotations/person_keypoints_val2017.json'),
+        dict(type='CocoMetric',
+            ann_file='data/aic/annotations/aic_val.json',
+            use_area=False,
+            prefix='aic')
+    ],
+    # the number of datasets must match metrics
+    datasets=val_dataset['datasets'],
+    )
+```
+
+Keep in mind that different datasets, like COCO and AIC, have various keypoint definitions. Yet, the model's output keypoints are standardized. This results in a discrepancy between the model outputs and the actual ground truth. To address this, you can employ `KeypointConverter` to align the keypoint configurations between different datasets. Here’s a full example that shows how to leverage `KeypointConverter` to align AIC keypoints with COCO keypoints:
+
+```python
+aic_to_coco_converter = dict(
+            type='KeypointConverter',
+            num_keypoints=17,
+            mapping=[
+                (0, 6),
+                (1, 8),
+                (2, 10),
+                (3, 5),
+                (4, 7),
+                (5, 9),
+                (6, 12),
+                (7, 14),
+                (8, 16),
+                (9, 11),
+                (10, 13),
+                (11, 15),
+            ])
+
+# val datasets
+coco_val = dict(
+    type='CocoDataset',
+    data_root='data/coco/',
+    data_mode='topdown',
+    ann_file='annotations/person_keypoints_val2017.json',
+    bbox_file='data/coco/person_detection_results/'
+    'COCO_val2017_detections_AP_H_56_person.json',
+    data_prefix=dict(img='val2017/'),
+    test_mode=True,
+    pipeline=[],
+)
+
+aic_val = dict(
+        type='AicDataset',
+        data_root='data/aic/',
+        data_mode=data_mode,
+        ann_file='annotations/aic_val.json',
+        data_prefix=dict(img='ai_challenger_keypoint_validation_20170911/'
+                         'keypoint_validation_images_20170911/'),
+        test_mode=True,
+        pipeline=[],
+    )
+
+val_dataset = dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        datasets=[coco_val, aic_val],
+        pipeline=val_pipeline,
+        test_mode=True,
+    )
+
+val_dataloader = dict(
+    batch_size=32,
+    num_workers=2,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=val_dataset)
+
+test_dataloader = val_dataloader
+
+val_evaluator = dict(
+    type='MultiDatasetEvaluator',
+    metrics=[
+        dict(type='CocoMetric',
+             ann_file=data_root + 'annotations/person_keypoints_val2017.json'),
+        dict(type='CocoMetric',
+            ann_file='data/aic/annotations/aic_val.json',
+            use_area=False,
+            gt_converter=aic_to_coco_converter,
+            prefix='aic')
+    ],
+    datasets=val_dataset['datasets'],
+    )
+
+test_evaluator = val_evaluator
+```
+
+For further clarification on converting AIC keypoints to COCO keypoints, please consult [this guide](https://mmpose.readthedocs.io/en/latest/user_guides/mixed_datasets.html#merge-aic-into-coco).
