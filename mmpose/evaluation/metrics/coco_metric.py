@@ -72,6 +72,10 @@ class CocoMetric(BaseMetric):
             test submission when the ground truth annotations are absent. If
             set to ``True``, ``outfile_prefix`` should specify the path to
             store the output results. Defaults to ``False``
+        gt_converter (dict, optional): Config dictionary for the ground truth
+            converter. The dictionary must contain the key 'type' set to
+            'KeypointConverter' to indicate the type of ground truth converter
+            to be used. Defaults to None.
         outfile_prefix (str | None): The prefix of json files. It includes
             the file path and the prefix of filename, e.g., ``'a/b/prefix'``.
             If not specified, a temp file will be created. Defaults to ``None``
@@ -142,7 +146,11 @@ class CocoMetric(BaseMetric):
         self.outfile_prefix = outfile_prefix
 
         if gt_converter is not None:
+            assert gt_converter.get('type', None) == 'KeypointConverter', \
+                'the type of `gt_converter` must be \'KeypointConverter\''
             self.gt_converter = TRANSFORMS.build(gt_converter)
+        else:
+            self.gt_converter = None
 
     @property
     def dataset_meta(self) -> Optional[dict]:
@@ -152,7 +160,7 @@ class CocoMetric(BaseMetric):
     @dataset_meta.setter
     def dataset_meta(self, dataset_meta: dict) -> None:
         """Set the dataset meta info to the metric."""
-        if hasattr(self, 'gt_converter'):
+        if self.gt_converter is not None:
             dataset_meta['sigmas'] = self.gt_converter.transform_sigmas(
                 dataset_meta['sigmas'])
             dataset_meta['num_keypoints'] = len(dataset_meta['sigmas'])
@@ -367,7 +375,7 @@ class CocoMetric(BaseMetric):
             coco_json_path = self.gt_to_coco_json(
                 gt_dicts=gts, outfile_prefix=outfile_prefix)
             self.coco = COCO(coco_json_path)
-        if hasattr(self, 'gt_converter'):
+        if self.gt_converter is not None:
             for id_, ann in self.coco.anns.items():
                 self.coco.anns[id_] = self.gt_converter.transform_ann(ann)
 
