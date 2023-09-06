@@ -169,15 +169,7 @@ train_pipeline_stage1 = [
     dict(type='RandomFlip'),
     dict(type='FilterAnnotations', by_kpt=True, by_box=True, keep_empty=False),
     dict(type='GenerateTarget', encoder=codec),
-    dict(
-        type='PackPoseInputs',
-        extra_mapping_labels={
-            'bbox': 'bboxes',
-            'bbox_labels': 'labels',
-            'keypoints': 'keypoints',
-            'keypoints_visible': 'keypoints_visible',
-            'area': 'areas'
-        }),
+    dict(type='PackPoseInputs'),
 ]
 train_pipeline_stage2 = [
     dict(type='LoadImage'),
@@ -196,15 +188,7 @@ train_pipeline_stage2 = [
     dict(type='RandomFlip'),
     dict(type='FilterAnnotations', by_kpt=True, by_box=True, keep_empty=False),
     dict(type='GenerateTarget', encoder=codec),
-    dict(
-        type='PackPoseInputs',
-        extra_mapping_labels={
-            'bbox': 'bboxes',
-            'bbox_labels': 'labels',
-            'keypoints': 'keypoints',
-            'keypoints_visible': 'keypoints_visible',
-            'area': 'areas'
-        }),
+    dict(type='PackPoseInputs'),
 ]
 
 data_mode = 'bottomup'
