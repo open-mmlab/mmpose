@@ -974,8 +974,21 @@ class GenerateTarget(BaseTransform):
                 keypoints_visible=keypoints_visible,
                 **auxiliary_encode_kwargs)
 
+            if self.encoder.field_mapping_table:
+                encoded[
+                    'field_mapping_table'] = self.encoder.field_mapping_table
+            if self.encoder.instance_mapping_table:
+                encoded['instance_mapping_table'] = \
+                    self.encoder.instance_mapping_table
+            if self.encoder.label_mapping_table:
+                encoded[
+                    'label_mapping_table'] = self.encoder.label_mapping_table
+
         else:
             encoded_list = []
+            _field_mapping_table = dict()
+            _instance_mapping_table = dict()
+            _label_mapping_table = dict()
             for _encoder in self.encoder:
                 auxiliary_encode_kwargs = {
                     key: results[key]
@@ -986,6 +999,10 @@ class GenerateTarget(BaseTransform):
                         keypoints=keypoints,
                         keypoints_visible=keypoints_visible,
                         **auxiliary_encode_kwargs))
+
+                _field_mapping_table.update(_encoder.field_mapping_table)
+                _instance_mapping_table.update(_encoder.instance_mapping_table)
+                _label_mapping_table.update(_encoder.label_mapping_table)
 
             if self.multilevel:
                 # For multilevel encoding, the encoded items from each encoder
@@ -1026,6 +1043,13 @@ class GenerateTarget(BaseTransform):
 
                 if keypoint_weights:
                     encoded['keypoint_weights'] = keypoint_weights
+
+            if _field_mapping_table:
+                encoded['field_mapping_table'] = _field_mapping_table
+            if _instance_mapping_table:
+                encoded['instance_mapping_table'] = _instance_mapping_table
+            if _label_mapping_table:
+                encoded['label_mapping_table'] = _label_mapping_table
 
         if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
             if isinstance(encoded['keypoint_weights'], list):

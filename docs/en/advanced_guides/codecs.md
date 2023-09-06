@@ -62,7 +62,23 @@ def encode(self,
     return encoded
 ```
 
-The encoded data is converted to Tensor format in `PackPoseInputs` and packed in `data_sample.gt_instance_labels` for model calls, which is generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
+The encoded data is converted to Tensor format in `PackPoseInputs` and packed in `data_sample.gt_instance_labels` for model calls. By default it will consist of the following encoded fields:
+
+- `keypoint_labels`
+- `keypoint_weights`
+- `keypoints_visible_weights`
+
+To specify data fields to be packed, you can define the `label_mapping_table` attribute in the codec. For example, in `VideoPoseLifting`:
+
+```Python
+label_mapping_table = dict(
+        trajectory_weights='trajectory_weights',
+        lifting_target_label='lifting_target_label',
+        lifting_target_weight='lifting_target_weight',
+)
+```
+
+`data_sample.gt_instance_labels` are generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
 
 ```Python
 def loss(self,
@@ -86,6 +102,10 @@ def loss(self,
 
     losses.update(loss_kpt=loss)
     ### Omitted ###
+```
+
+```{note}
+Encoder also defines data to be packed in `data_sample.gt_instances` and `data_sample.gt_fields`. Modify `instance_mapping_table` and `field_mapping_table` in the codec will specify values to be packed respectively. For default values, please check [BaseKeypointCodec](https://github.com/open-mmlab/mmpose/blob/main/mmpose/codecs/base.py).
 ```
 
 ### Decoder
