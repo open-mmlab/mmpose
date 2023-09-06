@@ -47,13 +47,10 @@ class TestMultiDatasetEvaluator(TestCase):
         self.datasets = [dataset_coco_val, dataset_aic_val]
 
         self.metrics = [
+            dict(type='CocoMetric', ann_file='tests/data/coco/test_coco.json'),
             dict(
                 type='CocoMetric',
-                ann_file='data/coco/annotations/person_keypoints_val2017.json'
-            ),
-            dict(
-                type='CocoMetric',
-                ann_file='data/aic/annotations/aic_val.json',
+                ann_file='tests/data/aic/test_aic.json',
                 use_area=False,
                 gt_converter=aic_to_coco_converter,
                 prefix='aic')
