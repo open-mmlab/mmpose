@@ -4,18 +4,24 @@ This project implements a YOLOX-based human pose estimator, utilizing the approa
 
 <img src="https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg" alt><br>
 
-📌 For improved performance and compatibility, consider using YOLOX-Pose which is built into MMPose. YOLOX-Pose seamlessly integrates with MMPose's tools and delivers state-of-the-art results. To learn more about adopting YOLOX-Pose in your workflow, see the documentation: [YOLOX-Pose](/configs/body_2d_keypoint/yoloxpose/README.md).
+📌 For improved performance and compatibility, **consider using YOLOX-Pose which is built into MMPose**, which seamlessly integrates with MMPose's tools. To learn more about adopting YOLOX-Pose in your workflow, see the documentation: [YOLOX-Pose](/configs/body_2d_keypoint/yoloxpose/README.md).
 
 ## Usage
 
 ### Prerequisites
 
 - Python 3.7 or higher
+
 - PyTorch 1.6 or higher
+
 - [MMEngine](https://github.com/open-mmlab/mmengine) v0.6.0 or higher
+
 - [MMCV](https://github.com/open-mmlab/mmcv) v2.0.0rc4 or higher
+
 - [MMDetection](https://github.com/open-mmlab/mmdetection) v3.0.0rc6 or higher
-- [MMYOLO](https://github.com/open-mmlab/mmyolo) **v0.5.0**
+
+- [MMYOLO](https://github.com/open-mmlab/mmyolo) <span style="color:red"> **v0.5.0**</span>
+
 - [MMPose](https://github.com/open-mmlab/mmpose) v1.0.0rc1 or higher
 
 All the commands below rely on the correct configuration of `PYTHONPATH`, which should point to the project's directory so that Python can locate the module files. **In `yolox-pose/` root directory**, run the following line to add the current directory to `PYTHONPATH`:
