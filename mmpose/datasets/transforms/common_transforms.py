@@ -974,6 +974,16 @@ class GenerateTarget(BaseTransform):
                 keypoints_visible=keypoints_visible,
                 **auxiliary_encode_kwargs)
 
+            if self.encoder.field_mapping_table:
+                encoded[
+                    'field_mapping_table'] = self.encoder.field_mapping_table
+            if self.encoder.instance_mapping_table:
+                encoded['instance_mapping_table'] = \
+                    self.encoder.instance_mapping_table
+            if self.encoder.label_mapping_table:
+                encoded[
+                    'label_mapping_table'] = self.encoder.label_mapping_table
+
         else:
             encoded_list = []
             for _encoder in self.encoder:
@@ -981,11 +991,21 @@ class GenerateTarget(BaseTransform):
                     key: results[key]
                     for key in _encoder.auxiliary_encode_keys
                 }
-                encoded_list.append(
-                    _encoder.encode(
-                        keypoints=keypoints,
-                        keypoints_visible=keypoints_visible,
-                        **auxiliary_encode_kwargs))
+                encoded = _encoder.encode(
+                    keypoints=keypoints,
+                    keypoints_visible=keypoints_visible,
+                    **auxiliary_encode_kwargs)
+
+                if _encoder.field_mapping_table:
+                    encoded['field_mapping_table'] = \
+                        self.encoder.field_mapping_table
+                if _encoder.instance_mapping_table:
+                    encoded['instance_mapping_table'] = \
+                        self.encoder.instance_mapping_table
+                if _encoder.label_mapping_table:
+                    encoded['label_mapping_table'] = \
+                        self.encoder.label_mapping_table
+                encoded_list.append(encoded)
 
             if self.multilevel:
                 # For multilevel encoding, the encoded items from each encoder
@@ -1026,17 +1046,6 @@ class GenerateTarget(BaseTransform):
 
                 if keypoint_weights:
                     encoded['keypoint_weights'] = keypoint_weights
-
-        if hasattr(self.encoder, 'field_mapping_table'
-                   ) and self.encoder.field_mapping_table is not None:
-            encoded['field_mapping_table'] = self.encoder.field_mapping_table
-        if hasattr(self.encoder, 'instance_mapping_table'
-                   ) and self.encoder.instance_mapping_table is not None:
-            encoded[
-                'instance_mapping_table'] = self.encoder.instance_mapping_table
-        if hasattr(self.encoder, 'label_mapping_table'
-                   ) and self.encoder.label_mapping_table is not None:
-            encoded['label_mapping_table'] = self.encoder.label_mapping_table
 
         if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
             if isinstance(encoded['keypoint_weights'], list):
