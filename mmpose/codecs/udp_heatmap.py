@@ -57,6 +57,9 @@ class UDPHeatmap(BaseKeypointCodec):
     Human Pose Estimation`: https://arxiv.org/abs/1911.07524
     """
 
+    label_mapping_table = dict(keypoint_weights='keypoint_weights', )
+    field_mapping_table = dict(heatmaps='heatmaps', )
+
     def __init__(self,
                  input_size: Tuple[int, int],
                  heatmap_size: Tuple[int, int],
