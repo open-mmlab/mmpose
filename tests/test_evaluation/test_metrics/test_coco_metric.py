@@ -7,8 +7,10 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import dump, load
+from mmengine.logging import MessageHub
 from xtcocotools.coco import COCO
 
+from mmpose.datasets.datasets import CocoDataset
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.metrics import CocoMetric
 
@@ -664,3 +666,13 @@ class TestCocoMetric(TestCase):
         self.assertTrue(
             osp.isfile(
                 osp.join(self.tmp_dir.name, 'test_convert.keypoints.json')))
+
+    def test_get_ann_file_from_dataset(self):
+        _ = CocoDataset(ann_file=self.ann_file_coco, test_mode=True)
+        metric = CocoMetric(ann_file=None)
+        metric.dataset_meta = self.dataset_meta_coco
+        self.assertIsNotNone(metric.coco)
+
+        # clear message to avoid disturbing other tests
+        message = MessageHub.get_current_instance()
+        message.pop_info('coco_ann_file')

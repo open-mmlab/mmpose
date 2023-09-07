@@ -8,7 +8,7 @@ from typing import Dict, Optional, Sequence
 import numpy as np
 from mmengine.evaluator import BaseMetric
 from mmengine.fileio import dump, get_local_path, load
-from mmengine.logging import MMLogger
+from mmengine.logging import MessageHub, MMLogger
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
@@ -165,6 +165,14 @@ class CocoMetric(BaseMetric):
                 dataset_meta['sigmas'])
             dataset_meta['num_keypoints'] = len(dataset_meta['sigmas'])
         self._dataset_meta = dataset_meta
+
+        if self.coco is None:
+            message = MessageHub.get_current_instance()
+            ann_file = message.get_info(
+                f"{dataset_meta['dataset_name']}_ann_file", None)
+            if ann_file is not None:
+                with get_local_path(ann_file) as local_path:
+                    self.coco = COCO(local_path)
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:

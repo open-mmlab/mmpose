@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 from mmengine.dataset import BaseDataset, force_full_init
 from mmengine.fileio import exists, get_local_path, load
+from mmengine.logging import MessageHub
 from mmengine.utils import is_list_of
 from xtcocotools.coco import COCO
 
@@ -111,6 +112,12 @@ class BaseCocoStyleDataset(BaseDataset):
             test_mode=test_mode,
             lazy_init=lazy_init,
             max_refetch=max_refetch)
+
+        if self.test_mode:
+            # save the ann_file into MessageHub for CocoMetric
+            message = MessageHub.get_current_instance()
+            dataset_name = self.metainfo['dataset_name']
+            message.update_info_dict({f'{dataset_name}_ann_file': ann_file})
 
     @classmethod
     def _load_metainfo(cls, metainfo: dict = None) -> dict:
