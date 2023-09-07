@@ -108,7 +108,12 @@ class PackPoseInputs(BaseTransform):
         bbox='bboxes',
         bbox_score='bbox_scores',
         keypoints='keypoints',
-        keypoints_visible='keypoints_visible')
+        keypoints_visible='keypoints_visible',
+        # In CocoMetric, the area of predicted instances will be calculated
+        # using gt_instances.bbox_scales. To unsure correspondence with
+        # previous version, this key is preserved here.
+        bbox_scale='bbox_scales',
+    )
 
     # items in `field_mapping_table` will be packed into
     # PoseDataSample.gt_fields and converted to Tensor. These items will be
