@@ -65,8 +65,6 @@ class TestPackPoseInputs(TestCase):
         }
         self.meta_keys = ('img_id', 'img_path', 'ori_shape', 'img_shape',
                           'scale_factor', 'flip', 'flip_direction')
-        self.pack_transformed = True
-        self.extra_mapping_labels = dict(bbox='bboxes')
 
     def test_transform(self):
         transform = PackPoseInputs(
@@ -75,10 +73,7 @@ class TestPackPoseInputs(TestCase):
         self.assertIn('transformed_keypoints',
                       results['data_samples'].gt_instances)
 
-        transform = PackPoseInputs(
-            meta_keys=self.meta_keys,
-            extra_mapping_labels=self.extra_mapping_labels,
-        )
+        transform = PackPoseInputs(meta_keys=self.meta_keys)
         results = transform(copy.deepcopy(self.results_topdown))
         self.assertIn('inputs', results)
         self.assertIsInstance(results['inputs'], torch.Tensor)
@@ -93,8 +88,6 @@ class TestPackPoseInputs(TestCase):
                               torch.Tensor)
         self.assertNotIn('transformed_keypoints',
                          results['data_samples'].gt_instances)
-        self.assertIn('bboxes',
-                      results['data_samples'].gt_instance_labels.keys())
 
         # test when results['img'] is sequence of frames
         results = copy.deepcopy(self.results_topdown)
@@ -110,11 +103,6 @@ class TestPackPoseInputs(TestCase):
         self.assertEqual(results['inputs'].shape, (len_seq, 3, 425, 640))
 
     def test_repr(self):
-        transform = PackPoseInputs(
-            meta_keys=self.meta_keys,
-            extra_mapping_labels=self.extra_mapping_labels,
-            pack_transformed=self.pack_transformed)
+        transform = PackPoseInputs(meta_keys=self.meta_keys)
         self.assertEqual(
-            repr(transform), f'PackPoseInputs(meta_keys={self.meta_keys}, '
-            f'extra_mapping_labels={self.extra_mapping_labels}, '
-            f'pack_transformed={self.pack_transformed})')
+            repr(transform), f'PackPoseInputs(meta_keys={self.meta_keys})')
