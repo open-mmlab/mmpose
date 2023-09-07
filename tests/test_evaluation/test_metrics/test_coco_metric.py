@@ -28,7 +28,7 @@ class TestCocoMetric(TestCase):
         # into MessageHub, which will influence the unit tests for CocoMetric
         msg = MessageHub.get_current_instance()
         for key in msg.runtime_info:
-            if 'key'.endswith('ann_file'):
+            if key.endswith('ann_file'):
                 msg.pop_info(key)
 
         self.tmp_dir = tempfile.TemporaryDirectory()
