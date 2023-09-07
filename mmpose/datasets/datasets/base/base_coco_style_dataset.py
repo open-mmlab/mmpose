@@ -117,7 +117,8 @@ class BaseCocoStyleDataset(BaseDataset):
             # save the ann_file into MessageHub for CocoMetric
             message = MessageHub.get_current_instance()
             dataset_name = self.metainfo['dataset_name']
-            message.update_info_dict({f'{dataset_name}_ann_file': ann_file})
+            message.update_info_dict(
+                {f'{dataset_name}_ann_file': self.ann_file})
 
     @classmethod
     def _load_metainfo(cls, metainfo: dict = None) -> dict:
