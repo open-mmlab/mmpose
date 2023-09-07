@@ -27,9 +27,7 @@ class TestCocoMetric(TestCase):
         # during CI on github, the unit tests for datasets will save ann_file
         # into MessageHub, which will influence the unit tests for CocoMetric
         msg = MessageHub.get_current_instance()
-        for key in msg.runtime_info:
-            if key.endswith('ann_file'):
-                msg.pop_info(key)
+        msg.runtime_info.clear()
 
         self.tmp_dir = tempfile.TemporaryDirectory()
 
