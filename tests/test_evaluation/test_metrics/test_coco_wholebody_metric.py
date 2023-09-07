@@ -7,6 +7,7 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import dump, load
+from mmengine.logging import MessageHub
 from xtcocotools.coco import COCO
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
@@ -21,6 +22,15 @@ class TestCocoWholeBodyMetric(TestCase):
         TestCase calls functions in this order: setUp() -> testMethod() ->
         tearDown() -> cleanUp()
         """
+
+        # during CI on github, the unit tests for datasets will save ann_file
+        # into MessageHub, which will influence the unit tests for
+        # CocoWholeBodyMetric
+        msg = MessageHub.get_current_instance()
+        for key in msg.runtime_info:
+            if 'key'.endswith('ann_file'):
+                msg.pop_info(key)
+
         self.tmp_dir = tempfile.TemporaryDirectory()
 
         self.ann_file_coco = 'tests/data/coco/test_coco_wholebody.json'
