@@ -8,7 +8,7 @@ from typing import Dict, Optional, Sequence
 import numpy as np
 from mmengine.evaluator import BaseMetric
 from mmengine.fileio import dump, get_local_path, load
-from mmengine.logging import MessageHub, MMLogger
+from mmengine.logging import MessageHub, MMLogger, print_log
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
@@ -173,6 +173,10 @@ class CocoMetric(BaseMetric):
             if ann_file is not None:
                 with get_local_path(ann_file) as local_path:
                     self.coco = COCO(local_path)
+                print_log(
+                    f'CocoMetric for dataset '
+                    f"{dataset_meta['dataset_name']} has successfully "
+                    f'loaded the annotation file from {ann_file}', 'current')
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
