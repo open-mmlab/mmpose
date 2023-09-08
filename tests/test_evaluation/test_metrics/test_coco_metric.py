@@ -7,8 +7,10 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import dump, load
+from mmengine.logging import MessageHub
 from xtcocotools.coco import COCO
 
+from mmpose.datasets.datasets import CocoDataset
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.metrics import CocoMetric
 
@@ -21,6 +23,12 @@ class TestCocoMetric(TestCase):
         TestCase calls functions in this order: setUp() -> testMethod() ->
         tearDown() -> cleanUp()
         """
+
+        # during CI on github, the unit tests for datasets will save ann_file
+        # into MessageHub, which will influence the unit tests for CocoMetric
+        msg = MessageHub.get_current_instance()
+        msg.runtime_info.clear()
+
         self.tmp_dir = tempfile.TemporaryDirectory()
 
         self.ann_file_coco = 'tests/data/coco/test_coco.json'
@@ -664,3 +672,13 @@ class TestCocoMetric(TestCase):
         self.assertTrue(
             osp.isfile(
                 osp.join(self.tmp_dir.name, 'test_convert.keypoints.json')))
+
+    def test_get_ann_file_from_dataset(self):
+        _ = CocoDataset(ann_file=self.ann_file_coco, test_mode=True)
+        metric = CocoMetric(ann_file=None)
+        metric.dataset_meta = self.dataset_meta_coco
+        self.assertIsNotNone(metric.coco)
+
+        # clear message to avoid disturbing other tests
+        message = MessageHub.get_current_instance()
+        message.pop_info('coco_ann_file')
