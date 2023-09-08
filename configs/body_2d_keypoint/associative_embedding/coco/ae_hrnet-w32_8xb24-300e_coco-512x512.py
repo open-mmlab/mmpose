@@ -96,7 +96,7 @@ model = dict(
         decoder=dict(codec, heatmap_size=codec['input_size'])),
     test_cfg=dict(
         multiscale_test=False,
-        flip_test=True,
+        flip_test=False,
         shift_heatmap=True,
         restore_heatmap_size=True,
         align_corners=False))
@@ -113,9 +113,14 @@ val_pipeline = [
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],
-        size_factor=32,
+        size_factor=64,
         resize_mode='expand'),
-    dict(type='PackPoseInputs')
+    dict(
+        type='PackPoseInputs',
+        meta_keys=('id', 'img_id', 'img_path', 'crowd_index', 'ori_shape',
+                   'img_shape', 'input_size', 'input_center', 'input_scale',
+                   'flip', 'flip_direction', 'flip_indices', 'raw_ann_info',
+                   'skeleton_links'))
 ]
 
 # data loaders

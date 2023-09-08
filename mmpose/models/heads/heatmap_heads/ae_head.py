@@ -2,6 +2,7 @@
 from typing import List, Optional, Sequence, Tuple, Union
 
 import torch
+import torch.nn.functional as F
 from mmengine.structures import PixelData
 from mmengine.utils import is_list_of
 from torch import Tensor
@@ -110,7 +111,7 @@ class AssociativeEmbeddingHead(HeatmapHead):
             # TTA: multi-scale test
             assert is_list_of(feats, list if flip_test else tuple)
         else:
-            assert is_list_of(feats, tuple if flip_test else Tensor)
+            assert isinstance(feats, list if flip_test else tuple)
             feats = [feats]
 
         # resize heatmaps to align with with input size
@@ -129,6 +130,15 @@ class AssociativeEmbeddingHead(HeatmapHead):
         for scale_idx, _feats in enumerate(feats):
             if not flip_test:
                 _heatmaps, _tags = self.forward(_feats)
+                if heatmap_size:
+                    _heatmaps = F.interpolate(
+                        _heatmaps, (img_h, img_w),
+                        mode='bilinear',
+                        align_corners=align_corners)
+                    _tags = F.interpolate(
+                        _tags, (img_h, img_w),
+                        mode='bilinear',
+                        align_corners=align_corners)
 
             else:
                 # TTA: flip test
