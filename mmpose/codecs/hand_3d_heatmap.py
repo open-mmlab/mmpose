@@ -45,6 +45,20 @@ class Hand3DHeatmap(BaseKeypointCodec):
         'hand_type', 'hand_type_valid', 'focal', 'principal_pt'
     }
 
+    instance_mapping_table = {
+        'keypoints': 'keypoints',
+        'keypoints_visible': 'keypoints_visible',
+        'keypoints_cam': 'keypoints_cam',
+    }
+
+    label_mapping_table = {
+        'keypoint_weights': 'keypoint_weights',
+        'root_depth_weight': 'root_depth_weight',
+        'type_weight': 'type_weight',
+        'root_depth': 'root_depth',
+        'type': 'type'
+    }
+
     def __init__(self,
                  image_size: Tuple[int, int] = [256, 256],
                  root_heatmap_size: int = 64,
@@ -108,10 +122,11 @@ class Hand3DHeatmap(BaseKeypointCodec):
                   (K * D, H, W) where [W, H, D] is the `heatmap_size`
                 - keypoint_weights (np.ndarray): The target weights in shape
                   (N, K)
-                - data_infos (list): Other data information for computing
-                  losses
-                - data_infos_valid (list): Validity of corresponding data
-                  information
+                - root_depth (np.ndarray): Encoded relative root depth
+                - root_depth_weight (np.ndarray): The weights of relative root
+                  depth
+                - type (np.ndarray): Encoded hand type
+                - type_weight (np.ndarray): The weights of hand type
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:-1], dtype=np.float32)
