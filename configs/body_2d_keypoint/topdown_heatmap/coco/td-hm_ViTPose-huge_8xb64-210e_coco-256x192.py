@@ -71,7 +71,7 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint='https://download.openmmlab.com/mmpose/'
-            'v1/pretrained_models/mae_pretrain_vit_huge_20230923.pth'),
+            'v1/pretrained_models/mae_pretrain_vit_huge_20230913.pth'),
     ),
     head=dict(
         type='HeatmapHead',
