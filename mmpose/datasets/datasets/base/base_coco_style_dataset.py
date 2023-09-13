@@ -151,9 +151,12 @@ class BaseCocoStyleDataset(BaseDataset):
         """
         data_info = self.get_data_info(idx)
 
-        # the assignment of 'dataset' should not be performed within the
-        # `get_data_info` function. Otherwise, it can lead to the mixed
-        # data augmentation process getting stuck.
+        # Mixed image transformations require multiple source images for
+        # effective blending. Therefore, we assign the 'dataset' field in
+        # `data_info` to provide these auxiliary images.
+        # Note: The 'dataset' assignment should not occur within the
+        # `get_data_info` function, as doing so may cause the mixed image
+        # transformations to stall or hang.
         data_info['dataset'] = self
 
         return self.pipeline(data_info)

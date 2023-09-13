@@ -18,8 +18,6 @@ from mmpose.utils import reduce_mean
 from mmpose.utils.typing import (ConfigType, Features, OptSampleList,
                                  Predictions, SampleList)
 
-EPS = 1e-8
-
 
 class YOLOXPoseHeadModule(BaseModule):
     """YOLOXPose head module for one-stage human pose estimation.
@@ -431,7 +429,7 @@ class YOLOXPoseHead(BaseModule):
             bbox_wh = bbox_targets[:, 2:] - bbox_targets[:, :2]
             bbox_aux_targets = torch.cat([
                 (bbox_cxcy - pos_priors[:, :2]) / pos_priors[:, 2:],
-                torch.log(bbox_wh / pos_priors[:, 2:] + EPS)
+                torch.log(bbox_wh / pos_priors[:, 2:] + 1e-8)
             ],
                                          dim=-1)
 
