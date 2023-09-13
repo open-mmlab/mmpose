@@ -71,7 +71,7 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint='https://download.openmmlab.com/mmpose/'
-            'v1/pretrained_models/mae_pretrain_vit_large.pth'),
+            'v1/pretrained_models/mae_pretrain_vit_large_20230913.pth'),
     ),
     neck=dict(type='FeatureMapProcessor', scale_factor=4.0, apply_relu=True),
     head=dict(
