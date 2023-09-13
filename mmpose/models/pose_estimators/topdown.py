@@ -152,8 +152,8 @@ class TopdownPoseEstimator(BasePoseEstimator):
             input_size = data_sample.metainfo['input_size']
 
             pred_instances.keypoints[..., :2] = \
-                pred_instances.keypoints[..., :2] / input_size * bbox_scales \
-                + bbox_centers - 0.5 * bbox_scales
+                pred_instances.keypoints[..., :2] / input_size * input_scale \
+                + input_center - 0.5 * input_scale
             if 'keypoints_visible' not in pred_instances:
                 pred_instances.keypoints_visible = \
                     pred_instances.keypoint_scores
@@ -182,4 +182,5 @@ class TopdownPoseEstimator(BasePoseEstimator):
                         pred_fields.set_field(value[output_keypoint_indices],
                                               key)
                 data_sample.pred_fields = pred_fields
+
         return batch_data_samples
