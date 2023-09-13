@@ -4,7 +4,9 @@ from .bottomup_transforms import (BottomupGetHeatmapMask, BottomupRandomAffine,
 from .common_transforms import (Albumentation, FilterAnnotations,
                                 GenerateTarget, GetBBoxCenterScale,
                                 PhotometricDistortion, RandomBBoxTransform,
-                                RandomFlip, RandomHalfBody, YOLOXHSVRandomAug)
+                                RandomFlip, RandomHalfBody, YOLOXHSVRandomAug,
+                                BottomupRandomChoiceResize,
+                                BottomupRandomCrop, BottomupResize)
 from .converting import KeypointConverter
 from .formatting import PackPoseInputs
 from .loading import LoadImage
@@ -18,5 +20,6 @@ __all__ = [
     'PhotometricDistortion', 'PackPoseInputs', 'LoadImage',
     'BottomupGetHeatmapMask', 'BottomupRandomAffine', 'BottomupResize',
     'GenerateTarget', 'KeypointConverter', 'RandomFlipAroundRoot',
-    'FilterAnnotations', 'YOLOXHSVRandomAug', 'YOLOXMixUp', 'Mosaic'
+    'FilterAnnotations', 'YOLOXHSVRandomAug', 'YOLOXMixUp', 'Mosaic',
+    'BottomupRandomCrop', 'BottomupRandomChoiceResize'
 ]

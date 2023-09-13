@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import torch.nn as nn
 from mmcv.cnn import ConvModule
@@ -56,6 +56,7 @@ class ChannelMapper(BaseModule):
         norm_cfg: OptConfigType = None,
         act_cfg: OptConfigType = dict(type='ReLU'),
         num_outs: int = None,
+        bias: Union[bool, str] = 'auto',
         init_cfg: OptMultiConfig = dict(
             type='Xavier', layer='Conv2d', distribution='uniform')
     ) -> None:
@@ -71,6 +72,7 @@ class ChannelMapper(BaseModule):
                     in_channel,
                     out_channels,
                     kernel_size,
+                    bias=bias,
                     padding=(kernel_size - 1) // 2,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
@@ -89,6 +91,7 @@ class ChannelMapper(BaseModule):
                         3,
                         stride=2,
                         padding=1,
+                        bias=bias,
                         conv_cfg=conv_cfg,
                         norm_cfg=norm_cfg,
                         act_cfg=act_cfg))
