@@ -65,6 +65,15 @@ class DecoupledHeatmap(BaseKeypointCodec):
     # instance, so that it can assign varying sigmas based on their size
     auxiliary_encode_keys = {'bbox'}
 
+    label_mapping_table = dict(
+        keypoint_weights='keypoint_weights',
+        instance_coords='instance_coords',
+    )
+    field_mapping_table = dict(
+        heatmaps='heatmaps',
+        instance_heatmaps='instance_heatmaps',
+    )
+
     def __init__(
         self,
         input_size: Tuple[int, int],

@@ -23,18 +23,15 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
         ndarray[K, 2 or 3]: the transformed 2D keypoints.
     """
     assert pose_lift_dataset in [
-        'Human36mDataset'], '`pose_lift_dataset` should be ' \
-        f'`Human36mDataset`, but got {pose_lift_dataset}.'
+        'h36m'], '`pose_lift_dataset` should be ' \
+        f'`h36m`, but got {pose_lift_dataset}.'
 
-    coco_style_datasets = [
-        'CocoDataset', 'PoseTrack18VideoDataset', 'PoseTrack18Dataset'
-    ]
     keypoints_new = np.zeros((keypoints.shape[0], 17, keypoints.shape[2]),
                              dtype=keypoints.dtype)
-    if pose_lift_dataset == 'Human36mDataset':
-        if pose_det_dataset in ['Human36mDataset']:
+    if pose_lift_dataset == 'h36m':
+        if pose_det_dataset in ['h36m']:
             keypoints_new = keypoints
-        elif pose_det_dataset in coco_style_datasets:
+        elif pose_det_dataset in ['coco', 'posetrack18']:
             # pelvis (root) is in the middle of l_hip and r_hip
             keypoints_new[:, 0] = (keypoints[:, 11] + keypoints[:, 12]) / 2
             # thorax is in the middle of l_shoulder and r_shoulder
@@ -48,7 +45,7 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
             # rearrange other keypoints
             keypoints_new[:, [1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
                 keypoints[:, [12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
-        elif pose_det_dataset in ['AicDataset']:
+        elif pose_det_dataset in ['aic']:
             # pelvis (root) is in the middle of l_hip and r_hip
             keypoints_new[:, 0] = (keypoints[:, 9] + keypoints[:, 6]) / 2
             # thorax is in the middle of l_shoulder and r_shoulder
@@ -66,7 +63,7 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
 
             keypoints_new[:, [1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
                 keypoints[:, [6, 7, 8, 9, 10, 11, 3, 4, 5, 0, 1, 2]]
-        elif pose_det_dataset in ['CrowdPoseDataset']:
+        elif pose_det_dataset in ['crowdpose']:
             # pelvis (root) is in the middle of l_hip and r_hip
             keypoints_new[:, 0] = (keypoints[:, 6] + keypoints[:, 7]) / 2
             # thorax is in the middle of l_shoulder and r_shoulder
@@ -181,16 +178,11 @@ def collate_pose_sequence(pose_results_2d,
     pose_sequences = []
     for idx in range(N):
         pose_seq = PoseDataSample()
-        gt_instances = InstanceData()
         pred_instances = InstanceData()
 
-        for k in pose_results_2d[target_frame][idx].gt_instances.keys():
-            gt_instances.set_field(
-                pose_results_2d[target_frame][idx].gt_instances[k], k)
-        for k in pose_results_2d[target_frame][idx].pred_instances.keys():
-            if k != 'keypoints':
-                pred_instances.set_field(
-                    pose_results_2d[target_frame][idx].pred_instances[k], k)
+        gt_instances = pose_results_2d[target_frame][idx].gt_instances.clone()
+        pred_instances = pose_results_2d[target_frame][
+            idx].pred_instances.clone()
         pose_seq.pred_instances = pred_instances
         pose_seq.gt_instances = gt_instances
 
@@ -228,7 +220,7 @@ def collate_pose_sequence(pose_results_2d,
                     # replicate the right most frame
                     keypoints[:, frame_idx + 1:] = keypoints[:, frame_idx]
                     break
-            pose_seq.pred_instances.keypoints = keypoints
+            pose_seq.pred_instances.set_field(keypoints, 'keypoints')
         pose_sequences.append(pose_seq)
 
     return pose_sequences
@@ -276,8 +268,15 @@ def inference_pose_lifter_model(model,
             bbox_center = None
             bbox_scale = None
 
+    pose_results_2d_copy = []
     for i, pose_res in enumerate(pose_results_2d):
+        pose_res_copy = []
         for j, data_sample in enumerate(pose_res):
+            data_sample_copy = PoseDataSample()
+            data_sample_copy.gt_instances = data_sample.gt_instances.clone()
+            data_sample_copy.pred_instances = data_sample.pred_instances.clone(
+            )
+            data_sample_copy.track_id = data_sample.track_id
             kpts = data_sample.pred_instances.keypoints
             bboxes = data_sample.pred_instances.bboxes
             keypoints = []
@@ -292,11 +291,13 @@ def inference_pose_lifter_model(model,
                                      bbox_scale + bbox_center)
                 else:
                     keypoints.append(kpt[:, :2])
-            pose_results_2d[i][j].pred_instances.keypoints = np.array(
-                keypoints)
+            data_sample_copy.pred_instances.set_field(
+                np.array(keypoints), 'keypoints')
+            pose_res_copy.append(data_sample_copy)
+        pose_results_2d_copy.append(pose_res_copy)
 
-    pose_sequences_2d = collate_pose_sequence(pose_results_2d, with_track_id,
-                                              target_idx)
+    pose_sequences_2d = collate_pose_sequence(pose_results_2d_copy,
+                                              with_track_id, target_idx)
 
     if not pose_sequences_2d:
         return []

@@ -376,3 +376,123 @@ NNODES=2 NODE_RANK=1 PORT=$MASTER_PORT MASTER_ADDR=$MASTER_ADDR bash tools/dist_
 | `GPUS_PER_NODE` | 每台机器使用的 GPU 总数，默认为 8                                        |
 | `CPUS_PER_TASK` | 每个任务分配的 CPU 总数（通常为 1 张 GPU 对应 1 个任务进程），默认为 5   |
 | `SRUN_ARGS`     | `srun` 的其他参数，可选项见 [这里](https://slurm.schedmd.com/srun.html). |
+
+## 自定义测试
+
+### 用自定义度量进行测试
+
+如果您希望使用 MMPose 中尚未支持的独特度量来评估模型，您将需要自己编写这些度量并将它们包含在您的配置文件中。关于如何实现这一点的指导，请查看我们的 [自定义评估指南](https://mmpose.readthedocs.io/zh_CN/dev-1.x/advanced_guides/customize_evaluation.html)。
+
+### 在多个数据集上进行评估
+
+MMPose 提供了一个名为 `MultiDatasetEvaluator` 的便捷工具，用于在多个数据集上进行简化评估。在配置文件中设置此评估器非常简单。下面是一个快速示例，演示如何使用 COCO 和 AIC 数据集评估模型：
+
+```python
+# 设置验证数据集
+coco_val = dict(type='CocoDataset', ...)
+
+aic_val = dict(type='AicDataset', ...)
+
+val_dataset = dict(
+        type='CombinedDataset',
+        datasets=[coco_val, aic_val],
+        pipeline=val_pipeline,
+        ...)
+
+# 配置评估器
+val_evaluator = dict(
+    type='MultiDatasetEvaluator',
+    metrics=[  # 为每个数据集配置度量
+        dict(type='CocoMetric',
+             ann_file='data/coco/annotations/person_keypoints_val2017.json'),
+        dict(type='CocoMetric',
+            ann_file='data/aic/annotations/aic_val.json',
+            use_area=False,
+            prefix='aic')
+    ],
+    # 数据集个数和顺序与度量必须匹配
+    datasets=[coco_val, aic_val],
+    )
+```
+
+同的数据集（如 COCO 和 AIC）具有不同的关键点定义。然而，模型的输出关键点是标准化的。这导致了模型输出与真值之间关键点顺序的差异。为解决这一问题，您可以使用 `KeypointConverter` 来对齐不同数据集之间的关键点顺序。下面是一个完整示例，展示了如何利用 `KeypointConverter` 来对齐 AIC 关键点与 COCO 关键点：
+
+```python
+aic_to_coco_converter = dict(
+            type='KeypointConverter',
+            num_keypoints=17,
+            mapping=[
+                (0, 6),
+                (1, 8),
+                (2, 10),
+                (3, 5),
+                (4, 7),
+                (5, 9),
+                (6, 12),
+                (7, 14),
+                (8, 16),
+                (9, 11),
+                (10, 13),
+                (11, 15),
+            ])
+
+# val datasets
+coco_val = dict(
+    type='CocoDataset',
+    data_root='data/coco/',
+    data_mode='topdown',
+    ann_file='annotations/person_keypoints_val2017.json',
+    bbox_file='data/coco/person_detection_results/'
+    'COCO_val2017_detections_AP_H_56_person.json',
+    data_prefix=dict(img='val2017/'),
+    test_mode=True,
+    pipeline=[],
+)
+
+aic_val = dict(
+        type='AicDataset',
+        data_root='data/aic/',
+        data_mode=data_mode,
+        ann_file='annotations/aic_val.json',
+        data_prefix=dict(img='ai_challenger_keypoint_validation_20170911/'
+                         'keypoint_validation_images_20170911/'),
+        test_mode=True,
+        pipeline=[],
+    )
+
+val_dataset = dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        datasets=[coco_val, aic_val],
+        pipeline=val_pipeline,
+        test_mode=True,
+    )
+
+val_dataloader = dict(
+    batch_size=32,
+    num_workers=2,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=val_dataset)
+
+test_dataloader = val_dataloader
+
+val_evaluator = dict(
+    type='MultiDatasetEvaluator',
+    metrics=[
+        dict(type='CocoMetric',
+             ann_file=data_root + 'annotations/person_keypoints_val2017.json'),
+        dict(type='CocoMetric',
+            ann_file='data/aic/annotations/aic_val.json',
+            use_area=False,
+            gt_converter=aic_to_coco_converter,
+            prefix='aic')
+    ],
+    datasets=val_dataset['datasets'],
+    )
+
+test_evaluator = val_evaluator
+```
+
+如需进一步了解如何将 AIC 关键点转换为 COCO 关键点，请查阅 [该指南](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/mixed_datasets.html#aic-coco)。

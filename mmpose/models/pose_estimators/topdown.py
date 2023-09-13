@@ -147,8 +147,8 @@ class TopdownPoseEstimator(BasePoseEstimator):
             gt_instances = data_sample.gt_instances
 
             # convert keypoint coordinates from input space to image space
-            bbox_centers = gt_instances.bbox_centers
-            bbox_scales = gt_instances.bbox_scales
+            input_center = data_sample.metainfo['input_center']
+            input_scale = data_sample.metainfo['input_scale']
             input_size = data_sample.metainfo['input_size']
 
             pred_instances.keypoints[..., :2] = \

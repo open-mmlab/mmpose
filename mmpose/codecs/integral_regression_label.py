@@ -45,6 +45,12 @@ class IntegralRegressionLabel(BaseKeypointCodec):
     .. _`DSNT`: https://arxiv.org/abs/1801.07372
     """
 
+    label_mapping_table = dict(
+        keypoint_labels='keypoint_labels',
+        keypoint_weights='keypoint_weights',
+    )
+    field_mapping_table = dict(heatmaps='heatmaps', )
+
     def __init__(self,
                  input_size: Tuple[int, int],
                  heatmap_size: Tuple[int, int],

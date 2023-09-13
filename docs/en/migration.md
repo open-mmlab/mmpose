@@ -111,6 +111,16 @@ class GenerateTarget(BaseTransform):
 
 The data normalization operations `NormalizeTensor` and `ToTensor` will be replaced by **DataPreprocessor** module, which will no longer be used as a preprocessing operation, but will be merged as a part of the model forward propagation.
 
+The 3D normalization methods like
+
+- `GetRootCenteredPose`
+- `ImageCoordinateNormalization`
+- `NormalizeJointCoordinate`
+
+will be merged into codecs, for example [`ImagePoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/image_pose_lifting.py#L11) and [`VideoPoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/video_pose_lifting.py#L13).
+
+The data conversion and reshaping operation `PoseSequenceToTensor` will be implemented in corresponding codecs and [`PackPoseInputs`](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py).
+
 ## Compatibility of Models
 
 We have performed compatibility with the model weights provided by model zoo to ensure that the same model weights can get a comparable accuracy in both version. But note that due to the large number of differences in processing details, the inference outputs can be slightly different(less than 0.05% difference in accuracy).

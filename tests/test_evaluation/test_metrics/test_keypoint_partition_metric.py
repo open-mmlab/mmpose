@@ -7,6 +7,7 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import load
+from mmengine.logging import MessageHub
 from mmengine.structures import InstanceData
 from xtcocotools.coco import COCO
 
@@ -22,6 +23,12 @@ class TestKeypointPartitionMetricWrappingCocoMetric(TestCase):
         TestCase calls functions in this order: setUp() -> testMethod() ->
         tearDown() -> cleanUp()
         """
+
+        # during CI on github, the unit tests for datasets will save ann_file
+        # into MessageHub, which will influence the unit tests for CocoMetric
+        msg = MessageHub.get_current_instance()
+        msg.runtime_info.clear()
+
         self.tmp_dir = tempfile.TemporaryDirectory()
 
         self.ann_file_coco = \

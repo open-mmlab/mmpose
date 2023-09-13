@@ -112,9 +112,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         # helper functions
         self._keypoint_converter = partial(
             convert_keypoint_definition,
-            pose_det_dataset=self.pose2d_model.cfg.test_dataloader.
-            dataset['type'],
-            pose_lift_dataset=self.cfg.test_dataloader.dataset['type'],
+            pose_det_dataset=self.pose2d_model.model.
+            dataset_meta['dataset_name'],
+            pose_lift_dataset=self.model.dataset_meta['dataset_name'],
         )
 
         self._pose_seq_extractor = partial(
@@ -172,7 +172,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 nms_thr=nms_thr,
                 bboxes=bboxes,
                 merge_results=False,
-                return_datasample=True))['predictions']
+                return_datasamples=True))['predictions']
 
         for ds in results_pose2d:
             ds.pred_instances.set_field(
@@ -343,7 +343,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
     def __call__(
         self,
         inputs: InputsType,
-        return_datasample: bool = False,
+        return_datasamples: bool = False,
         batch_size: int = 1,
         out_dir: Optional[str] = None,
         **kwargs,
@@ -352,7 +352,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
         Args:
             inputs (InputsType): Inputs for the inferencer.
-            return_datasample (bool): Whether to return results as
+            return_datasamples (bool): Whether to return results as
                 :obj:`BaseDataElement`. Defaults to False.
             batch_size (int): Batch size. Defaults to 1.
             out_dir (str, optional): directory to save visualization
@@ -412,7 +412,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
             visualization = self.visualize(ori_inputs, preds,
                                            **visualize_kwargs)
-            results = self.postprocess(preds, visualization, return_datasample,
+            results = self.postprocess(preds, visualization,
+                                       return_datasamples,
                                        **postprocess_kwargs)
             yield results
 
@@ -504,6 +505,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
+                dataset_2d=self.pose2d_model.model.
+                dataset_meta['dataset_name'],
+                dataset_3d=self.model.dataset_meta['dataset_name'],
                 kpt_thr=kpt_thr,
                 num_instances=num_instances)
             results.append(visualization)

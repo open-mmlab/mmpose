@@ -245,7 +245,7 @@ class CocoWholeBodyMetric(CocoMetric):
             coco_det,
             'keypoints_body',
             sigmas[cuts[0]:cuts[1]],
-            use_area=True)
+            use_area=self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
@@ -256,7 +256,7 @@ class CocoWholeBodyMetric(CocoMetric):
             coco_det,
             'keypoints_foot',
             sigmas[cuts[1]:cuts[2]],
-            use_area=True)
+            use_area=self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
@@ -267,7 +267,7 @@ class CocoWholeBodyMetric(CocoMetric):
             coco_det,
             'keypoints_face',
             sigmas[cuts[2]:cuts[3]],
-            use_area=True)
+            use_area=self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
@@ -278,7 +278,7 @@ class CocoWholeBodyMetric(CocoMetric):
             coco_det,
             'keypoints_lefthand',
             sigmas[cuts[3]:cuts[4]],
-            use_area=True)
+            use_area=self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
@@ -289,14 +289,18 @@ class CocoWholeBodyMetric(CocoMetric):
             coco_det,
             'keypoints_righthand',
             sigmas[cuts[4]:cuts[5]],
-            use_area=True)
+            use_area=self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
 
         coco_eval = COCOeval(
-            self.coco, coco_det, 'keypoints_wholebody', sigmas, use_area=True)
+            self.coco,
+            coco_det,
+            'keypoints_wholebody',
+            sigmas,
+            use_area=self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()

@@ -255,7 +255,7 @@ The inferencer is designed for both visualization and saving predictions. The ta
 | `num_instances`           | Sets the number of instances to visualize in the results. If set to a negative number, all detected instances will be visualized.                                 | ❌  | ✔️  |
 | `return_vis`              | Decides whether to include visualization images in the results.                                                                                                   | ✔️  | ✔️  |
 | `vis_out_dir`             | Defines the folder path to save the visualization images. If unset, the visualization images will not be saved.                                                   | ✔️  | ✔️  |
-| `return_datasample`       | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
+| `return_datasamples`      | Determines if the prediction should be returned in the `PoseDataSample` format.                                                                                   | ✔️  | ✔️  |
 | `pred_out_dir`            | Specifies the folder path to save the predictions. If unset, the predictions will not be saved.                                                                   | ✔️  | ✔️  |
 | `out_dir`                 | If `vis_out_dir` or `pred_out_dir` is unset, these will be set to `f'{out_dir}/visualization'` or `f'{out_dir}/predictions'`, respectively.                       | ✔️  | ✔️  |
 
@@ -266,9 +266,10 @@ The MMPose library has predefined aliases for several frequently used models. Th
 | Alias     | Configuration Name                                 | Task                            | Pose Estimator | Detector            |
 | --------- | -------------------------------------------------- | ------------------------------- | -------------- | ------------------- |
 | animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | Animal pose estimation          | RTMPose-m      | RTMDet-m            |
-| human     | rtmpose-m_8xb256-420e_aic-coco-256x192             | Human pose estimation           | RTMPose-m      | RTMDet-m            |
-| face      | rtmpose-m_8xb64-60e_wflw-256x256                   | Face keypoint detection         | RTMPose-m      | yolox-s             |
-| hand      | rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256   | Hand keypoint detection         | RTMPose-m      | ssdlite_mobilenetv2 |
+| human     | rtmpose-m_8xb256-420e_body8-256x192                | Human pose estimation           | RTMPose-m      | RTMDet-m            |
+| body26    | rtmpose-m_8xb512-700e_body8-halpe26-256x192        | Human pose estimation           | RTMPose-m      | RTMDet-m            |
+| face      | rtmpose-m_8xb256-120e_face6-256x256                | Face keypoint detection         | RTMPose-m      | yolox-s             |
+| hand      | rtmpose-m_8xb256-210e_hand5-256x256                | Hand keypoint detection         | RTMPose-m      | ssdlite_mobilenetv2 |
 | wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | Human wholebody pose estimation | RTMPose-m      | RTMDet-m            |
 | vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base   | RTMDet-m            |
 | vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-small  | RTMDet-m            |
@@ -278,9 +279,9 @@ The MMPose library has predefined aliases for several frequently used models. Th
 
 The following table lists the available 3D model aliases and their corresponding configuration names:
 
-| Alias   | Configuration Name                                        | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
-| ------- | --------------------------------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
-| human3d | pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
+| Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 

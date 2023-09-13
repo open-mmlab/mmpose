@@ -5,7 +5,7 @@ Collections:
     URL: https://arxiv.org/abs/2210.06551
   README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/motionbert.md
 Models:
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert_8xb32-240e_h36m.py
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-243frm_8xb32-240e_h36m.py
   In Collection: MotionBERT
   Metadata:
     Architecture: &id001
@@ -24,8 +24,9 @@ Models:
       P-MPJPE: 33.4
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_h36m-f554954f_20230531.pth
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-ft_8xb32-120e_h36m.py
+- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_motionbert-ft-243frm_8xb32-120e_h36m.py
   In Collection: MotionBERT
+  Alias: human3d
   Metadata:
     Architecture: *id001
     Training Data: Human3.6M (MotionBERT)

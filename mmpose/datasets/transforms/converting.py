@@ -83,7 +83,7 @@ class KeypointConverter(BaseTransform):
             self.source_index2 = src2
 
         self.source_index = src1
-        self.target_index = target_index
+        self.target_index = list(target_index)
         self.interpolation = interpolation
 
     def transform(self, results: dict) -> dict:
@@ -121,6 +121,44 @@ class KeypointConverter(BaseTransform):
         results['keypoints_visible'] = np.stack(
             [keypoints_visible, keypoints_visible_weights], axis=2)
         return results
+
+    def transform_sigmas(self, sigmas: Union[List, np.ndarray]):
+        """Transforms the sigmas based on the mapping."""
+        list_input = False
+        if isinstance(sigmas, list):
+            sigmas = np.array(sigmas)
+            list_input = True
+
+        new_sigmas = np.ones(self.num_keypoints, dtype=sigmas.dtype)
+        new_sigmas[self.target_index] = sigmas[self.source_index]
+
+        if list_input:
+            new_sigmas = new_sigmas.tolist()
+
+        return new_sigmas
+
+    def transform_ann(self, ann_info: Union[dict, list]):
+        """Transforms the annotations based on the mapping."""
+
+        list_input = True
+        if not isinstance(ann_info, list):
+            ann_info = [ann_info]
+            list_input = False
+
+        for ann in ann_info:
+            if 'keypoints' in ann:
+                keypoints = np.array(ann['keypoints']).reshape(-1, 3)
+                new_keypoints = np.zeros((self.num_keypoints, 3),
+                                         dtype=keypoints.dtype)
+                new_keypoints[self.target_index] = keypoints[self.source_index]
+                ann['keypoints'] = new_keypoints.reshape(-1).tolist()
+            if 'num_keypoints' in ann:
+                ann['num_keypoints'] = self.num_keypoints
+
+        if not list_input:
+            ann_info = ann_info[0]
+
+        return ann_info
 
     def __repr__(self) -> str:
         """print the basic information of the transform.

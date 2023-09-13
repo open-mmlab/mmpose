@@ -1,4 +1,4 @@
-# 20 分钟了解 MMPose 架构设计
+# 20 分钟上手 MMPose
 
 MMPose 1.0 与之前的版本有较大改动，对部分模块进行了重新设计和组织，降低代码冗余度，提升运行效率，降低学习难度。
 
@@ -18,7 +18,7 @@ MMPose 1.0 采用了全新的模块结构设计以精简代码，提升运行效
 
 以下是这篇教程的目录：
 
-- [20 分钟了解 MMPose 架构设计](#20-分钟了解-mmpose-架构设计)
+- [20 分钟上手 MMPose](#20-分钟上手-mmpose)
   - [文件结构](#文件结构)
   - [总览](#总览)
   - [Step1：配置文件](#step1配置文件)
@@ -201,11 +201,18 @@ test_dataloader = val_dataloader
 
 在 MMPose 中使用自定义数据集时，我们推荐将数据转化为已支持的格式（如 COCO 或 MPII），并直接使用我们提供的对应数据集实现。如果这种方式不可行，则用户需要实现自己的数据集类。
 
+更多自定义数据集的使用方式，请前往 [【进阶教程 - 自定义数据集】](./advanced_guides/customize_datasets.md)。
+
+````{note}
+如果你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)
+
+
+#### 2D 数据集
 MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了基类 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ```{note}
 关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
-```
+````
 
 在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在 [$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py)。
 
@@ -281,11 +288,11 @@ class CrowdPoseDataset(BaseCocoStyleDataset):
 
 对于使用 COCO 格式标注的数据集，只需要继承 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) 并指定 `METAINFO`，就可以十分轻松地集成到 MMPose 中参与训练。
 
-更多自定义数据集的使用方式，请前往 [【进阶教程 - 自定义数据集】](./advanced_guides/customize_datasets.md)。
+````
 
-```{note}
-如果你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)
-```
+
+#### 3D 数据集
+我们提供了基类 [BaseMocapStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ### 数据流水线
 
@@ -309,7 +316,7 @@ test_pipeline = [
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
-```
+````
 
 在关键点检测任务中，数据一般会在三个尺度空间中变换：
 
@@ -329,9 +336,9 @@ test_pipeline = [
 
 #### i. 数据增强
 
-数据增强中常用的变换存放在 [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py) 中，如 [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94)、[RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263) 等。
+数据增强中常用的变换存放在 [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py) 中，如 [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94)、[RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263) 等。对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433) 来实现；对于 bottom-up 方法，这些则是由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 实现。
 
-对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433) 来实现；对于 bottom-up 方法，这些则是由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 实现。
+3D 姿态数据的变换存放在 [$MMPOSE/mmpose/datasets/transforms/pose3d_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/pose3d_transforms.py) 中。
 
 ```{note}
 值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 [GetBBoxCenterScale](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L31) 来得到。
@@ -339,7 +346,9 @@ test_pipeline = [
 
 #### ii. 数据变换
 
-我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) 完成，在 bottom-up 方法中则由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 完成。
+对于二维图片输入，我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) 完成，在 bottom-up 方法中则由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 完成。
+
+对于 3D 姿态提升任务，变换被合并进[数据编码](./guide_to_framework.md#iii-数据编码)。
 
 #### iii. 数据编码
 
@@ -354,6 +363,7 @@ test_pipeline = [
 - `keypoint_xy_label`: 单个坐标轴关键点标签
 - `heatmap+keypoint_label`: 同时生成高斯热图和关键点标签
 - `multiscale_heatmap`: 多尺度高斯热图
+- `lifting_target_label`: 3D 提升目标的关键点标签
 
 生成的监督目标会按以下关键字进行封装：
 
@@ -362,6 +372,8 @@ test_pipeline = [
 - `keypoint_x_labels`：x 轴关键点标签
 - `keypoint_y_labels`：y 轴关键点标签
 - `keypoint_weights`：关键点权重
+- `lifting_target_label`: 3D 提升目标的关键点标签
+- `lifting_target_weight`: 3D 提升目标的关键点权重
 
 ```Python
 @TRANSFORMS.register_module()
@@ -377,15 +389,15 @@ class GenerateTarget(BaseTransform):
     """
 ```
 
-值得注意的是，我们对 top-down 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
+值得注意的是，我们对 top-down，pose-lifting 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
 ```
 
-- top-down：`[B, 1, K, D]`
+- top-down 和 pose-lifting：`[B, 1, K, D]`
 
-- Bottom-up: `[B, N, K, D]`
+- bottom-up: `[B, N, K, D]`
 
 当前已经支持的编解码器定义在 [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs) 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
 

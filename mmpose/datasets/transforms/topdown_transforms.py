@@ -125,6 +125,8 @@ class TopdownAffine(BaseTransform):
             results['transformed_keypoints'] = transformed_keypoints
 
         results['input_size'] = (w, h)
+        results['input_center'] = center
+        results['input_scale'] = scale
 
         return results
 

@@ -126,7 +126,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
     def __call__(
         self,
         inputs: InputsType,
-        return_datasample: bool = False,
+        return_datasamples: bool = False,
         batch_size: int = 1,
         out_dir: Optional[str] = None,
         **kwargs,
@@ -135,7 +135,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         Args:
             inputs (InputsType): Inputs for the inferencer.
-            return_datasample (bool): Whether to return results as
+            return_datasamples (bool): Whether to return results as
                 :obj:`BaseDataElement`. Defaults to False.
             batch_size (int): Batch size. Defaults to 1.
             out_dir (str, optional): directory to save visualization
@@ -201,7 +201,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
             visualization = self.visualize(ori_inputs, preds,
                                            **visualize_kwargs)
-            results = self.postprocess(preds, visualization, return_datasample,
+            results = self.postprocess(preds, visualization,
+                                       return_datasamples,
                                        **postprocess_kwargs)
             yield results
 
