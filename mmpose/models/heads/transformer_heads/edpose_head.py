@@ -11,6 +11,7 @@ from mmengine.model import BaseModule, ModuleList, constant_init
 from mmengine.structures import InstanceData
 from torch import Tensor, nn
 
+from mmpose.models.utils import inverse_sigmoid
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, Features, OptConfigType,
@@ -18,46 +19,7 @@ from mmpose.utils.typing import (ConfigType, Features, OptConfigType,
 from .base_transformer_head import TransformerHead
 from .transformers.deformable_detr_layers import (
     DeformableDetrTransformerDecoderLayer, DeformableDetrTransformerEncoder)
-from .transformers.utils import MLP, PositionEmbeddingSineHW, inverse_sigmoid
-
-
-@MODELS.register_module()
-class FrozenBatchNorm2d(BaseModule):
-    """BatchNorm2d where the batch statistics and the affine parameters are
-    fixed.
-
-    Copy-paste from torchvision.misc.ops with added eps before rqsrt, without
-    which any other models than torchvision.models.resnet[18,34,50,101] produce
-    nans.
-    """
-
-    def __init__(self, n, eps: int = 1e-5):
-        super(FrozenBatchNorm2d, self).__init__()
-        self.register_buffer('weight', torch.ones(n))
-        self.register_buffer('bias', torch.zeros(n))
-        self.register_buffer('running_mean', torch.zeros(n))
-        self.register_buffer('running_var', torch.ones(n))
-        self.eps = eps
-
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
-                              missing_keys, unexpected_keys, error_msgs):
-        num_batches_tracked_key = prefix + 'num_batches_tracked'
-        if num_batches_tracked_key in state_dict:
-            del state_dict[num_batches_tracked_key]
-
-        super(FrozenBatchNorm2d,
-              self)._load_from_state_dict(state_dict, prefix, local_metadata,
-                                          strict, missing_keys,
-                                          unexpected_keys, error_msgs)
-
-    def forward(self, x):
-        w = self.weight.reshape(1, -1, 1, 1)
-        b = self.bias.reshape(1, -1, 1, 1)
-        rv = self.running_var.reshape(1, -1, 1, 1)
-        rm = self.running_mean.reshape(1, -1, 1, 1)
-        scale = w * (rv + self.eps).rsqrt()
-        bias = b - rm * scale
-        return x * scale + bias
+from .transformers.utils import FFN, PositionEmbeddingSineHW
 
 
 class EDPoseDecoder(BaseModule):
@@ -74,7 +36,7 @@ class EDPoseDecoder(BaseModule):
         - query_dim (int): Dims of queries.
         - num_feature_levels (int): Number of feature levels.
         - num_box_decoder_layers (int): Number of box decoder layers.
-        - num_body_points (int): Number of datasets' body keypoints.
+        - num_keypoints (int): Number of datasets' body keypoints.
         - num_dn (int): Number of denosing points.
         - num_group (int): Number of decoder layers.
     """
@@ -87,7 +49,7 @@ class EDPoseDecoder(BaseModule):
                  query_dim=4,
                  num_feature_levels=1,
                  num_box_decoder_layers=2,
-                 num_body_points=17,
+                 num_keypoints=17,
                  num_dn=100,
                  num_group=100):
         super().__init__()
@@ -112,10 +74,10 @@ class EDPoseDecoder(BaseModule):
         ])
         self.norm = nn.LayerNorm(self.embed_dims)
 
-        self.ref_point_head = MLP(self.query_dim // 2 * self.embed_dims,
+        self.ref_point_head = FFN(self.query_dim // 2 * self.embed_dims,
                                   self.embed_dims, self.embed_dims, 2)
 
-        self.num_body_points = num_body_points
+        self.num_keypoints = num_keypoints
         self.query_scale = None
         self.bbox_embed = None
         self.class_embed = None
@@ -126,11 +88,11 @@ class EDPoseDecoder(BaseModule):
         self.num_group = num_group
         self.rm_detach = None
         self.num_dn = num_dn
-        self.hw = nn.Embedding(self.num_body_points, 2)
-        self.keypoint_embed = nn.Embedding(self.num_body_points, embed_dims)
+        self.hw = nn.Embedding(self.num_keypoints, 2)
+        self.keypoint_embed = nn.Embedding(self.num_keypoints, embed_dims)
         self.kpt_index = [
-            x for x in range(self.num_group * (self.num_body_points + 1))
-            if x % (self.num_body_points + 1) != 0
+            x for x in range(self.num_group * (self.num_keypoints + 1))
+            if x % (self.num_keypoints + 1) != 0
         ]
 
     def forward(self, query: Tensor, value: Tensor, key_padding_mask: Tensor,
@@ -235,7 +197,7 @@ class EDPoseDecoder(BaseModule):
                 bs = new_output_for_box.shape[1]
                 new_output_for_keypoint = new_output_for_box[:, None, :, :] \
                     + self.keypoint_embed.weight[None, :, None, :]
-                if self.num_body_points == 17:
+                if self.num_keypoints == 17:
                     delta_xy = self.pose_embed[-1](new_output_for_keypoint)[
                         ..., :2]
                 else:
@@ -270,12 +232,12 @@ class EDPoseDecoder(BaseModule):
                 ref_before_sigmoid = inverse_sigmoid(reference_points)
                 output_bbox_dn = output[:effect_num_dn]
                 output_bbox_norm = output[effect_num_dn:][0::(
-                    self.num_body_points + 1)]
+                    self.num_keypoints + 1)]
                 ref_before_sigmoid_bbox_dn = \
                     ref_before_sigmoid[:effect_num_dn]
                 ref_before_sigmoid_bbox_norm = \
                     ref_before_sigmoid[effect_num_dn:][0::(
-                        self.num_body_points + 1)]
+                        self.num_keypoints + 1)]
                 delta_unsig_dn = self.bbox_embed[layer_id](output_bbox_dn)
                 delta_unsig_norm = self.bbox_embed[layer_id](output_bbox_norm)
                 outputs_unsig_dn = delta_unsig_dn + ref_before_sigmoid_bbox_dn
@@ -303,7 +265,7 @@ class EDPoseDecoder(BaseModule):
                 new_reference_points_norm = torch.cat(
                     (new_reference_points_for_box_norm.unsqueeze(1),
                      new_reference_points_for_keypoint.view(
-                         -1, self.num_body_points, bs, 4)),
+                         -1, self.num_keypoints, bs, 4)),
                     dim=1).flatten(0, 1)
                 new_reference_points = torch.cat(
                     (new_reference_points_for_box_dn,
@@ -382,7 +344,7 @@ class EDPoseOutHead(BaseModule):
 
     Args:
         - num_classes (int): The number of classes.
-        - num_body_points (int): The number of datasets' body keypoints.
+        - num_keypoints (int): The number of datasets' body keypoints.
         - num_queries (int): The number of queries.
         - cls_no_bias (bool): Weather add the bias to class embed.
         - embed_dims (int): The dims of embed.
@@ -404,7 +366,7 @@ class EDPoseOutHead(BaseModule):
 
     def __init__(self,
                  num_classes,
-                 num_body_points: int = 17,
+                 num_keypoints: int = 17,
                  num_queries: int = 900,
                  cls_no_bias: bool = False,
                  embed_dims: int = 256,
@@ -423,7 +385,7 @@ class EDPoseOutHead(BaseModule):
         self.num_classes = num_classes
         self.refine_queries_num = refine_queries_num
         self.num_box_decoder_layers = num_box_decoder_layers
-        self.num_body_points = num_body_points
+        self.num_keypoints = num_keypoints
         self.num_queries = num_queries
 
         # prepare pred layers
@@ -438,9 +400,9 @@ class EDPoseOutHead(BaseModule):
             bias_value = -math.log((1 - prior_prob) / prior_prob)
             _class_embed.bias.data = torch.ones(self.num_classes) * bias_value
 
-        _bbox_embed = MLP(self.embed_dims, self.embed_dims, 4, 3)
-        _pose_embed = MLP(self.embed_dims, self.embed_dims, 2, 3)
-        _pose_hw_embed = MLP(self.embed_dims, self.embed_dims, 2, 3)
+        _bbox_embed = FFN(self.embed_dims, self.embed_dims, 4, 3)
+        _pose_embed = FFN(self.embed_dims, self.embed_dims, 2, 3)
+        _pose_hw_embed = FFN(self.embed_dims, self.embed_dims, 2, 3)
 
         self.num_group = num_group
         if dec_pred_bbox_embed_share:
@@ -458,7 +420,7 @@ class EDPoseOutHead(BaseModule):
                 copy.deepcopy(_class_embed) for i in range(num_pred_layer)
             ]
 
-        if num_body_points == 17:
+        if num_keypoints == 17:
             if dec_pred_pose_embed_share:
                 pose_embed_layerlist = [
                     _pose_embed
@@ -536,13 +498,13 @@ class EDPoseOutHead(BaseModule):
                 layer_hs_bbox_dn = layer_hs[:, :effec_dn_num, :]
                 layer_hs_bbox_norm = \
                     layer_hs[:, effec_dn_num:, :][:, 0::(
-                        self.num_body_points + 1), :]
+                        self.num_keypoints + 1), :]
                 bs = layer_ref_sig.shape[0]
                 ref_before_sigmoid_bbox_dn = \
                     layer_ref_sig[:, : effec_dn_num, :]
                 ref_before_sigmoid_bbox_norm = \
                     layer_ref_sig[:, effec_dn_num:, :][:, 0::(
-                        self.num_body_points + 1), :]
+                        self.num_keypoints + 1), :]
                 layer_delta_unsig_dn = layer_bbox_embed(layer_hs_bbox_dn)
                 layer_delta_unsig_norm = layer_bbox_embed(layer_hs_bbox_norm)
                 layer_outputs_unsig_dn = layer_delta_unsig_dn + \
@@ -562,8 +524,8 @@ class EDPoseOutHead(BaseModule):
         # update keypoints boxes
         outputs_keypoints_list = []
         kpt_index = [
-            x for x in range(self.num_group * (self.num_body_points + 1))
-            if x % (self.num_body_points + 1) != 0
+            x for x in range(self.num_group * (self.num_keypoints + 1))
+            if x % (self.num_keypoints + 1) != 0
         ]
         for dec_lid, (layer_ref_sig, layer_hs) in enumerate(
                 zip(references[:-1], hidden_states)):
@@ -571,7 +533,7 @@ class EDPoseOutHead(BaseModule):
                 assert isinstance(layer_hs, torch.Tensor)
                 bs = layer_hs.shape[0]
                 layer_res = layer_hs.new_zeros(
-                    (bs, self.num_queries, self.num_body_points * 3))
+                    (bs, self.num_queries, self.num_keypoints * 3))
                 outputs_keypoints_list.append(layer_res)
             else:
                 bs = layer_ref_sig.shape[0]
@@ -594,8 +556,7 @@ class EDPoseOutHead(BaseModule):
                                 dim=-1)
                 xyv = xyv.sigmoid()
                 layer_res = xyv.reshape(
-                    (bs, self.num_group, self.num_body_points,
-                     3)).flatten(2, 3)
+                    (bs, self.num_group, self.num_keypoints, 3)).flatten(2, 3)
                 layer_res = self.keypoint_xyzxyz_to_xyxyzz(layer_res)
                 outputs_keypoints_list.append(layer_res)
 
@@ -641,7 +602,7 @@ class EDPoseOutHead(BaseModule):
 class EDPoseHead(TransformerHead):
     """Head introduced in `Explicit Box Detection Unifies End-to-End Multi-
     Person Pose Estimation`_ by J Yang1 et al (2023). The head is composed of
-    Encoder、Decoder、Out_head.
+    Encoder, Decoder and Out_head.
 
     Code is modified from the `official github repo
     <https://github.com/IDEA-Research/ED-Pose>`_.
@@ -680,7 +641,7 @@ class EDPoseHead(TransformerHead):
     def __init__(self,
                  num_queries: int = 100,
                  num_feature_levels: int = 4,
-                 num_body_points: int = 17,
+                 num_keypoints: int = 17,
                  as_two_stage: bool = False,
                  encoder: OptConfigType = None,
                  decoder: OptConfigType = None,
@@ -701,7 +662,7 @@ class EDPoseHead(TransformerHead):
         self.two_stage_keep_all_tokens = two_stage_keep_all_tokens
         self.num_heads = decoder['layer_cfg']['self_attn_cfg']['num_heads']
         self.num_group = decoder['num_group']
-        self.num_body_points = num_body_points
+        self.num_keypoints = num_keypoints
         self.denosing_cfg = denosing_cfg
         if data_decoder is not None:
             self.data_decoder = KEYPOINT_CODECS.build(data_decoder)
@@ -719,9 +680,9 @@ class EDPoseHead(TransformerHead):
             **self.positional_encoding_cfg)
         self.encoder = DeformableDetrTransformerEncoder(**self.encoder_cfg)
         self.decoder = EDPoseDecoder(
-            num_body_points=num_body_points, **self.decoder_cfg)
+            num_keypoints=num_keypoints, **self.decoder_cfg)
         self.out_head = EDPoseOutHead(
-            num_body_points=num_body_points,
+            num_keypoints=num_keypoints,
             as_two_stage=as_two_stage,
             refine_queries_num=refine_queries_num,
             **self.out_head_cfg,
@@ -1244,23 +1205,23 @@ class EDPoseHead(TransformerHead):
             attn_mask_infere = torch.zeros(
                 bs,
                 self.num_heads,
-                self.num_group * (self.num_body_points + 1),
-                self.num_group * (self.num_body_points + 1),
+                self.num_group * (self.num_keypoints + 1),
+                self.num_group * (self.num_keypoints + 1),
                 device=device,
                 dtype=torch.bool)
-            group_bbox_kpt = (self.num_body_points + 1)
+            group_bbox_kpt = (self.num_keypoints + 1)
             kpt_index = [
-                x for x in range(self.num_group * (self.num_body_points + 1))
-                if x % (self.num_body_points + 1) == 0
+                x for x in range(self.num_group * (self.num_keypoints + 1))
+                if x % (self.num_keypoints + 1) == 0
             ]
-            for matchj in range(self.num_group * (self.num_body_points + 1)):
+            for matchj in range(self.num_group * (self.num_keypoints + 1)):
                 sj = (matchj // group_bbox_kpt) * group_bbox_kpt
                 ej = (matchj // group_bbox_kpt + 1) * group_bbox_kpt
                 if sj > 0:
                     attn_mask_infere[:, :, matchj, :sj] = True
-                if ej < self.num_group * (self.num_body_points + 1):
+                if ej < self.num_group * (self.num_keypoints + 1):
                     attn_mask_infere[:, :, matchj, ej:] = True
-            for match_x in range(self.num_group * (self.num_body_points + 1)):
+            for match_x in range(self.num_group * (self.num_keypoints + 1)):
                 if match_x % group_bbox_kpt == 0:
                     attn_mask_infere[:, :, match_x, kpt_index] = False
 
@@ -1315,9 +1276,7 @@ class EDPoseHead(TransformerHead):
                     refine_queries_num, dtype=torch.int64,
                     device=device) * int(self.num_classes)
                 gt_keypoints_expand_i = torch.rand(
-                    refine_queries_num,
-                    self.num_body_points * 3,
-                    device=device)
+                    refine_queries_num, self.num_keypoints * 3, device=device)
             gt_boxes_expand.append(gt_boxes_expand_i)
             gt_labels_expand.append(gt_labels_expand_i)
             gt_keypoints_expand.append(gt_keypoints_expand_i)
@@ -1377,29 +1336,27 @@ class EDPoseHead(TransformerHead):
             attn_mask2 = torch.zeros(
                 bs,
                 self.num_heads,
-                refine_queries_num + self.num_group *
-                (self.num_body_points + 1),
-                refine_queries_num + self.num_group *
-                (self.num_body_points + 1),
+                refine_queries_num + self.num_group * (self.num_keypoints + 1),
+                refine_queries_num + self.num_group * (self.num_keypoints + 1),
                 device=device,
                 dtype=torch.bool)
             attn_mask2[:, :, refine_queries_num:, :refine_queries_num] = True
-            group_bbox_kpt = (self.num_body_points + 1)
+            group_bbox_kpt = (self.num_keypoints + 1)
             kpt_index = [
-                x for x in range(self.num_group * (self.num_body_points + 1))
-                if x % (self.num_body_points + 1) == 0
+                x for x in range(self.num_group * (self.num_keypoints + 1))
+                if x % (self.num_keypoints + 1) == 0
             ]
-            for matchj in range(self.num_group * (self.num_body_points + 1)):
+            for matchj in range(self.num_group * (self.num_keypoints + 1)):
                 sj = (matchj // group_bbox_kpt) * group_bbox_kpt
                 ej = (matchj // group_bbox_kpt + 1) * group_bbox_kpt
                 if sj > 0:
                     attn_mask2[:, :, refine_queries_num:,
                                refine_queries_num:][:, :, matchj, :sj] = True
-                if ej < self.num_group * (self.num_body_points + 1):
+                if ej < self.num_group * (self.num_keypoints + 1):
                     attn_mask2[:, :, refine_queries_num:,
                                refine_queries_num:][:, :, matchj, ej:] = True
 
-            for match_x in range(self.num_group * (self.num_body_points + 1)):
+            for match_x in range(self.num_group * (self.num_keypoints + 1)):
                 if match_x % group_bbox_kpt == 0:
                     attn_mask2[:, :, refine_queries_num:,
                                refine_queries_num:][:, :, match_x,

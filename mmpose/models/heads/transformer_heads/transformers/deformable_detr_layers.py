@@ -8,9 +8,9 @@ from mmcv.ops import MultiScaleDeformableAttention
 from mmengine.model import ModuleList
 from torch import Tensor, nn
 
+from mmpose.models.utils import inverse_sigmoid
 from .detr_layers import (DetrTransformerDecoder, DetrTransformerDecoderLayer,
                           DetrTransformerEncoder, DetrTransformerEncoderLayer)
-from .utils import inverse_sigmoid
 
 
 class DeformableDetrTransformerEncoder(DetrTransformerEncoder):

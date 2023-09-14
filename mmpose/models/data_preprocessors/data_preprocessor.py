@@ -165,7 +165,7 @@ class BatchShapeDataPreprocessor(ImgDataPreprocessor):
         self.normalize_bakend = normalize_bakend
 
     def forward(self, data: dict, training: bool = False) -> dict:
-        """Perform normalization、padding and bgr2rgb conversion based on
+        """Perform normalization, padding and bgr2rgb conversion based on
         ``BaseDataPreprocessor``.
 
         Args:

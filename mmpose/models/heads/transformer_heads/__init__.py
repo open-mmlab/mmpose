@@ -1,19 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from .edpose_head import EDPoseHead, FrozenBatchNorm2d
-from .transformers import (MLP, DeformableDetrTransformerDecoder,
+from .edpose_head import EDPoseHead
+from .transformers import (FFN, DeformableDetrTransformerDecoder,
                            DeformableDetrTransformerDecoderLayer,
                            DeformableDetrTransformerEncoder,
                            DeformableDetrTransformerEncoderLayer,
                            DetrTransformerDecoder, DetrTransformerDecoderLayer,
                            DetrTransformerEncoder, DetrTransformerEncoderLayer,
-                           PositionEmbeddingSineHW, inverse_sigmoid)
+                           PositionEmbeddingSineHW)
 
 __all__ = [
-    'EDPoseHead', 'FrozenBatchNorm2d', 'DetrTransformerEncoder',
-    'DetrTransformerDecoder', 'DetrTransformerEncoderLayer',
-    'DetrTransformerDecoderLayer', 'DeformableDetrTransformerEncoder',
-    'DeformableDetrTransformerDecoder',
+    'EDPoseHead', 'DetrTransformerEncoder', 'DetrTransformerDecoder',
+    'DetrTransformerEncoderLayer', 'DetrTransformerDecoderLayer',
+    'DeformableDetrTransformerEncoder', 'DeformableDetrTransformerDecoder',
     'DeformableDetrTransformerEncoderLayer',
-    'DeformableDetrTransformerDecoderLayer', 'inverse_sigmoid',
-    'PositionEmbeddingSineHW', 'MLP'
+    'DeformableDetrTransformerDecoderLayer', 'PositionEmbeddingSineHW', 'FFN'
 ]

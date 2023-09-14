@@ -8,44 +8,31 @@ from mmengine.model import BaseModule, ModuleList
 from torch import Tensor
 
 
-def inverse_sigmoid(x: Tensor, eps: float = 1e-3) -> Tensor:
-    """Inverse function of sigmoid.
-
-    Args:
-        x (Tensor): The tensor to do the inverse.
-        eps (float): EPS avoid numerical overflow. Defaults 1e-5.
-    Returns:
-        Tensor: The x has passed the inverse function of sigmoid, has the same
-        shape with input.
-    """
-    x = x.clamp(min=0, max=1)
-    x1 = x.clamp(min=eps)
-    x2 = (1 - x).clamp(min=eps)
-    return torch.log(x1 / x2)
-
-
-class MLP(BaseModule):
-    """Very simple multi-layer perceptron (also called FFN) with relu. Mostly
-    used in DETR series detectors.
+class FFN(BaseModule):
+    """Very simple multi-layer perceptron with relu. Mostly used in DETR series
+    detectors.
 
     Args:
         input_dim (int): Feature dim of the input tensor.
         hidden_dim (int): Feature dim of the hidden layer.
         output_dim (int): Feature dim of the output tensor.
-        num_layers (int): Number of FFN layers. As the last
-            layer of MLP only contains FFN (Linear).
+        num_layers (int): Number of FFN layers..
     """
 
     def __init__(self, input_dim: int, hidden_dim: int, output_dim: int,
                  num_layers: int) -> None:
         super().__init__()
+
         self.num_layers = num_layers
-        h = [hidden_dim] * (num_layers - 1)
-        self.layers = ModuleList(
-            Linear(n, k) for n, k in zip([input_dim] + h, h + [output_dim]))
+
+        self.layers = ModuleList()
+        self.layers.append(Linear(input_dim, hidden_dim))
+        for _ in range(num_layers - 2):
+            self.layers.append(Linear(hidden_dim, hidden_dim))
+        self.layers.append(Linear(hidden_dim, output_dim))
 
     def forward(self, x: Tensor) -> Tensor:
-        """Forward function of MLP.
+        """Forward function of FFN.
 
         Args:
             x (Tensor): The input feature, has shape
@@ -55,7 +42,9 @@ class MLP(BaseModule):
                 (num_queries, bs, output_dim).
         """
         for i, layer in enumerate(self.layers):
-            x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
+            x = layer(x)
+            if i < self.num_layers - 1:
+                x = F.relu(x)
         return x
 
 
