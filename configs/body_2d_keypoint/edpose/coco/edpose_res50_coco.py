@@ -30,8 +30,7 @@ auto_scale_lr = dict(base_batch_size=80)
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
-codec = dict(
-    type='EDPoseLabel', num_select=50, num_body_points=17, not_to_xyxy=False)
+codec = dict(type='EDPoseLabel', num_select=50, num_keypoints=17)
 
 # model settings
 model = dict(
@@ -125,7 +124,7 @@ data_root = 'data/coco/'
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage'),
+    dict(type='LoadImage', imdecode_backend='pillow'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(
         type='RandomChoice',
@@ -190,6 +189,7 @@ train_dataloader = dict(
         data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
+
 val_dataloader = dict(
     batch_size=4,
     num_workers=8,

@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
+from mmpose.structures import bbox_cs2xyxy, bbox_xyxy2cs
 from .base import BaseKeypointCodec
 
 
@@ -28,23 +29,17 @@ class EDPoseLabel(BaseKeypointCodec):
         - bbox (np.ndarray): Bbox in shape (N, 4)
 
     Args:
-        num_select (int): The number of candidate keypoints
-        num_body_points (int): The Number of keypoints
-        not_to_xyxy (bool): Whether convert bbox from cxcy to
-            xyxy.
+        num_select (int): The number of candidate instances
+        num_keypoints (int): The Number of keypoints
     """
 
     auxiliary_encode_keys = {'area', 'bboxes', 'img_shape'}
 
-    def __init__(self,
-                 num_select: int = 100,
-                 num_body_points: int = 17,
-                 not_to_xyxy: bool = False):
+    def __init__(self, num_select: int = 100, num_keypoints: int = 17):
         super().__init__()
 
         self.num_select = num_select
-        self.num_body_points = num_body_points
-        self.not_to_xyxy = not_to_xyxy
+        self.num_keypoints = num_keypoints
 
     def encode(
         self,
@@ -54,14 +49,16 @@ class EDPoseLabel(BaseKeypointCodec):
         area: Optional[np.ndarray] = None,
         bboxes: Optional[np.ndarray] = None,
     ) -> dict:
-        """Encoding keypoints 、area、bbox from input image space to normalized
-        space.
+        """Encoding keypoints, area and bbox from input image space to
+        normalized space.
 
         Args:
+            - img_shape (Sequence[int]): The shape of image in the format
+                of (width, height).
             - keypoints (np.ndarray): Keypoint coordinates in
                 shape (N, K, D).
             - keypoints_visible (np.ndarray): Keypoint visibility in shape
-                (N, K, D)
+                (N, K)
             - area (np.ndarray):
             - bboxes (np.ndarray):
 
@@ -83,12 +80,11 @@ class EDPoseLabel(BaseKeypointCodec):
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if bboxes is not None:
-            bboxes = self.box_xyxy_to_cxcywh(bboxes)
+            bboxes = np.concatenate(bbox_xyxy2cs(bboxes), axis=-1)
             bboxes_labels = bboxes / np.array([w, h, w, h], dtype=np.float32)
 
         if area is not None:
-            area_labels = area / (
-                np.array(w, dtype=np.float32) * np.array(h, dtype=np.float32))
+            area_labels = area / float(w * h)
 
         if keypoints is not None:
             keypoint_labels = keypoints / np.array([w, h], dtype=np.float32)
@@ -114,28 +110,23 @@ class EDPoseLabel(BaseKeypointCodec):
             pred_keypoints (Tensor): The result of keypoints.
 
         Returns:
+            tuple: Decoded keypoints, scores, and boxes.
         """
 
-        num_body_points = self.num_body_points
+        num_keypoints = self.num_keypoints
 
         prob = pred_logits
 
-        prob_reshaped = prob.reshape(-1)
-        topk_indexes = np.argsort(-prob_reshaped)[:self.num_select]
-        topk_values = np.take_along_axis(prob_reshaped, topk_indexes, axis=0)
+        prob = prob.reshape(-1)
+        topk_indexes = np.argsort(-prob)[:self.num_select]
+        topk_values = np.take_along_axis(prob, topk_indexes, axis=0)
 
-        scores = np.tile(topk_values[:, np.newaxis], [1, num_body_points])
+        scores = np.tile(topk_values[:, np.newaxis], [1, num_keypoints])
 
         # bbox
         topk_boxes = topk_indexes // pred_logits.shape[1]
-        if self.not_to_xyxy:
-            boxes = pred_boxes
-        else:
-            x_c, y_c, w, h = np.split(pred_boxes, 4, axis=-1)
-            b = [(x_c - 0.5 * w), (y_c - 0.5 * h), (x_c + 0.5 * w),
-                 (y_c + 0.5 * h)]
-            boxes = np.concatenate(b, axis=1)
 
+        boxes = bbox_cs2xyxy(*np.split(pred_boxes, [2], axis=-1))
         boxes = np.take_along_axis(
             boxes, np.tile(topk_boxes[:, np.newaxis], [1, 4]), axis=0)
 
@@ -148,23 +139,18 @@ class EDPoseLabel(BaseKeypointCodec):
         topk_keypoints = topk_indexes // pred_logits.shape[1]
         keypoints = np.take_along_axis(
             pred_keypoints,
-            np.tile(topk_keypoints[:, np.newaxis], [1, num_body_points * 3]),
+            np.tile(topk_keypoints[:, np.newaxis], [1, num_keypoints * 3]),
             axis=0)
 
-        Z_pred = keypoints[:, :(num_body_points * 2)]
-        V_pred = keypoints[:, (num_body_points * 2):]
-        Z_pred = Z_pred * np.tile(
-            np.hstack([img_w, img_h]), [num_body_points])[np.newaxis, :]
+        Z_pred = keypoints[:, :(num_keypoints * 2)]
+        V_pred = keypoints[:, (num_keypoints * 2):]
+        Z_pred = Z_pred * np.tile(np.hstack([img_w, img_h]),
+                                  [num_keypoints])[np.newaxis, :]
         keypoints_res = np.zeros_like(keypoints)
         keypoints_res[..., 0::3] = Z_pred[..., 0::2]
         keypoints_res[..., 1::3] = Z_pred[..., 1::2]
         keypoints_res[..., 2::3] = V_pred[..., 0::1]
 
-        keypoint = keypoints_res.reshape(-1, num_body_points, 3)[:, :, :2]
+        keypoint = keypoints_res.reshape(-1, num_keypoints, 3)[:, :, :2]
 
         return keypoint, scores, boxes
-
-    def box_xyxy_to_cxcywh(self, x):
-        x0, y0, x1, y1 = x.unbind(-1)
-        b = [(x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0), (y1 - y0)]
-        return np.stack(b, dim=-1)
