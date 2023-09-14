@@ -526,7 +526,7 @@ class CocoMetric(BaseMetric):
                     'score': float(img_kpt['score']),
                 }
                 if 'bbox' in img_kpt:
-                    res['bbox'] = img_kpt['bbox'].tolist(),
+                    res['bbox'] = img_kpt['bbox'].tolist()
                 result.append(res)
 
             cat_results.extend(result)
