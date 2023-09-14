@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .bottomup_transforms import (BottomupGetHeatmapMask, BottomupRandomAffine,
-                                  BottomupResize)
+                                  BottomupRandomChoiceResize,
+                                  BottomupRandomCrop, BottomupResize)
 from .common_transforms import (Albumentation, FilterAnnotations,
                                 GenerateTarget, GetBBoxCenterScale,
                                 PhotometricDistortion, RandomBBoxTransform,
-                                RandomFlip, RandomHalfBody, YOLOXHSVRandomAug,
-                                BottomupRandomChoiceResize,
-                                BottomupRandomCrop, BottomupResize)
+                                RandomFlip, RandomHalfBody, YOLOXHSVRandomAug)
 from .converting import KeypointConverter
 from .formatting import PackPoseInputs
 from .loading import LoadImage
