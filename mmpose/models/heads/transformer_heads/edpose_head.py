@@ -27,18 +27,18 @@ class EDPoseDecoder(BaseModule):
     End Multi-Person Pose Estimation.
 
     Args:
-        - layer_cfg (:obj:`ConfigDict` or dict): the config of each encoder
+        layer_cfg (ConfigDict): the config of each encoder
             layer. All the layers will share the same config.
-        - num_layers (int): Number of decoder layers.
-        - return_intermediate (bool, optional): Whether to return outputs of
+        num_layers (int): Number of decoder layers.
+        return_intermediate (bool, optional): Whether to return outputs of
             intermediate layers. Defaults to `True`.
-        - embed_dims (int): Dims of embed.
-        - query_dim (int): Dims of queries.
-        - num_feature_levels (int): Number of feature levels.
-        - num_box_decoder_layers (int): Number of box decoder layers.
-        - num_keypoints (int): Number of datasets' body keypoints.
-        - num_dn (int): Number of denosing points.
-        - num_group (int): Number of decoder layers.
+        embed_dims (int): Dims of embed.
+        query_dim (int): Dims of queries.
+        num_feature_levels (int): Number of feature levels.
+        num_box_decoder_layers (int): Number of box decoder layers.
+        num_keypoints (int): Number of datasets' body keypoints.
+        num_dn (int): Number of denosing points.
+        num_group (int): Number of decoder layers.
     """
 
     def __init__(self,
@@ -343,24 +343,24 @@ class EDPoseOutHead(BaseModule):
     Person Pose Estimation.
 
     Args:
-        - num_classes (int): The number of classes.
-        - num_keypoints (int): The number of datasets' body keypoints.
-        - num_queries (int): The number of queries.
-        - cls_no_bias (bool): Weather add the bias to class embed.
-        - embed_dims (int): The dims of embed.
-        - as_two_stage (bool, optional): Whether to generate the proposal
+        num_classes (int): The number of classes.
+        num_keypoints (int): The number of datasets' body keypoints.
+        num_queries (int): The number of queries.
+        cls_no_bias (bool): Weather add the bias to class embed.
+        embed_dims (int): The dims of embed.
+        as_two_stage (bool, optional): Whether to generate the proposal
             from the outputs of encoder. Defaults to `False`.
-        - refine_queries_num (int): The number of refines queries after
+        refine_queries_num (int): The number of refines queries after
             decoders.
-        - num_box_decoder_layers (int): The number of bbox decoder layer.
-        - num_group (int): The number of groups.
-        - num_pred_layer (int): The number of the prediction layers.
+        num_box_decoder_layers (int): The number of bbox decoder layer.
+        num_group (int): The number of groups.
+        num_pred_layer (int): The number of the prediction layers.
             Defaults to 6.
-        - dec_pred_class_embed_share (bool): Whether to share parameters
+        dec_pred_class_embed_share (bool): Whether to share parameters
             for all the class prediction layers. Defaults to `False`.
-        - dec_pred_bbox_embed_share (bool): Whether to share parameters
+        dec_pred_bbox_embed_share (bool): Whether to share parameters
             for all the bbox prediction layers. Defaults to `False`.
-        - dec_pred_pose_embed_share (bool): Whether to share parameters
+        dec_pred_pose_embed_share (bool): Whether to share parameters
             for all the pose prediction layers. Defaults to `False`.
     """
 
@@ -567,11 +567,9 @@ class EDPoseOutHead(BaseModule):
                     outputs_class, outputs_coord_list,
                     outputs_keypoints_list, dn_mask_dict
                 )
-            # TODO：the denosing strateges are used in training stage
 
-        for idx, (_out_class, _out_bbox, _out_keypoint) in enumerate(
-                zip(outputs_class, outputs_coord_list,
-                    outputs_keypoints_list)):
+        for _out_class, _out_bbox, _out_keypoint in zip(
+                outputs_class, outputs_coord_list, outputs_keypoints_list):
             assert _out_class.shape[1] == \
                 _out_bbox.shape[1] == _out_keypoint.shape[1]
 
@@ -580,8 +578,6 @@ class EDPoseOutHead(BaseModule):
             'pred_boxes': outputs_coord_list[-1],
             'pred_keypoints': outputs_keypoints_list[-1]
         }
-
-        # TODO: if refine_queries_num and dn_mask_dict are used:
 
         return out
 
@@ -612,8 +608,8 @@ class EDPoseHead(TransformerHead):
 
     Args:
         num_queries (int): Number of query in Transformer.
-        num_feature_levels (int, optional): Number of feature levels.
-            Defaults to 4.
+        num_feature_levels (int): Number of feature levels. Defaults to 4.
+        num_keypoints (int): Number of keypoints. Defaults to 4.
         as_two_stage (bool, optional): Whether to generate the proposal
             from the outputs of encoder. Defaults to `False`.
         encoder (:obj:`ConfigDict` or dict, optional): Config of the
@@ -1017,28 +1013,18 @@ class EDPoseHead(TransformerHead):
                             batch_data_samples)
         return out
 
-    def forward(self,
-                feats: Tuple[Tensor],
-                batch_data_samples: OptSampleList = None) -> Dict:
-        """Forward the network."""
-        encoder_outputs_dict = self.forward_encoder(feats, batch_data_samples)
-
-        decoder_outputs_dict = self.forward_decoder(**encoder_outputs_dict)
-
-        head_outputs_dict = self.forward_out_head(batch_data_samples,
-                                                  **decoder_outputs_dict)
-        return head_outputs_dict
-
     def predict(self,
                 feats: Features,
                 batch_data_samples: OptSampleList,
                 test_cfg: ConfigType = {}) -> Predictions:
         """Predict results from features."""
         input_shapes = np.array(
-            [d.metainfo['input_size'] for d in batch_data_samples], )
+            [d.metainfo['input_size'] for d in batch_data_samples])
 
         if test_cfg.get('flip_test', False):
-            assert NotImplementedError
+            assert NotImplementedError(
+                'flip_test is currently not supported '
+                'for EDPose. Please set `model.test_cfg.flip_test=False`')
         else:
             batch_out = self.forward(feats, batch_data_samples)  # (B, K, D)
 
@@ -1068,64 +1054,25 @@ class EDPoseHead(TransformerHead):
                      `head.decode()`')
 
         preds = []
-        batch_size = input_shapes.shape[0]
 
         pred_logits = pred_logits.sigmoid()
         pred_logits, pred_boxes, pred_keypoints = to_numpy(
             [pred_logits, pred_boxes, pred_keypoints])
 
-        for b in range(batch_size):
-            keypoint, keypoint_score, bbox = self.data_decoder.decode(
-                input_shapes[b], pred_logits[b], pred_boxes[b],
-                pred_keypoints[b])
+        for input_shape, pred_logit, pred_bbox, pred_kpts in zip(
+                input_shapes, pred_logits, pred_boxes, pred_keypoints):
+
+            keypoints, keypoint_scores, bboxes = self.data_decoder.decode(
+                input_shape, pred_logit, pred_bbox, pred_kpts)
 
             # pack outputs
             preds.append(
                 InstanceData(
-                    keypoints=keypoint,
-                    keypoint_scores=keypoint_score,
-                    boxes=bbox))
+                    keypoints=keypoints,
+                    keypoint_scores=keypoint_scores,
+                    bboxes=bboxes))
 
         return preds
-
-    @staticmethod
-    def get_valid_ratio(mask: Tensor) -> Tensor:
-        """Get the valid radios of feature map in a level.
-
-        .. code:: text
-
-                    |---> valid_W <---|
-                 ---+-----------------+-----+---
-                  A |                 |     | A
-                  | |                 |     | |
-                  | |                 |     | |
-            valid_H |                 |     | |
-                  | |                 |     | H
-                  | |                 |     | |
-                  V |                 |     | |
-                 ---+-----------------+     | |
-                    |                       | V
-                    +-----------------------+---
-                    |---------> W <---------|
-
-          The valid_ratios are defined as:
-                r_h = valid_H / H,  r_w = valid_W / W
-          They are the factors to re-normalize the relative coordinates of the
-          image to the relative coordinates of the current level feature map.
-
-        Args:
-            mask (Tensor): Binary mask of a feature map, has shape (bs, H, W).
-
-        Returns:
-            Tensor: valid ratios [r_w, r_h] of a feature map, has shape (1, 2).
-        """
-        _, H, W = mask.shape
-        valid_H = torch.sum(~mask[:, :, 0], 1)
-        valid_W = torch.sum(~mask[:, 0, :], 1)
-        valid_ratio_h = valid_H.float() / H
-        valid_ratio_w = valid_W.float() / W
-        valid_ratio = torch.stack([valid_ratio_w, valid_ratio_h], -1)
-        return valid_ratio
 
     def gen_encoder_output_proposals(self, memory: Tensor, memory_mask: Tensor,
                                      spatial_shapes: Tensor
@@ -1176,8 +1123,8 @@ class EDPoseHead(TransformerHead):
         output_proposals_valid = ((output_proposals > 0.01) &
                                   (output_proposals < 0.99)).all(
                                       -1, keepdim=True)
-        # inverse_sigmoid
-        output_proposals = torch.log(output_proposals / (1 - output_proposals))
+
+        output_proposals = inverse_sigmoid(output_proposals)
         output_proposals = output_proposals.masked_fill(
             memory_mask.unsqueeze(-1), float('inf'))
         output_proposals = output_proposals.masked_fill(
@@ -1308,7 +1255,6 @@ class EDPoseHead(TransformerHead):
         input_query_bbox = inverse_sigmoid(knwon_boxes_expand)
 
         # prepare mask
-
         if 'group2group' in self.denosing_cfg['dn_attn_mask_type_list']:
             attn_mask = torch.zeros(
                 bs,
@@ -1393,4 +1339,6 @@ class EDPoseHead(TransformerHead):
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
-        assert NotImplementedError
+        assert NotImplementedError(
+            'the training of EDPose has not been '
+            'supported. Please stay tuned for further update.')

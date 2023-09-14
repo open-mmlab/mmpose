@@ -2,9 +2,9 @@
 from abc import abstractmethod
 from typing import Dict, Tuple
 
+import torch
 from torch import Tensor
 
-from mmpose.models.utils.tta import flip_coordinates
 from mmpose.registry import MODELS
 from mmpose.utils.typing import (Features, OptConfigType, OptMultiConfig,
                                  OptSampleList, Predictions)
@@ -20,15 +20,18 @@ class TransformerHead(BaseHead):
     <https://github.com/fundamentalvision/Deformable-DETR>`_.
 
     Args:
-        encoder (:obj:`ConfigDict` or dict, optional): Config of the
+        encoder (ConfigDict, optional): Config of the
             Transformer encoder. Defaults to None.
-        decoder (:obj:`ConfigDict` or dict, optional): Config of the
+        decoder (ConfigDict, optional): Config of the
             Transformer decoder. Defaults to None.
-        out_head (:obj:`ConfigDict` or dict, optional): Config for the
+        out_head (ConfigDict, optional): Config for the
             bounding final out head module. Defaults to None.
-        positional_encoding (:obj:`ConfigDict` or dict): Config for
-            transformer position encoding. Defaults None
+        positional_encoding (ConfigDict, optional): Config for
+            transformer position encoding. Defaults to None.
         num_queries (int): Number of query in Transformer.
+        loss (ConfigDict, optional): Config for loss functions.
+            Defaults to None.
+        init_cfg (ConfigDict, optional): Config to control the initialization.
     """
     _version = 2
 
@@ -64,30 +67,13 @@ class TransformerHead(BaseHead):
                                                   **decoder_outputs_dict)
         return head_outputs_dict
 
+    @abstractmethod
     def predict(self,
                 feats: Features,
                 batch_data_samples: OptSampleList,
                 test_cfg: OptConfigType = {}) -> Predictions:
         """Predict results from features."""
-
-        if test_cfg.get('flip_test', False):
-            # TTA: flip test -> feats = [orig, flipped]
-            assert isinstance(feats, list) and len(feats) == 2
-            flip_indices = batch_data_samples[0].metainfo['flip_indices']
-            input_size = batch_data_samples[0].metainfo['input_size']
-            _feats, _feats_flip = feats
-
-            _batch_coords = self.forward(_feats)
-            _batch_coords_flip = flip_coordinates(
-                self.forward(_feats_flip),
-                flip_indices=flip_indices,
-                shift_coords=test_cfg.get('shift_coords', True),
-                input_size=input_size)
-            batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
-        else:
-            batch_coords = self.forward(feats, batch_data_samples)  # (B, K, D)
-
-        return batch_coords
+        pass
 
     def loss(self,
              feats: Tuple[Tensor],
@@ -110,3 +96,42 @@ class TransformerHead(BaseHead):
     def forward_out_head(self, query: Tensor, query_pos: Tensor,
                          memory: Tensor, **kwargs) -> Dict:
         pass
+
+    @staticmethod
+    def get_valid_ratio(mask: Tensor) -> Tensor:
+        """Get the valid radios of feature map in a level.
+
+        .. code:: text
+
+                    |---> valid_W <---|
+                 ---+-----------------+-----+---
+                  A |                 |     | A
+                  | |                 |     | |
+                  | |                 |     | |
+            valid_H |                 |     | |
+                  | |                 |     | H
+                  | |                 |     | |
+                  V |                 |     | |
+                 ---+-----------------+     | |
+                    |                       | V
+                    +-----------------------+---
+                    |---------> W <---------|
+
+          The valid_ratios are defined as:
+                r_h = valid_H / H,  r_w = valid_W / W
+          They are the factors to re-normalize the relative coordinates of the
+          image to the relative coordinates of the current level feature map.
+
+        Args:
+            mask (Tensor): Binary mask of a feature map, has shape (bs, H, W).
+
+        Returns:
+            Tensor: valid ratios [r_w, r_h] of a feature map, has shape (1, 2).
+        """
+        _, H, W = mask.shape
+        valid_H = torch.sum(~mask[:, :, 0], 1)
+        valid_W = torch.sum(~mask[:, 0, :], 1)
+        valid_ratio_h = valid_H.float() / H
+        valid_ratio_w = valid_W.float() / W
+        valid_ratio = torch.stack([valid_ratio_w, valid_ratio_h], -1)
+        return valid_ratio

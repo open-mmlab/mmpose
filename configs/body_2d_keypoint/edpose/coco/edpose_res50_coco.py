@@ -124,7 +124,7 @@ data_root = 'data/coco/'
 
 # pipelines
 train_pipeline = [
-    dict(type='LoadImage', imdecode_backend='pillow'),
+    dict(type='LoadImage'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(
         type='RandomChoice',
@@ -161,7 +161,7 @@ train_pipeline = [
 ]
 
 val_pipeline = [
-    dict(type='LoadImage', imdecode_backend='pillow'),
+    dict(type='LoadImage'),
     dict(
         type='BottomupRandomChoiceResize',
         scales=[(800, 1333)],
