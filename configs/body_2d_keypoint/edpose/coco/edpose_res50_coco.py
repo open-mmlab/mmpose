@@ -36,7 +36,7 @@ codec = dict(type='EDPoseLabel', num_select=50, num_keypoints=17)
 model = dict(
     type='BottomupPoseEstimator',
     data_preprocessor=dict(
-        type='BatchShapeDataPreprocessor',
+        type='PoseDataPreprocessor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225],
         bgr_to_rgb=True,

@@ -34,6 +34,12 @@ class EDPoseLabel(BaseKeypointCodec):
     """
 
     auxiliary_encode_keys = {'area', 'bboxes', 'img_shape'}
+    instance_mapping_table = dict(
+        bbox='bboxes',
+        keypoints='keypoints',
+        keypoints_visible='keypoints_visible',
+        area='areas',
+    )
 
     def __init__(self, num_select: int = 100, num_keypoints: int = 17):
         super().__init__()
@@ -81,18 +87,18 @@ class EDPoseLabel(BaseKeypointCodec):
 
         if bboxes is not None:
             bboxes = np.concatenate(bbox_xyxy2cs(bboxes), axis=-1)
-            bboxes_labels = bboxes / np.array([w, h, w, h], dtype=np.float32)
+            bboxes = bboxes / np.array([w, h, w, h], dtype=np.float32)
 
         if area is not None:
-            area_labels = area / float(w * h)
+            area = area / float(w * h)
 
         if keypoints is not None:
-            keypoint_labels = keypoints / np.array([w, h], dtype=np.float32)
+            keypoints = keypoints / np.array([w, h], dtype=np.float32)
 
         encoded = dict(
-            keypoint_labels=keypoint_labels,
-            area_labels=area_labels,
-            bboxes_labels=bboxes_labels,
+            keypoints=keypoints,
+            area=area,
+            bbox=bboxes,
             keypoints_visible=keypoints_visible)
 
         return encoded
