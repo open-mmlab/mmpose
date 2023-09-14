@@ -2,7 +2,7 @@
 import copy
 import os.path as osp
 from copy import deepcopy
-from itertools import filterfalse, groupby
+from itertools import chain, filterfalse, groupby
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -159,6 +159,14 @@ class BaseCocoStyleDataset(BaseDataset):
         """
         data_info = self.get_data_info(idx)
 
+        # Mixed image transformations require multiple source images for
+        # effective blending. Therefore, we assign the 'dataset' field in
+        # `data_info` to provide these auxiliary images.
+        # Note: The 'dataset' assignment should not occur within the
+        # `get_data_info` function, as doing so may cause the mixed image
+        # transformations to stall or hang.
+        data_info['dataset'] = self
+
         return self.pipeline(data_info)
 
     def get_data_info(self, idx: int) -> dict:
@@ -288,6 +296,12 @@ class BaseCocoStyleDataset(BaseDataset):
         else:
             num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 
+        if 'area' in ann:
+            area = np.array(ann['area'], dtype=np.float32)
+        else:
+            area = np.clip((x2 - x1) * (y2 - y1) * 0.53, a_min=1.0, a_max=None)
+            area = np.array(area, dtype=np.float32)
+
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img['img_path'],
@@ -296,10 +310,11 @@ class BaseCocoStyleDataset(BaseDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
+            'area': area,
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
-            'category_id': ann['category_id'],
+            'category_id': np.array(ann['category_id']),
             # store the raw annotation of the instance
             # it is useful for evaluation without providing ann_file
             'raw_ann_info': copy.deepcopy(ann),
@@ -365,7 +380,13 @@ class BaseCocoStyleDataset(BaseDataset):
                 if key not in data_info_bu:
                     seq = [d[key] for d in data_infos]
                     if isinstance(seq[0], np.ndarray):
-                        seq = np.concatenate(seq, axis=0)
+                        if seq[0].ndim > 0:
+                            seq = np.concatenate(seq, axis=0)
+                        else:
+                            seq = np.stack(seq, axis=0)
+                    elif isinstance(seq[0], (tuple, list)):
+                        seq = list(chain.from_iterable(seq))
+
                     data_info_bu[key] = seq
 
             # The segmentation annotation of invalid objects will be used

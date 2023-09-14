@@ -2,8 +2,9 @@
 from unittest import TestCase
 
 import numpy as np
+import torch
 
-from mmpose.evaluation.functional.nms import nearby_joints_nms
+from mmpose.evaluation.functional.nms import nearby_joints_nms, nms_torch
 
 
 class TestNearbyJointsNMS(TestCase):
@@ -38,3 +39,21 @@ class TestNearbyJointsNMS(TestCase):
 
         with self.assertRaises(AssertionError):
             _ = nearby_joints_nms(kpts_db, 0.05, num_nearby_joints_thr=3)
+
+
+class TestNMSTorch(TestCase):
+
+    def test_nms_torch(self):
+        bboxes = torch.tensor([[0, 0, 3, 3], [1, 0, 3, 3], [4, 4, 6, 6]],
+                              dtype=torch.float32)
+
+        scores = torch.tensor([0.9, 0.8, 0.7])
+
+        expected_result = torch.tensor([0, 2])
+        result = nms_torch(bboxes, scores, threshold=0.5)
+        self.assertTrue(torch.equal(result, expected_result))
+
+        expected_result = [torch.tensor([0, 1]), torch.tensor([2])]
+        result = nms_torch(bboxes, scores, threshold=0.5, return_group=True)
+        for res_out, res_expected in zip(result, expected_result):
+            self.assertTrue(torch.equal(res_out, res_expected))
