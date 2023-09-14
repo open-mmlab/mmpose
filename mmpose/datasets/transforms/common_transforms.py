@@ -1140,7 +1140,13 @@ class YOLOXHSVRandomAug(BaseTransform):
 
 @TRANSFORMS.register_module()
 class FilterAnnotations(BaseTransform):
-    """Filter invalid annotations.
+    """Eliminate undesirable annotations based on specific conditions.
+
+    This class is designed to sift through annotations by examining multiple
+    factors such as the size of the bounding box, the visibility of keypoints,
+    and the overall area. Users can fine-tune the criteria to filter out
+    instances that have excessively small bounding boxes, insufficient area,
+    or an inadequate number of visible keypoints.
 
     Required Keys:
 
@@ -1165,8 +1171,8 @@ class FilterAnnotations(BaseTransform):
         min_kpt_vis (int): Minimum number of visible keypoints. Default: 1
         by_box (bool): Filter instances with bounding boxes not meeting the
             min_gt_bbox_wh threshold. Default: False
-        by_mask (bool): Filter instances with masks not meeting
-            min_gt_mask_area threshold. Default: False
+        by_area (bool): Filter instances with area less than min_gt_area
+            threshold. Default: False
         by_kpt (bool): Filter instances with keypoints_visible not meeting the
             min_kpt_vis threshold. Default: True
         keep_empty (bool): Whether to return None when it
