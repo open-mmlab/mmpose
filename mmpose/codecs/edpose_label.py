@@ -119,35 +119,32 @@ class EDPoseLabel(BaseKeypointCodec):
             tuple: Decoded boxes, keypoints, and keypoint scores.
         """
 
+        # Initialization
         num_keypoints = self.num_keypoints
+        prob = pred_logits.reshape(-1)
 
-        prob = pred_logits
-
-        prob = prob.reshape(-1)
+        # Select top-k instances based on prediction scores
         topk_indexes = np.argsort(-prob)[:self.num_select]
         topk_values = np.take_along_axis(prob, topk_indexes, axis=0)
-
         scores = np.tile(topk_values[:, np.newaxis], [1, num_keypoints])
 
-        # bbox
+        # Decode bounding boxes
         topk_boxes = topk_indexes // pred_logits.shape[1]
-
         boxes = bbox_cs2xyxy(*np.split(pred_boxes, [2], axis=-1))
         boxes = np.take_along_axis(
             boxes, np.tile(topk_boxes[:, np.newaxis], [1, 4]), axis=0)
 
-        # from relative [0, 1] to absolute [0, height] coordinates
+        # Convert from relative to absolute coordinates
         img_h, img_w = np.split(input_shapes, 2, axis=0)
         scale_fct = np.hstack([img_w, img_h, img_w, img_h])
         boxes = boxes * scale_fct[np.newaxis, :]
 
-        # keypoints
+        # Decode keypoints
         topk_keypoints = topk_indexes // pred_logits.shape[1]
         keypoints = np.take_along_axis(
             pred_keypoints,
             np.tile(topk_keypoints[:, np.newaxis], [1, num_keypoints * 3]),
             axis=0)
-
         keypoints = keypoints[:, :(num_keypoints * 2)]
         keypoints = keypoints * np.tile(
             np.hstack([img_w, img_h]), [num_keypoints])[np.newaxis, :]
