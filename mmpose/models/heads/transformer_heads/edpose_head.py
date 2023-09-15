@@ -1,4 +1,9 @@
-# Copyright (c) OpenMMLab. All rights reserved.
+# ----------------------------------------------------------------------------
+# Adapted from https://github.com/IDEA-Research/ED-Pose/ \
+#              tree/master/models/edpose
+# Original licence: IDEA License 1.0
+# ----------------------------------------------------------------------------
+
 import copy
 import math
 from typing import Dict, List, Tuple
