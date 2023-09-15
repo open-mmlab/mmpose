@@ -129,7 +129,7 @@ class EDPoseDecoder(BaseModule):
                 the regression results.
 
         Returns:
-            tuple[Tensor]: Outputs of Deformable Transformer Decoder.
+            Tuple[Tuple[Tensor]]: Outputs of Deformable Transformer Decoder.
 
             - output (Tensor): Output embeddings of the last decoder, has
               shape (num_queries, bs, embed_dims) when `return_intermediate`
