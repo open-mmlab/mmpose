@@ -19,9 +19,7 @@ class PoseDataPreprocessor(ImgDataPreprocessor):
     1. It will additionally append batch_input_shape
     to data_samples considering the DETR-based pose estimation tasks.
 
-    2. Add a 'pillow backend' pipeline based normalize operation, convert
-    np.array to PIL.Image, and normalize it through torchvision.
-
+    2. Support image augmentation transforms on batched data.
 
     It provides the data pre-processing as follows
 
@@ -88,7 +86,7 @@ class PoseDataPreprocessor(ImgDataPreprocessor):
             dict: Data in the same format as the model input.
         """
         batch_pad_shape = self._get_pad_shape(data)
-        data = self.preprocess(data=data, training=training)
+        data = super().forward(data=data, training=training)
         inputs, data_samples = data['inputs'], data['data_samples']
 
         # update metainfo since the image shape might change

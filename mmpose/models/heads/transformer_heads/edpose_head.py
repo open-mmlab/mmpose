@@ -131,16 +131,11 @@ class EDPoseDecoder(BaseModule):
         Returns:
             Tuple[Tuple[Tensor]]: Outputs of Deformable Transformer Decoder.
 
-            - output (Tensor): Output embeddings of the last decoder, has
-              shape (num_queries, bs, embed_dims) when `return_intermediate`
-              is `False`. Otherwise, Intermediate output embeddings of all
-              decoder layers, has shape (num_decoder_layers, num_queries, bs,
-              embed_dims).
+            - output (Tuple[Tensor]): Output embeddings of the last decoder,
+              each has shape (num_decoder_layers, num_queries, bs, embed_dims)
             - reference_points (Tensor): The reference of the last decoder
-              layer, has shape (bs, num_queries, 4)  when `return_intermediate`
-              is `False`. Otherwise, Intermediate references of all decoder
-              layers, has shape (num_decoder_layers, bs, num_queries, 4). The
-              coordinates are arranged as (cx, cy, w, h)
+              layer, each has shape (num_decoder_layers, bs, num_queries, 4).
+              The coordinates are arranged as (cx, cy, w, h)
         """
         output = query
         attn_mask = humandet_attn_mask
@@ -280,11 +275,13 @@ class EDPoseDecoder(BaseModule):
             reference_points = new_reference_points.detach()
             intermediate_reference_points.append(reference_points)
 
-        return [[itm_out.transpose(0, 1) for itm_out in intermediate],
-                [
-                    itm_refpoint.transpose(0, 1)
-                    for itm_refpoint in intermediate_reference_points
-                ]]
+        decoder_outputs = [itm_out.transpose(0, 1) for itm_out in intermediate]
+        reference_points = [
+            itm_refpoint.transpose(0, 1)
+            for itm_refpoint in intermediate_reference_points
+        ]
+
+        return decoder_outputs, reference_points
 
     @staticmethod
     def get_proposal_pos_embed(pos_tensor: Tensor,
@@ -578,13 +575,8 @@ class EDPoseOutHead(BaseModule):
             assert _out_class.shape[1] == \
                 _out_bbox.shape[1] == _out_keypoint.shape[1]
 
-        out = {
-            'pred_logits': outputs_class[-1],
-            'pred_boxes': outputs_coord_list[-1],
-            'pred_keypoints': outputs_keypoints_list[-1]
-        }
-
-        return out
+        return outputs_class[-1], outputs_coord_list[
+            -1], outputs_keypoints_list[-1]
 
     def keypoint_xyzxyz_to_xyxyzz(self, keypoints: torch.Tensor):
         """
@@ -1031,9 +1023,14 @@ class EDPoseHead(TransformerHead):
                 'flip_test is currently not supported '
                 'for EDPose. Please set `model.test_cfg.flip_test=False`')
         else:
-            batch_out = self.forward(feats, batch_data_samples)  # (B, K, D)
+            pred_logits, pred_boxes, pred_keypoints = self.forward(
+                feats, batch_data_samples)  # (B, K, D)
 
-            pred = self.decode(input_shapes, **batch_out)
+            pred = self.decode(
+                input_shapes,
+                pred_logits=pred_logits,
+                pred_boxes=pred_boxes,
+                pred_keypoints=pred_keypoints)
         return pred
 
     def decode(self, input_shapes: np.ndarray, pred_logits: Tensor,
