@@ -12,6 +12,7 @@ Import:
 - configs/body_2d_keypoint/rtmpose/body8/rtmpose_body8-coco.yml
 - configs/body_2d_keypoint/rtmpose/body8/rtmpose_body8-halpe26.yml
 - configs/body_2d_keypoint/dekr/crowdpose/hrnet_crowdpose.yml
+- configs/body_2d_keypoint/edpose/coco/edpose_coco.yml
 - configs/body_2d_keypoint/integral_regression/coco/resnet_ipr_coco.yml
 - configs/body_2d_keypoint/integral_regression/coco/resnet_dsnt_coco.yml
 - configs/body_2d_keypoint/integral_regression/coco/resnet_debias_coco.yml

@@ -5,14 +5,15 @@ Collections:
     URL: https://arxiv.org/pdf/2302.01593.pdf
   README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/edpose.md
 Models:
-- Config: configs/body_2d_keypoint/edpose/coco/edpose_resnet50_coco.py
+- Config: configs/body_2d_keypoint/edpose/coco/edpose_res50_8xb2-50e_coco-800x1333.py
   In Collection: ED-Pose
+  Alias: edpose
   Metadata:
     Architecture: &id001
     - ED-Pose
     - ResNet
     Training Data: COCO
-  Name: edpose_resnet50_coco
+  Name: edpose_res50_8xb2-50e_coco-800x1333
   Results:
   - Dataset: COCO
     Metrics:
