@@ -51,9 +51,10 @@ url={https://openreview.net/forum?id=s4WVupnJjmX}
 
 </details>
 
-Results on COCO val2017
+Results on COCO val2017.
 
 | Arch                                          | BackBone  |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                      ckpt                      |                      log                      |
 | :-------------------------------------------- | :-------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :--------------------------------------------: | :-------------------------------------------: |
 | [edpose_res50_coco](/configs/body_2d_keypoint/edpose/coco/edpose_res50_coco.py) | ResNet-50 | 0.716 |      0.898      |      0.783      | 0.793 |      0.944      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/edpose/coco/edpose_res50_coco_3rdparty.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/edpose/coco/edpose_res50_coco_3rdparty.json) |
-|                                               |           |       |                 |                 |       |                 |                                                |                                               |
+
+The checkpoint is converted from the official repo. The training of EDPose is not supported yet. It will be supported in the future updates.
