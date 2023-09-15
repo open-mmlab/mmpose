@@ -21,17 +21,17 @@ Take [onehand10k model](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnet
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
-    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
-    configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py \
-    https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth \
+    demo/mmdetection_cfg/rtmdet_nano_320-8xb32_hand.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth \
+    configs/hand_2d_keypoint/rtmpose/hand5/rtmpose-m_8xb256-210e_hand5-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth \
     --input tests/data/onehand10k/9.jpg \
     --show --draw-heatmap
 ```
 
 Visualization result:
 
-<img src="https://user-images.githubusercontent.com/26127467/187664103-cfbe0c4e-5876-42f9-9023-5fb58ce00d7b.jpg" height="500px" alt><br>
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/3a2794cb-8071-4b9e-9498-c0bb46eb381e" height="500px" alt><br>
 
 If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
 
@@ -39,10 +39,10 @@ To save visualized results on disk:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
-    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
-    configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py \
-    https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth \
+    demo/mmdetection_cfg/rtmdet_nano_320-8xb32_hand.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth \
+    configs/hand_2d_keypoint/rtmpose/hand5/rtmpose-m_8xb256-210e_hand5-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth \
     --input tests/data/onehand10k/9.jpg \
     --output-root vis_results --show --draw-heatmap
 ```
@@ -53,10 +53,10 @@ To run demos on CPU:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
-    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
-    configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py \
-    https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth \
+    demo/mmdetection_cfg/rtmdet_nano_320-8xb32_hand.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth \
+    configs/hand_2d_keypoint/rtmpose/hand5/rtmpose-m_8xb256-210e_hand5-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth \
     --input tests/data/onehand10k/9.jpg \
     --show --draw-heatmap  --device cpu
 ```
@@ -67,15 +67,15 @@ Videos share the same interface with images. The difference is that the `${INPUT
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
-    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
-    configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb64-210e_onehand10k-256x256.py \
-    https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth \
-    --input demo/resources/<demo_hand.mp4> \
-    --output-root vis_results --show --draw-heatmap
+    demo/mmdetection_cfg/rtmdet_nano_320-8xb32_hand.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_nano_8xb32-300e_hand-267f9c8f.pth \
+    configs/hand_2d_keypoint/rtmpose/hand5/rtmpose-m_8xb256-210e_hand5-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth \
+    --input data/tests_data_nvgesture_sk_color.avi \
+    --output-root vis_results --kpt-thr 0.1
 ```
 
-<img src="https://user-images.githubusercontent.com/26127467/187665873-3ac836ec-8da5-45e1-8d78-c0abe962bd5e.gif" height="500px" alt><br>
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/558e8211-d7ca-4e04-b690-6c455e805ed7" height="300px" alt><br>
 
 The original video can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi).
 

@@ -287,12 +287,16 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
 
     def _load_detection_results(self) -> List[dict]:
         """Load data from detection results with dummy keypoint annotations."""
-        assert exists(self.ann_file), 'Annotation file does not exist'
-        assert exists(self.bbox_file), 'Bbox file does not exist'
+        assert exists(self.ann_file), (
+            f'Annotation file `{self.ann_file}` does not exist')
+        assert exists(
+            self.bbox_file), (f'Bbox file `{self.bbox_file}` does not exist')
 
         # load detection results
         det_results = load(self.bbox_file)
-        assert is_list_of(det_results, dict)
+        assert is_list_of(det_results, dict), (
+            f'annotation file `{self.bbox_file}` should be a list of dicts, '
+            f'but got type {type(det_results)}')
 
         # load coco annotations to build image id-to-name index
         with get_local_path(self.ann_file) as local_path:

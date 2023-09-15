@@ -29,6 +29,9 @@ def to_numpy(x: Union[Tensor, Sequence[Tensor]],
     if isinstance(x, Tensor):
         arrays = x.detach().cpu().numpy()
         device = x.device
+    elif isinstance(x, np.ndarray) or is_seq_of(x, np.ndarray):
+        arrays = x
+        device = 'cpu'
     elif is_seq_of(x, Tensor):
         if unzip:
             # convert (A, B) -> [(A[0], B[0]), (A[1], B[1]), ...]

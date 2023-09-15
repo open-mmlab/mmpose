@@ -72,7 +72,7 @@ mim install "mmdet>=3.1.0"
 - mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
 - mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
 
-如果遇到版本不兼容的问题，请使用 `pip list | grep mm` 检查对应关系后，升级或降级相关依赖。
+如果遇到版本不兼容的问题，请使用 `pip list | grep mm` 检查对应关系后，升级或降级相关依赖。注意，`mmcv-full` 只对应旧版本 `mmcv 1.x`，所以请先卸载它后，再通过 `mim install mmcv` 来安装 `mmcv 2.x`。
 ```
 
 ## 最佳实践
@@ -110,7 +110,7 @@ mim install "mmpose>=1.1.0"
 mim download mmpose --config td-hm_hrnet-w48_8xb32-210e_coco-256x192  --dest .
 ```
 
-下载过程往往需要几秒或更多的时间，这取决于您的网络环境。完成之后，您会在当前目录下找到这两个文件：`td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` 和 `hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth`, 分别是配置文件和对应的模型权重文件。
+下载过程往往需要几秒或更多的时间，这取决于您的网络环境。完成之后，您会在当前目录下找到这两个文件：`td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` 和 `td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth`, 分别是配置文件和对应的模型权重文件。
 
 **第 2 步** 验证推理示例
 
@@ -120,7 +120,7 @@ mim download mmpose --config td-hm_hrnet-w48_8xb32-210e_coco-256x192  --dest .
 python demo/image_demo.py \
     tests/data/coco/000000000785.jpg \
     td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
-    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth \
     --out-file vis_results.jpg \
     --draw-heatmap
 ```
@@ -140,7 +140,7 @@ from mmpose.utils import register_all_modules
 register_all_modules()
 
 config_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
-checkpoint_file = 'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
+checkpoint_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth'
 model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
 
 # 请准备好一张带有人体的图片

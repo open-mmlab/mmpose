@@ -158,7 +158,7 @@ python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coc
 
 ## 用 MIM 下载数据集
 
-通过使用 [OpenDataLab](https://opendatalab.com/)，您可以直接下载开源数据集。通过平台的搜索功能，您可以快速轻松地找到他们正在寻找的数据集。使用平台上的格式化数据集，您可以高效地跨数据集执行任务。
+通过使用 [OpenXLab](https://openxlab.org.cn/datasets)，您可以直接下载开源数据集。通过平台的搜索功能，您可以快速轻松地找到他们正在寻找的数据集。使用平台上的格式化数据集，您可以高效地跨数据集执行任务。
 
 如果您使用 MIM 下载，请确保版本大于 v0.3.8。您可以使用以下命令进行更新、安装、登录和数据集下载：
 
@@ -166,10 +166,10 @@ python tools/misc/browse_dataset.py configs/body_2d_keypoint/topdown_heatmap/coc
 # upgrade your MIM
 pip install -U openmim
 
-# install OpenDataLab CLI tools
-pip install -U opendatalab
-# log in OpenDataLab, registry
-odl login
+# install OpenXLab CLI tools
+pip install -U openxlab
+# log in OpenXLab
+openxlab login
 
 # download coco2017 and preprocess by MIM
 mim download mmpose --dataset coco2017

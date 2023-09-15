@@ -42,6 +42,7 @@ class TestCrowdPoseDataset(TestCase):
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
                 invalid_segs=list,
+                area=(list, np.ndarray),
                 id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')

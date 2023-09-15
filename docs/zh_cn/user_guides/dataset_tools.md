@@ -1,8 +1,32 @@
-# 数据集格式转换脚本
+# 数据集标注与格式转换
+
+本章提供了一些有用的数据集处理脚本，来满足 MMPose 的数据格式要求。
+
+## 数据集标注
+
+对于 [Label Studio](https://github.com/heartexlabs/label-studio/) 用户，请依照 [Label Studio 转换工具文档](./label_studio.md) 中的方法进行标注，并将结果导出为 Label Studio 标准的 `.json` 文件，将 `Labeling Interface` 中的 `Code` 保存为 `.xml` 文件。
+
+```{note}
+MMPose **没有**对用户使用的标注工具做任何限制，只要最终的标注结果符合 MMPose 的数据格式要求即可。我们非常欢迎社区用户贡献更多的数据集标注工具使用教程和转换脚本。
+```
+
+## 浏览数据集
+
+MMPose 提供了一个有用的数据集浏览工具，通过它用户可以可视化地查看数据集的原始标注，和数据增强后的标注。这对于用户检查数据集加载和数据增强是否正确非常有用。
+
+详细的使用方法请参考 [【浏览数据集】](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/prepare_datasets.html#id5)。
+
+## 通过 MIM 下载开源数据集
+
+通过使用 [OpenXLab](https://openxlab.org.cn/datasets)，您可以直接下载开源数据集。通过平台的搜索功能，您可以快速轻松地找到他们正在寻找的数据集。使用平台上的格式化数据集，您可以高效地跨数据集执行任务。
+
+我们推荐用户跟随 [MIM 数据集下载教程](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/prepare_datasets.html#mim) 进行开源数据集的下载。
+
+## 格式转换脚本
 
 MMPose 提供了一些工具来帮助用户处理数据集。
 
-## Animal Pose 数据集
+### Animal Pose 数据集
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Cao_Cross-Domain_Adaptation_for_Animal_Pose_Estimation_ICCV_2019_paper.html">Animal-Pose (ICCV'2019)</a></summary>
@@ -78,7 +102,7 @@ MMPose 提供了一些工具来帮助用户处理数据集。
 
 开源作者没有提供官方的 train/val/test 划分，我们选择来自 PascalVOC 的图片作为 train & val，train+val 一共 3600 张图片，5117 个标注。其中 2798 张图片，4000 个标注用于训练，810 张图片，1117 个标注用于验证。测试集包含 1000 张图片，1000 个标注用于评估。
 
-## COFW 数据集
+### COFW 数据集
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_iccv_2013/html/Burgos-Artizzu_Robust_Face_Landmark_2013_ICCV_paper.html">COFW (ICCV'2013)</a></summary>
@@ -139,7 +163,7 @@ mmpose
             |── 000002.jpg
 ```
 
-## DeepposeKit 数据集
+### DeepposeKit 数据集
 
 <details>
 <summary align="right"><a href="https://elifesciences.org/articles/47994">Desert Locust (Elife'2019)</a></summary>
@@ -215,7 +239,7 @@ mmpose
 
 由于官方数据集中没有提供测试集，我们随机选择了 90% 的图片用于训练，剩下的 10% 用于测试。
 
-## Macaque 数据集
+### Macaque 数据集
 
 <details>
 <summary align="right"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/">MacaquePose (bioRxiv'2020)</a></summary>
@@ -269,7 +293,7 @@ mmpose
 
 由于官方数据集中没有提供测试集，我们随机选择了 90% 的图片用于训练，剩下的 10% 用于测试。
 
-## Human3.6M 数据集
+### Human3.6M 数据集
 
 <details>
 <summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/6682899/">Human3.6M (TPAMI'2014)</a></summary>
@@ -346,7 +370,7 @@ mmpose
 python tools/dataset_converters/h36m_to_coco.py
 ```
 
-## MPII 数据集
+### MPII 数据集
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
@@ -377,7 +401,7 @@ python tools/dataset_converters/mat2json ${PRED_MAT_FILE} ${GT_JSON_FILE} ${OUTP
 python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotations/mpii_val.json pred.json
 ```
 
-## Label Studio 数据集
+### Label Studio 数据集
 
 <details>
 <summary align="right"><a href="https://github.com/heartexlabs/label-studio/">Label Studio</a></summary>

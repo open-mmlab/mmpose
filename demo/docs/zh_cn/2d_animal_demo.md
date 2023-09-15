@@ -21,8 +21,8 @@ python demo/topdown_demo_with_mmdet.py \
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -49,8 +49,8 @@ COCO 数据集共包含 80 个类别，其中有 10 种常见动物，类别如�
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -61,8 +61,8 @@ python demo/topdown_demo_with_mmdet.py \
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -73,8 +73,8 @@ python demo/topdown_demo_with_mmdet.py \
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_tiny_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_tiny_8xb32-300e_coco/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -89,8 +89,8 @@ python demo/topdown_demo_with_mmdet.py \
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input demo/resources/<demo_dog.mp4> \

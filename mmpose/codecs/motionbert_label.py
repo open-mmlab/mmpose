@@ -42,6 +42,15 @@ class MotionBERTLabel(BaseKeypointCodec):
         'lifting_target', 'lifting_target_visible', 'camera_param', 'factor'
     }
 
+    instance_mapping_table = dict(
+        lifting_target='lifting_target',
+        lifting_target_visible='lifting_target_visible',
+    )
+    label_mapping_table = dict(
+        trajectory_weights='trajectory_weights',
+        lifting_target_label='lifting_target_label',
+        lifting_target_weight='lifting_target_weight')
+
     def __init__(self,
                  num_keypoints: int,
                  root_index: int = 0,
@@ -93,7 +102,7 @@ class MotionBERTLabel(BaseKeypointCodec):
                   keypoints' weights in shape (N, K, ) or (N, K-1, ).
                 - lifting_target_label: The processed target coordinate in
                   shape (K, C) or (K-1, C).
-                - lifting_target_weights (np.ndarray): The target weights in
+                - lifting_target_weight (np.ndarray): The target weights in
                   shape (K, ) or (K-1, ).
                 - factor (np.ndarray): The factor mapping camera and image
                   coordinate in shape (T, 1).
@@ -104,14 +113,14 @@ class MotionBERTLabel(BaseKeypointCodec):
         if lifting_target is None:
             lifting_target = [keypoints[..., 0, :, :]]
 
-        # set initial value for `lifting_target_weights`
+        # set initial value for `lifting_target_weight`
         if lifting_target_visible is None:
             lifting_target_visible = np.ones(
                 lifting_target.shape[:-1], dtype=np.float32)
-            lifting_target_weights = lifting_target_visible
+            lifting_target_weight = lifting_target_visible
         else:
             valid = lifting_target_visible > 0.5
-            lifting_target_weights = np.where(valid, 1., 0.).astype(np.float32)
+            lifting_target_weight = np.where(valid, 1., 0.).astype(np.float32)
 
         if camera_param is None:
             camera_param = dict()
@@ -170,7 +179,7 @@ class MotionBERTLabel(BaseKeypointCodec):
         encoded['keypoint_labels'] = keypoint_labels
         encoded['keypoint_labels_visible'] = keypoints_visible
         encoded['lifting_target_label'] = lifting_target_label
-        encoded['lifting_target_weights'] = lifting_target_weights
+        encoded['lifting_target_weight'] = lifting_target_weight
         encoded['lifting_target'] = lifting_target_label
         encoded['lifting_target_visible'] = lifting_target_visible
         encoded['factor'] = factor

@@ -18,6 +18,10 @@ class BaseKeypointCodec(metaclass=ABCMeta):
     # mandatory `keypoints` and `keypoints_visible` arguments.
     auxiliary_encode_keys = set()
 
+    field_mapping_table = dict()
+    instance_mapping_table = dict()
+    label_mapping_table = dict()
+
     @abstractmethod
     def encode(self,
                keypoints: np.ndarray,

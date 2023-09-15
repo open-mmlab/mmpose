@@ -23,15 +23,15 @@ Take [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18
 python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth \
-    configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
-    https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
+    configs/face_2d_keypoint/rtmpose/face6/rtmpose-m_8xb256-120e_face6-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth \
     --input tests/data/cofw/001766.jpg \
     --show --draw-heatmap
 ```
 
 Visualization result:
 
-<img src="https://user-images.githubusercontent.com/26127467/220538388-582ce90d-751a-40dd-ac06-3bc078b773a0.jpg" height="500px" alt><br>
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/d5f4a947-b6a7-465b-b54d-0ffa2f6d353a" height="500px" alt><br>
 
 If you use a heatmap-based model and set argument `--draw-heatmap`, the predicted heatmap will be visualized together with the keypoints.
 
@@ -41,8 +41,8 @@ To save visualized results on disk:
 python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth \
-    configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
-    https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
+    configs/face_2d_keypoint/rtmpose/face6/rtmpose-m_8xb256-120e_face6-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth \
     --input tests/data/cofw/001766.jpg \
     --draw-heatmap --output-root vis_results
 ```
@@ -55,8 +55,8 @@ To run demos on CPU:
 python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth \
-    configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
-    https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
+    configs/face_2d_keypoint/rtmpose/face6/rtmpose-m_8xb256-120e_face6-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth \
     --input tests/data/cofw/001766.jpg \
     --show --draw-heatmap --device=cpu
 ```
@@ -69,13 +69,13 @@ Videos share the same interface with images. The difference is that the `${INPUT
 python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/yolo-x_8xb8-300e_coco-face_13274d7c.pth \
-    configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py \
-    https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
+    configs/face_2d_keypoint/rtmpose/face6/rtmpose-m_8xb256-120e_face6-256x256.py \
+    https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-face6_pt-in1k_120e-256x256-72a37400_20230529.pth \
     --input demo/resources/<demo_face.mp4> \
-    --show --draw-heatmap --output-root vis_results
+    --show --output-root vis_results --radius 1
 ```
 
-<img src="https://user-images.githubusercontent.com/26127467/220541430-6ade5a59-3d06-466a-a94d-00c82ff96a00.gif" height="500px" alt><br>
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/5883f014-d0be-4796-a30e-f1b5dcb6e85d" height="300px" alt><br>
 
 The original video can be downloaded from [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing).
 

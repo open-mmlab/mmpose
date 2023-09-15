@@ -23,6 +23,7 @@ class BottomupPoseEstimator(BasePoseEstimator):
             Defaults to ``None``
         test_cfg (dict, optional): The runtime config for testing process.
             Defaults to ``None``
+        use_syncbn (bool): whether to use SyncBatchNorm. Defaults to False.
         data_preprocessor (dict, optional): The data preprocessing config to
             build the instance of :class:`BaseDataPreprocessor`. Defaults to
             ``None``.
@@ -36,6 +37,7 @@ class BottomupPoseEstimator(BasePoseEstimator):
                  head: OptConfigType = None,
                  train_cfg: OptConfigType = None,
                  test_cfg: OptConfigType = None,
+                 use_syncbn: bool = False,
                  data_preprocessor: OptConfigType = None,
                  init_cfg: OptMultiConfig = None):
         super().__init__(
@@ -44,6 +46,7 @@ class BottomupPoseEstimator(BasePoseEstimator):
             head=head,
             train_cfg=train_cfg,
             test_cfg=test_cfg,
+            use_syncbn=use_syncbn,
             data_preprocessor=data_preprocessor,
             init_cfg=init_cfg)
 
@@ -162,16 +165,24 @@ class BottomupPoseEstimator(BasePoseEstimator):
         for pred_instances, pred_fields, data_sample in zip_longest(
                 batch_pred_instances, batch_pred_fields, batch_data_samples):
 
-            # convert keypoint coordinates from input space to image space
             input_size = data_sample.metainfo['input_size']
             input_center = data_sample.metainfo['input_center']
             input_scale = data_sample.metainfo['input_scale']
 
+            # convert keypoint coordinates from input space to image space
             pred_instances.keypoints = pred_instances.keypoints / input_size \
                 * input_scale + input_center - 0.5 * input_scale
             if 'keypoints_visible' not in pred_instances:
                 pred_instances.keypoints_visible = \
                     pred_instances.keypoint_scores
+
+            # convert bbox coordinates from input space to image space
+            if 'bboxes' in pred_instances:
+                bboxes = pred_instances.bboxes.reshape(
+                    pred_instances.bboxes.shape[0], 2, 2)
+                bboxes = bboxes / input_size * input_scale + input_center \
+                    - 0.5 * input_scale
+                pred_instances.bboxes = bboxes.reshape(bboxes.shape[0], 4)
 
             data_sample.pred_instances = pred_instances
 

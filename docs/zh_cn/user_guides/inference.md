@@ -243,7 +243,7 @@ result = next(result_generator)
 | `num_instances`           | 设置可视化结果中显示的实例数量。如果设置为负数，则所有实例的结果都会可视化。                                               | ❌  | ✔️  |
 | `return_vis`              | 决定是否在结果中包含可视化图像。                                                                                           | ✔️  | ✔️  |
 | `vis_out_dir`             | 定义保存可视化图像的文件夹路径。如果未设置，将不保存可视化图像。                                                           | ✔️  | ✔️  |
-| `return_datasample`       | 决定是否以 `PoseDataSample` 格式返回预测。                                                                                 | ✔️  | ✔️  |
+| `return_datasamples`      | 决定是否以 `PoseDataSample` 格式返回预测。                                                                                 | ✔️  | ✔️  |
 | `pred_out_dir`            | 指定保存预测的文件夹路径。如果未设置，将不保存预测。                                                                       | ✔️  | ✔️  |
 | `out_dir`                 | 如果 `vis_out_dir` 或 `pred_out_dir` 未设置，它们将分别设置为 `f'{out_dir}/visualization'` 或 `f'{out_dir}/predictions'`。 | ✔️  | ✔️  |
 
@@ -254,15 +254,22 @@ MMPose 为常用模型提供了一组预定义的别名。在初始化 [MMPoseIn
 | 别名      | 配置文件名称                                       | 对应任务                        | 姿态估计模型  | 检测模型            |
 | --------- | -------------------------------------------------- | ------------------------------- | ------------- | ------------------- |
 | animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | Animal pose estimation          | RTMPose-m     | RTMDet-m            |
-| human     | rtmpose-m_8xb256-420e_aic-coco-256x192             | Human pose estimation           | RTMPose-m     | RTMDet-m            |
-| face      | rtmpose-m_8xb64-60e_wflw-256x256                   | Face keypoint detection         | RTMPose-m     | yolox-s             |
-| hand      | rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256   | Hand keypoint detection         | RTMPose-m     | ssdlite_mobilenetv2 |
+| human     | rtmpose-m_8xb256-420e_body8-256x192                | Human pose estimation           | RTMPose-m     | RTMDet-m            |
+| body26    | rtmpose-m_8xb512-700e_body8-halpe26-256x192        | Human pose estimation           | RTMPose-m     | RTMDet-m            |
+| face      | rtmpose-m_8xb256-120e_face6-256x256                | Face keypoint detection         | RTMPose-m     | yolox-s             |
+| hand      | rtmpose-m_8xb256-210e_hand5-256x256                | Hand keypoint detection         | RTMPose-m     | ssdlite_mobilenetv2 |
 | wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | Human wholebody pose estimation | RTMPose-m     | RTMDet-m            |
 | vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base  | RTMDet-m            |
 | vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-small | RTMDet-m            |
 | vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base  | RTMDet-m            |
 | vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large | RTMDet-m            |
 | vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge  | RTMDet-m            |
+
+下表列出了可用的 3D 姿态估计模型别名及其对应的配置文件：
+
+| Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
+| ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
 
 此外，用户可以使用命令行界面工具显示所有可用的别名，使用以下命令:
 

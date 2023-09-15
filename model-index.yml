@@ -9,6 +9,8 @@ Import:
 - configs/animal_2d_keypoint/topdown_heatmap/zebra/resnet_zebra.yml
 - configs/body_2d_keypoint/cid/coco/hrnet_coco.yml
 - configs/body_2d_keypoint/dekr/coco/hrnet_coco.yml
+- configs/body_2d_keypoint/rtmpose/body8/rtmpose_body8-coco.yml
+- configs/body_2d_keypoint/rtmpose/body8/rtmpose_body8-halpe26.yml
 - configs/body_2d_keypoint/dekr/crowdpose/hrnet_crowdpose.yml
 - configs/body_2d_keypoint/integral_regression/coco/resnet_ipr_coco.yml
 - configs/body_2d_keypoint/integral_regression/coco/resnet_dsnt_coco.yml
@@ -75,8 +77,11 @@ Import:
 - configs/body_2d_keypoint/topdown_regression/coco/mobilenetv2_rle_coco.yml
 - configs/body_2d_keypoint/topdown_regression/mpii/resnet_mpii.yml
 - configs/body_2d_keypoint/topdown_regression/mpii/resnet_rle_mpii.yml
+- configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_coco.yml
 - configs/body_3d_keypoint/pose_lift/h36m/videopose3d_h36m.yml
+- configs/body_3d_keypoint/pose_lift/h36m/motionbert_h36m.yml
 - configs/face_2d_keypoint/rtmpose/coco_wholebody_face/rtmpose_coco_wholebody_face.yml
+- configs/face_2d_keypoint/rtmpose/face6/rtmpose_face6.yml
 - configs/face_2d_keypoint/rtmpose/wflw/rtmpose_wflw.yml
 - configs/face_2d_keypoint/topdown_heatmap/300w/hrnetv2_300w.yml
 - configs/face_2d_keypoint/topdown_heatmap/aflw/hrnetv2_aflw.yml
@@ -92,6 +97,7 @@ Import:
 - configs/face_2d_keypoint/topdown_heatmap/wflw/hrnetv2_dark_wflw.yml
 - configs/face_2d_keypoint/topdown_heatmap/wflw/hrnetv2_awing_wflw.yml
 - configs/hand_2d_keypoint/rtmpose/coco_wholebody_hand/rtmpose_coco_wholebody_hand.yml
+- configs/hand_2d_keypoint/rtmpose/hand5/rtmpose_hand5.yml
 - configs/hand_2d_keypoint/topdown_heatmap/coco_wholebody_hand/hourglass_coco_wholebody_hand.yml
 - configs/hand_2d_keypoint/topdown_heatmap/coco_wholebody_hand/hrnetv2_coco_wholebody_hand.yml
 - configs/hand_2d_keypoint/topdown_heatmap/coco_wholebody_hand/hrnetv2_dark_coco_wholebody_hand.yml
@@ -120,3 +126,5 @@ Import:
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/vipnas_dark_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/cspnext_udp_coco-wholebody.yml
 - configs/fashion_2d_keypoint/topdown_heatmap/deepfashion2/res50_deepfasion2.yml
+- configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/hrnet_deepfashion.yml
+- configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/resnet_deepfashion.yml

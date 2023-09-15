@@ -1,6 +1,32 @@
-# Dataset Tools
+# Dataset Annotation and Format Conversion
 
-## Animal Pose
+This guide will help you tackle your datasets to get them ready for training and testing.
+
+## Dataset Annotation
+
+For users of [Label Studio](https://github.com/heartexlabs/label-studio/), please follow the instructions in the [Label Studio to COCO document](./label_studio.md) to annotate and export the results as a Label Studio `.json` file. And save the `Code` from the `Labeling Interface` as an `.xml` file.
+
+```{note}
+MMPose **DOSE NOT** impose any restrictions on the annotation tools used by users. As long as the final annotated results meet MMPose's data format requirements, they are acceptable. We warmly welcome community users to contribute more tutorials and conversion scripts for using various dataset annotation tools.
+```
+
+## Browse Dataset
+
+MMPose provides a useful tool to browse the dataset. You can visualize the raw annotations and the transformed annotations after data augmentation, which is helpful for debugging.
+
+Please refer to [this document](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/prepare_datasets.html#browse-dataset) for more details.
+
+## Download Open-source Datasets via MIM
+
+By using [OpenXLab](https://openxlab.org.cn/datasets), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
+
+We recommend you check out this [how-to guide](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/prepare_datasets.html#download-dataset-via-mim) to learn more details.
+
+## Format Conversion Scripts
+
+We provide some scripts to convert the raw annotations into the format compatible with MMPose (namely, COCO style).
+
+### Animal Pose
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Cao_Cross-Domain_Adaptation_for_Animal_Pose_Estimation_ICCV_2019_paper.html">Animal-Pose (ICCV'2019)</a></summary>
@@ -79,7 +105,7 @@ We choose the images from PascalVOC for train & val. In total, we have 3608 imag
 2798 images with 4000 annotations are used for training, and 810 images with 1117 annotations are used for validation.
 Those images from other sources (1000 images with 1000 annotations) are used for testing.
 
-## COFW
+### COFW
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_iccv_2013/html/Burgos-Artizzu_Robust_Face_Landmark_2013_ICCV_paper.html">COFW (ICCV'2013)</a></summary>
@@ -139,7 +165,7 @@ mmpose
             |── 000002.jpg
 ```
 
-## DeepposeKit
+### DeepposeKit
 
 <details>
 <summary align="right"><a href="https://elifesciences.org/articles/47994">Desert Locust (Elife'2019)</a></summary>
@@ -207,7 +233,7 @@ For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data), [Desert Locust]
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation.
 
-## Macaque
+### Macaque
 
 <details>
 <summary align="right"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/">MacaquePose (bioRxiv'2020)</a></summary>
@@ -257,7 +283,7 @@ For [MacaquePose](http://www2.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html
 
 Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation.
 
-## Human3.6M
+### Human3.6M
 
 <details>
 <summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/6682899/">Human3.6M (TPAMI'2014)</a></summary>
@@ -333,7 +359,7 @@ After that, the annotations need to be transformed into COCO format which is com
 python tools/dataset_converters/h36m_to_coco.py
 ```
 
-## MPII
+### MPII
 
 <details>
 <summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
@@ -395,4 +421,82 @@ For example,
 
 ```shell
 python tools/dataset_converters/labelstudio2coco.py config.xml project-1-at-2023-05-13-09-22-91b53efa.json output/result.json
+```
+
+### UBody2D
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2303.16160">UBody (CVPR'2023)</a></summary>
+
+```bibtex
+@article{lin2023one,
+  title={One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer},
+  author={Lin, Jing and Zeng, Ailing and Wang, Haoqian and Zhang, Lei and Li, Yu},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2023},
+}
+```
+
+</details>
+
+For [Ubody](https://github.com/IDEA-Research/OSX) dataset, videos and annotations can be downloaded from [OSX homepage](https://github.com/IDEA-Research/OSX).
+
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── UBody
+        ├── annotations
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+        ├── splits
+        │   ├── inter_scene_test_list.npy
+        │   └── intra_scene_test_list.npy
+        ├── videos
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+```
+
+We provide a script to convert vidoes to images and split annotations to train/val sets. It can be used by running the following command:
+
+```shell
+python tools/dataset_converters/ubody_kpts_to_coco.py --data-root ${UBODY_DATA_ROOT}
+```
+
+For example,
+
+```shell
+python tools/dataset_converters/ubody_kpts_to_coco.py --data-root data/UBody
 ```

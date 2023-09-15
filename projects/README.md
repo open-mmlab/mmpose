@@ -30,7 +30,11 @@ We also provide some documentation listed below to help you get started:
 
 ## Project List
 
-- **[:zap:RTMPose](./rtmpose)**: Real-Time Multi-Person Pose Estimation toolkit based on MMPose
+- **[:zap:RTMPose](./rtmpose)**: Real-Time Multi-Person Pose Estimation toolkit based on MMPose <sup>
+  <a href="https://openxlab.org.cn/apps/detail/mmpose/RTMPose">
+  <i>TRY IT NOW</i>
+  </a>
+  </sup>
 
   <div align="center">
   <img src="https://github.com/open-mmlab/mmpose/assets/13503330/5b637d76-41dd-4376-9a7f-854cd120799d" width=800 height=200 />

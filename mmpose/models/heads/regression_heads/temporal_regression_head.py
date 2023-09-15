@@ -120,15 +120,15 @@ class TemporalRegressionHead(BaseHead):
             d.gt_instance_labels.lifting_target_label
             for d in batch_data_samples
         ])
-        lifting_target_weights = torch.cat([
-            d.gt_instance_labels.lifting_target_weights
+        lifting_target_weight = torch.cat([
+            d.gt_instance_labels.lifting_target_weight
             for d in batch_data_samples
         ])
 
         # calculate losses
         losses = dict()
         loss = self.loss_module(pred_outputs, lifting_target_label,
-                                lifting_target_weights.unsqueeze(-1))
+                                lifting_target_weight.unsqueeze(-1))
 
         losses.update(loss_pose3d=loss)
 
@@ -136,7 +136,7 @@ class TemporalRegressionHead(BaseHead):
         _, avg_acc, _ = keypoint_pck_accuracy(
             pred=to_numpy(pred_outputs),
             gt=to_numpy(lifting_target_label),
-            mask=to_numpy(lifting_target_weights) > 0,
+            mask=to_numpy(lifting_target_weight) > 0,
             thr=0.05,
             norm_factor=np.ones((pred_outputs.size(0), 3), dtype=np.float32))
 

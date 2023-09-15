@@ -39,6 +39,9 @@ class MegviiHeatmap(BaseKeypointCodec):
     .. _`CPN`: https://arxiv.org/abs/1711.07319
     """
 
+    label_mapping_table = dict(keypoint_weights='keypoint_weights', )
+    field_mapping_table = dict(heatmaps='heatmaps', )
+
     def __init__(
         self,
         input_size: Tuple[int, int],

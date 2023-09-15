@@ -102,6 +102,10 @@ class GenerateTarget(BaseTransform):
 
 旧版的数据归一化操作 `NormalizeTensor` 和 `ToTensor` 方法将由 **DataPreprocessor** 模块替代，不再作为流水线的一部分，而是作为模块加入到模型前向传播中。
 
+旧版用于 3D 人类姿态数据变换的方法 `GetRootCenteredPose`, `ImageCoordinateNormalization` 和 `NormalizeJointCoordinate` 等，将被合并入编码器，比如 [`ImagePoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/image_pose_lifting.py#L11) 和 [`VideoPoseLifting`](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/video_pose_lifting.py#L13) 等。
+
+数据转换和重构操作 `PoseSequenceToTensor` 将在相应的编解码器和 [`PackPoseInputs`](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py) 中实现。
+
 ## 模型兼容
 
 我们对 model zoo 提供的模型权重进行了兼容性处理，确保相同的模型权重测试精度能够与 0.x 版本保持同等水平，但由于在这两个版本中存在大量处理细节的差异，推理结果可能会产生轻微的不同（精度误差小于 0.05%）。
