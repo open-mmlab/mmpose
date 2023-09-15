@@ -197,7 +197,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
                 kpt_color = kpt_color[valid][..., ::-1] / 255.
 
-                ax.scatter(x_3d, y_3d, z_3d, marker='o', color=kpt_color)
+                ax.scatter(x_3d, y_3d, z_3d, marker='o', c=kpt_color)
 
                 for kpt_idx in range(len(x_3d)):
                     ax.text(x_3d[kpt_idx][0], y_3d[kpt_idx][0],
