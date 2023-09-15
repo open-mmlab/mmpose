@@ -88,6 +88,11 @@ class H36MWholeBodyDataset(Human36mDataset):
         from_file='configs/_base_/datasets/coco_wholebody.py')
     SUPPORTED_keypoint_2d_src = {'gt', 'detection', 'pipeline'}
 
+    def get_sequence_indices(self) -> List[List[int]]:
+        img_names = [ann['image_path'] for ann in self.ann_data]
+        self.ann_data['imgname'] = img_names
+        return super().get_sequence_indices()
+
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         num_keypoints = self.metainfo['num_keypoints']
 
