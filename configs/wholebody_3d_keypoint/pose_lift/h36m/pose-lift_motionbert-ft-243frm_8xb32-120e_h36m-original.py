@@ -25,11 +25,7 @@ auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(
-        type='CheckpointHook',
-        # save_best='MPJPE',
-        # rule='less',
-        max_keep_ckpts=1),
+    checkpoint=dict(type='CheckpointHook', max_keep_ckpts=1),
     logger=dict(type='LoggerHook', interval=20),
 )
 
@@ -47,6 +43,7 @@ model = dict(
         in_channels=3,
         feat_size=512,
         depth=5,
+        num_keypoints=133,
         num_heads=8,
         mlp_ratio=2,
         seq_len=243,
@@ -84,13 +81,6 @@ train_pipeline = [
         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
                    'factor', 'camera_param'))
 ]
-# val_pipeline = [
-#     dict(type='GenerateTarget', encoder=val_codec),
-#     dict(
-#         type='PackPoseInputs',
-#         meta_keys=('id', 'category_id', 'target_img_path', 'flip_indices',
-#                    'factor', 'camera_param'))
-# ]
 
 # data loaders
 train_dataloader = dict(
@@ -111,35 +101,3 @@ train_dataloader = dict(
         data_prefix=dict(img='processed/images/'),
         pipeline=train_pipeline,
     ))
-
-# val_dataloader = dict(
-#     batch_size=32,
-#     prefetch_factor=4,
-#     pin_memory=True,
-#     num_workers=2,
-#     persistent_workers=True,
-#     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
-#     dataset=dict(
-#         type=dataset_type,
-#         ann_file='annotation_body3d/fps50/h36m_test_original.npz',
-#         factor_file='annotation_body3d/fps50/h36m_factors.npy',
-#         seq_len=1,
-#         seq_step=1,
-#         multiple_target=243,
-#         camera_param_file='annotation_body3d/cameras.pkl',
-#         data_root=data_root,
-#         data_prefix=dict(img='images/'),
-#         pipeline=val_pipeline,
-#         test_mode=True,
-#     ))
-# test_dataloader = val_dataloader
-
-# # evaluators
-# skip_list = [
-#     'S9_Greet', 'S9_SittingDown', 'S9_Wait_1', 'S9_Greeting', 'S9_Waiting_1'
-# ]
-# val_evaluator = [
-#     dict(type='MPJPE', mode='mpjpe', skip_list=skip_list),
-#     dict(type='MPJPE', mode='p-mpjpe', skip_list=skip_list)
-# ]
-# test_evaluator = val_evaluator
