@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from functools import partial
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,6 +15,7 @@ class BCELoss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
+        reduction (str): Options are "none", "mean" and "sum".
         loss_weight (float): Weight of the loss. Default: 1.0.
         use_sigmoid (bool, optional): Whether the prediction uses sigmoid
             before output. Defaults to False.
@@ -21,11 +24,19 @@ class BCELoss(nn.Module):
     def __init__(self,
                  use_target_weight=False,
                  loss_weight=1.,
+                 reduction='mean',
                  use_sigmoid=False):
         super().__init__()
+
+        assert reduction in ('mean', 'sum', 'none'), f'the argument ' \
+            f'`reduction` should be either \'mean\', \'sum\' or \'none\', ' \
+            f'but got {reduction}'
+
+        self.reduction = reduction
         self.use_sigmoid = use_sigmoid
-        self.criterion = F.binary_cross_entropy if use_sigmoid \
+        criterion = F.binary_cross_entropy if use_sigmoid \
             else F.binary_cross_entropy_with_logits
+        self.criterion = partial(criterion, reduction='none')
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
@@ -45,12 +56,17 @@ class BCELoss(nn.Module):
 
         if self.use_target_weight:
             assert target_weight is not None
-            loss = self.criterion(output, target, reduction='none')
+            loss = self.criterion(output, target)
             if target_weight.dim() == 1:
                 target_weight = target_weight[:, None]
-            loss = (loss * target_weight).mean()
+            loss = (loss * target_weight)
         else:
             loss = self.criterion(output, target)
+
+        if self.reduction == 'sum':
+            loss = loss.sum()
+        elif self.reduction == 'mean':
+            loss = loss.mean()
 
         return loss * self.loss_weight
 

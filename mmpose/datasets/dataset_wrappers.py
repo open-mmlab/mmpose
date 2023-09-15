@@ -109,6 +109,11 @@ class CombinedDataset(BaseDataset):
 
         data_info = self.get_data_info(idx)
 
+        # the assignment of 'dataset' should not be performed within the
+        # `get_data_info` function. Otherwise, it can lead to the mixed
+        # data augmentation process getting stuck.
+        data_info['dataset'] = self
+
         return self.pipeline(data_info)
 
     def get_data_info(self, idx: int) -> dict:
@@ -122,6 +127,9 @@ class CombinedDataset(BaseDataset):
         subset_idx, sample_idx = self._get_subset_index(idx)
         # Get data sample processed by ``subset.pipeline``
         data_info = self.datasets[subset_idx][sample_idx]
+
+        if 'dataset' in data_info:
+            data_info.pop('dataset')
 
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [

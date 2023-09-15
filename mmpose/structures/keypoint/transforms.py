@@ -121,3 +121,33 @@ def flip_keypoints_custom_center(keypoints: np.ndarray,
     # Flip horizontally
     keypoints_flipped[..., 0] = x_c * 2 - keypoints_flipped[..., 0]
     return keypoints_flipped, keypoints_visible_flipped
+
+
+def keypoint_clip_border(keypoints: np.ndarray, keypoints_visible: np.ndarray,
+                         shape: Tuple[int,
+                                      int]) -> Tuple[np.ndarray, np.ndarray]:
+    """Set the visibility values for keypoints outside the image border.
+
+    Args:
+        keypoints (np.ndarray): Input keypoints coordinates.
+        keypoints_visible (np.ndarray): Visibility values of keypoints.
+        shape (Tuple[int, int]): Shape of the image to which keypoints are
+            being clipped in the format of (w, h).
+
+    Note:
+        This function sets the visibility values of keypoints that fall outside
+            the specified frame border to zero (0.0).
+    """
+    width, height = shape[:2]
+
+    # Create a mask for keypoints outside the frame
+    outside_mask = ((keypoints[..., 0] > width) | (keypoints[..., 0] < 0) |
+                    (keypoints[..., 1] > height) | (keypoints[..., 1] < 0))
+
+    # Update visibility values for keypoints outside the frame
+    if keypoints_visible.ndim == 2:
+        keypoints_visible[outside_mask] = 0.0
+    elif keypoints_visible.ndim == 3:
+        keypoints_visible[outside_mask, 0] = 0.0
+
+    return keypoints, keypoints_visible

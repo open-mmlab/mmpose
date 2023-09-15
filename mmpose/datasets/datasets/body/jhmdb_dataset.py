@@ -118,6 +118,8 @@ class JhmdbDataset(BaseCocoStyleDataset):
         keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
         num_keypoints = np.count_nonzero(keypoints.max(axis=2))
+        area = np.clip((x2 - x1) * (y2 - y1) * 0.53, a_min=1.0, a_max=None)
+        category_id = ann.get('category_id', [1] * len(keypoints))
 
         data_info = {
             'img_id': ann['image_id'],
@@ -127,9 +129,11 @@ class JhmdbDataset(BaseCocoStyleDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
+            'area': np.array(area, dtype=np.float32),
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
+            'category_id': category_id,
         }
 
         return data_info
