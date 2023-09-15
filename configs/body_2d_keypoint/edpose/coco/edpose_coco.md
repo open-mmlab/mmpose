@@ -58,3 +58,5 @@ Results on COCO val2017.
 | [edpose_res50_coco](/configs/body_2d_keypoint/edpose/coco/edpose_res50_8xb2-50e_coco-800x1333.py) | ResNet-50 | 0.716 |      0.898      |      0.783      | 0.793 |      0.944      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/edpose/coco/edpose_res50_coco_3rdparty.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/edpose/coco/edpose_res50_coco_3rdparty.json) |
 
 The checkpoint is converted from the official repo. The training of EDPose is not supported yet. It will be supported in the future updates.
+
+The above config follows [Pure Python style](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/config.html#a-pure-python-style-configuration-file-beta). Please install `mmengine>=0.8.2` to use this config.
