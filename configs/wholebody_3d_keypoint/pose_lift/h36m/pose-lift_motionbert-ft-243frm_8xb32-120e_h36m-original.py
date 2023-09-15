@@ -104,11 +104,11 @@ train_dataloader = dict(
         type=dataset_type,
         ann_file='json/RGBto3D_train.json',
         seq_len=1,
-        multiple_target=243,
+        multiple_target=151,
         multiple_target_step=81,
-        camera_param_file='annotation_body3d/cameras.pkl',
+        camera_param_file='processed/annotation_body3d/cameras.pkl',
         data_root=data_root,
-        data_prefix=dict(img='images/'),
+        data_prefix=dict(img='processed/images/'),
         pipeline=train_pipeline,
     ))
 

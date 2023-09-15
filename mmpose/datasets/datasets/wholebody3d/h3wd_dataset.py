@@ -1,7 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import json
+import logging
+import os.path as osp
 from typing import List, Tuple
 
 import numpy as np
+from mmengine.fileio import get_local_path
+from mmengine.logging import print_log
 
 from mmpose.registry import DATASETS
 from ..body3d import Human36mDataset
@@ -88,15 +93,51 @@ class H36MWholeBodyDataset(Human36mDataset):
         from_file='configs/_base_/datasets/coco_wholebody.py')
     SUPPORTED_keypoint_2d_src = {'gt', 'detection', 'pipeline'}
 
+    def __init__(self, ann_file: str, data_root: str, data_prefix: dict,
+                 **kwargs):
+        self.ann_file = ann_file
+        self.data_root = data_root
+        self.data_prefix = data_prefix
+
+        # Process img_names
+        _ann_file = osp.join(data_root, ann_file)
+        with get_local_path(_ann_file) as local_path:
+            self.ann_data = json.load(open(local_path))
+            self._process_image_names(self.ann_data)
+        super().__init__(
+            ann_file=ann_file,
+            data_root=data_root,
+            data_prefix=data_prefix,
+            **kwargs)
+
+    def _process_image_names(self, ann_data: dict) -> List[str]:
+        """Process image names."""
+        image_folder = self.data_prefix['img']
+        img_names = [ann_data[i]['image_path'] for i in ann_data]
+        image_paths = []
+        for image_name in img_names:
+            scene, _, sub, frame = image_name.split('/')
+            frame, suffix = frame.split('.')
+            frame_id = f'{int(frame.split("_")[-1]) + 1:06d}'
+            sub = '_'.join(sub.split(' '))
+            path = f'{scene}/{scene}_{sub}/{scene}_{sub}_{frame_id}.{suffix}'
+            if not osp.exists(osp.join(self.data_root, image_folder, path)):
+                print_log(
+                    f'Failed to read image {path}.',
+                    logger='current',
+                    level=logging.WARN)
+                continue
+            image_paths.append(path)
+        self.image_names = image_paths
+
     def get_sequence_indices(self) -> List[List[int]]:
-        img_names = [ann['image_path'] for ann in self.ann_data]
-        self.ann_data['imgname'] = img_names
+        self.ann_data['imgname'] = self.image_names
         return super().get_sequence_indices()
 
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         num_keypoints = self.metainfo['num_keypoints']
 
-        img_names = [ann['image_path'] for ann in self.ann_data]
+        img_names = np.array(self.image_names)
         num_imgs = len(img_names)
 
         scales = np.zeros(num_imgs, dtype=np.float32)
@@ -104,6 +145,8 @@ class H36MWholeBodyDataset(Human36mDataset):
 
         kpts_3d, kpts_2d = [], []
         for _, ann in self.ann_data.items():
+            if not isinstance(ann, dict):
+                continue
             kpts_2d_i, kpts_3d_i = self._get_kpts(ann)
             kpts_3d.append(kpts_3d_i)
             kpts_2d.append(kpts_2d_i)
@@ -111,6 +154,12 @@ class H36MWholeBodyDataset(Human36mDataset):
         kpts_3d = np.concatenate(kpts_3d, axis=0)
         kpts_2d = np.concatenate(kpts_2d, axis=0)
         kpts_visible = np.ones_like(kpts_2d[..., 0], dtype=np.float32)
+
+        if self.factor_file:
+            with get_local_path(self.factor_file) as local_path:
+                factors = np.load(local_path).astype(np.float32)
+        else:
+            factors = np.zeros((kpts_3d.shape[0], ), dtype=np.float32)
 
         instance_list = []
         for idx, frame_ids in enumerate(self.sequence_indices):
@@ -126,6 +175,7 @@ class H36MWholeBodyDataset(Human36mDataset):
             _kpts_2d = kpts_2d[frame_ids]
             _kpts_3d = kpts_3d[frame_ids]
             _kpts_visible = kpts_visible[frame_ids]
+            factor = factors[frame_ids].astype(np.float32)
 
             target_idx = [-1] if self.causal else [int(self.seq_len) // 2]
             if self.multiple_target > 0:
@@ -139,6 +189,7 @@ class H36MWholeBodyDataset(Human36mDataset):
                 'keypoints_3d_visible': _kpts_visible,
                 'scale': scales[idx],
                 'center': centers[idx].astype(np.float32).reshape(1, -1),
+                'factor': factor,
                 'id': idx,
                 'category_id': 1,
                 'iscrowd': 0,
@@ -159,7 +210,7 @@ class H36MWholeBodyDataset(Human36mDataset):
                     'f': np.array([[1149.67569987], [1148.79896857]]),
                     'c': np.array([[519.81583718], [515.45148698]])
                 }
-            instance_info['cam_param'] = _cam_param
+            instance_info['camera_param'] = _cam_param
             instance_list.append(instance_info)
 
         image_list = []
@@ -172,7 +223,8 @@ class H36MWholeBodyDataset(Human36mDataset):
     def _get_kpts(self, ann: dict) -> Tuple[np.ndarray, np.ndarray]:
         """Get 2D keypoints and 3D keypoints from annotation."""
         kpts = ann['keypoints_3d']
-        kpts_3d = np.array([v for _, v in kpts.items()],
+        kpts_3d = np.array([[v for _, v in joint.items()]
+                            for _, joint in kpts.items()],
                            dtype=np.float32).reshape(1, -1, 3)
         kpts_2d = kpts_3d[..., :2]
         return kpts_2d, kpts_3d
