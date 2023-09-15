@@ -14,7 +14,15 @@ train_cfg = dict(max_epochs=20, val_interval=1)
 optim_wrapper = dict(optimizer=dict(type='Adam', lr=0.0002))
 
 # learning policy
-param_scheduler = [dict(type='MultiStepLR', milestones=[15, 17])]
+param_scheduler = [
+    dict(
+        type='MultiStepLR',
+        begin=0,
+        end=20,
+        milestones=[15, 17],
+        gamma=0.1,
+        by_epoch=True)
+]
 
 auto_scale_lr = dict(base_batch_size=128)
 
@@ -169,6 +177,6 @@ test_dataloader = dict(
 
 # evaluators
 val_evaluator = [
-    dict(type='HandMetric', modes=['MPJPE', 'MRRPE', 'Handedness_Acc'])
+    dict(type='InterHandMetric', modes=['MPJPE', 'MRRPE', 'HandednessAcc'])
 ]
 test_evaluator = val_evaluator

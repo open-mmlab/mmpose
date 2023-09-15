@@ -9,10 +9,10 @@ from xtcocotools.coco import COCO
 
 from mmpose.codecs.utils import camera_to_pixel
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
-from mmpose.evaluation import HandMetric
+from mmpose.evaluation import InterHandMetric
 
 
-class TestHandMetric(TestCase):
+class TestInterHandMetric(TestCase):
 
     def setUp(self):
         """Setup some variables which are used in every test method.
@@ -45,7 +45,7 @@ class TestHandMetric(TestCase):
             'MPJPE_interacting': 0.0,
             'MPJPE_single': 0.0,
             'MRRPE': 0.0,
-            'Handedness_Acc': 1.0
+            'HandednessAcc': 1.0
         }
 
     def encode_handtype(self, hand_type):
@@ -157,12 +157,12 @@ class TestHandMetric(TestCase):
         """test metric init method."""
         # test modes option
         with self.assertRaisesRegex(ValueError, '`mode` should be'):
-            _ = HandMetric(modes=['invalid'])
+            _ = InterHandMetric(modes=['invalid'])
 
     def test_topdown_evaluate(self):
         """test topdown-style COCO metric evaluation."""
         # case 1: modes='MPJPE'
-        metric = HandMetric(modes=['MPJPE'])
+        metric = InterHandMetric(modes=['MPJPE'])
         metric.dataset_meta = self.dataset_meta
 
         # process samples
@@ -175,7 +175,7 @@ class TestHandMetric(TestCase):
             self.assertAlmostEqual(err, self.target[metric], places=4)
 
         # case 2: modes='MRRPE'
-        metric = HandMetric(modes=['MRRPE'])
+        metric = InterHandMetric(modes=['MRRPE'])
         metric.dataset_meta = self.dataset_meta
 
         # process samples
@@ -187,8 +187,8 @@ class TestHandMetric(TestCase):
         for metric, err in eval_results.items():
             self.assertAlmostEqual(err, self.target[metric], places=4)
 
-        # case 2: modes='Handedness_Acc'
-        metric = HandMetric(modes=['Handedness_Acc'])
+        # case 2: modes='HandednessAcc'
+        metric = InterHandMetric(modes=['HandednessAcc'])
         metric.dataset_meta = self.dataset_meta
 
         # process samples

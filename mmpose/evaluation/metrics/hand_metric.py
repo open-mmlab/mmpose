@@ -11,19 +11,19 @@ from ..functional import keypoint_epe
 
 
 @METRICS.register_module()
-class HandMetric(BaseMetric):
+class InterHandMetric(BaseMetric):
 
-    METRICS = {'MPJPE', 'MRRPE', 'Handedness_Acc'}
+    METRICS = {'MPJPE', 'MRRPE', 'HandednessAcc'}
 
     def __init__(self,
-                 modes: List[str] = ['MPJPE', 'MRRPE', 'Handedness_Acc'],
+                 modes: List[str] = ['MPJPE', 'MRRPE', 'HandednessAcc'],
                  collect_device: str = 'cpu',
                  prefix: Optional[str] = None) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
         for mode in modes:
             if mode not in self.METRICS:
                 raise ValueError("`mode` should be 'MPJPE', 'MRRPE', or "
-                                 f"'Handedness_Acc', but got '{mode}'.")
+                                 f"'HandednessAcc', but got '{mode}'.")
 
         self.modes = modes
 
@@ -55,8 +55,8 @@ class HandMetric(BaseMetric):
 
             pred_hand_type = data_sample['pred_instances']['hand_type']
             gt_hand_type = data_sample['hand_type']
-            if pred_hand_type is None and 'Handedness_Acc' in self.modes:
-                raise KeyError('metric Handedness_Acc is not supported')
+            if pred_hand_type is None and 'HandednessAcc' in self.modes:
+                raise KeyError('metric HandednessAcc is not supported')
 
             pred_root_depth = data_sample['pred_instances']['rel_root_depth']
             if pred_root_depth is None and 'MRRPE' in self.modes:
@@ -94,7 +94,7 @@ class HandMetric(BaseMetric):
                 result['single_mask'] = single_mask
                 result['interacting_mask'] = interacting_mask
 
-            if 'Handedness_Acc' in self.modes:
+            if 'HandednessAcc' in self.modes:
                 hand_type_mask = data_sample['hand_type_valid'] > 0
                 result['pred_hand_type'] = pred_hand_type
                 result['gt_hand_type'] = gt_hand_type
@@ -178,7 +178,7 @@ class HandMetric(BaseMetric):
             metrics['MPJPE_interacting'] = keypoint_epe(
                 pred_coords, gt_coords, interacting_mask)
 
-        if 'Handedness_Acc' in self.modes:
+        if 'HandednessAcc' in self.modes:
             pred_hand_type = np.concatenate(
                 [result['pred_hand_type'] for result in results])
             gt_hand_type = np.concatenate(
@@ -186,7 +186,7 @@ class HandMetric(BaseMetric):
             hand_type_mask = np.concatenate(
                 [result['hand_type_mask'] for result in results])
             acc = (pred_hand_type == gt_hand_type).all(axis=-1)
-            metrics['Handedness_Acc'] = np.mean(acc[hand_type_mask])
+            metrics['HandednessAcc'] = np.mean(acc[hand_type_mask])
 
         if 'MRRPE' in self.modes:
             pred_rel_root_coords = np.concatenate(
