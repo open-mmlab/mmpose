@@ -104,51 +104,42 @@ class PackPoseInputs(BaseTransform):
 
     # items in `instance_mapping_table` will be directly packed into
     # PoseDataSample.gt_instances without converting to Tensor
-    instance_mapping_table = {
-        'bbox': 'bboxes',
-        'head_size': 'head_size',
-        'bbox_center': 'bbox_centers',
-        'bbox_scale': 'bbox_scales',
-        'bbox_score': 'bbox_scores',
-        'keypoints': 'keypoints',
-        'keypoints_visible': 'keypoints_visible',
-        'lifting_target': 'lifting_target',
-        'lifting_target_visible': 'lifting_target_visible',
-    }
-
-    # items in `label_mapping_table` will be packed into
-    # PoseDataSample.gt_instance_labels and converted to Tensor. These items
-    # will be used for computing losses
-    label_mapping_table = {
-        'keypoint_labels': 'keypoint_labels',
-        'lifting_target_label': 'lifting_target_label',
-        'lifting_target_weight': 'lifting_target_weight',
-        'trajectory_weights': 'trajectory_weights',
-        'keypoint_x_labels': 'keypoint_x_labels',
-        'keypoint_y_labels': 'keypoint_y_labels',
-        'keypoint_weights': 'keypoint_weights',
-        'instance_coords': 'instance_coords',
-        'keypoints_visible_weights': 'keypoints_visible_weights'
-    }
+    instance_mapping_table = dict(
+        bbox='bboxes',
+        bbox_score='bbox_scores',
+        keypoints='keypoints',
+        keypoints_visible='keypoints_visible',
+        # In CocoMetric, the area of predicted instances will be calculated
+        # using gt_instances.bbox_scales. To unsure correspondence with
+        # previous version, this key is preserved here.
+        bbox_scale='bbox_scales',
+    )
 
     # items in `field_mapping_table` will be packed into
     # PoseDataSample.gt_fields and converted to Tensor. These items will be
     # used for computing losses
-    field_mapping_table = {
-        'heatmaps': 'heatmaps',
-        'instance_heatmaps': 'instance_heatmaps',
-        'heatmap_mask': 'heatmap_mask',
-        'heatmap_weights': 'heatmap_weights',
-        'displacements': 'displacements',
-        'displacement_weights': 'displacement_weights',
-    }
+    field_mapping_table = dict(
+        heatmaps='heatmaps',
+        instance_heatmaps='instance_heatmaps',
+        heatmap_mask='heatmap_mask',
+        heatmap_weights='heatmap_weights',
+        displacements='displacements',
+        displacement_weights='displacement_weights')
+
+    # items in `label_mapping_table` will be packed into
+    # PoseDataSample.gt_instance_labels and converted to Tensor. These items
+    # will be used for computing losses
+    label_mapping_table = dict(
+        keypoint_labels='keypoint_labels',
+        keypoint_weights='keypoint_weights',
+        keypoints_visible_weights='keypoints_visible_weights')
 
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'category_id',
                             'crowd_index', 'ori_shape', 'img_shape',
                             'input_size', 'input_center', 'input_scale',
                             'flip', 'flip_direction', 'flip_indices',
-                            'raw_ann_info'),
+                            'raw_ann_info', 'dataset_name'),
                  pack_transformed=False):
         self.meta_keys = meta_keys
         self.pack_transformed = pack_transformed
@@ -182,12 +173,10 @@ class PackPoseInputs(BaseTransform):
 
         # pack instance data
         gt_instances = InstanceData()
-        for key, packed_key in self.instance_mapping_table.items():
+        _instance_mapping_table = results.get('instance_mapping_table',
+                                              self.instance_mapping_table)
+        for key, packed_key in _instance_mapping_table.items():
             if key in results:
-                if 'lifting_target' in results and key in {
-                        'keypoints', 'keypoints_visible'
-                }:
-                    continue
                 gt_instances.set_field(results[key], packed_key)
 
         # pack `transformed_keypoints` for visualizing data transform
@@ -200,14 +189,10 @@ class PackPoseInputs(BaseTransform):
 
         # pack instance labels
         gt_instance_labels = InstanceData()
-        for key, packed_key in self.label_mapping_table.items():
+        _label_mapping_table = results.get('label_mapping_table',
+                                           self.label_mapping_table)
+        for key, packed_key in _label_mapping_table.items():
             if key in results:
-                # For pose-lifting, store only target-related fields
-                if 'lifting_target' in results and packed_key in {
-                        'keypoint_labels', 'keypoint_weights',
-                        'keypoints_visible'
-                }:
-                    continue
                 if isinstance(results[key], list):
                     # A list of labels is usually generated by combined
                     # multiple encoders (See ``GenerateTarget`` in
@@ -222,7 +207,9 @@ class PackPoseInputs(BaseTransform):
 
         # pack fields
         gt_fields = None
-        for key, packed_key in self.field_mapping_table.items():
+        _field_mapping_table = results.get('field_mapping_table',
+                                           self.field_mapping_table)
+        for key, packed_key in _field_mapping_table.items():
             if key in results:
                 if isinstance(results[key], list):
                     if gt_fields is None:

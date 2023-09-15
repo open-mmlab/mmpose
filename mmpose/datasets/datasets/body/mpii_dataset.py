@@ -184,6 +184,12 @@ class MpiiDataset(BaseCocoStyleDataset):
             keypoints = np.array(ann['joints']).reshape(1, -1, 2)
             keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
 
+            x1, y1, x2, y2 = np.split(bbox, axis=1, indices_or_sections=4)
+            area = np.clip((x2 - x1) * (y2 - y1) * 0.53, a_min=1.0, a_max=None)
+            area = area[..., 0].astype(np.float32)
+
+            category_id = ann.get('category_id', [1] * len(bbox))
+
             instance_info = {
                 'id': ann_id,
                 'img_id': int(ann['image'].split('.')[0]),
@@ -194,6 +200,8 @@ class MpiiDataset(BaseCocoStyleDataset):
                 'bbox_score': np.ones(1, dtype=np.float32),
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
+                'area': area,
+                'category_id': category_id,
             }
 
             if self.headbox_file:

@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 from typing import Tuple, Union
 
 import torch
+from mmengine.dist import get_world_size
+from mmengine.logging import print_log
 from mmengine.model import BaseModel
 from torch import Tensor
 
@@ -22,6 +24,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
             config of :class:`BaseDataPreprocessor`. Defaults to ``None``
         init_cfg (dict | ConfigDict): The model initialization config.
             Defaults to ``None``
+        use_syncbn (bool): whether to use SyncBatchNorm. Defaults to False.
         metainfo (dict): Meta information for dataset, such as keypoints
             definition and properties. If set, the metainfo of the input data
             batch will be overridden. For more details, please refer to
@@ -38,11 +41,14 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
                  train_cfg: OptConfigType = None,
                  test_cfg: OptConfigType = None,
                  data_preprocessor: OptConfigType = None,
+                 use_syncbn: bool = False,
                  init_cfg: OptMultiConfig = None,
                  metainfo: Optional[dict] = None):
         super().__init__(
             data_preprocessor=data_preprocessor, init_cfg=init_cfg)
         self.metainfo = self._load_metainfo(metainfo)
+        self.train_cfg = train_cfg if train_cfg else {}
+        self.test_cfg = test_cfg if test_cfg else {}
 
         self.backbone = MODELS.build(backbone)
 
@@ -57,12 +63,15 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
         if head is not None:
             self.head = MODELS.build(head)
-
-        self.train_cfg = train_cfg if train_cfg else {}
-        self.test_cfg = test_cfg if test_cfg else {}
+            self.head.test_cfg = self.test_cfg.copy()
 
         # Register the hook to automatically convert old version state dicts
         self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
+
+        # TODO： Waiting for mmengine support
+        if use_syncbn and get_world_size() > 1:
+            torch.nn.SyncBatchNorm.convert_sync_batchnorm(self)
+            print_log('Using SyncBatchNorm()', 'current')
 
     @property
     def with_neck(self) -> bool:

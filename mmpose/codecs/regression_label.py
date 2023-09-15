@@ -30,6 +30,11 @@ class RegressionLabel(BaseKeypointCodec):
 
     """
 
+    label_mapping_table = dict(
+        keypoint_labels='keypoint_labels',
+        keypoint_weights='keypoint_weights',
+    )
+
     def __init__(self, input_size: Tuple[int, int]) -> None:
         super().__init__()
 

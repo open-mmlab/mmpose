@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from .annotation_processors import YOLOXPoseAnnotationProcessor
 from .associative_embedding import AssociativeEmbedding
 from .decoupled_heatmap import DecoupledHeatmap
 from .image_pose_lifting import ImagePoseLifting
@@ -16,5 +17,5 @@ __all__ = [
     'MSRAHeatmap', 'MegviiHeatmap', 'UDPHeatmap', 'RegressionLabel',
     'SimCCLabel', 'IntegralRegressionLabel', 'AssociativeEmbedding', 'SPR',
     'DecoupledHeatmap', 'VideoPoseLifting', 'ImagePoseLifting',
-    'MotionBERTLabel'
+    'MotionBERTLabel', 'YOLOXPoseAnnotationProcessor'
 ]

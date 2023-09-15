@@ -3,6 +3,7 @@ import warnings
 from copy import deepcopy
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
+import cv2
 import mmcv
 import mmengine
 import numpy as np
@@ -957,6 +958,7 @@ class GenerateTarget(BaseTransform):
         if keypoints_visible.ndim == 3 and keypoints_visible.shape[2] == 2:
             keypoints_visible, keypoints_visible_weights = \
                 keypoints_visible[..., 0], keypoints_visible[..., 1]
+            results['keypoints_visible'] = keypoints_visible
             results['keypoints_visible_weights'] = keypoints_visible_weights
 
         # Encoded items from the encoder(s) will be updated into the results.
@@ -974,8 +976,21 @@ class GenerateTarget(BaseTransform):
                 keypoints_visible=keypoints_visible,
                 **auxiliary_encode_kwargs)
 
+            if self.encoder.field_mapping_table:
+                encoded[
+                    'field_mapping_table'] = self.encoder.field_mapping_table
+            if self.encoder.instance_mapping_table:
+                encoded['instance_mapping_table'] = \
+                    self.encoder.instance_mapping_table
+            if self.encoder.label_mapping_table:
+                encoded[
+                    'label_mapping_table'] = self.encoder.label_mapping_table
+
         else:
             encoded_list = []
+            _field_mapping_table = dict()
+            _instance_mapping_table = dict()
+            _label_mapping_table = dict()
             for _encoder in self.encoder:
                 auxiliary_encode_kwargs = {
                     key: results[key]
@@ -986,6 +1001,10 @@ class GenerateTarget(BaseTransform):
                         keypoints=keypoints,
                         keypoints_visible=keypoints_visible,
                         **auxiliary_encode_kwargs))
+
+                _field_mapping_table.update(_encoder.field_mapping_table)
+                _instance_mapping_table.update(_encoder.instance_mapping_table)
+                _label_mapping_table.update(_encoder.label_mapping_table)
 
             if self.multilevel:
                 # For multilevel encoding, the encoded items from each encoder
@@ -1027,6 +1046,13 @@ class GenerateTarget(BaseTransform):
                 if keypoint_weights:
                     encoded['keypoint_weights'] = keypoint_weights
 
+            if _field_mapping_table:
+                encoded['field_mapping_table'] = _field_mapping_table
+            if _instance_mapping_table:
+                encoded['instance_mapping_table'] = _instance_mapping_table
+            if _label_mapping_table:
+                encoded['label_mapping_table'] = _label_mapping_table
+
         if self.use_dataset_keypoint_weights and 'keypoint_weights' in encoded:
             if isinstance(encoded['keypoint_weights'], list):
                 for w in encoded['keypoint_weights']:
@@ -1050,3 +1076,178 @@ class GenerateTarget(BaseTransform):
         repr_str += ('use_dataset_keypoint_weights='
                      f'{self.use_dataset_keypoint_weights})')
         return repr_str
+
+
+@TRANSFORMS.register_module()
+class YOLOXHSVRandomAug(BaseTransform):
+    """Apply HSV augmentation to image sequentially. It is referenced from
+    https://github.com/Megvii-
+    BaseDetection/YOLOX/blob/main/yolox/data/data_augment.py#L21.
+
+    Required Keys:
+
+    - img
+
+    Modified Keys:
+
+    - img
+
+    Args:
+        hue_delta (int): delta of hue. Defaults to 5.
+        saturation_delta (int): delta of saturation. Defaults to 30.
+        value_delta (int): delat of value. Defaults to 30.
+    """
+
+    def __init__(self,
+                 hue_delta: int = 5,
+                 saturation_delta: int = 30,
+                 value_delta: int = 30) -> None:
+        self.hue_delta = hue_delta
+        self.saturation_delta = saturation_delta
+        self.value_delta = value_delta
+
+    @cache_randomness
+    def _get_hsv_gains(self):
+        hsv_gains = np.random.uniform(-1, 1, 3) * [
+            self.hue_delta, self.saturation_delta, self.value_delta
+        ]
+        # random selection of h, s, v
+        hsv_gains *= np.random.randint(0, 2, 3)
+        # prevent overflow
+        hsv_gains = hsv_gains.astype(np.int16)
+        return hsv_gains
+
+    def transform(self, results: dict) -> dict:
+        img = results['img']
+        hsv_gains = self._get_hsv_gains()
+        img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype(np.int16)
+
+        img_hsv[..., 0] = (img_hsv[..., 0] + hsv_gains[0]) % 180
+        img_hsv[..., 1] = np.clip(img_hsv[..., 1] + hsv_gains[1], 0, 255)
+        img_hsv[..., 2] = np.clip(img_hsv[..., 2] + hsv_gains[2], 0, 255)
+        cv2.cvtColor(img_hsv.astype(img.dtype), cv2.COLOR_HSV2BGR, dst=img)
+
+        results['img'] = img
+        return results
+
+    def __repr__(self):
+        repr_str = self.__class__.__name__
+        repr_str += f'(hue_delta={self.hue_delta}, '
+        repr_str += f'saturation_delta={self.saturation_delta}, '
+        repr_str += f'value_delta={self.value_delta})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class FilterAnnotations(BaseTransform):
+    """Eliminate undesirable annotations based on specific conditions.
+
+    This class is designed to sift through annotations by examining multiple
+    factors such as the size of the bounding box, the visibility of keypoints,
+    and the overall area. Users can fine-tune the criteria to filter out
+    instances that have excessively small bounding boxes, insufficient area,
+    or an inadequate number of visible keypoints.
+
+    Required Keys:
+
+    - bbox (np.ndarray) (optional)
+    - area (np.int64) (optional)
+    - keypoints_visible (np.ndarray) (optional)
+
+    Modified Keys:
+
+    - bbox (optional)
+    - bbox_score (optional)
+    - category_id (optional)
+    - keypoints (optional)
+    - keypoints_visible (optional)
+    - area (optional)
+
+    Args:
+        min_gt_bbox_wh (tuple[float]): Minimum width and height of ground
+            truth boxes. Default: (1., 1.)
+        min_gt_area (int): Minimum foreground area of instances.
+            Default: 1
+        min_kpt_vis (int): Minimum number of visible keypoints. Default: 1
+        by_box (bool): Filter instances with bounding boxes not meeting the
+            min_gt_bbox_wh threshold. Default: False
+        by_area (bool): Filter instances with area less than min_gt_area
+            threshold. Default: False
+        by_kpt (bool): Filter instances with keypoints_visible not meeting the
+            min_kpt_vis threshold. Default: True
+        keep_empty (bool): Whether to return None when it
+            becomes an empty bbox after filtering. Defaults to True.
+    """
+
+    def __init__(self,
+                 min_gt_bbox_wh: Tuple[int, int] = (1, 1),
+                 min_gt_area: int = 1,
+                 min_kpt_vis: int = 1,
+                 by_box: bool = False,
+                 by_area: bool = False,
+                 by_kpt: bool = True,
+                 keep_empty: bool = True) -> None:
+
+        assert by_box or by_kpt or by_area
+        self.min_gt_bbox_wh = min_gt_bbox_wh
+        self.min_gt_area = min_gt_area
+        self.min_kpt_vis = min_kpt_vis
+        self.by_box = by_box
+        self.by_area = by_area
+        self.by_kpt = by_kpt
+        self.keep_empty = keep_empty
+
+    def transform(self, results: dict) -> Union[dict, None]:
+        """Transform function to filter annotations.
+
+        Args:
+            results (dict): Result dict.
+
+        Returns:
+            dict: Updated result dict.
+        """
+        assert 'keypoints' in results
+        kpts = results['keypoints']
+        if kpts.shape[0] == 0:
+            return results
+
+        tests = []
+        if self.by_box and 'bbox' in results:
+            bbox = results['bbox']
+            tests.append(
+                ((bbox[..., 2] - bbox[..., 0] > self.min_gt_bbox_wh[0]) &
+                 (bbox[..., 3] - bbox[..., 1] > self.min_gt_bbox_wh[1])))
+        if self.by_area and 'area' in results:
+            area = results['area']
+            tests.append(area >= self.min_gt_area)
+        if self.by_kpt:
+            kpts_vis = results['keypoints_visible']
+            if kpts_vis.ndim == 3:
+                kpts_vis = kpts_vis[..., 0]
+            tests.append(kpts_vis.sum(axis=1) >= self.min_kpt_vis)
+
+        keep = tests[0]
+        for t in tests[1:]:
+            keep = keep & t
+
+        if not keep.any():
+            if self.keep_empty:
+                return None
+
+        keys = ('bbox', 'bbox_score', 'category_id', 'keypoints',
+                'keypoints_visible', 'area')
+        for key in keys:
+            if key in results:
+                results[key] = results[key][keep]
+
+        return results
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'min_gt_bbox_wh={self.min_gt_bbox_wh}, '
+                f'min_gt_area={self.min_gt_area}, '
+                f'min_kpt_vis={self.min_kpt_vis}, '
+                f'by_box={self.by_box}, '
+                f'by_area={self.by_area}, '
+                f'by_kpt={self.by_kpt}, '
+                f'keep_empty={self.keep_empty})')

@@ -7,8 +7,10 @@ from unittest import TestCase
 
 import numpy as np
 from mmengine.fileio import dump, load
+from mmengine.logging import MessageHub
 from xtcocotools.coco import COCO
 
+from mmpose.datasets.datasets import CocoDataset
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.metrics import CocoMetric
 
@@ -21,6 +23,12 @@ class TestCocoMetric(TestCase):
         TestCase calls functions in this order: setUp() -> testMethod() ->
         tearDown() -> cleanUp()
         """
+
+        # during CI on github, the unit tests for datasets will save ann_file
+        # into MessageHub, which will influence the unit tests for CocoMetric
+        msg = MessageHub.get_current_instance()
+        msg.runtime_info.clear()
+
         self.tmp_dir = tempfile.TemporaryDirectory()
 
         self.ann_file_coco = 'tests/data/coco/test_coco.json'
@@ -59,6 +67,10 @@ class TestCocoMetric(TestCase):
 
         self.topdown_data_crowdpose = self._convert_ann_to_topdown_batch_data(
             self.ann_file_crowdpose)
+        self.topdown_data_pseudo_coco = \
+            self._convert_ann_to_topdown_batch_data(
+                self.ann_file_crowdpose,
+                num_pseudo_kpts=3)
         assert len(self.topdown_data_crowdpose) == 5
         self.bottomup_data_crowdpose = \
             self._convert_ann_to_bottomup_batch_data(self.ann_file_crowdpose)
@@ -103,7 +115,9 @@ class TestCocoMetric(TestCase):
             'coco/AR (L)': 1.0,
         }
 
-    def _convert_ann_to_topdown_batch_data(self, ann_file):
+    def _convert_ann_to_topdown_batch_data(self,
+                                           ann_file,
+                                           num_pseudo_kpts: int = 0):
         """Convert annotations to topdown-style batch data."""
         topdown_data = []
         db = load(ann_file)
@@ -121,6 +135,12 @@ class TestCocoMetric(TestCase):
                 'bbox_scores': np.ones((1, ), dtype=np.float32),
                 'bboxes': bboxes,
             }
+
+            if num_pseudo_kpts > 0:
+                keypoints = np.concatenate(
+                    (keypoints, *((keypoints[:, :1], ) * num_pseudo_kpts)),
+                    axis=1)
+
             pred_instances = {
                 'keypoints': keypoints[..., :2],
                 'keypoint_scores': keypoints[..., -1],
@@ -610,3 +630,55 @@ class TestCocoMetric(TestCase):
             osp.isfile(osp.join(self.tmp_dir.name, 'test8.gt.json')))
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, 'test8.keypoints.json')))
+
+    def test_gt_converter(self):
+
+        crowdpose_to_coco_converter = dict(
+            type='KeypointConverter',
+            num_keypoints=17,
+            mapping=[
+                (0, 5),
+                (1, 6),
+                (2, 7),
+                (3, 8),
+                (4, 9),
+                (5, 10),
+                (6, 11),
+                (7, 12),
+                (8, 13),
+                (9, 14),
+                (10, 15),
+                (11, 16),
+            ])
+
+        metric_crowdpose = CocoMetric(
+            ann_file=self.ann_file_crowdpose,
+            outfile_prefix=f'{self.tmp_dir.name}/test_convert',
+            use_area=False,
+            gt_converter=crowdpose_to_coco_converter,
+            iou_type='keypoints_crowd',
+            prefix='crowdpose')
+        metric_crowdpose.dataset_meta = self.dataset_meta_crowdpose
+
+        self.assertEqual(metric_crowdpose.dataset_meta['num_keypoints'], 17)
+        self.assertEqual(len(metric_crowdpose.dataset_meta['sigmas']), 17)
+
+        # process samples
+        for data_batch, data_samples in self.topdown_data_pseudo_coco:
+            metric_crowdpose.process(data_batch, data_samples)
+
+        _ = metric_crowdpose.evaluate(size=len(self.topdown_data_crowdpose))
+
+        self.assertTrue(
+            osp.isfile(
+                osp.join(self.tmp_dir.name, 'test_convert.keypoints.json')))
+
+    def test_get_ann_file_from_dataset(self):
+        _ = CocoDataset(ann_file=self.ann_file_coco, test_mode=True)
+        metric = CocoMetric(ann_file=None)
+        metric.dataset_meta = self.dataset_meta_coco
+        self.assertIsNotNone(metric.coco)
+
+        # clear message to avoid disturbing other tests
+        message = MessageHub.get_current_instance()
+        message.pop_info('coco_ann_file')

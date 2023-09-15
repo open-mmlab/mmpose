@@ -345,11 +345,10 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
                         alpha=transparency,
                         line_widths=self.radius)
                     if show_kpt_idx:
-                        kpt[0] += self.radius
-                        kpt[1] -= self.radius
+                        kpt_idx_coords = kpt + [self.radius, -self.radius]
                         self.draw_texts(
                             str(kid),
-                            kpt,
+                            kpt_idx_coords,
                             colors=color,
                             font_sizes=self.radius * 3,
                             vertical_alignments='bottom',

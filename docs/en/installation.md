@@ -111,7 +111,7 @@ To verify that MMPose is installed correctly, you can run an inference demo with
 mim download mmpose --config td-hm_hrnet-w48_8xb32-210e_coco-256x192  --dest .
 ```
 
-The downloading will take several seconds or more, depending on your network environment. When it is done, you will find two files `td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` and `hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth` in your current folder.
+The downloading will take several seconds or more, depending on your network environment. When it is done, you will find two files `td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` and `td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth` in your current folder.
 
 **Step 2.** Run the inference demo.
 
@@ -121,7 +121,7 @@ Option (A). If you install mmpose from source, just run the following command un
 python demo/image_demo.py \
     tests/data/coco/000000000785.jpg \
     td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
-    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth \
     --out-file vis_results.jpg \
     --draw-heatmap
 ```
@@ -139,7 +139,7 @@ from mmpose.utils import register_all_modules
 register_all_modules()
 
 config_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
-checkpoint_file = 'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
+checkpoint_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth'
 model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
 
 # please prepare an image with person
