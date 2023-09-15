@@ -115,17 +115,17 @@ class PoseDataPreprocessor(ImgDataPreprocessor):
                 'pad_shape': pad_shape
             }
 
-            if 'input_size' not in data_sample.metainfo:
-                aux_metainfo['input_size'] = data_sample.img_shape
+            # if 'input_size' not in data_sample.metainfo:
+            #     aux_metainfo['input_size'] = data_sample.img_shape
 
-            if 'input_center' not in data_sample.metainfo \
-                    or 'input_scale' not in data_sample.metainfo:
+            # if 'input_center' not in data_sample.metainfo \
+            #         or 'input_scale' not in data_sample.metainfo:
 
-                w, h = data_sample.ori_shape
-                center = np.array([w / 2, h / 2], dtype=np.float32)
-                scale = np.array([w, h], dtype=np.float32)
-                aux_metainfo['input_center'] = center
-                aux_metainfo['input_scale'] = scale
+            #     w, h = data_sample.ori_shape
+            #     center = np.array([w / 2, h / 2], dtype=np.float32)
+            #     scale = np.array([w, h], dtype=np.float32)
+            #     aux_metainfo['input_center'] = center
+            #     aux_metainfo['input_scale'] = scale
 
             data_sample.set_metainfo(aux_metainfo)
 

@@ -1062,7 +1062,7 @@ class EDPoseHead(TransformerHead):
         for input_shape, pred_logit, pred_bbox, pred_kpts in zip(
                 input_shapes, pred_logits, pred_boxes, pred_keypoints):
 
-            keypoints, keypoint_scores, bboxes = self.data_decoder.decode(
+            bboxes, keypoints, keypoint_scores = self.data_decoder.decode(
                 input_shape, pred_logit, pred_bbox, pred_kpts)
 
             # pack outputs

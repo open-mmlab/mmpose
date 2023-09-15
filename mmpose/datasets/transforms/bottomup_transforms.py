@@ -963,9 +963,16 @@ class BottomupRandomChoiceResize(BaseTransform):
                 interpolation='bilinear',
                 return_scale=True,
                 backend=self.backend)
+
         results['img'] = img
         results['img_shape'] = img.shape[:2]
         results['scale_factor'] = (w_scale, h_scale)
+        results['input_size'] = img.shape[:2]
+        w, h = results['ori_shape']
+        center = np.array([w / 2, h / 2], dtype=np.float32)
+        scale = np.array([w, h], dtype=np.float32)
+        results['input_center'] = center
+        results['input_scale'] = scale
 
     def _resize_bboxes(self, results: dict) -> None:
         """Resize bounding boxes with ``self.scale``."""

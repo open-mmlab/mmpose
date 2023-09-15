@@ -116,7 +116,7 @@ class EDPoseLabel(BaseKeypointCodec):
             pred_keypoints (Tensor): The result of keypoints.
 
         Returns:
-            tuple: Decoded keypoints, scores, and boxes.
+            tuple: Decoded boxes, keypoints, and keypoint scores.
         """
 
         num_keypoints = self.num_keypoints
@@ -148,15 +148,9 @@ class EDPoseLabel(BaseKeypointCodec):
             np.tile(topk_keypoints[:, np.newaxis], [1, num_keypoints * 3]),
             axis=0)
 
-        Z_pred = keypoints[:, :(num_keypoints * 2)]
-        V_pred = keypoints[:, (num_keypoints * 2):]
-        Z_pred = Z_pred * np.tile(np.hstack([img_w, img_h]),
-                                  [num_keypoints])[np.newaxis, :]
-        keypoints_res = np.zeros_like(keypoints)
-        keypoints_res[..., 0::3] = Z_pred[..., 0::2]
-        keypoints_res[..., 1::3] = Z_pred[..., 1::2]
-        keypoints_res[..., 2::3] = V_pred[..., 0::1]
+        keypoints = keypoints[:, :(num_keypoints * 2)]
+        keypoints = keypoints * np.tile(
+            np.hstack([img_w, img_h]), [num_keypoints])[np.newaxis, :]
+        keypoints = keypoints.reshape(-1, num_keypoints, 2)
 
-        keypoint = keypoints_res.reshape(-1, num_keypoints, 3)[:, :, :2]
-
-        return keypoint, scores, boxes
+        return boxes, keypoints, scores
