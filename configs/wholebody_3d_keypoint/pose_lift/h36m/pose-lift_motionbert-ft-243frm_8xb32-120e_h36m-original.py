@@ -68,7 +68,7 @@ model = dict(
 )
 
 # base dataset settings
-dataset_type = 'Human36mDataset'
+dataset_type = 'H36MWholeBodyDataset'
 data_root = 'data/h36m/'
 
 # pipelines
