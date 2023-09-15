@@ -33,7 +33,6 @@ class TransformerHead(BaseHead):
             Defaults to None.
         init_cfg (ConfigDict, optional): Config to control the initialization.
     """
-    _version = 2
 
     def __init__(self,
                  encoder: OptConfigType = None,
