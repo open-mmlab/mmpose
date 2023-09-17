@@ -98,7 +98,7 @@ class PackPoseInputs(BaseTransform):
         meta_keys (Sequence[str], optional): Meta keys which will be stored in
             :obj: `PoseDataSample` as meta info. Defaults to ``('id',
             'img_id', 'img_path', 'category_id', 'crowd_index, 'ori_shape',
-            'img_shape',, 'input_size', 'input_center', 'input_scale', 'flip',
+            'img_shape', 'input_size', 'input_center', 'input_scale', 'flip',
             'flip_direction', 'flip_indices', 'raw_ann_info')``
     """
 
@@ -108,6 +108,7 @@ class PackPoseInputs(BaseTransform):
         bbox='bboxes',
         bbox_score='bbox_scores',
         keypoints='keypoints',
+        keypoints_cam='keypoints_cam',
         keypoints_visible='keypoints_visible',
         # In CocoMetric, the area of predicted instances will be calculated
         # using gt_instances.bbox_scales. To unsure correspondence with
