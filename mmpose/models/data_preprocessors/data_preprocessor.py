@@ -12,7 +12,43 @@ from mmpose.registry import MODELS
 
 @MODELS.register_module()
 class PoseDataPreprocessor(ImgDataPreprocessor):
-    """Image pre-processor for pose estimation tasks."""
+    """Image pre-processor for pose estimation tasks.
+
+    Comparing with the :class:`ImgDataPreprocessor`,
+
+    1. It will additionally append batch_input_shape
+    to data_samples considering the DETR-based pose estimation tasks.
+
+    2. Support image augmentation transforms on batched data.
+
+    It provides the data pre-processing as follows
+
+    - Collate and move data to the target device.
+    - Pad inputs to the maximum size of current batch with defined
+      ``pad_value``. The padding size can be divisible by a defined
+      ``pad_size_divisor``
+    - Stack inputs to batch_inputs.
+    - Convert inputs from bgr to rgb if the shape of input is (3, H, W).
+    - Normalize image with defined std and mean.
+    - Apply batch augmentation transforms.
+
+    Args:
+        mean (sequence of float, optional): The pixel mean of R, G, B
+            channels. Defaults to None.
+        std (sequence of float, optional): The pixel standard deviation
+            of R, G, B channels. Defaults to None.
+        pad_size_divisor (int): The size of padded image should be
+            divisible by ``pad_size_divisor``. Defaults to 1.
+        pad_value (float or int): The padded pixel value. Defaults to 0.
+        bgr_to_rgb (bool): whether to convert image from BGR to RGB.
+            Defaults to False.
+        rgb_to_bgr (bool): whether to convert image from RGB to BGR.
+            Defaults to False.
+        non_blocking (bool): Whether block current process
+            when transferring data to device. Defaults to False.
+        batch_augments: (list of dict, optional): Configs of augmentation
+            transforms on batched data. Defaults to None.
+    """
 
     def __init__(self,
                  mean: Sequence[float] = None,
@@ -31,6 +67,7 @@ class PoseDataPreprocessor(ImgDataPreprocessor):
             bgr_to_rgb=bgr_to_rgb,
             rgb_to_bgr=rgb_to_bgr,
             non_blocking=non_blocking)
+
         if batch_augments is not None:
             self.batch_augments = nn.ModuleList(
                 [MODELS.build(aug) for aug in batch_augments])
@@ -51,6 +88,8 @@ class PoseDataPreprocessor(ImgDataPreprocessor):
         batch_pad_shape = self._get_pad_shape(data)
         data = super().forward(data=data, training=training)
         inputs, data_samples = data['inputs'], data['data_samples']
+
+        # update metainfo since the image shape might change
         batch_input_shape = tuple(inputs[0].size()[-2:])
         for data_sample, pad_shape in zip(data_samples, batch_pad_shape):
             data_sample.set_metainfo({
@@ -58,6 +97,7 @@ class PoseDataPreprocessor(ImgDataPreprocessor):
                 'pad_shape': pad_shape
             })
 
+        # apply batch augmentations
         if training and self.batch_augments is not None:
             for batch_aug in self.batch_augments:
                 inputs, data_samples = batch_aug(inputs, data_samples)
