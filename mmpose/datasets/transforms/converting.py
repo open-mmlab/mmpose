@@ -91,11 +91,14 @@ class KeypointConverter(BaseTransform):
         num_instances = results['keypoints'].shape[0]
 
         # Initialize output arrays
-        keypoints = np.zeros((num_instances, self.num_keypoints, 2))
-        keypoints_visible = np.zeros((num_instances, self.num_keypoints))
+        keypoints = np.zeros((num_instances, self.num_keypoints, 2),
+                             dtype=np.float32)
+        keypoints_visible = np.zeros((num_instances, self.num_keypoints),
+                                     dtype=np.float32)
         keypoints_3d = None
         if 'keypoints_3d' in results:
-            keypoints_3d = np.zeros((num_instances, self.num_keypoints, 3))
+            keypoints_3d = np.zeros((num_instances, self.num_keypoints, 3),
+                                    dtype=np.float32)
 
         # Create a mask to weight visibility loss
         keypoints_visible_weights = keypoints_visible.copy()
@@ -133,6 +136,9 @@ class KeypointConverter(BaseTransform):
             [keypoints_visible, keypoints_visible_weights], axis=2)
         if 'keypoints_3d' in results:
             results['keypoints_3d'] = keypoints_3d
+            results['lifting_target'] = keypoints_3d[results['target_idx']]
+            results['lifting_target_visible'] = keypoints_visible[
+                results['target_idx']]
 
         # Updatae flip pairs
         if 'flip_indices' in results:

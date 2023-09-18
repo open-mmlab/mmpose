@@ -91,11 +91,9 @@ ubody_h36m = [
 ]
 
 scenes = [
-    'Magic_show',
-    'Entertainment',
-    # 'ConductMusic', 'Online_class', 'TalkShow',
-    # 'Speech', 'Fitness', 'Interview', 'Olympic', 'TVShow', 'Singing',
-    # 'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
+    'Magic_show', 'Entertainment', 'ConductMusic', 'Online_class', 'TalkShow',
+    'Speech', 'Fitness', 'Interview', 'Olympic', 'TVShow', 'Singing',
+    'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
 ]
 
 train_datasets = []

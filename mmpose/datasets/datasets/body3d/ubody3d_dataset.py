@@ -228,7 +228,8 @@ class UBody3dDataset(BaseMocapDataset):
                 'lifting_target_visible': keypoints_visible[target_idx],
                 'target_img_paths': img_paths[target_idx],
                 'camera_param': cam_param,
-                'factor': factors
+                'factor': factors,
+                'target_idx': target_idx,
             }
 
             instance_list.append(instance_info)
