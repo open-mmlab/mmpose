@@ -359,66 +359,10 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
         keypoints_3d = joint_img.copy()
         keypoints_valid = coord_valid.reshape((-1, 1))
 
-        # map to COCO keypoint order
-        coco_keypoint_names = [
-            'Nose', 'L_Eye', 'R_Eye', 'L_Ear', 'R_Ear', 'L_Shoulder',
-            'R_Shoulder', 'L_Elbow', 'R_Elbow', 'L_Wrist', 'R_Wrist', 'L_Hip',
-            'R_Hip', 'L_Knee', 'R_Knee', 'L_Ankle', 'R_Ankle'
-        ]
-        coco_keypoint_idx = [
-            human_model.joints_name.index(name) for name in coco_keypoint_names
-        ]
-        coco_3d_keypoints = keypoints_3d[coco_keypoint_idx, :]
-        coco_2d_keypoints = keypoints_2d[coco_keypoint_idx, :]
-        coco_keypoint_valid = keypoints_valid[coco_keypoint_idx, :]
-
-        # map to H36M keypoint order
-        h36m_keypoint_names = [
-            'Pelvis', 'R_Hip', 'R_Knee', 'R_Ankle', 'L_Hip', 'L_Knee',
-            'L_Ankle', 'Neck', 'L_Shoulder', 'L_Elbow', 'L_Wrist',
-            'R_Shoulder', 'R_Elbow', 'R_Wrist'
-        ]
-        # interplate 'spine' and 'neck_base'
-        pelvis_id = human_model.joints_name.index('Pelvis')
-        neck_id = human_model.joints_name.index('Neck')
-        nose_id = human_model.joints_name.index('Nose')
-        spine_3d = (keypoints_3d[pelvis_id, :] + keypoints_3d[neck_id, :]) / 2
-        neck_base_3d = (keypoints_3d[neck_id, :] +
-                        keypoints_3d[nose_id, :]) / 2
-        spine_valid = keypoints_valid[pelvis_id] * keypoints_valid[neck_id]
-        neck_base_valid = keypoints_valid[neck_id] * keypoints_valid[nose_id]
-
-        h36m_keypoint_idx = [
-            human_model.joints_name.index(name) for name in h36m_keypoint_names
-        ]
-        h36m_3d_keypoints = keypoints_3d[h36m_keypoint_idx, :]
-        h36m_2d_keypoints = keypoints_2d[h36m_keypoint_idx, :]
-        h36m_3d_keypoints = np.concatenate([
-            h36m_3d_keypoints[:7, :], spine_3d, h36m_3d_keypoints[7, :],
-            neck_base_3d, h36m_3d_keypoints[8:]
-        ],
-                                           axis=0)
-        h36m_2d_keypoints = np.concatenate([
-            h36m_2d_keypoints[:7, :], spine_3d, h36m_2d_keypoints[7, :],
-            neck_base_3d, h36m_3d_keypoints[8:]
-        ],
-                                           axis=0)
-        h36m_keypoint_valid = keypoints_valid[h36m_keypoint_idx]
-        h36m_keypoint_valid = np.concatenate([
-            h36m_keypoint_valid[:7], spine_valid, h36m_keypoint_valid[7],
-            neck_base_valid, h36m_keypoint_valid[8:]
-        ],
-                                             axis=0)
-
         ann['keypoints'] = keypoints_2d.tolist()
         ann['keypoints_3d'] = keypoints_3d.tolist()
         ann['keypoints_valid'] = keypoints_valid.tolist()
-        ann['coco_keypoints'] = coco_2d_keypoints.tolist()
-        ann['coco_keypoints_3d'] = coco_3d_keypoints.tolist()
-        ann['coco_keypoints_valid'] = coco_keypoint_valid.tolist()
-        ann['h36m_keypoints'] = h36m_2d_keypoints.tolist()
-        ann['h36m_keypoints_3d'] = h36m_3d_keypoints.tolist()
-        ann['h36m_keypoints_valid'] = h36m_keypoint_valid.tolist()
+        ann['camera_param'] = cam_param
         img['file_name'] = os.path.join(scene, file_name)
         if video_name in splits:
             val_annos.append(ann)
@@ -466,6 +410,7 @@ if __name__ == '__main__':
     annotation_path = f'{args.data_root}/annotations'
 
     folders = os.listdir(annotation_path)
+    folders = [f for f in folders if osp.isdir(osp.join(annotation_path, f))]
     human_model_path = args.human_model_path
     splits = np.load(split_path)
 

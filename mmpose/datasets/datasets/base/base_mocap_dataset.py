@@ -96,8 +96,7 @@ class BaseMocapDataset(BaseDataset):
         assert exists(_ann_file), (
             f'Annotation file `{_ann_file}` does not exist.')
 
-        with get_local_path(_ann_file) as local_path:
-            self.ann_data = np.load(local_path)
+        self._load_ann_file(_ann_file)
 
         self.camera_param_file = camera_param_file
         if self.camera_param_file:
@@ -136,6 +135,19 @@ class BaseMocapDataset(BaseDataset):
             test_mode=test_mode,
             lazy_init=lazy_init,
             max_refetch=max_refetch)
+
+    def _load_ann_file(self, ann_file: str) -> dict:
+        """Load annotation file to get image information.
+
+        Args:
+            ann_file (str): Annotation file path.
+
+        Returns:
+            dict: Annotation information.
+        """
+
+        with get_local_path(ann_file) as local_path:
+            self.ann_data = np.load(local_path)
 
     @classmethod
     def _load_metainfo(cls, metainfo: dict = None) -> dict:
