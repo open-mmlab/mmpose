@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import numpy as np
 from mmengine.fileio import get_local_path
@@ -161,7 +161,7 @@ class UBody3dDataset(BaseMocapDataset):
         Returns:
             tuple[str, int]: Video name and frame index.
         """
-        trim, file_name = image_path.split('/')[2:]
+        trim, file_name = image_path.split('/')[-2:]
         frame_id, suffix = file_name.split('.')
         return trim, frame_id, suffix
 
@@ -184,39 +184,51 @@ class UBody3dDataset(BaseMocapDataset):
                 f'got {len(_ann_ids)} ')
 
             anns = self.ann_data.loadAnns(_ann_ids)
-            imgs = self.ann_data.loadImgs([ann['image_id'] for ann in anns])
+            img_ids = []
+            kpts = np.zeros((len(anns), num_keypoints, 2), dtype=np.float32)
+            kpts_3d = np.zeros((len(anns), num_keypoints, 3), dtype=np.float32)
+            keypoints_visible = np.zeros((len(anns), num_keypoints, 1),
+                                         dtype=np.float32)
+            for j, ann in enumerate(anns):
+                img_ids.append(ann['image_id'])
+                kpts[j] = np.array(ann['keypoints'], dtype=np.float32)
+                kpts_3d[j] = np.array(ann['keypoints_3d'], dtype=np.float32)
+                keypoints_visible[j] = np.array(
+                    ann['keypoints_valid'], dtype=np.float32)
+            imgs = self.ann_data.loadImgs(img_ids)
+            keypoints_visible = keypoints_visible.squeeze(-1)
 
-            _kpts = np.array([ann['keypoints'] for ann in anns],
-                             dtype=np.float32)
-            _kpts_3d = np.array([ann['keypoints_3d'] for ann in anns],
-                                dtype=np.float32)
-            _keypoints_visible = np.array(
-                [ann['keypoints_valid'] for ann in anns], dtype=np.float32)
-            _camera_params = np.array([ann['camera_param'] for ann in anns])
-            _scales = np.zeros(len(imgs), dtype=np.float32)
-            _centers = np.zeros((len(imgs), 2), dtype=np.float32)
-            _img_paths = np.array([img['file_name'] for img in imgs])
+            scales = np.zeros(len(imgs), dtype=np.float32)
+            centers = np.zeros((len(imgs), 2), dtype=np.float32)
+            img_paths = np.array([img['file_name'] for img in imgs])
+            factors = np.zeros((kpts_3d.shape[0], ), dtype=np.float32)
 
             target_idx = [-1] if self.causal else [int(self.seq_len // 2)]
             if self.multiple_target:
                 target_idx = list(range(self.multiple_target))
 
+            cam_param = anns[-1]['camera_param']
+            if 'w' not in cam_param or 'h' not in cam_param:
+                cam_param['w'] = 1000
+                cam_param['h'] = 1000
+
             instance_info = {
                 'num_keypoints': num_keypoints,
-                'keypoints': _kpts,
-                'keypoints_3d': _kpts_3d,
-                'keypoints_visible': _keypoints_visible,
-                'scale': _scales,
-                'center': _centers,
+                'keypoints': kpts,
+                'keypoints_3d': kpts_3d,
+                'keypoints_visible': keypoints_visible,
+                'scale': scales,
+                'center': centers,
                 'id': i,
                 'category_id': 1,
                 'iscrowd': 0,
-                'img_paths': list(_img_paths),
+                'img_paths': list(img_paths),
                 'img_ids': [img['id'] for img in imgs],
-                'lifting_target': _kpts_3d[target_idx],
-                'lifting_target_visible': _keypoints_visible[target_idx],
-                'target_img_paths': _img_paths[target_idx],
-                'camera_param': _camera_params,
+                'lifting_target': kpts_3d[target_idx],
+                'lifting_target_visible': keypoints_visible[target_idx],
+                'target_img_paths': img_paths[target_idx],
+                'camera_param': cam_param,
+                'factor': factors
             }
 
             instance_list.append(instance_info)
@@ -232,77 +244,3 @@ class UBody3dDataset(BaseMocapDataset):
             image_list.append(img)
 
         return instance_list, image_list
-
-    def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
-        """Parse raw COCO annotation of an instance.
-
-        Args:
-            raw_data_info (dict): Raw data information loaded from
-                ``ann_file``. It should have following contents:
-
-                - ``'raw_ann_info'``: Raw annotation of an instance
-                - ``'raw_img_info'``: Raw information of the image that
-                    contains the instance
-
-        Returns:
-                dict | None: Parsed instance annotation
-        """
-
-        ann = raw_data_info['raw_ann_info']
-        if 'bbox' not in ann or 'keypoints_3d' not in ann:
-            return None
-
-        img = raw_data_info['raw_img_info']
-        img_w, img_h = img['width'], img['height']
-
-        # get bbox in shape [1, 4], formatted as xywh
-        x, y, w, h = ann['bbox']
-        x1 = np.clip(x, 0, img_w - 1)
-        y1 = np.clip(y, 0, img_h - 1)
-        x2 = np.clip(x + w, 0, img_w - 1)
-        y2 = np.clip(y + h, 0, img_h - 1)
-
-        bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
-
-        # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
-        _keypoints = np.array(
-            ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
-        keypoints = _keypoints[..., :2]
-        keypoints_visible = np.minimum(1, _keypoints[..., 2])
-
-        _keypoints_3d = np.array(
-            ann['keypoints_3d'], dtype=np.float32).reshape(1, -1, 4)
-        keypoints_3d = _keypoints_3d[..., :3]
-        keypoints_3d_visible = keypoints_visible
-
-        if 'num_keypoints' in ann:
-            num_keypoints = ann['num_keypoints']
-        else:
-            num_keypoints = np.count_nonzero(keypoints.max(axis=2))
-
-        scale = ann.get('scale', 0.0)
-        center = ann.get('center', np.array([0.0, 0.0]))
-
-        instance_info = {
-            'num_keypoints': num_keypoints,
-            'keypoints': keypoints,
-            'keypoints_visible': keypoints_visible,
-            'keypoints_3d': keypoints_3d,
-            'keypoints_3d_visible': keypoints_3d_visible,
-            'bbox': bbox,
-            'bbox_score': np.ones(1, dtype=np.float32),
-            'scale': scale,
-            'center': center,
-            'id': ann['id'],
-            'category_id': 1,
-            'iscrowd': ann.get('iscrowd', 0),
-            'segmentation': ann.get('segmentation', None),
-            'img_path': img['img_path'],
-            'img_id': ann['image_id'],
-            'lifting_target': keypoints_3d[[-1]],
-            'lifting_target_visible': keypoints_3d_visible[[-1]],
-            'target_img_path': img['img_path'],
-        }
-        if 'crowdIndex' in img:
-            instance_info['crowd_index'] = img['crowdIndex']
-        return instance_info

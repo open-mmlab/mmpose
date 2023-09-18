@@ -91,9 +91,11 @@ ubody_h36m = [
 ]
 
 scenes = [
-    'Magic_show', 'Entertainment', 'ConductMusic', 'Online_class', 'TalkShow',
-    'Speech', 'Fitness', 'Interview', 'Olympic', 'TVShow', 'Singing',
-    'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
+    'Magic_show',
+    'Entertainment',
+    # 'ConductMusic', 'Online_class', 'TalkShow',
+    # 'Speech', 'Fitness', 'Interview', 'Olympic', 'TVShow', 'Singing',
+    # 'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
 ]
 
 train_datasets = []
@@ -108,10 +110,7 @@ for scene in scenes:
         multiple_target=120,
         multiple_target_step=60,
         data_prefix=dict(img='images/'),
-        pipeline=[
-            dict(
-                type='KeypointConverter', num_keypoints=17, mapping=ubody_h36m)
-        ],
+        pipeline=[],
     )
     if scene in ['Speech', 'Movie']:
         continue
@@ -123,10 +122,7 @@ for scene in scenes:
         multiple_target=243,
         data_root=data_root,
         data_prefix=dict(img='images/'),
-        pipeline=[
-            dict(
-                type='KeypointConverter', num_keypoints=17, mapping=ubody_h36m)
-        ],
+        pipeline=[],
         test_mode=True,
     )
     train_datasets.append(train_dataset)
@@ -134,6 +130,7 @@ for scene in scenes:
 
 # pipelines
 train_pipeline = [
+    dict(type='KeypointConverter', num_keypoints=17, mapping=ubody_h36m),
     dict(type='GenerateTarget', encoder=train_codec),
     dict(
         type='RandomFlipAroundRoot',
@@ -146,6 +143,7 @@ train_pipeline = [
                    'factor', 'camera_param'))
 ]
 val_pipeline = [
+    dict(type='KeypointConverter', num_keypoints=17, mapping=ubody_h36m),
     dict(type='GenerateTarget', encoder=val_codec),
     dict(
         type='PackPoseInputs',
