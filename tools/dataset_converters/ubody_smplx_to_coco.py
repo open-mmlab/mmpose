@@ -244,7 +244,7 @@ def process_scene_anno(scene: str, annotation_root: str, splits: np.array,
         if not os.path.exists(img_path):
             progress_bar.update()
             continue
-        if aid not in annos:
+        if str(aid) not in annos:
             progress_bar.update()
             continue
 
