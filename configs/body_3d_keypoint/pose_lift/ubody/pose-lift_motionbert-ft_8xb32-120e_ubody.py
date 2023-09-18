@@ -117,7 +117,7 @@ for scene in scenes:
         ann_file=f'annotations/{scene}/val_3dkeypoint_annotation.json',
         seq_len=1,
         seq_step=1,
-        multiple_target=243,
+        multiple_target=120,
         data_root=data_root,
         data_prefix=dict(img='images/'),
         pipeline=[],
