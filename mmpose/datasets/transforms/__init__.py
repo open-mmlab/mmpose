@@ -21,6 +21,5 @@ __all__ = [
     'BottomupGetHeatmapMask', 'BottomupRandomAffine', 'BottomupResize',
     'GenerateTarget', 'KeypointConverter', 'RandomFlipAroundRoot',
     'FilterAnnotations', 'YOLOXHSVRandomAug', 'YOLOXMixUp', 'Mosaic',
-    'BottomupRandomCrop', 'BottomupRandomChoiceResize',
-    'HandRandomFlip'
+    'BottomupRandomCrop', 'BottomupRandomChoiceResize', 'HandRandomFlip'
 ]
