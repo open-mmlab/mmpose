@@ -356,7 +356,7 @@ def nms_torch(bboxes: Tensor,
         idx, indices = indices[0], indices[1:]
         bbox = bboxes[idx]
         ious = iou_calculator(bbox, bboxes[indices])
-        close_indices = torch.where(ious > threshold)[0]
+        close_indices = torch.where(ious > threshold)[1]
         keep_indices = torch.ones_like(indices, dtype=torch.bool)
         keep_indices[close_indices] = 0
         groups.append(torch.cat((idx[None], indices[close_indices])))

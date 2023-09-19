@@ -132,7 +132,7 @@ model = dict(
         loss_bbox_aux=dict(type='L1Loss', reduction='sum', loss_weight=1.0),
     ),
     test_cfg=dict(
-        score_thr=0.001,
+        score_thr=0.01,
         nms_thr=0.65,
     ))
 
