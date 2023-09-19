@@ -94,6 +94,54 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     return locs, vals
 
 
+def get_heatmap_3d_maximum(heatmaps: np.ndarray
+                           ) -> Tuple[np.ndarray, np.ndarray]:
+    """Get maximum response location and value from heatmaps.
+
+    Note:
+        batch_size: B
+        num_keypoints: K
+        heatmap dimension: D
+        heatmap height: H
+        heatmap width: W
+
+    Args:
+        heatmaps (np.ndarray): Heatmaps in shape (K, D, H, W) or
+            (B, K, D, H, W)
+
+    Returns:
+        tuple:
+        - locs (np.ndarray): locations of maximum heatmap responses in shape
+            (K, 3) or (B, K, 3)
+        - vals (np.ndarray): values of maximum heatmap responses in shape
+            (K,) or (B, K)
+    """
+    assert isinstance(heatmaps,
+                      np.ndarray), ('heatmaps should be numpy.ndarray')
+    assert heatmaps.ndim == 4 or heatmaps.ndim == 5, (
+        f'Invalid shape {heatmaps.shape}')
+
+    if heatmaps.ndim == 4:
+        K, D, H, W = heatmaps.shape
+        B = None
+        heatmaps_flatten = heatmaps.reshape(K, -1)
+    else:
+        B, K, D, H, W = heatmaps.shape
+        heatmaps_flatten = heatmaps.reshape(B * K, -1)
+
+    z_locs, y_locs, x_locs = np.unravel_index(
+        np.argmax(heatmaps_flatten, axis=1), shape=(D, H, W))
+    locs = np.stack((x_locs, y_locs, z_locs), axis=-1).astype(np.float32)
+    vals = np.amax(heatmaps_flatten, axis=1)
+    locs[vals <= 0.] = -1
+
+    if B:
+        locs = locs.reshape(B, K, 3)
+        vals = vals.reshape(B, K)
+
+    return locs, vals
+
+
 def get_heatmap_maximum(heatmaps: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Get maximum response location and value from heatmaps.
 

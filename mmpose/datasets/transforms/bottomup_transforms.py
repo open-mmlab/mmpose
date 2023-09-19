@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from functools import partial
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import cv2
 import numpy as np
 import xtcocotools.mask as cocomask
 from mmcv.image import imflip_, imresize
+from mmcv.image.geometric import imrescale
 from mmcv.transforms import BaseTransform
 from mmcv.transforms.utils import cache_randomness
 from scipy.stats import truncnorm
@@ -606,4 +607,417 @@ class BottomupResize(BaseTransform):
             results['img'] = imgs[0]
             results['aug_scale'] = None
 
+        return results
+
+
+@TRANSFORMS.register_module()
+class BottomupRandomCrop(BaseTransform):
+    """Random crop the image & bboxes & masks.
+
+    The absolute ``crop_size`` is sampled based on ``crop_type`` and
+    ``image_size``, then the cropped results are generated.
+
+    Required Keys:
+
+        - img
+        - keypoints
+        - bbox (optional)
+        - masks (BitmapMasks | PolygonMasks) (optional)
+
+    Modified Keys:
+
+        - img
+        - img_shape
+        - keypoints
+        - keypoints_visible
+        - num_keypoints
+        - bbox (optional)
+        - bbox_score (optional)
+        - id (optional)
+        - category_id (optional)
+        - raw_ann_info (optional)
+        - iscrowd (optional)
+        - segmentation (optional)
+        - masks (optional)
+
+    Added Keys:
+
+        - warp_mat
+
+    Args:
+        crop_size (tuple): The relative ratio or absolute pixels of
+            (width, height).
+        crop_type (str, optional): One of "relative_range", "relative",
+            "absolute", "absolute_range". "relative" randomly crops
+            (h * crop_size[0], w * crop_size[1]) part from an input of size
+            (h, w). "relative_range" uniformly samples relative crop size from
+            range [crop_size[0], 1] and [crop_size[1], 1] for height and width
+            respectively. "absolute" crops from an input with absolute size
+            (crop_size[0], crop_size[1]). "absolute_range" uniformly samples
+            crop_h in range [crop_size[0], min(h, crop_size[1])] and crop_w
+            in range [crop_size[0], min(w, crop_size[1])].
+            Defaults to "absolute".
+        allow_negative_crop (bool, optional): Whether to allow a crop that does
+            not contain any bbox area. Defaults to False.
+        recompute_bbox (bool, optional): Whether to re-compute the boxes based
+            on cropped instance masks. Defaults to False.
+        bbox_clip_border (bool, optional): Whether clip the objects outside
+            the border of the image. Defaults to True.
+
+    Note:
+        - If the image is smaller than the absolute crop size, return the
+            original image.
+        - If the crop does not contain any gt-bbox region and
+          ``allow_negative_crop`` is set to False, skip this image.
+    """
+
+    def __init__(self,
+                 crop_size: tuple,
+                 crop_type: str = 'absolute',
+                 allow_negative_crop: bool = False,
+                 recompute_bbox: bool = False,
+                 bbox_clip_border: bool = True) -> None:
+        if crop_type not in [
+                'relative_range', 'relative', 'absolute', 'absolute_range'
+        ]:
+            raise ValueError(f'Invalid crop_type {crop_type}.')
+        if crop_type in ['absolute', 'absolute_range']:
+            assert crop_size[0] > 0 and crop_size[1] > 0
+            assert isinstance(crop_size[0], int) and isinstance(
+                crop_size[1], int)
+            if crop_type == 'absolute_range':
+                assert crop_size[0] <= crop_size[1]
+        else:
+            assert 0 < crop_size[0] <= 1 and 0 < crop_size[1] <= 1
+        self.crop_size = crop_size
+        self.crop_type = crop_type
+        self.allow_negative_crop = allow_negative_crop
+        self.bbox_clip_border = bbox_clip_border
+        self.recompute_bbox = recompute_bbox
+
+    def _crop_data(self, results: dict, crop_size: Tuple[int, int],
+                   allow_negative_crop: bool) -> Union[dict, None]:
+        """Function to randomly crop images, bounding boxes, masks, semantic
+        segmentation maps.
+
+        Args:
+            results (dict): Result dict from loading pipeline.
+            crop_size (Tuple[int, int]): Expected absolute size after
+                cropping, (h, w).
+            allow_negative_crop (bool): Whether to allow a crop that does not
+                contain any bbox area.
+
+        Returns:
+            results (Union[dict, None]): Randomly cropped results, 'img_shape'
+                key in result dict is updated according to crop size. None will
+                be returned when there is no valid bbox after cropping.
+        """
+        assert crop_size[0] > 0 and crop_size[1] > 0
+        img = results['img']
+        margin_h = max(img.shape[0] - crop_size[0], 0)
+        margin_w = max(img.shape[1] - crop_size[1], 0)
+        offset_h, offset_w = self._rand_offset((margin_h, margin_w))
+        crop_y1, crop_y2 = offset_h, offset_h + crop_size[0]
+        crop_x1, crop_x2 = offset_w, offset_w + crop_size[1]
+
+        # Record the warp matrix for the RandomCrop
+        warp_mat = np.array([[1, 0, -offset_w], [0, 1, -offset_h], [0, 0, 1]],
+                            dtype=np.float32)
+        if results.get('warp_mat', None) is None:
+            results['warp_mat'] = warp_mat
+        else:
+            results['warp_mat'] = warp_mat @ results['warp_mat']
+
+        # crop the image
+        img = img[crop_y1:crop_y2, crop_x1:crop_x2, ...]
+        img_shape = img.shape
+        results['img'] = img
+        results['img_shape'] = img_shape[:2]
+
+        # crop bboxes accordingly and clip to the image boundary
+        if results.get('bbox', None) is not None:
+            distances = (-offset_w, -offset_h)
+            bboxes = results['bbox']
+            bboxes = bboxes + np.tile(np.asarray(distances), 2)
+
+            if self.bbox_clip_border:
+                bboxes[..., 0::2] = bboxes[..., 0::2].clip(0, img_shape[1])
+                bboxes[..., 1::2] = bboxes[..., 1::2].clip(0, img_shape[0])
+
+            valid_inds = (bboxes[..., 0] < img_shape[1]) & \
+                (bboxes[..., 1] < img_shape[0]) & \
+                (bboxes[..., 2] > 0) & \
+                (bboxes[..., 3] > 0)
+
+            # If the crop does not contain any gt-bbox area and
+            # allow_negative_crop is False, skip this image.
+            if (not valid_inds.any() and not allow_negative_crop):
+                return None
+
+            results['bbox'] = bboxes[valid_inds]
+            meta_keys = [
+                'bbox_score', 'id', 'category_id', 'raw_ann_info', 'iscrowd'
+            ]
+            for key in meta_keys:
+                if results.get(key):
+                    if isinstance(results[key], list):
+                        results[key] = np.asarray(
+                            results[key])[valid_inds].tolist()
+                    else:
+                        results[key] = results[key][valid_inds]
+
+            if results.get('keypoints', None) is not None:
+                keypoints = results['keypoints']
+                distances = np.asarray(distances).reshape(1, 1, 2)
+                keypoints = keypoints + distances
+                if self.bbox_clip_border:
+                    keypoints_outside_x = keypoints[:, :, 0] < 0
+                    keypoints_outside_y = keypoints[:, :, 1] < 0
+                    keypoints_outside_width = keypoints[:, :, 0] > img_shape[1]
+                    keypoints_outside_height = keypoints[:, :,
+                                                         1] > img_shape[0]
+
+                    kpt_outside = np.logical_or.reduce(
+                        (keypoints_outside_x, keypoints_outside_y,
+                         keypoints_outside_width, keypoints_outside_height))
+
+                    results['keypoints_visible'][kpt_outside] *= 0
+                keypoints[:, :, 0] = keypoints[:, :, 0].clip(0, img_shape[1])
+                keypoints[:, :, 1] = keypoints[:, :, 1].clip(0, img_shape[0])
+                results['keypoints'] = keypoints[valid_inds]
+                results['keypoints_visible'] = results['keypoints_visible'][
+                    valid_inds]
+
+            if results.get('segmentation', None) is not None:
+                results['segmentation'] = results['segmentation'][
+                    crop_y1:crop_y2, crop_x1:crop_x2]
+
+            if results.get('masks', None) is not None:
+                results['masks'] = results['masks'][valid_inds.nonzero(
+                )[0]].crop(np.asarray([crop_x1, crop_y1, crop_x2, crop_y2]))
+                if self.recompute_bbox:
+                    results['bbox'] = results['masks'].get_bboxes(
+                        type(results['bbox']))
+
+        return results
+
+    @cache_randomness
+    def _rand_offset(self, margin: Tuple[int, int]) -> Tuple[int, int]:
+        """Randomly generate crop offset.
+
+        Args:
+            margin (Tuple[int, int]): The upper bound for the offset generated
+                randomly.
+
+        Returns:
+            Tuple[int, int]: The random offset for the crop.
+        """
+        margin_h, margin_w = margin
+        offset_h = np.random.randint(0, margin_h + 1)
+        offset_w = np.random.randint(0, margin_w + 1)
+
+        return offset_h, offset_w
+
+    @cache_randomness
+    def _get_crop_size(self, image_size: Tuple[int, int]) -> Tuple[int, int]:
+        """Randomly generates the absolute crop size based on `crop_type` and
+        `image_size`.
+
+        Args:
+            image_size (Tuple[int, int]): (h, w).
+
+        Returns:
+            crop_size (Tuple[int, int]): (crop_h, crop_w) in absolute pixels.
+        """
+        h, w = image_size
+        if self.crop_type == 'absolute':
+            return min(self.crop_size[1], h), min(self.crop_size[0], w)
+        elif self.crop_type == 'absolute_range':
+            crop_h = np.random.randint(
+                min(h, self.crop_size[0]),
+                min(h, self.crop_size[1]) + 1)
+            crop_w = np.random.randint(
+                min(w, self.crop_size[0]),
+                min(w, self.crop_size[1]) + 1)
+            return crop_h, crop_w
+        elif self.crop_type == 'relative':
+            crop_w, crop_h = self.crop_size
+            return int(h * crop_h + 0.5), int(w * crop_w + 0.5)
+        else:
+            # 'relative_range'
+            crop_size = np.asarray(self.crop_size, dtype=np.float32)
+            crop_h, crop_w = crop_size + np.random.rand(2) * (1 - crop_size)
+            return int(h * crop_h + 0.5), int(w * crop_w + 0.5)
+
+    def transform(self, results: dict) -> Union[dict, None]:
+        """Transform function to randomly crop images, bounding boxes, masks,
+        semantic segmentation maps.
+
+        Args:
+            results (dict): Result dict from loading pipeline.
+
+        Returns:
+            results (Union[dict, None]): Randomly cropped results, 'img_shape'
+                key in result dict is updated according to crop size. None will
+                be returned when there is no valid bbox after cropping.
+        """
+        image_size = results['img'].shape[:2]
+        crop_size = self._get_crop_size(image_size)
+        results = self._crop_data(results, crop_size, self.allow_negative_crop)
+        return results
+
+
+@TRANSFORMS.register_module()
+class BottomupRandomChoiceResize(BaseTransform):
+    """Resize images & bbox & mask from a list of multiple scales.
+
+    This transform resizes the input image to some scale. Bboxes and masks are
+    then resized with the same scale factor. Resize scale will be randomly
+    selected from ``scales``.
+
+    How to choose the target scale to resize the image will follow the rules
+    below:
+
+    - if `scale` is a list of tuple, the target scale is sampled from the list
+      uniformally.
+    - if `scale` is a tuple, the target scale will be set to the tuple.
+
+    Required Keys:
+
+    - img
+    - bbox
+    - keypoints
+
+    Modified Keys:
+
+    - img
+    - img_shape
+    - bbox
+    - keypoints
+
+    Added Keys:
+
+    - scale
+    - scale_factor
+    - scale_idx
+
+    Args:
+        scales (Union[list, Tuple]): Images scales for resizing.
+
+        **resize_kwargs: Other keyword arguments for the ``resize_type``.
+    """
+
+    def __init__(
+        self,
+        scales: Sequence[Union[int, Tuple]],
+        keep_ratio: bool = False,
+        clip_object_border: bool = True,
+        backend: str = 'cv2',
+        **resize_kwargs,
+    ) -> None:
+        super().__init__()
+        if isinstance(scales, list):
+            self.scales = scales
+        else:
+            self.scales = [scales]
+
+        self.keep_ratio = keep_ratio
+        self.clip_object_border = clip_object_border
+        self.backend = backend
+
+    @cache_randomness
+    def _random_select(self) -> Tuple[int, int]:
+        """Randomly select an scale from given candidates.
+
+        Returns:
+            (tuple, int): Returns a tuple ``(scale, scale_dix)``,
+            where ``scale`` is the selected image scale and
+            ``scale_idx`` is the selected index in the given candidates.
+        """
+
+        scale_idx = np.random.randint(len(self.scales))
+        scale = self.scales[scale_idx]
+        return scale, scale_idx
+
+    def _resize_img(self, results: dict) -> None:
+        """Resize images with ``self.scale``."""
+
+        if self.keep_ratio:
+
+            img, scale_factor = imrescale(
+                results['img'],
+                self.scale,
+                interpolation='bilinear',
+                return_scale=True,
+                backend=self.backend)
+            # the w_scale and h_scale has minor difference
+            # a real fix should be done in the mmcv.imrescale in the future
+            new_h, new_w = img.shape[:2]
+            h, w = results['img'].shape[:2]
+            w_scale = new_w / w
+            h_scale = new_h / h
+        else:
+            img, w_scale, h_scale = imresize(
+                results['img'],
+                self.scale,
+                interpolation='bilinear',
+                return_scale=True,
+                backend=self.backend)
+
+        results['img'] = img
+        results['img_shape'] = img.shape[:2]
+        results['scale_factor'] = (w_scale, h_scale)
+        results['input_size'] = img.shape[:2]
+        w, h = results['ori_shape']
+        center = np.array([w / 2, h / 2], dtype=np.float32)
+        scale = np.array([w, h], dtype=np.float32)
+        results['input_center'] = center
+        results['input_scale'] = scale
+
+    def _resize_bboxes(self, results: dict) -> None:
+        """Resize bounding boxes with ``self.scale``."""
+        if results.get('bbox', None) is not None:
+            bboxes = results['bbox'] * np.tile(
+                np.array(results['scale_factor']), 2)
+            if self.clip_object_border:
+                bboxes[:, 0::2] = np.clip(bboxes[:, 0::2], 0,
+                                          results['img_shape'][1])
+                bboxes[:, 1::2] = np.clip(bboxes[:, 1::2], 0,
+                                          results['img_shape'][0])
+            results['bbox'] = bboxes
+
+    def _resize_keypoints(self, results: dict) -> None:
+        """Resize keypoints with ``self.scale``."""
+        if results.get('keypoints', None) is not None:
+            keypoints = results['keypoints']
+
+            keypoints[:, :, :2] = keypoints[:, :, :2] * np.array(
+                results['scale_factor'])
+            if self.clip_object_border:
+                keypoints[:, :, 0] = np.clip(keypoints[:, :, 0], 0,
+                                             results['img_shape'][1])
+                keypoints[:, :, 1] = np.clip(keypoints[:, :, 1], 0,
+                                             results['img_shape'][0])
+            results['keypoints'] = keypoints
+
+    def transform(self, results: dict) -> dict:
+        """Apply resize transforms on results from a list of scales.
+
+        Args:
+            results (dict): Result dict contains the data to transform.
+
+        Returns:
+            dict: Resized results, 'img', 'bbox',
+            'keypoints', 'scale', 'scale_factor', 'img_shape',
+            and 'keep_ratio' keys are updated in result dict.
+        """
+
+        target_scale, scale_idx = self._random_select()
+
+        self.scale = target_scale
+        self._resize_img(results)
+        self._resize_bboxes(results)
+        self._resize_keypoints(results)
+
+        results['scale_idx'] = scale_idx
         return results

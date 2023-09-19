@@ -48,8 +48,6 @@ class HeatmapHead(BaseHead):
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
-        extra (dict, optional): Extra configurations.
-            Defaults to ``None``
 
     .. _`Simple Baselines`: https://arxiv.org/abs/1804.06208
     """
@@ -321,8 +319,8 @@ class HeatmapHead(BaseHead):
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
         """A hook function to convert old-version state dict of
-        :class:`DeepposeRegressionHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`RegressionHead`.
+        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`HeatmapHead`.
 
         The hook will be automatically registered during initialization.
         """

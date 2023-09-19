@@ -2,4 +2,7 @@
 from .batch_augmentation import BatchSyncRandomResize
 from .data_preprocessor import PoseDataPreprocessor
 
-__all__ = ['PoseDataPreprocessor', 'BatchSyncRandomResize']
+__all__ = [
+    'PoseDataPreprocessor',
+    'BatchSyncRandomResize',
+]

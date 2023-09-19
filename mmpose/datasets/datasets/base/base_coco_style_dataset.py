@@ -222,7 +222,9 @@ class BaseCocoStyleDataset(BaseDataset):
             self.coco = COCO(local_path)
         # set the metainfo about categories, which is a list of dict
         # and each dict contains the 'id', 'name', etc. about this category
-        self._metainfo['CLASSES'] = self.coco.loadCats(self.coco.getCatIds())
+        if 'categories' in self.coco.dataset:
+            self._metainfo['CLASSES'] = self.coco.loadCats(
+                self.coco.getCatIds())
 
         instance_list = []
         image_list = []

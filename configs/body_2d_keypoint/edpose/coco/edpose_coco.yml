@@ -1,0 +1,26 @@
+Collections:
+- Name: ED-Pose
+  Paper:
+    Title: Explicit Box Detection Unifies End-to-End Multi-Person Pose Estimation
+    URL: https://arxiv.org/pdf/2302.01593.pdf
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/edpose.md
+Models:
+- Config: configs/body_2d_keypoint/edpose/coco/edpose_res50_8xb2-50e_coco-800x1333.py
+  In Collection: ED-Pose
+  Alias: edpose
+  Metadata:
+    Architecture: &id001
+    - ED-Pose
+    - ResNet
+    Training Data: COCO
+  Name: edpose_res50_8xb2-50e_coco-800x1333
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.716
+      AP@0.5: 0.897
+      AP@0.75: 0.783
+      AR: 0.793
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/edpose/coco/edpose_res50_coco_3rdparty.pth
