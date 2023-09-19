@@ -8,6 +8,7 @@ from .common_transforms import (Albumentation, FilterAnnotations,
                                 RandomFlip, RandomHalfBody, YOLOXHSVRandomAug)
 from .converting import KeypointConverter
 from .formatting import PackPoseInputs
+from .hand_transforms import HandRandomFlip
 from .loading import LoadImage
 from .mix_img_transforms import Mosaic, YOLOXMixUp
 from .pose3d_transforms import RandomFlipAroundRoot
@@ -20,5 +21,5 @@ __all__ = [
     'BottomupGetHeatmapMask', 'BottomupRandomAffine', 'BottomupResize',
     'GenerateTarget', 'KeypointConverter', 'RandomFlipAroundRoot',
     'FilterAnnotations', 'YOLOXHSVRandomAug', 'YOLOXMixUp', 'Mosaic',
-    'BottomupRandomCrop', 'BottomupRandomChoiceResize'
+    'BottomupRandomCrop', 'BottomupRandomChoiceResize', 'HandRandomFlip'
 ]

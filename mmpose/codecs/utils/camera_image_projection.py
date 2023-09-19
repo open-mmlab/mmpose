@@ -47,7 +47,37 @@ def camera_to_image_coord(root_index: int, kpts_3d_cam: np.ndarray,
     return kpts_3d_image, factor
 
 
-def camera_to_pixel(kpts_3d: np.ndarray, fx: float, fy: float, cx: float,
+def camera_to_pixel(kpts_3d: np.ndarray,
+                    fx: float,
+                    fy: float,
+                    cx: float,
+                    cy: float,
+                    shift: bool = False) -> np.ndarray:
+    """Project keypoints from camera space to image space.
+
+    Args:
+        kpts_3d (np.ndarray): Keypoint coordinates in camera space.
+        fx (float): x-coordinate of camera's focal length.
+        fy (float): y-coordinate of camera's focal length.
+        cx (float): x-coordinate of image center.
+        cy (float): y-coordinate of image center.
+        shift (bool): Whether to shift the coordinates by 1e-8.
+
+    Returns:
+        pose_2d (np.ndarray): Projected keypoint coordinates in image space.
+    """
+    if not shift:
+        pose_2d = kpts_3d[..., :2] / kpts_3d[..., 2:3]
+    else:
+        pose_2d = kpts_3d[..., :2] / (kpts_3d[..., 2:3] + 1e-8)
+    pose_2d[..., 0] *= fx
+    pose_2d[..., 1] *= fy
+    pose_2d[..., 0] += cx
+    pose_2d[..., 1] += cy
+    return pose_2d
+
+
+def pixel_to_camera(kpts_3d: np.ndarray, fx: float, fy: float, cx: float,
                     cy: float) -> np.ndarray:
     """Project keypoints from camera space to image space.
 
@@ -57,13 +87,16 @@ def camera_to_pixel(kpts_3d: np.ndarray, fx: float, fy: float, cx: float,
         fy (float): y-coordinate of camera's focal length.
         cx (float): x-coordinate of image center.
         cy (float): y-coordinate of image center.
+        shift (bool): Whether to shift the coordinates by 1e-8.
 
     Returns:
         pose_2d (np.ndarray): Projected keypoint coordinates in image space.
     """
-    pose_2d = kpts_3d[..., :2] / kpts_3d[..., 2:3]
-    pose_2d[..., 0] *= fx
-    pose_2d[..., 1] *= fy
-    pose_2d[..., 0] += cx
-    pose_2d[..., 1] += cy
+    pose_2d = kpts_3d.copy()
+    pose_2d[..., 0] -= cx
+    pose_2d[..., 1] -= cy
+    pose_2d[..., 0] /= fx
+    pose_2d[..., 1] /= fy
+    pose_2d[..., 0] *= kpts_3d[..., 2]
+    pose_2d[..., 1] *= kpts_3d[..., 2]
     return pose_2d
