@@ -44,7 +44,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
         'kpt_thr', 'vis_out_dir', 'black_background'
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def _load_weights_to_model(self, model: nn.Module,
                                checkpoint: Optional[dict],
@@ -384,6 +384,7 @@ class BaseMMPoseInferencer(BaseInferencer):
         self,
         preds: List[PoseDataSample],
         visualization: List[np.ndarray],
+        return_datasample=None,
         return_datasamples=False,
         pred_out_dir: str = '',
     ) -> dict:
@@ -416,6 +417,12 @@ class BaseMMPoseInferencer(BaseInferencer):
               json-serializable dict containing only basic data elements such
               as strings and numbers.
         """
+        if return_datasample is not None:
+            warnings.warn(
+                'The `return_datasample` argument is deprecated '
+                'and will be removed in future versions. Please '
+                'use `return_datasamples`.', DeprecationWarning)
+            return_datasamples = return_datasample
 
         result_dict = defaultdict(list)
 

@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import os
-import warnings
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import mmcv
@@ -8,6 +8,7 @@ import numpy as np
 import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.infer.infer import ModelType
+from mmengine.logging import print_log
 from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
@@ -77,7 +78,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         'draw_heatmap',
         'black_background',
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def __init__(self,
                  model: Union[ModelType, str],
@@ -183,8 +184,19 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         if self.cfg.data_mode == 'topdown':
             if self.detector is not None:
-                det_results = self.detector(
-                    input, return_datasamples=True)['predictions']
+                try:
+                    det_results = self.detector(
+                        input, return_datasamples=True)['predictions']
+                except ValueError:
+                    print_log(
+                        'Support for mmpose and mmdet versions up to 3.1.0 '
+                        'will be discontinued in upcoming releases. To '
+                        'ensure ongoing compatibility, please upgrade to '
+                        'mmdet version 3.2.0 or later.',
+                        logger='current',
+                        level=logging.WARNING)
+                    det_results = self.detector(
+                        input, return_datasample=True)['predictions']
                 pred_instance = det_results[0].pred_instances.cpu().numpy()
                 bboxes = np.concatenate(
                     (pred_instance.bboxes, pred_instance.scores[:, None]),
@@ -301,8 +313,11 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             inputs = self._get_webcam_inputs(inputs)
             batch_size = 1
             if not visualize_kwargs.get('show', False):
-                warnings.warn('The display mode is closed when using webcam '
-                              'input. It will be turned on automatically.')
+                print_log(
+                    'The display mode is closed when using webcam '
+                    'input. It will be turned on automatically.',
+                    logger='current',
+                    level=logging.WARNING)
             visualize_kwargs['show'] = True
         else:
             inputs = self._inputs_to_list(inputs)
