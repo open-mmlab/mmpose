@@ -251,25 +251,25 @@ result = next(result_generator)
 
 MMPose 为常用模型提供了一组预定义的别名。在初始化 [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 时，这些别名可以用作简略的表达方式，而不是指定完整的模型配置名称。下面是可用的模型别名及其对应的配置名称的列表：
 
-| 别名      | 配置文件名称                                       | 对应任务                        | 姿态估计模型  | 检测模型            |
-| --------- | -------------------------------------------------- | ------------------------------- | ------------- | ------------------- |
-| animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | Animal pose estimation          | RTMPose-m     | RTMDet-m            |
-| human     | rtmpose-m_8xb256-420e_body8-256x192                | Human pose estimation           | RTMPose-m     | RTMDet-m            |
-| body26    | rtmpose-m_8xb512-700e_body8-halpe26-256x192        | Human pose estimation           | RTMPose-m     | RTMDet-m            |
-| face      | rtmpose-m_8xb256-120e_face6-256x256                | Face keypoint detection         | RTMPose-m     | yolox-s             |
-| hand      | rtmpose-m_8xb256-210e_hand5-256x256                | Hand keypoint detection         | RTMPose-m     | ssdlite_mobilenetv2 |
-| wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | Human wholebody pose estimation | RTMPose-m     | RTMDet-m            |
-| vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base  | RTMDet-m            |
-| vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-small | RTMDet-m            |
-| vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-base  | RTMDet-m            |
-| vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | Human pose estimation           | ViTPose-large | RTMDet-m            |
-| vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | Human pose estimation           | ViTPose-huge  | RTMDet-m            |
+| 别名      | 配置文件名称                                       | 对应任务         | 姿态估计模型  | 检测模型            |
+| --------- | -------------------------------------------------- | ---------------- | ------------- | ------------------- |
+| animal    | rtmpose-m_8xb64-210e_ap10k-256x256                 | 动物姿态估计     | RTMPose-m     | RTMDet-m            |
+| human     | rtmpose-m_8xb256-420e_body8-256x192                | 人体姿态估计     | RTMPose-m     | RTMDet-m            |
+| body26    | rtmpose-m_8xb512-700e_body8-halpe26-256x192        | 人体姿态估计     | RTMPose-m     | RTMDet-m            |
+| face      | rtmpose-m_8xb256-120e_face6-256x256                | 人脸关键点检测   | RTMPose-m     | yolox-s             |
+| hand      | rtmpose-m_8xb256-210e_hand5-256x256                | 手部关键点检测   | RTMPose-m     | ssdlite_mobilenetv2 |
+| wholebody | rtmpose-m_8xb64-270e_coco-wholebody-256x192        | 人体全身姿态估计 | RTMPose-m     | RTMDet-m            |
+| vitpose   | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | 人体姿态估计     | ViTPose-base  | RTMDet-m            |
+| vitpose-s | td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192 | 人体姿态估计     | ViTPose-small | RTMDet-m            |
+| vitpose-b | td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192  | 人体姿态估计     | ViTPose-base  | RTMDet-m            |
+| vitpose-l | td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192 | 人体姿态估计     | ViTPose-large | RTMDet-m            |
+| vitpose-h | td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192  | 人体姿态估计     | ViTPose-huge  | RTMDet-m            |
 
 下表列出了可用的 3D 姿态估计模型别名及其对应的配置文件：
 
-| Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
-| ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
-| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
+| 别名    | 配置文件名称                      | 对应任务        | 3D 姿态估计模型 | 2D 姿态估计模型 | 监测模型 |
+| ------- | --------------------------------- | --------------- | --------------- | --------------- | -------- |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m | 3D 人体姿态估计 | MotionBert      | RTMPose-m       | RTMDet-m |
 
 此外，用户可以使用命令行界面工具显示所有可用的别名，使用以下命令:
 

@@ -281,7 +281,7 @@ The following table lists the available 3D model aliases and their corresponding
 
 | Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
 | ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
-| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | VideoPose3D       | RTMPose-m         | RTMDet-m |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | MotionBert        | RTMPose-m         | RTMDet-m |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 
