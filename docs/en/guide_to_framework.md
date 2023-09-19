@@ -161,7 +161,7 @@ dataset_info = dict(
 - `joint_weights` assigns different loss weights to different keypoints.
 - `sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
 
-In the model config, the user needs to specify the metainfo path of the custom dataset (e.g. `$MMPOSE/configs/_base_/datasets/custom.py`) as follows:
+In the model config, the user needs to specify the metainfo path of the custom dataset (e.g. `$MMPOSE/configs/_base_/datasets/{your_dataset}.py`) as follows:
 
 ```python
 # dataset and dataloader settings
@@ -171,9 +171,9 @@ train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
+        data_root='root of your train data',
+        ann_file='path to your json file',
+        data_prefix=dict(img='path to your train img'),
         # specify the new dataset meta information config file
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
@@ -183,15 +183,41 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
+        data_root='root of your val data',
+        ann_file='path to your val json',
+        data_prefix=dict(img='path to your val img'),
         # specify the new dataset meta information config file
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 
 test_dataloader = val_dataloader
+```
+
+More specifically speaking, if you organize your data as follows:
+
+```shell
+data
+├── annotations
+│   ├── train.json
+│   ├── val.json
+├── train
+│   ├── images
+│   │   ├── 000001.jpg
+├── val
+│   ├── images
+│   │   ├── 000002.jpg
+```
+
+You need to set your config as follows:
+
+```
+dataset=dict(
+    ...
+    data_root='data/',
+    ann_file='annotations/train.json',
+    data_prefix=dict(img='train/images/'),
+    ...),
 ```
 
 ### Dataset

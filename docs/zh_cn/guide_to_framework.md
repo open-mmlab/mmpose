@@ -167,7 +167,7 @@ dataset_info = dict(
 - `joint_weights`：每个关键点的权重，用于损失函数计算。
 - `sigma`：标准差，用于计算 OKS 分数，详细信息请参考 [keypoints-eval](https://cocodataset.org/#keypoints-eval)。
 
-在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/_base_/datasets/custom.py`，指定方式如下：
+在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/_base_/datasets/{your_dataset}.py`，指定方式如下：
 
 ```python
 # dataset and dataloader settings
@@ -176,9 +176,9 @@ train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
+        data_root='root of your train data',
+        ann_file='path to your json file',
+        data_prefix=dict(img='path to your train img'),
         # 指定对应的元信息配置文件
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
@@ -187,14 +187,40 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
+        data_root='root of your val data',
+        ann_file='path to your val json',
+        data_prefix=dict(img='path to your val img'),
         # 指定对应的元信息配置文件
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 test_dataloader = val_dataloader
+```
+
+下面是一个更加具体的例子，假设你的数据集按照以下结构进行组织：
+
+```shell
+data
+├── annotations
+│   ├── train.json
+│   ├── val.json
+├── train
+│   ├── images
+│   │   ├── 000001.jpg
+├── val
+│   ├── images
+│   │   ├── 000002.jpg
+```
+
+你的数据集路径应该如下所示：
+
+```
+dataset=dict(
+    ...
+    data_root='data/',
+    ann_file='annotations/train.json',
+    data_prefix=dict(img='train/images/'),
+    ...),
 ```
 
 ### 数据集
