@@ -211,7 +211,7 @@ train_dataloader = dict(
     ))
 
 val_dataloader = dict(
-    batch_size=4,
+    batch_size=1,
     num_workers=8,
     persistent_workers=True,
     drop_last=False,
