@@ -2,7 +2,6 @@
 import logging
 import mimetypes
 import os
-import warnings
 from collections import defaultdict
 from typing import (Callable, Dict, Generator, Iterable, List, Optional,
                     Sequence, Union)
@@ -67,15 +66,20 @@ class BaseMMPoseInferencer(BaseInferencer):
                 # mmpose 1.x
                 model.dataset_meta = checkpoint_meta['dataset_meta']
             else:
-                warnings.warn(
+                print_log(
                     'dataset_meta are not saved in the checkpoint\'s '
-                    'meta data, load via config.')
+                    'meta data, load via config.',
+                    logger='current',
+                    level=logging.WARNING)
                 model.dataset_meta = dataset_meta_from_config(
                     cfg, dataset_mode='train')
         else:
-            warnings.warn('Checkpoint is not loaded, and the inference '
-                          'result is calculated by the randomly initialized '
-                          'model!')
+            print_log(
+                'Checkpoint is not loaded, and the inference '
+                'result is calculated by the randomly initialized '
+                'model!',
+                logger='current',
+                level=logging.WARNING)
             model.dataset_meta = dataset_meta_from_config(
                 cfg, dataset_mode='train')
 
@@ -178,7 +182,10 @@ class BaseMMPoseInferencer(BaseInferencer):
         # Attempt to open the video capture object.
         vcap = cv2.VideoCapture(camera_id)
         if not vcap.isOpened():
-            warnings.warn(f'Cannot open camera (ID={camera_id})')
+            print_log(
+                f'Cannot open camera (ID={camera_id})',
+                logger='current',
+                level=logging.WARNING)
             return []
 
         # Set video input flag and metadata.
@@ -418,10 +425,12 @@ class BaseMMPoseInferencer(BaseInferencer):
               as strings and numbers.
         """
         if return_datasample is not None:
-            warnings.warn(
+            print_log(
                 'The `return_datasample` argument is deprecated '
                 'and will be removed in future versions. Please '
-                'use `return_datasamples`.', DeprecationWarning)
+                'use `return_datasamples`.',
+                logger='current',
+                level=logging.WARNING)
             return_datasamples = return_datasample
 
         result_dict = defaultdict(list)
