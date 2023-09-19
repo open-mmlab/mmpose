@@ -55,8 +55,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
     """
 
     preprocess_kwargs: set = {
-        'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
-        'disable_norm_pose_2d'
+        'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr'
     }
     forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
