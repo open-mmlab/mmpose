@@ -91,14 +91,13 @@ class KeypointConverter(BaseTransform):
         num_instances = results['keypoints'].shape[0]
 
         # Initialize output arrays
-        keypoints = np.zeros((num_instances, self.num_keypoints, 2),
-                             dtype=np.float32)
-        keypoints_visible = np.zeros((num_instances, self.num_keypoints),
-                                     dtype=np.float32)
-        keypoints_3d = None
+        keypoints = np.zeros((num_instances, self.num_keypoints, 2))
+        keypoints_visible = np.zeros((num_instances, self.num_keypoints))
+
         if 'keypoints_3d' in results:
             keypoints_3d = np.zeros((num_instances, self.num_keypoints, 3),
                                     dtype=np.float32)
+        flip_indices = results.get('flip_indices', None)
 
         # Create a mask to weight visibility loss
         keypoints_visible_weights = keypoints_visible.copy()
@@ -119,6 +118,13 @@ class KeypointConverter(BaseTransform):
                     results['keypoints_3d'][:, self.source_index] +
                     results['keypoints_3d'][:, self.source_index2])
 
+            # Flip keypoints if flip_indices provided
+            if flip_indices is not None:
+                for i, (x1, x2) in enumerate(
+                        zip(self.source_index, self.source_index2)):
+                    id = flip_indices[x1] if x1 == x2 else i
+                    flip_indices[i] = id if id < self.num_keypoints else i
+                flip_indices = flip_indices[:len(self.source_index)]
         # Otherwise just copy from the source index
         else:
             keypoints[:,
@@ -139,19 +145,8 @@ class KeypointConverter(BaseTransform):
             results['lifting_target'] = keypoints_3d[results['target_idx']]
             results['lifting_target_visible'] = keypoints_visible[
                 results['target_idx']]
+        results['flip_indices'] = flip_indices
 
-        # Updatae flip pairs
-        if 'flip_indices' in results:
-            flip_indices = []
-            for i in range(len(self.target_index)):
-                x1, x2 = self.source_index[i], self.source_index2[i]
-                if x1 == x2:
-                    flip_id = results['flip_indices'][x1]
-                    flip_id = flip_id if flip_id < self.num_keypoints else i
-                    flip_indices.append(flip_id)
-                else:
-                    flip_indices.append(i)
-            results['flip_indices'] = flip_indices
         return results
 
     def transform_sigmas(self, sigmas: Union[List, np.ndarray]):
