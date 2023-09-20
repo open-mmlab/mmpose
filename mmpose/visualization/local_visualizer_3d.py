@@ -608,9 +608,8 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
             det_img_data = cv2.copyMakeBorder(
                 det_img_data,
                 height // 2,
-                height // 2,
-                width // 2,
-                width // 2,
+                (height // 2 + 1) if height % 2 == 1 else height // 2,
+                width // 2, (width // 2 + 1) if width % 2 == 1 else width // 2,
                 cv2.BORDER_CONSTANT,
                 value=(255, 255, 255))
             drawn_img = np.concatenate((det_img_data, pred_img_data), axis=1)
