@@ -235,8 +235,18 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         bbox_center = stats_info.get('bbox_center', None)
         bbox_scale = stats_info.get('bbox_scale', None)
 
-        for i, pose_res in enumerate(pose_results_2d):
-            for j, data_sample in enumerate(pose_res):
+        pose_results_2d_copy = []
+        for pose_res in pose_results_2d:
+            pose_res_copy = []
+            for data_sample in pose_res:
+
+                data_sample_copy = PoseDataSample()
+                data_sample_copy.gt_instances = \
+                    data_sample.gt_instances.clone()
+                data_sample_copy.pred_instances = \
+                    data_sample.pred_instances.clone()
+                data_sample_copy.track_id = data_sample.track_id
+
                 kpts = data_sample.pred_instances.keypoints
                 bboxes = data_sample.pred_instances.bboxes
                 keypoints = []
@@ -251,9 +261,12 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                                          bbox_scale + bbox_center)
                     else:
                         keypoints.append(kpt[:, :2])
-                pose_results_2d[i][j].pred_instances.keypoints = np.array(
-                    keypoints)
-        pose_sequences_2d = collate_pose_sequence(pose_results_2d, True,
+                data_sample_copy.pred_instances.set_field(
+                    np.array(keypoints), 'keypoints')
+                pose_res_copy.append(data_sample_copy)
+
+            pose_results_2d_copy.append(pose_res_copy)
+        pose_sequences_2d = collate_pose_sequence(pose_results_2d_copy, True,
                                                   target_idx)
         if not pose_sequences_2d:
             return []
