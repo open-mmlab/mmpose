@@ -62,8 +62,8 @@ class TestPose3DInferencer(TestCase):
 
         # 2. init with config name
         inferencer = Pose3DInferencer(
-            model='configs/body_3d_keypoint/pose_lift/h36m/pose-lift_'
-            'videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py',
+            model='configs/body_3d_keypoint/video_pose_lift/h36m/'
+            'video-pose-lift_tcn-243frm-supv-cpn-ft_8xb128-200e_h36m.py',
             pose2d_model='configs/body_2d_keypoint/simcc/coco/'
             'simcc_res50_8xb64-210e_coco-256x192.py',
             det_model=det_model,
