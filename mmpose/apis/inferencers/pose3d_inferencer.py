@@ -83,7 +83,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         'kpt_thr',
         'vis_out_dir',
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def __init__(self,
                  model: Union[ModelType, str],

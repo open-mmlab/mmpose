@@ -64,7 +64,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap',
         'black_background', 'num_instances'
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def __init__(self,
                  pose2d: Optional[str] = None,
