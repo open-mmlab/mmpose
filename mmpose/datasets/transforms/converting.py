@@ -94,6 +94,7 @@ class KeypointConverter(BaseTransform):
         keypoints = np.zeros((num_instances, self.num_keypoints, 3))
         keypoints_visible = np.zeros((num_instances, self.num_keypoints))
         key = 'keypoints_3d' if 'keypoints_3d' in results else 'keypoints'
+        c = results[key].shape[-1]
 
         flip_indices = results.get('flip_indices', None)
 
@@ -103,7 +104,7 @@ class KeypointConverter(BaseTransform):
 
         # Interpolate keypoints if pairs of source indexes provided
         if self.interpolation:
-            keypoints[:, self.target_index] = 0.5 * (
+            keypoints[:, self.target_index, :c] = 0.5 * (
                 results[key][:, self.source_index] +
                 results[key][:, self.source_index2])
             keypoints_visible[:, self.target_index] = results[
@@ -118,8 +119,9 @@ class KeypointConverter(BaseTransform):
                 flip_indices = flip_indices[:len(self.source_index)]
         # Otherwise just copy from the source index
         else:
-            keypoints[:, self.target_index] = results[key][:,
-                                                           self.source_index]
+            keypoints[:,
+                      self.target_index, :c] = results[key][:,
+                                                            self.source_index]
             keypoints_visible[:, self.target_index] = results[
                 'keypoints_visible'][:, self.source_index]
 
