@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets.body3d import UBody3dDataset
+from mmpose.datasets.datasets.wholebody3d import UBody3dDataset
 
 
 class TestUBody3dDataset(TestCase):
