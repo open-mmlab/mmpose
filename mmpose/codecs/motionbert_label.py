@@ -74,8 +74,8 @@ class MotionBERTLabel(BaseKeypointCodec):
 
     def encode(self,
                keypoints: np.ndarray,
+               lifting_target: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None,
-               lifting_target: Optional[np.ndarray] = None,
                lifting_target_visible: Optional[np.ndarray] = None,
                camera_param: Optional[dict] = None,
                factor: Optional[np.ndarray] = None) -> dict:
@@ -83,10 +83,10 @@ class MotionBERTLabel(BaseKeypointCodec):
 
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (B, T, K, D).
-            keypoints_visible (np.ndarray, optional): Keypoint visibilities in
-                shape (B, T, K).
             lifting_target (np.ndarray, optional): 3d target coordinate in
                 shape (T, K, C).
+            keypoints_visible (np.ndarray, optional): Keypoint visibilities in
+                shape (B, T, K).
             lifting_target_visible (np.ndarray, optional): Target coordinate in
                 shape (T, K, ).
             camera_param (dict, optional): The camera parameter dictionary.
@@ -109,9 +109,6 @@ class MotionBERTLabel(BaseKeypointCodec):
         """
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
-
-        if lifting_target is None:
-            lifting_target = [keypoints[..., 0, :, :]]
 
         # set initial value for `lifting_target_weight`
         if lifting_target_visible is None:
@@ -154,9 +151,7 @@ class MotionBERTLabel(BaseKeypointCodec):
         if self.mode == 'train':
             w, h = w / 1000, h / 1000
             lifting_target_label[
-                ..., :2] = lifting_target_label[..., :2] / w * 2 - [
-                    0.001, h / w
-                ]
+                ..., :2] = lifting_target_label[..., :2] / w * 2 - [1, h / w]
             lifting_target_label[..., 2] = lifting_target_label[..., 2] / w * 2
         lifting_target_label[..., :, :] = lifting_target_label[
             ..., :, :] - lifting_target_label[...,
