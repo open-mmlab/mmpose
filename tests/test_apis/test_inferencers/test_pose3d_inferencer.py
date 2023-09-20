@@ -46,7 +46,7 @@ class TestPose3DInferencer(TestCase):
         # 1. init with config path and checkpoint
         inferencer = Pose3DInferencer(
             model=  # noqa
-            'configs/body_3d_keypoint/pose_lift/h36m/pose-lift_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py',  # noqa
+            'configs/body_3d_keypoint/video_pose_lift/h36m/video-pose-lift_tcn-243frm-supv-cpn-ft_8xb128-200e_h36m.py',  # noqa
             weights=  # noqa
             'https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth',  # noqa
             pose2d_model='configs/body_2d_keypoint/simcc/coco/'

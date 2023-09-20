@@ -5,13 +5,13 @@ Collections:
     URL: http://openaccess.thecvf.com/content_iccv_2017/html/Martinez_A_Simple_yet_ICCV_2017_paper.html
   README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/simplebaseline3d.md
 Models:
-- Config: configs/body_3d_keypoint/pose_lift/h36m/pose-lift_simplebaseline3d_8xb64-200e_h36m.py
+- Config: configs/body_3d_keypoint/image_pose_lift/h36m/image-pose-lift_tcn_8xb64-200e_h36m.py
   In Collection: SimpleBaseline3D
   Metadata:
     Architecture: &id001
     - SimpleBaseline3D
     Training Data: Human3.6M
-  Name: pose-lift_simplebaseline3d_8xb64-200e_h36m
+  Name: image-pose-lift_tcn_8xb64-200e_h36m
   Results:
   - Dataset: Human3.6M
     Metrics:
