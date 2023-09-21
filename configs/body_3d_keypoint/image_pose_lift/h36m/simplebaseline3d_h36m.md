@@ -39,6 +39,6 @@ Results on Human3.6M dataset with ground truth 2D detections
 
 | Arch                                                            | MPJPE | P-MPJPE |                              ckpt                               |                              log                               |
 | :-------------------------------------------------------------- | :---: | :-----: | :-------------------------------------------------------------: | :------------------------------------------------------------: |
-| [SimpleBaseline3D-tcn<sup>1</sup>](/configs/body_3d_keypoint/pose_lift/h36m/pose-lift_simplebaseline3d_8xb64-200e_h36m.py) | 43.4  |  34.3   | [ckpt](https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth) | [log](https://download.openmmlab.com/mmpose/body3d/simple_baseline/20210415_065056.log.json) |
+| [SimpleBaseline3D<sup>1</sup>](/configs/body_3d_keypoint/image_pose_lift/h36m/image-pose-lift_tcn_8xb64-200e_h36m.py) | 43.4  |  34.3   | [ckpt](https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth) | [log](https://download.openmmlab.com/mmpose/body3d/simple_baseline/20210415_065056.log.json) |
 
 <sup>1</sup> Differing from the original paper, we didn't apply the `max-norm constraint` because we found this led to a better convergence and performance.

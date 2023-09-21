@@ -79,8 +79,9 @@ Import:
 - configs/body_2d_keypoint/topdown_regression/mpii/resnet_mpii.yml
 - configs/body_2d_keypoint/topdown_regression/mpii/resnet_rle_mpii.yml
 - configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_coco.yml
-- configs/body_3d_keypoint/pose_lift/h36m/videopose3d_h36m.yml
-- configs/body_3d_keypoint/pose_lift/h36m/motionbert_h36m.yml
+- configs/body_3d_keypoint/image_pose_lift/h36m/simplebaseline3d_h36m.yml
+- configs/body_3d_keypoint/video_pose_lift/h36m/videopose3d_h36m.yml
+- configs/body_3d_keypoint/motionbert/h36m/motionbert_h36m.yml
 - configs/face_2d_keypoint/rtmpose/coco_wholebody_face/rtmpose_coco_wholebody_face.yml
 - configs/face_2d_keypoint/rtmpose/face6/rtmpose_face6.yml
 - configs/face_2d_keypoint/rtmpose/wflw/rtmpose_wflw.yml
@@ -119,6 +120,7 @@ Import:
 - configs/hand_2d_keypoint/topdown_heatmap/rhd2d/resnet_rhd2d.yml
 - configs/hand_2d_keypoint/topdown_regression/onehand10k/resnet_onehand10k.yml
 - configs/hand_2d_keypoint/topdown_regression/rhd2d/resnet_rhd2d.yml
+- configs/hand_3d_keypoint/internet/interhand3d/internet_interhand3d.yml
 - configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/hrnet_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/hrnet_dark_coco-wholebody.yml

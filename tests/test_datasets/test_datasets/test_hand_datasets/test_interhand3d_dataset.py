@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets.hand import InterHand3DDataset
+from mmpose.datasets.datasets.hand3d import InterHand3DDataset
 
 
 class TestInterHand3DDataset(TestCase):
