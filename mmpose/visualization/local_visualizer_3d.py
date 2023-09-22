@@ -85,6 +85,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                               axis_limit: float = 1.7,
                               axis_dist: float = 10.0,
                               axis_elev: float = 15.0,
+                              show_kpt_idx: bool = False,
                               scores_2d: Optional[np.ndarray] = None):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
@@ -109,13 +110,16 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 - y: [y_c - axis_limit/2, y_c + axis_limit/2]
                 - z: [0, axis_limit]
                 Where x_c, y_c is the mean value of x and y coordinates
+            show_kpt_idx (bool): Whether to show the index of keypoints.
+                Defaults to ``False``
             scores_2d (np.ndarray, optional): Keypoint scores of 2d estimation
                 that will be used to filter 3d instances.
 
         Returns:
             Tuple(np.ndarray): the drawn image which channel is RGB.
         """
-        vis_height, vis_width, _ = image.shape
+        vis_width = max(image.shape)
+        vis_height = vis_width
 
         if 'pred_instances' in pose_samples:
             pred_instances = pose_samples.pred_instances
@@ -150,6 +154,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                                     scores_2d,
                                     keypoints_visible,
                                     fig_idx,
+                                    show_kpt_idx,
                                     title=None):
 
             for idx, (kpts, score, score_2d) in enumerate(
@@ -169,7 +174,6 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_zticklabels([])
-                ax.scatter([0], [0], [0], marker='o', color='red')
                 if title:
                     ax.set_title(f'{title} ({idx})')
                 ax.dist = axis_dist
@@ -199,9 +203,10 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
                 ax.scatter(x_3d, y_3d, z_3d, marker='o', c=kpt_color)
 
-                for kpt_idx in range(len(x_3d)):
-                    ax.text(x_3d[kpt_idx][0], y_3d[kpt_idx][0],
-                            z_3d[kpt_idx][0], str(kpt_idx))
+                if show_kpt_idx:
+                    for kpt_idx in range(len(x_3d)):
+                        ax.text(x_3d[kpt_idx][0], y_3d[kpt_idx][0],
+                                z_3d[kpt_idx][0], str(kpt_idx))
 
                 if self.skeleton is not None and self.link_color is not None:
                     if self.link_color is None or isinstance(
@@ -247,7 +252,8 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 keypoints_visible = np.ones(keypoints.shape[:-1])
 
             _draw_3d_instances_kpts(keypoints, scores, scores_2d,
-                                    keypoints_visible, 1, 'Prediction')
+                                    keypoints_visible, 1, show_kpt_idx,
+                                    'Prediction')
 
         if draw_gt and 'gt_instances' in pose_samples:
             gt_instances = pose_samples.gt_instances
@@ -260,9 +266,22 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                     keypoints_visible = gt_instances.lifting_target_visible
                 else:
                     keypoints_visible = np.ones(keypoints.shape[:-1])
+            elif 'keypoints_gt' in gt_instances:
+                keypoints = gt_instances.get('keypoints_gt',
+                                             gt_instances.keypoints_gt)
+                scores = np.ones(keypoints.shape[:-1])
 
-                _draw_3d_instances_kpts(keypoints, scores, keypoints_visible,
-                                        2, 'Ground Truth')
+                if 'keypoints_visible' in gt_instances:
+                    keypoints_visible = gt_instances.keypoints_visible
+                else:
+                    keypoints_visible = np.ones(keypoints.shape[:-1])
+            else:
+                raise ValueError('to visualize ground truth results, '
+                                 'data sample must contain '
+                                 '"lifting_target" or "keypoints_gt"')
+
+            _draw_3d_instances_kpts(keypoints, scores, keypoints_visible, 2,
+                                    show_kpt_idx, 'Ground Truth')
 
         # convert figure to numpy array
         fig.tight_layout()
@@ -357,7 +376,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
             for kpts, score, visible in zip(keypoints, scores,
                                             keypoints_visible):
-                kpts = np.array(kpts, copy=False)
+                kpts = np.array(kpts[..., :2], copy=False)
 
                 if kpt_color is None or isinstance(kpt_color, str):
                     kpt_color = [kpt_color] * len(kpts)
@@ -477,6 +496,11 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                        skeleton_style: str = 'mmpose',
                        dataset_2d: str = 'coco',
                        dataset_3d: str = 'h36m',
+                       convert_keypoint: bool = True,
+                       axis_azimuth: float = 70,
+                       axis_limit: float = 1.7,
+                       axis_dist: float = 10.0,
+                       axis_elev: float = 15.0,
                        num_instances: int = -1,
                        show: bool = False,
                        wait_time: float = 0,
@@ -517,6 +541,17 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                 ``'CocoDataset'``
             dataset_3d (str): Name of 3d keypoint dataset. Defaults to
                 ``'Human36mDataset'``
+            convert_keypoint (bool): Whether to convert keypoint definition.
+                Defaults to ``True``
+            axis_azimuth (float): axis azimuth angle for 3D visualizations.
+            axis_dist (float): axis distance for 3D visualizations.
+            axis_elev (float): axis elevation view angle for 3D visualizations.
+            axis_limit (float): The axis limit to visualize 3d pose. The xyz
+                range will be set as:
+                - x: [x_c - axis_limit/2, x_c + axis_limit/2]
+                - y: [y_c - axis_limit/2, y_c + axis_limit/2]
+                - z: [0, axis_limit]
+                Where x_c, y_c is the mean value of x and y coordinates
             num_instances (int): Number of instances to be shown in 3D. If
                 smaller than 0, all the instances in the pose_result will be
                 shown. Otherwise, pad or truncate the pose_result to a length
@@ -531,21 +566,24 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
         """
 
         det_img_data = None
-        gt_img_data = None
         scores_2d = None
 
         if draw_2d:
             det_img_data = image.copy()
 
             # draw bboxes & keypoints
-            if 'pred_instances' in det_data_sample:
+            if (det_data_sample is not None
+                    and 'pred_instances' in det_data_sample):
                 det_img_data, scores_2d = self._draw_instances_kpts(
-                    det_img_data, det_data_sample.pred_instances, kpt_thr,
-                    show_kpt_idx, skeleton_style)
+                    image=det_img_data,
+                    instances=det_data_sample.pred_instances,
+                    kpt_thr=kpt_thr,
+                    show_kpt_idx=show_kpt_idx,
+                    skeleton_style=skeleton_style)
                 if draw_bbox:
                     det_img_data = self._draw_instances_bbox(
                         det_img_data, det_data_sample.pred_instances)
-        if scores_2d is not None:
+        if scores_2d is not None and convert_keypoint:
             if scores_2d.ndim == 2:
                 scores_2d = scores_2d[..., None]
             scores_2d = np.squeeze(
@@ -556,16 +594,25 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
             data_sample,
             draw_gt=draw_gt,
             num_instances=num_instances,
+            axis_azimuth=axis_azimuth,
+            axis_limit=axis_limit,
+            show_kpt_idx=show_kpt_idx,
+            axis_dist=axis_dist,
+            axis_elev=axis_elev,
             scores_2d=scores_2d)
 
         # merge visualization results
-        if det_img_data is not None and gt_img_data is not None:
-            drawn_img = np.concatenate(
-                (det_img_data, pred_img_data, gt_img_data), axis=1)
-        elif det_img_data is not None:
+        if det_img_data is not None:
+            width = max(pred_img_data.shape[1] - det_img_data.shape[1], 0)
+            height = max(pred_img_data.shape[0] - det_img_data.shape[0], 0)
+            det_img_data = cv2.copyMakeBorder(
+                det_img_data,
+                height // 2,
+                (height // 2 + 1) if height % 2 == 1 else height // 2,
+                width // 2, (width // 2 + 1) if width % 2 == 1 else width // 2,
+                cv2.BORDER_CONSTANT,
+                value=(255, 255, 255))
             drawn_img = np.concatenate((det_img_data, pred_img_data), axis=1)
-        elif gt_img_data is not None:
-            drawn_img = np.concatenate((det_img_data, gt_img_data), axis=1)
         else:
             drawn_img = pred_img_data
 
