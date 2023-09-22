@@ -20,6 +20,7 @@ python demo/hand3d_internet_demo.py \
     [--device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_THR}] \
     [--show-kpt-idx] \
+    [--show-interval] \
     [--radius ${RADIUS}] \
     [--thickness ${THICKNESS}]
 ```

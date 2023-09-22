@@ -60,6 +60,8 @@ def parse_args():
         default=False,
         help='Whether to show the index of keypoints')
     parser.add_argument(
+        '--show-interval', type=int, default=0, help='Sleep seconds per frame')
+    parser.add_argument(
         '--radius',
         type=int,
         default=3,
@@ -170,7 +172,8 @@ def main():
             f'{os.path.splitext(os.path.basename(args.input))[0]}.json'
 
     # build the model from a config file and a checkpoint file
-    model = init_model(args.config, args.checkpoint, device=args.device)
+    model = init_model(
+        args.config, args.checkpoint, device=args.device.lower())
 
     # init visualizer
     model.cfg.visualizer.radius = args.radius
