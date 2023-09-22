@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import json
 import os
 import os.path as osp
@@ -27,8 +28,13 @@ def move_img(img_path, save_img):
 
 
 # split 300w-lp data
-def split_data(file_img, train_path, val_path,
-               test_path, shuffle=True, ratio1=0.8, ratio2=0.1):
+def split_data(file_img,
+               train_path,
+               val_path,
+               test_path,
+               shuffle=True,
+               ratio1=0.8,
+               ratio2=0.1):
     img_list = os.listdir(file_img)
     if shuffle:
         np.random.shuffle(img_list)
@@ -140,7 +146,7 @@ def convert_300WLP_to_coco(root_path, img_pathDir, out_file):
     print(f'done {out_file}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # 1.Move all images to one folder
     # 2.split 300W-LP data
     # 3.convert json
@@ -160,4 +166,6 @@ if __name__ == "__main__":
         os.makedirs(anno_path_json)
     for tv in ['val', 'test', 'train']:
         print(f'processing {tv}')
-        convert_300WLP_to_coco(root_path, tv, anno_path_json + '/' + f'face_landmarks_300wlp_{tv}.json')
+        convert_300WLP_to_coco(
+            root_path, tv,
+            anno_path_json + '/' + f'face_landmarks_300wlp_{tv}.json')

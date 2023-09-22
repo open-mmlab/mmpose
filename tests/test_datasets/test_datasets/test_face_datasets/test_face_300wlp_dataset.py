@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from unittest import TestCase
+
 import numpy as np
 
 from mmpose.datasets.datasets.face import Face300WLPDataset
@@ -136,5 +137,3 @@ class TestFace300WLPDataset(TestCase):
                 data_mode='bottomup',
                 test_mode=True,
                 filter_cfg=dict(bbox_score_thr=0.3))
-
-

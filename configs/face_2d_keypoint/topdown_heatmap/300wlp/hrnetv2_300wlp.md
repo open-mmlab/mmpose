@@ -21,7 +21,6 @@
 <details>
 <summary align="right"><a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm">300WLP (IEEE'2017)</a></summary>
 
-
 ```bibtex
 @article{zhu2017face,
   title={Face alignment in full pose range: A 3d total solution},
@@ -38,7 +37,6 @@ Results on 300W-LP dataset
 
 The model is trained on 300W-LP train.
 
-| Arch                                                         | Input Size | NME<sub>*full*</sub> | NME<sub>*test*</sub> |                             ckpt                             |                             log                              |
-| :----------------------------------------------------------- | :--------: | :------------------: | :------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| Arch                                               | Input Size | NME<sub>*full*</sub> | NME<sub>*test*</sub> |                        ckpt                        |                        log                         |
+| :------------------------------------------------- | :--------: | :------------------: | :------------------: | :------------------------------------------------: | :------------------------------------------------: |
 | [pose_hrnetv2_w18](/configs/face_2d_keypoint/topdown_heatmap/300wlp/td-hm_hrnetv2-w18_8xb64-60e_300wlp-256x256.py) |  256x256   |        0.0413        |       0.04125        | [ckpt](https://download.openmmlab.com/mmpose/v1/face_2d_keypoint/topdown_heatmap/300wlp/hrnetv2_w18_300wlp_256x256-fb433d21_20230922.pth) | [log](https://download.openmmlab.com/mmpose/v1/face_2d_keypoint/topdown_heatmap/300wlp/hrnetv2_w18_300wlp_256x256-fb433d21_20230922.json) |
-

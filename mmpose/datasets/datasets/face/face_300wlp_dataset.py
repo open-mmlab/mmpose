@@ -1,11 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os.path as osp
-from typing import Optional
-
-import numpy as np
 
 from mmpose.registry import DATASETS
-from mmpose.structures.bbox import bbox_cs2xyxy
 from ..base import BaseCocoStyleDataset
 
 
@@ -57,5 +52,4 @@ class Face300WLPDataset(BaseCocoStyleDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_file='configs/_base_/datasets/300w_LP.py')
-
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/300wlp.py')
