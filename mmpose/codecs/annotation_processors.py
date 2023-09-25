@@ -32,9 +32,9 @@ class YOLOXPoseAnnotationProcessor(BaseAnnotationProcessor):
     """
 
     auxiliary_encode_keys = {'category_id', 'bbox'}
-    instance_mapping_table = dict(
+    label_mapping_table = dict(
         bbox='bboxes',
-        bbox_lables='labels',
+        bbox_labels='labels',
         keypoints='keypoints',
         keypoints_visible='keypoints_visible',
         area='areas',
