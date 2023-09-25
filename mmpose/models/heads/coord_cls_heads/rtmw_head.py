@@ -23,10 +23,7 @@ OptIntSeq = Optional[Sequence[int]]
 
 @MODELS.register_module()
 class RTMWHead(BaseHead):
-    """Top-down head introduced in RTMPose (2023). The head is composed of a
-    large-kernel convolutional layer, a fully-connected layer and a Gated
-    Attention Unit to generate 1d representation from low-resolution feature
-    maps.
+    """Top-down head introduced in RTMPose-Wholebody (2023).
 
     Args:
         in_channels (int | sequence[int]): Number of channels in the input
