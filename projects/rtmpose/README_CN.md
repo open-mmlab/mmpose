@@ -264,6 +264,25 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 </details>
 
+
+
+### Human-Art (17 Keypoints)
+
+- 17 个关键点骨架定义遵循 [COCO](https://cocodataset.org/#home)，详情见 [meta info](configs/_base_/datasets/humanart.py)。虽然 [Human-Art](https://idea-research.github.io/HumanArt/) 中定义了21个关键点，在 COCO 的基础上额外加入了手指脚趾尖，我们在这里仅仅使用了与 COCO 对齐的 17 个关键点。
+
+
+|       Detection Config        | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |        Download        |
+| :---------------------------: | :--------: | :---------------------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :--------------------: |
+| [RTMDet-tiny](./rtmdet/person/rtmdet_tiny_8xb32-300e_humanart.py) |  640x640   |             46.6              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_tiny_8xb32-300e_humanart-7da5554e.pth) |
+| [RTMDet-s](./rtmdet/person/rtmdet_s_8xb32-300e_humanart.py) |  640x640   |             50.6              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmdet_s_8xb32-300e_humanart-af5bd52d.pth) |
+| [YOLOX-nano](./yolox/humanart/yolox_nano_8xb8-300e_humanart.py) |  640x640   |             38.9              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_nano_8xb8-300e_humanart-40f6f0d0.pth) |
+| [YOLOX-tiny](./yolox/humanart/yolox_tiny_8xb8-300e_humanart.py) |  640x640   |             47.7              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_tiny_8xb8-300e_humanart-6f3252f9.pth) |
+| [YOLOX-s](./yolox/humanart/yolox_s_8xb8-300e_humanart.py) |  640x640   |             54.6              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_s_8xb8-300e_humanart-3ef259a7.pth) |
+| [YOLOX-m](./yolox/humanart/yolox_m_8xb8-300e_humanart.py) |  640x640   |             59.1              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_m_8xb8-300e_humanart-c2c7a14a.pth) |
+| [YOLOX-l](./yolox/humanart/yolox_l_8xb8-300e_humanart.py) |  640x640   |             60.2              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_l_8xb8-300e_humanart-ce1d7a62.pth) |
+| [YOLOX-x](./yolox/humanart/yolox_x_8xb8-300e_humanart.py) |  640x640    |            61.3              |       -        |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_x_8xb8-300e_humanart-a39d44ed.pth) |
+
+
 ### 手部 2d 关键点 (21 Keypoints)
 
 - 关键点骨架定义遵循 [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)，详情见 [meta info](/configs/_base_/datasets/coco_wholebody_hand.py)。
