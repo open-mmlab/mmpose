@@ -1,7 +1,6 @@
 _base_ = [
     'mmdet::_base_/schedules/schedule_1x.py',
-    'mmdet::_base_/default_runtime.py',
-    'mmdet::yolox/yolox_tta.py'
+    'mmdet::_base_/default_runtime.py', 'mmdet::yolox/yolox_tta.py'
 ]
 
 img_scale = (640, 640)  # width, height

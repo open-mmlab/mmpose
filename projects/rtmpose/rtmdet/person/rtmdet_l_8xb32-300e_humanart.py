@@ -1,6 +1,7 @@
 _base_ = [
-    'mmdet::_base_/default_runtime.py', 'mmdet::_base_/schedules/schedule_1x.py',
-    './humanart_detection.py', 'mmdet::rtmdet_tta.py'
+    'mmdet::_base_/default_runtime.py',
+    'mmdet::_base_/schedules/schedule_1x.py', './humanart_detection.py',
+    'mmdet::rtmdet_tta.py'
 ]
 model = dict(
     type='RTMDet',
