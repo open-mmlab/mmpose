@@ -62,7 +62,10 @@ class KeypointConverter(BaseTransform):
                                                                   int]]]):
         self.num_keypoints = num_keypoints
         self.mapping = mapping
-        source_index, target_index = zip(*mapping)
+        if len(mapping):
+            source_index, target_index = zip(*mapping)
+        else:
+            source_index, target_index = [], []
 
         src1, src2 = [], []
         interpolation = False
@@ -89,6 +92,9 @@ class KeypointConverter(BaseTransform):
     def transform(self, results: dict) -> dict:
         """Transforms the keypoint results to match the target keypoints."""
         num_instances = results['keypoints'].shape[0]
+        if len(results['keypoints_visible'].shape) > 2:
+            results['keypoints_visible'] = results['keypoints_visible'][:, :,
+                                                                        0]
 
         # Initialize output arrays
         keypoints = np.zeros((num_instances, self.num_keypoints, 3))
@@ -185,4 +191,84 @@ class KeypointConverter(BaseTransform):
         repr_str = self.__class__.__name__
         repr_str += f'(num_keypoints={self.num_keypoints}, '\
                     f'mapping={self.mapping})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class SingleHandConverter(BaseTransform):
+    """Mapping a single hand keypoints into double hands according to the given
+    mapping and hand type.
+
+    Required Keys:
+
+        - keypoints
+        - keypoints_visible
+        - hand_type
+
+    Modified Keys:
+
+        - keypoints
+        - keypoints_visible
+
+    Args:
+        num_keypoints (int): The number of keypoints in target dataset.
+        left_hand_mapping (list): A list containing mapping indexes. Each
+            element has format (source_index, target_index)
+        right_hand_mapping (list): A list containing mapping indexes. Each
+            element has format (source_index, target_index)
+
+    Example:
+        >>> import numpy as np
+        >>> self = SingleHandConverter(
+        >>>     num_keypoints=42,
+        >>>     left_hand_mapping=[
+        >>>         (0, 0), (1, 1), (2, 2), (3, 3)
+        >>>     ],
+        >>>     right_hand_mapping=[
+        >>>         (0, 21), (1, 22), (2, 23), (3, 24)
+        >>>     ])
+        >>> results = dict(
+        >>>     keypoints=np.arange(84).reshape(2, 21, 2),
+        >>>     keypoints_visible=np.arange(84).reshape(2, 21, 2) % 2,
+        >>>     hand_type=np.array([[0, 1], [1, 0]]))
+        >>> results = self(results)
+    """
+
+    def __init__(self, num_keypoints: int,
+                 left_hand_mapping: Union[List[Tuple[int, int]],
+                                          List[Tuple[Tuple, int]]],
+                 right_hand_mapping: Union[List[Tuple[int, int]],
+                                           List[Tuple[Tuple, int]]]):
+        self.num_keypoints = num_keypoints
+        self.left_hand_converter = KeypointConverter(num_keypoints,
+                                                     left_hand_mapping)
+        self.right_hand_converter = KeypointConverter(num_keypoints,
+                                                      right_hand_mapping)
+
+    def transform(self, results: dict) -> dict:
+        """Transforms the keypoint results to match the target keypoints."""
+        assert 'hand_type' in results, (
+            'hand_type should be provided in results')
+        hand_type = results['hand_type']
+
+        if np.sum(hand_type - [[0, 1]]) <= 1e-6:
+            # left hand
+            results = self.left_hand_converter(results)
+        elif np.sum(hand_type - [[1, 0]]) <= 1e-6:
+            results = self.right_hand_converter(results)
+        else:
+            raise ValueError('hand_type should be left or right')
+
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(num_keypoints={self.num_keypoints}, '\
+                    f'left_hand_converter={self.left_hand_converter}, '\
+                    f'right_hand_converter={self.right_hand_converter})'
         return repr_str

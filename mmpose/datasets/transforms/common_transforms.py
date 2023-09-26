@@ -503,8 +503,13 @@ class RandomBBoxTransform(BaseTransform):
             - scale (np.ndarray): Scaling factor of each bbox in shape (n, 1)
             - rotate (np.ndarray): Rotation degree of each bbox in shape (n,)
         """
+        random_v = self._truncnorm(size=(num_bboxes, 4))
+        offset_v = random_v[:, :2]
+        scale_v = random_v[:, 2:3]
+        rotate_v = random_v[:, 3]
+
         # Get shift parameters
-        offset = self._truncnorm(size=(num_bboxes, 2)) * self.shift_factor
+        offset = offset_v * self.shift_factor
         offset = np.where(
             np.random.rand(num_bboxes, 1) < self.shift_prob, offset, 0.)
 
@@ -512,12 +517,12 @@ class RandomBBoxTransform(BaseTransform):
         scale_min, scale_max = self.scale_factor
         mu = (scale_max + scale_min) * 0.5
         sigma = (scale_max - scale_min) * 0.5
-        scale = self._truncnorm(size=(num_bboxes, 1)) * sigma + mu
+        scale = scale_v * sigma + mu
         scale = np.where(
             np.random.rand(num_bboxes, 1) < self.scale_prob, scale, 1.)
 
         # Get rotation parameters
-        rotate = self._truncnorm(size=(num_bboxes, )) * self.rotate_factor
+        rotate = rotate_v * self.rotate_factor
         rotate = np.where(
             np.random.rand(num_bboxes) < self.rotate_prob, rotate, 0.)
 

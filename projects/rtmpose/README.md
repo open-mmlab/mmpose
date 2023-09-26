@@ -44,6 +44,9 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Sep. 2023:
+  - Add RTMW models trained on combined datasets. The alpha version of RTMW-x model achieves 70.2 mAP on COCO-Wholebody val set. The technical report will be released soon.
+  - Add YOLOX and RTMDet models trained on HumanArt dataset.
 - Aug. 2023:
   - Support distilled 133-keypoint WholeBody models powered by [DWPose](https://github.com/IDEA-Research/DWPose/tree/main).
     - You can try DWPose/RTMPose with [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) now! Just update your sd-webui-controlnet >= v1.1237, then choose `dw_openpose_full` as preprocessor.
@@ -219,15 +222,6 @@ Feel free to join our community group for more help:
 - RTMPose for Human-Centric Artificial Scenes is supported by  [Human-Art](https://github.com/IDEA-Research/HumanArt)
 - <img src="https://github.com/open-mmlab/mmpose/assets/13503330/685bc610-dd9e-4e6f-9c41-dbc8220584f4" height="300px">
 
-Pose Estimators:
-
-|                                     Config                                      | Input Size | AP<sup><br>(Human-Art GT) | Params<sup><br>(M) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                                                                                   Download                                                                                                                                   |
-| :-----------------------------------------------------------------------------: | :--------: | :-----------------------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [RTMPose-t\*](./rtmpose/body_2d_keypoint/rtmpose-t_8xb256-420e_coco-256x192.py) |  256x192   |           65.5            |        3.34        |       0.36        |                    3.20                     |                        1.06                        |                          9.02                           | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_8xb256-420e_humanart-256x192-60b68c98_20230612.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-t_8xb256-420e_humanart-256x192-60b68c98_20230612.zip) |
-| [RTMPose-s\*](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |           69.8            |        5.47        |       0.68        |                    4.48                     |                        1.39                        |                          13.89                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_8xb256-420e_humanart-256x192-5a3ac943_20230611.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-s_8xb256-420e_humanart-256x192-5a3ac943_20230611.zip) |
-| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |           72.8            |       13.59        |       1.93        |                    11.06                    |                        2.29                        |                          26.44                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_8xb256-420e_humanart-256x192-8430627b_20230611.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-m_8xb256-420e_humanart-256x192-8430627b_20230611.zip) |
-| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |           75.3            |       27.66        |       4.16        |                    18.85                    |                        3.46                        |                          45.37                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_8xb256-420e_humanart-256x192-389f2cb0_20230611.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-l_8xb256-420e_humanart-256x192-389f2cb0_20230611.zip) |
-
 Detetors:
 
 |       Detection Config        | Input Size | Model AP<sup><br>(OneHand10K) | Flops<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |        Download        |
@@ -240,6 +234,15 @@ Detetors:
 | [YOLOX-m](./yolox/humanart/yolox_m_8xb8-300e_humanart.py) |  640x640   |             59.1              |         -         |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_m_8xb8-300e_humanart-c2c7a14a.pth) |
 | [YOLOX-l](./yolox/humanart/yolox_l_8xb8-300e_humanart.py) |  640x640   |             60.2              |         -         |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_l_8xb8-300e_humanart-ce1d7a62.pth) |
 | [YOLOX-x](./yolox/humanart/yolox_x_8xb8-300e_humanart.py) |  640x640   |             61.3              |         -         |                      -                      |                         -                          | [Det Model](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/yolox_x_8xb8-300e_humanart-a39d44ed.pth) |
+
+Pose Estimators:
+
+|                                     Config                                      | Input Size | AP<sup><br>(Human-Art GT) | Params<sup><br>(M) | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) | ncnn-FP16-Latency<sup><br>(ms)<sup><br>(Snapdragon 865) |                                                                                                                                   Download                                                                                                                                   |
+| :-----------------------------------------------------------------------------: | :--------: | :-----------------------: | :----------------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [RTMPose-t\*](./rtmpose/body_2d_keypoint/rtmpose-t_8xb256-420e_coco-256x192.py) |  256x192   |           65.5            |        3.34        |       0.36        |                    3.20                     |                        1.06                        |                          9.02                           | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_8xb256-420e_humanart-256x192-60b68c98_20230612.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-t_8xb256-420e_humanart-256x192-60b68c98_20230612.zip) |
+| [RTMPose-s\*](./rtmpose/body_2d_keypoint/rtmpose-s_8xb256-420e_coco-256x192.py) |  256x192   |           69.8            |        5.47        |       0.68        |                    4.48                     |                        1.39                        |                          13.89                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_8xb256-420e_humanart-256x192-5a3ac943_20230611.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-s_8xb256-420e_humanart-256x192-5a3ac943_20230611.zip) |
+| [RTMPose-m\*](./rtmpose/body_2d_keypoint/rtmpose-m_8xb256-420e_coco-256x192.py) |  256x192   |           72.8            |       13.59        |       1.93        |                    11.06                    |                        2.29                        |                          26.44                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_8xb256-420e_humanart-256x192-8430627b_20230611.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-m_8xb256-420e_humanart-256x192-8430627b_20230611.zip) |
+| [RTMPose-l\*](./rtmpose/body_2d_keypoint/rtmpose-l_8xb256-420e_coco-256x192.py) |  256x192   |           75.3            |       27.66        |       4.16        |                    18.85                    |                        3.46                        |                          45.37                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_8xb256-420e_humanart-256x192-389f2cb0_20230611.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-l_8xb256-420e_humanart-256x192-389f2cb0_20230611.zip) |
 
 </details>
 
@@ -276,7 +279,7 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 - Keypoints are defined as [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/). For details please refer to the [meta info](/configs/_base_/datasets/coco_wholebody.py).
 - <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
 
-<details open>
+<details close>
 <summary><b>COCO-WholeBody</b></summary>
 
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
@@ -289,7 +292,32 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 </details>
 
 <details open>
-<summary><b>DWPose</b></summary>
+<summary><b>Cocktail13</b></summary>
+
+- `Cocktail13` denotes model trained on 13 public datasets:
+  - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
+  - [CrowdPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#crowdpose)
+  - [MPII](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#mpii)
+  - [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#sub-jhmdb-dataset)
+  - [Halpe](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_wholebody_keypoint.html#halpe)
+  - [PoseTrack18](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#posetrack18)
+  - [COCO-Wholebody](https://github.com/jin-s13/COCO-WholeBody/)
+  - [UBody](https://github.com/IDEA-Research/OSX)
+  - [Human-Art](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#human-art-dataset)
+  - [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
+  - [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
+  - [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
+  - [LaPa](https://github.com/JDAI-CV/lapa-dataset)
+
+| Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
+| :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
+| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   67.2   |   75.4   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-256x192-fbef0d61_20230925.pth) |
+| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmpose-x_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   70.2   |   77.9   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-384x288-0949e3a9_20230925.pth) |
+
+</details>
+
+<details open>
+<summary><b>COCO+UBody</b></summary>
 
 - DWPose Models are supported by [DWPose](https://github.com/IDEA-Research/DWPose)
 - Models are trained and distilled on:
