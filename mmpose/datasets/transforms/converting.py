@@ -196,6 +196,43 @@ class KeypointConverter(BaseTransform):
 
 @TRANSFORMS.register_module()
 class SingleHandConverter(BaseTransform):
+    """Mapping a single hand keypoints into double hands according to the given
+    mapping and hand type.
+
+    Required Keys:
+
+        - keypoints
+        - keypoints_visible
+        - hand_type
+
+    Modified Keys:
+
+        - keypoints
+        - keypoints_visible
+
+    Args:
+        num_keypoints (int): The number of keypoints in target dataset.
+        left_hand_mapping (list): A list containing mapping indexes. Each
+            element has format (source_index, target_index)
+        right_hand_mapping (list): A list containing mapping indexes. Each
+            element has format (source_index, target_index)
+
+    Example:
+        >>> import numpy as np
+        >>> self = SingleHandConverter(
+        >>>     num_keypoints=42,
+        >>>     left_hand_mapping=[
+        >>>         (0, 0), (1, 1), (2, 2), (3, 3)
+        >>>     ],
+        >>>     right_hand_mapping=[
+        >>>         (0, 21), (1, 22), (2, 23), (3, 24)
+        >>>     ])
+        >>> results = dict(
+        >>>     keypoints=np.arange(84).reshape(2, 21, 2),
+        >>>     keypoints_visible=np.arange(84).reshape(2, 21, 2) % 2,
+        >>>     hand_type=np.array([[0, 1], [1, 0]]))
+        >>> results = self(results)
+    """
 
     def __init__(self, num_keypoints: int,
                  left_hand_mapping: Union[List[Tuple[int, int]],
