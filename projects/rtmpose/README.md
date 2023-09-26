@@ -44,6 +44,8 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Sep. 2023:
+  - Add RTMW models trained on combined datasets. The alpha version of RTMW-x model achieves 70.2 mAP on COCO-Wholebody val set. The technical report will be released soon.
 - Aug. 2023:
   - Support distilled 133-keypoint WholeBody models powered by [DWPose](https://github.com/IDEA-Research/DWPose/tree/main).
     - You can try DWPose/RTMPose with [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) now! Just update your sd-webui-controlnet >= v1.1237, then choose `dw_openpose_full` as preprocessor.

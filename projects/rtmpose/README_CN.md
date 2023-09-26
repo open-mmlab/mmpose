@@ -40,6 +40,8 @@ ______________________________________________________________________
 
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
+- 2023 年 9 月：
+  - 发布混合数据集上训练的 RTMW 模型。Alpha 版本的 RTMW-x 在 COCO-Wholebody 验证集上取得了 70.2 mAP。技术报告正在撰写中。
 - 2023 年 8 月：
   - 支持基于 RTMPose 模型蒸馏的 133 点 WholeBody 模型（由 [DWPose](https://github.com/IDEA-Research/DWPose/tree/main) 提供）。
     - 你可以在 [sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) 中使用 DWPose/RTMPose 作为姿态估计后端进行人物图像生成。升级 sd-webui-controlnet >= v1.1237 并选择 `dw_openpose_full` 即可使用。
