@@ -279,9 +279,10 @@ The MMPose library has predefined aliases for several frequently used models. Th
 
 The following table lists the available 3D model aliases and their corresponding configuration names:
 
-| Alias   | Configuration Name                | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector |
-| ------- | --------------------------------- | ------------------------ | ----------------- | ----------------- | -------- |
-| human3d | vid_pl_motionbert_8xb32-120e_h36m | Human 3D pose estimation | MotionBert        | RTMPose-m         | RTMDet-m |
+| Alias   | Configuration Name                           | Task                     | 3D Pose Estimator | 2D Pose Estimator | Detector    |
+| ------- | -------------------------------------------- | ------------------------ | ----------------- | ----------------- | ----------- |
+| human3d | vid_pl_motionbert_8xb32-120e_h36m            | Human 3D pose estimation | MotionBert        | RTMPose-m         | RTMDet-m    |
+| hand3d  | internet_res50_4xb16-20e_interhand3d-256x256 | Hand 3D pose estimation  | InterNet          | -                 | whole image |
 
 In addition, users can utilize the CLI tool to display all available aliases with the following command:
 
