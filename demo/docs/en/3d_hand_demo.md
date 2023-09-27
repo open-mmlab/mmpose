@@ -36,3 +36,17 @@ python demo/hand3d_internet_demo.py \
     --save-predictions \
     --output-root vis_results
 ```
+
+### 3D Hand Pose Estimation with Inferencer
+
+The Inferencer provides a convenient interface for inference, allowing customization using model aliases instead of configuration files and checkpoint paths. It supports various input formats, including image paths, video paths, image folder paths, and webcams. Below is an example command:
+
+```shell
+python demo/inferencer_demo.py tests/data/interhand2.6m/image29590.jpg --pose3d hand3d --vis-out-dir vis_results/hand3d
+```
+
+This command infers the image and saves the visualization results in the `vis_results/hand3d` directory.
+
+<img src="https://github.com/open-mmlab/mmpose/assets/26127467/29218285-aff6-455f-9763-39e8539eae61" alt="Image 1" height="300"/>
+
+In addition, the Inferencer supports saving predicted poses. For more information, please refer to the [inferencer document](https://mmpose.readthedocs.io/en/latest/user_guides/inference.html#inferencer-a-unified-inference-interface).

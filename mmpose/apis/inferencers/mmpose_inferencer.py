@@ -9,6 +9,7 @@ from mmengine.infer.infer import ModelType
 from mmengine.structures import InstanceData
 
 from .base_mmpose_inferencer import BaseMMPoseInferencer
+from .hand3d_inferencer import Hand3DInferencer
 from .pose2d_inferencer import Pose2DInferencer
 from .pose3d_inferencer import Pose3DInferencer
 
@@ -79,10 +80,15 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         self.visualizer = None
         if pose3d is not None:
-            self.inferencer = Pose3DInferencer(pose3d, pose3d_weights, pose2d,
-                                               pose2d_weights, device, scope,
-                                               det_model, det_weights,
-                                               det_cat_ids)
+            if 'hand3d' in pose3d:
+                self.inferencer = Hand3DInferencer(pose3d, pose3d_weights,
+                                                   device, scope, det_model,
+                                                   det_weights, det_cat_ids)
+            else:
+                self.inferencer = Pose3DInferencer(pose3d, pose3d_weights,
+                                                   pose2d, pose2d_weights,
+                                                   device, scope, det_model,
+                                                   det_weights, det_cat_ids)
         elif pose2d is not None:
             self.inferencer = Pose2DInferencer(pose2d, pose2d_weights, device,
                                                scope, det_model, det_weights,
@@ -201,9 +207,11 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
             visualization = self.visualize(ori_inputs, preds,
                                            **visualize_kwargs)
-            results = self.postprocess(preds, visualization,
-                                       return_datasamples,
-                                       **postprocess_kwargs)
+            results = self.postprocess(
+                preds,
+                visualization,
+                return_datasamples=return_datasamples,
+                **postprocess_kwargs)
             yield results
 
         if self._video_input:

@@ -1,23 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import logging
 import os
-import warnings
 from collections import defaultdict
 from functools import partial
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
-import cv2
 import mmcv
 import numpy as np
 import torch
 from mmengine.config import Config, ConfigDict
-from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
-from mmengine.logging import print_log
 from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
-from mmengine.utils import mkdir_or_exist
 
 from mmpose.apis import (_track_by_iou, _track_by_oks, collate_pose_sequence,
                          convert_keypoint_definition, extract_pose_sequence)
@@ -353,88 +347,6 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         data_samples = [merge_data_samples(pose_lift_results)]
         return data_samples
 
-    def __call__(
-        self,
-        inputs: InputsType,
-        return_datasamples: bool = False,
-        batch_size: int = 1,
-        out_dir: Optional[str] = None,
-        **kwargs,
-    ) -> dict:
-        """Call the inferencer.
-
-        Args:
-            inputs (InputsType): Inputs for the inferencer.
-            return_datasamples (bool): Whether to return results as
-                :obj:`BaseDataElement`. Defaults to False.
-            batch_size (int): Batch size. Defaults to 1.
-            out_dir (str, optional): directory to save visualization
-                results and predictions. Will be overoden if vis_out_dir or
-                pred_out_dir are given. Defaults to None
-            **kwargs: Key words arguments passed to :meth:`preprocess`,
-                :meth:`forward`, :meth:`visualize` and :meth:`postprocess`.
-                Each key in kwargs should be in the corresponding set of
-                ``preprocess_kwargs``, ``forward_kwargs``,
-                ``visualize_kwargs`` and ``postprocess_kwargs``.
-
-        Returns:
-            dict: Inference and visualization results.
-        """
-        if out_dir is not None:
-            if 'vis_out_dir' not in kwargs:
-                kwargs['vis_out_dir'] = f'{out_dir}/visualizations'
-            if 'pred_out_dir' not in kwargs:
-                kwargs['pred_out_dir'] = f'{out_dir}/predictions'
-
-        (
-            preprocess_kwargs,
-            forward_kwargs,
-            visualize_kwargs,
-            postprocess_kwargs,
-        ) = self._dispatch_kwargs(**kwargs)
-
-        self.update_model_visualizer_settings(**kwargs)
-
-        # preprocessing
-        if isinstance(inputs, str) and inputs.startswith('webcam'):
-            inputs = self._get_webcam_inputs(inputs)
-            batch_size = 1
-            if not visualize_kwargs.get('show', False):
-                warnings.warn('The display mode is closed when using webcam '
-                              'input. It will be turned on automatically.')
-            visualize_kwargs['show'] = True
-        else:
-            inputs = self._inputs_to_list(inputs)
-
-        # check the compatibility between inputs/outputs
-        if not self._video_input and len(inputs) > 0:
-            vis_out_dir = visualize_kwargs.get('vis_out_dir', None)
-            if vis_out_dir is not None:
-                _, file_extension = os.path.splitext(vis_out_dir)
-                assert not file_extension, f'the argument `vis_out_dir` ' \
-                    f'should be a folder while the input contains multiple ' \
-                    f'images, but got {vis_out_dir}'
-
-        inputs = self.preprocess(
-            inputs, batch_size=batch_size, **preprocess_kwargs)
-
-        preds = []
-
-        for proc_inputs, ori_inputs in inputs:
-            preds = self.forward(proc_inputs, **forward_kwargs)
-
-            visualization = self.visualize(ori_inputs, preds,
-                                           **visualize_kwargs)
-            results = self.postprocess(preds, visualization,
-                                       return_datasamples,
-                                       **postprocess_kwargs)
-            yield results
-
-        if self._video_input:
-            self._finalize_video_processing(
-                postprocess_kwargs.get('pred_out_dir', ''))
-        self._buffer.clear()
-
     def visualize(self,
                   inputs: list,
                   preds: List[PoseDataSample],
@@ -526,39 +438,13 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             results.append(visualization)
 
             if vis_out_dir:
-                out_img = mmcv.rgb2bgr(visualization)
-                _, file_extension = os.path.splitext(vis_out_dir)
-                if file_extension:
-                    dir_name = os.path.dirname(vis_out_dir)
-                    file_name = os.path.basename(vis_out_dir)
-                else:
-                    dir_name = vis_out_dir
-                    file_name = None
-                mkdir_or_exist(dir_name)
-
-                if self._video_input:
-
-                    if self.video_info['writer'] is None:
-                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                        if file_name is None:
-                            file_name = os.path.basename(
-                                self.video_info['name'])
-                        out_file = join_path(dir_name, file_name)
-                        self.video_info['output_file'] = out_file
-                        self.video_info['writer'] = cv2.VideoWriter(
-                            out_file, fourcc, self.video_info['fps'],
-                            (visualization.shape[1], visualization.shape[0]))
-                    self.video_info['writer'].write(out_img)
-
-                else:
-                    img_name = os.path.basename(pred.metainfo['img_path'])
-                    file_name = file_name if file_name else img_name
-                    out_file = join_path(dir_name, file_name)
-                    mmcv.imwrite(out_img, out_file)
-                    print_log(
-                        f'the output image has been saved at {out_file}',
-                        logger='current',
-                        level=logging.INFO)
+                img_name = os.path.basename(pred.metainfo['img_path']) \
+                    if 'img_path' in pred.metainfo else None
+                self.save_visualization(
+                    visualization,
+                    vis_out_dir,
+                    img_name=img_name,
+                )
 
         if return_vis:
             return results
