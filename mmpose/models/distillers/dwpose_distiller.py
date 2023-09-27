@@ -20,9 +20,30 @@ from mmpose.utils.typing import (ForwardResults, OptConfigType, OptMultiConfig,
 
 @MODELS.register_module()
 class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
-    """Base distiller for detectors.
+    """Distiller introduced in `DWPose`_ by Yang et al (2023). This distiller
+    is designed for distillation of RTMPose.
 
-    It typically consists of teacher_model and student_model.
+    It typically consists of teacher_model and student_model. Please use the
+    script `tools/misc/pth_transfer.py` to transfer the distilled model to the
+    original RTMPose model.
+
+    Args:
+        teacher_cfg (str): Config file of the teacher model.
+        student_cfg (str): Config file of the student model.
+        two_dis (bool): Whether this is the second stage of distillation.
+            Defaults to False.
+        distill_cfg (dict): Config for distillation. Defaults to None.
+        teacher_pretrained (str): Path of the pretrained teacher model.
+            Defaults to None.
+        train_cfg (dict, optional): The runtime config for training process.
+            Defaults to ``None``
+        data_preprocessor (dict, optional): The data preprocessing config to
+            build the instance of :class:`BaseDataPreprocessor`. Defaults to
+            ``None``
+        init_cfg (dict, optional): The config to control the initialization.
+            Defaults to ``None``
+
+    .. _`DWPose`: https://arxiv.org/abs/2307.15880
     """
 
     def __init__(self,
@@ -70,6 +91,10 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
         self.student.init_weights()
 
     def set_epoch(self):
+        """Set epoch for distiller.
+
+        Used for the decay of distillation loss.
+        """
         self.message_hub = MessageHub.get_current_instance()
         self.epoch = self.message_hub.get_info('epoch')
         self.max_epochs = self.message_hub.get_info('max_epochs')
@@ -143,6 +168,26 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
         return losses
 
     def predict(self, inputs, data_samples):
+        """Predict results from a batch of inputs and data samples with post-
+        processing.
+
+        Args:
+            inputs (Tensor): Inputs with shape (N, C, H, W)
+            data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+
+        Returns:
+            list[:obj:`PoseDataSample`]: The pose estimation results of the
+            input images. The return value is `PoseDataSample` instances with
+            ``pred_instances`` and ``pred_fields``(optional) field , and
+            ``pred_instances`` usually contains the following keys:
+
+                - keypoints (Tensor): predicted keypoint coordinates in shape
+                    (num_instances, K, D) where K is the keypoint number and D
+                    is the keypoint dimension
+                - keypoint_scores (Tensor): predicted keypoint scores in shape
+                    (num_instances, K)
+        """
         if self.two_dis:
             assert self.student.with_head, (
                 'The model must have head to perform prediction.')
@@ -171,10 +216,16 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
             return self.student.predict(inputs, data_samples)
 
     def extract_feat(self, inputs: Tensor) -> Tuple[Tensor]:
-        x = self.teacher.extract_feat(inputs)
-        if self.student.with_neck:
-            x = self.neck(x)
+        """Extract features.
 
+        Args:
+            inputs (Tensor): Image tensor with shape (N, C, H ,W).
+
+        Returns:
+            tuple[Tensor]: Multi-level features that may have various
+            resolutions.
+        """
+        x = self.teacher.extract_feat(inputs)
         return x
 
     def head_loss(
@@ -227,5 +278,13 @@ class DWPoseDistiller(BaseModel, metaclass=ABCMeta):
         return losses, pred_simcc, gt_simcc, keypoint_weights
 
     def _forward(self, inputs: Tensor):
+        """Network forward process. Usually includes backbone, neck and head
+        forward without any post-processing.
 
+        Args:
+            inputs (Tensor): Inputs with shape (N, C, H, W).
+
+        Returns:
+            Union[Tensor | Tuple[Tensor]]: forward output of the network.
+        """
         return self.student._forward(inputs)
