@@ -57,7 +57,7 @@ class Hand3DInferencer(BaseMMPoseInferencer):
     """
 
     preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
-    forward_kwargs: set = {'merge_results'}
+    forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
         'return_vis',
         'show',
@@ -67,9 +67,7 @@ class Hand3DInferencer(BaseMMPoseInferencer):
         'thickness',
         'kpt_thr',
         'vis_out_dir',
-        'skeleton_style',
-        'draw_heatmap',
-        'black_background',
+        'num_instances',
     }
     postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
