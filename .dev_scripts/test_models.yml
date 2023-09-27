@@ -1,0 +1,1125 @@
+# 测试用例列表
+cases:
+- name: rtmpose-m_8xb64-210e_ap10k-256x256
+  params:
+    checkpoint: rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth
+    config: configs/animal_2d_keypoint/rtmpose/ap10k/rtmpose-m_8xb64-210e_ap10k-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AP-10K
+    eval: AP
+    metrics:
+      AP: 0.722
+
+- name: cspnext-m_udp_8xb64-210e_ap10k-256x256
+  params:
+    checkpoint: cspnext-m_udp-ap10k_pt-in1k_210e-256x256-1f2d947a_20230123.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-ap10k_pt-in1k_210e-256x256-1f2d947a_20230123.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ap10k/cspnext-m_udp_8xb64-210e_ap10k-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AP-10K
+    eval: AP
+    metrics:
+      AP: 0.703
+
+- name: cid_hrnet-w32_8xb20-140e_coco-512x512
+  params:
+    checkpoint: cid_hrnet-w32_8xb20-140e_coco-512x512_42b7e6e6-20230207.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/cid/coco/cid_hrnet-w32_8xb20-140e_coco-512x512_42b7e6e6-20230207.pth
+    config: configs/body_2d_keypoint/cid/coco/cid_hrnet-w32_8xb20-140e_coco-512x512.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.704
+
+- name: cid_hrnet-w48_8xb20-140e_coco-512x512
+  params:
+    checkpoint: cid_hrnet-w48_8xb20-140e_coco-512x512_a36c3ecf-20230207.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/cid/coco/cid_hrnet-w48_8xb20-140e_coco-512x512_a36c3ecf-20230207.pth
+    config: configs/body_2d_keypoint/cid/coco/cid_hrnet-w48_8xb20-140e_coco-512x512.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.715
+
+- name: dekr_hrnet-w32_8xb10-140e_coco-512x512
+  params:
+    checkpoint: dekr_hrnet-w32_8xb10-140e_coco-512x512_ac7c17bf-20221228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512_ac7c17bf-20221228.pth
+    config: configs/body_2d_keypoint/dekr/coco/dekr_hrnet-w32_8xb10-140e_coco-512x512.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.686
+
+- name: dekr_hrnet-w48_8xb10-140e_coco-640x640
+  params:
+    checkpoint: dekr_hrnet-w48_8xb10-140e_coco-640x640_74796c32-20230124.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/coco/dekr_hrnet-w48_8xb10-140e_coco-640x640_74796c32-20230124.pth
+    config: configs/body_2d_keypoint/dekr/coco/dekr_hrnet-w48_8xb10-140e_coco-640x640.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.714
+
+- name: dekr_hrnet-w32_8xb10-300e_crowdpose-512x512
+  params:
+    checkpoint: dekr_hrnet-w32_8xb10-140e_crowdpose-512x512_147bae97-20221228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w32_8xb10-300e_crowdpose-512x512_147bae97-20221228.pth
+    config: configs/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w32_8xb10-300e_crowdpose-512x512.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: CrowdPose
+    eval: AP
+    metrics:
+      AP: 0.663
+
+- name: dekr_hrnet-w48_8xb5-300e_crowdpose-640x640
+  params:
+    checkpoint: hrnet_w48_crowdpose_640x640-ef6b6040_20220930.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w48_8xb5-300e_crowdpose-640x640_4ea6031e-20230128.pth
+    config: configs/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w48_8xb5-300e_crowdpose-640x640.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: CrowdPose
+    eval: AP
+    metrics:
+      AP: 0.679
+
+- name: ipr_res50_8xb64-210e_coco-256x256
+  params:
+    checkpoint: ipr_res50_8xb64-210e_coco-256x256-a3898a33_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256-a3898a33_20220913.pth
+    config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.633
+
+- name: ipr_res50_dsnt-8xb64-210e_coco-256x256
+  params:
+    checkpoint: ipr_res50_dsnt-8xb64-210e_coco-256x256-441eedc0_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256-441eedc0_20220913.pth
+    config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_dsnt-8xb64-210e_coco-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.674
+
+- name: ipr_res50_debias--8xb64-210e_coco-256x256
+  params:
+    checkpoint: ipr_res50_debias-8xb64-210e_coco-256x256-055a7699_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_debias-8xb64-210e_coco-256x256-055a7699_20220913.pth
+    config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_debias--8xb64-210e_coco-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.675
+
+- name: rtmpose-t_8xb256-420e_coco-256x192
+  params:
+    checkpoint: rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-t_8xb256-420e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.682
+
+- name: rtmpose-s_8xb256-420e_coco-256x192
+  params:
+    checkpoint: rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-s_8xb256-420e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.716
+
+- name: rtmpose-m_8xb256-420e_coco-256x192
+  params:
+    checkpoint: rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.746
+
+- name: rtmpose-l_8xb256-420e_coco-256x192
+  params:
+    checkpoint: rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.758
+
+- name: rtmpose-t_8xb256-420e_aic-coco-256x192
+  params:
+    checkpoint: rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-t_8xb256-420e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.685
+
+- name: rtmpose-s_8xb256-420e_aic-coco-256x192
+  params:
+    checkpoint: rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-s_8xb256-420e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.722
+
+- name: rtmpose-m_8xb256-420e_aic-coco-256x192
+  params:
+    checkpoint: rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.758
+
+- name: rtmpose-l_8xb256-420e_aic-coco-256x192
+  params:
+    checkpoint: rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.765
+
+- name: rtmpose-m_8xb256-420e_aic-coco-384x288
+  params:
+    checkpoint: rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.77
+
+- name: rtmpose-l_8xb256-420e_aic-coco-384x288
+  params:
+    checkpoint: rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_aic-coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.773
+
+- name: rtmpose-t_8xb256-420e_coco-256x192
+  params:
+    checkpoint: rtmpose-m_simcc-crowdpose_pt-aic-coco_210e-256x192-e6192cac_20230224.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-crowdpose_pt-aic-coco_210e-256x192-e6192cac_20230224.pth
+    config: configs/body_2d_keypoint/rtmpose/crowdpose/rtmpose-m_8xb64-210e_crowdpose-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: CrowdPose
+    eval: AP
+    metrics:
+      AP: 0.706
+
+- name: rtmpose-m_8xb64-210e_mpii-256x256
+  params:
+    checkpoint: rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.pth
+    config: configs/body_2d_keypoint/rtmpose/mpii/rtmpose-m_8xb64-210e_mpii-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: MPII
+    eval: Mean
+    metrics:
+      Mean: 0.907
+
+- name: simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192
+  params:
+    checkpoint: simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192-4b0703bb_20221010.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192-4b0703bb_20221010.pth
+    config: configs/body_2d_keypoint/simcc/coco/simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.62
+
+- name: simcc_res50_8xb64-210e_coco-256x192
+  params:
+    checkpoint: simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth
+    config: configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.721
+
+- name: simcc_res50_8xb32-140e_coco-384x288
+  params:
+    checkpoint: simcc_res50_8xb32-140e_coco-384x288-45c3ba34_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288-45c3ba34_20220913.pth
+    config: configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.735
+
+- name: simcc_vipnas-mbv3_8xb64-210e_coco-256x192
+  params:
+    checkpoint: simcc_vipnas-mbv3_8xb64-210e_coco-256x192-719f3489_20220922.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192-719f3489_20220922.pth
+    config: configs/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.695
+
+- name: td-hm_ViTPose-small_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-small_8xb64-210e_coco-256x192-62d7a712_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-small_8xb64-210e_coco-256x192-62d7a712_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-small_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.739
+
+- name: td-hm_ViTPose-base_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-base_8xb64-210e_coco-256x192-216eae50_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base_8xb64-210e_coco-256x192-216eae50_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.757
+
+- name: td-hm_ViTPose-large_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-large_8xb64-210e_coco-256x192-53609f55_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large_8xb64-210e_coco-256x192-53609f55_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.782
+
+- name: td-hm_ViTPose-huge_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.788
+
+- name: td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192-4c101a76_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192-4c101a76_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-small-simple_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.736
+
+- name: td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192-0b8234ea_20230407.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192-0b8234ea_20230407.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-base-simple_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.756
+
+- name: td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192-3a7ee9e1_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192-3a7ee9e1_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-large-simple_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.780
+
+- name: td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192-ffd48c05_20230314.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192-ffd48c05_20230314.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge-simple_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.789
+
+- name: td-hm_hrformer-small_8xb32-210e_coco-256x192
+  params:
+    checkpoint: hrformer_small_coco_256x192-5310d898_20220316.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_256x192-5310d898_20220316.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrformer-small_8xb32-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.738
+
+- name: td-hm_hrformer-small_8xb32-210e_coco-384x288
+  params:
+    checkpoint: hrformer_small_coco_384x288-98d237ed_20220316.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_384x288-98d237ed_20220316.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrformer-small_8xb32-210e_coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.757
+
+- name: td-hm_hrformer-base_8xb32-210e_coco-256x192
+  params:
+    checkpoint: hrformer_base_coco_256x192-6f5f1169_20220316.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_base_coco_256x192-6f5f1169_20220316.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrformer-base_8xb32-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.754
+
+- name: td-hm_hrformer-base_8xb32-210e_coco-384x288
+  params:
+    checkpoint: hrformer_base_coco_384x288-ecf0758d_20220316.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_base_coco_384x288-ecf0758d_20220316.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrformer-base_8xb32-210e_coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.774
+
+- name: td-hm_hrnet-w32_udp-8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-hm_hrnet-w32_udp-8xb64-210e_coco-256x192-73ede547_20220914.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_udp-8xb64-210e_coco-256x192-73ede547_20220914.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_udp-8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.762
+
+- name: td-hm_hrnet-w32_udp-8xb64-210e_coco-384x288
+  params:
+    checkpoint: td-hm_hrnet-w32_udp-8xb64-210e_coco-384x288-9a3f7c85_20220914.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_udp-8xb64-210e_coco-384x288-9a3f7c85_20220914.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_udp-8xb64-210e_coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.768
+
+- name: td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192
+  params:
+    checkpoint: td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192-3feaef8f_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192-3feaef8f_20220913.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.768
+
+- name: td-hm_hrnet-w48_udp-8xb32-210e_coco-384x288
+  params:
+    checkpoint: td-hm_hrnet-w48_udp-8xb32-210e_coco-384x288-70d7ab01_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_udp-8xb32-210e_coco-384x288-70d7ab01_20220913.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_udp-8xb32-210e_coco-384x288.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.773
+
+- name: cspnext-tiny_udp_8xb256-210e_coco-256x192
+  params:
+    checkpoint: cspnext-tiny_udp-coco_pt-in1k_210e-256x192-0908dd2d_20230123.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-coco_pt-in1k_210e-256x192-0908dd2d_20230123.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-tiny_udp_8xb256-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.665
+
+- name: cspnext-s_udp_8xb256-210e_coco-256x192
+  params:
+    checkpoint: cspnext-s_udp-coco_pt-in1k_210e-256x192-92dbfc1d_20230123.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-s_udp-coco_pt-in1k_210e-256x192-92dbfc1d_20230123.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-s_udp_8xb256-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.697
+
+- name: cspnext-m_udp_8xb256-210e_coco-256x192
+  params:
+    checkpoint: cspnext-m_udp-coco_pt-in1k_210e-256x192-95f5967e_20230123.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-coco_pt-in1k_210e-256x192-95f5967e_20230123.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-m_udp_8xb256-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.732
+
+- name: cspnext-l_udp_8xb256-210e_coco-256x192
+  params:
+    checkpoint: cspnext-l_udp-coco_pt-in1k_210e-256x192-661cdd8c_20230123.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-coco_pt-in1k_210e-256x192-661cdd8c_20230123.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-l_udp_8xb256-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.75
+
+- name: cspnext-tiny_udp_8xb256-210e_aic-coco-256x192
+  params:
+    checkpoint: cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-tiny_udp_8xb256-210e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.655
+
+- name: cspnext-s_udp_8xb256-210e_aic-coco-256x192
+  params:
+    checkpoint: cspnext-s_udp-aic-coco_210e-256x192-92f5a029_20230130.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-s_udp-aic-coco_210e-256x192-92f5a029_20230130.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-s_udp_8xb256-210e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.7
+
+- name: cspnext-m_udp_8xb256-210e_aic-coco-256x192
+  params:
+    checkpoint: cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-m_udp_8xb256-210e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.748
+
+- name: cspnext-l_udp_8xb256-210e_aic-coco-256x192
+  params:
+    checkpoint: cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-l_udp_8xb256-210e_aic-coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.772
+
+- name: cspnext-m_udp_8xb64-210e_crowpose-256x192
+  params:
+    checkpoint: cspnext-m_udp-crowdpose_pt-in1k_210e-256x192-f591079f_20230123.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-crowdpose_pt-in1k_210e-256x192-f591079f_20230123.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/cspnext-m_udp_8xb64-210e_crowpose-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: CrowdPose
+    eval: AP
+    metrics:
+      AP: 0.662
+
+- name: cspnext-m_udp_8xb64-210e_mpii-256x256
+  params:
+    checkpoint: cspnext-m_udp-mpii_pt-in1k_210e-256x256-68d0402f_20230208.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-mpii_pt-in1k_210e-256x256-68d0402f_20230208.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/mpii/cspnext-m_udp_8xb64-210e_mpii-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: MPII
+    eval: Mean
+    metrics:
+      Mean: 0.902
+
+- name: td-reg_res50_rle-8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-reg_res50_rle-8xb64-210e_coco-256x192-d37efd64_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192-d37efd64_20220913.pth
+    config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.706
+
+- name: td-reg_res50_rle-pretrained-8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-reg_res50_rle-pretrained-8xb64-210e_coco-256x192-2cb494ee_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-pretrained-8xb64-210e_coco-256x192-2cb494ee_20220913.pth
+    config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-pretrained-8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.719
+
+- name: td-reg_res101_rle-8xb64-210e_coco-256x192
+  params:
+    checkpoint: deeppose_res101_coco_256x192_rle-16c3d461_20220615.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192_rle-16c3d461_20220615.pth
+    config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_res101_rle-8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.722
+
+- name: td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192
+  params:
+    checkpoint: td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.pth
+    config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.593
+
+# - name: vid-pl_videopose3d-243frm-supv_8xb128-80e_h36m
+#   params:
+#     checkpoint: videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv_8xb128-80e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 40.0
+
+# - name: vid-pl_videopose3d-81frm-supv_8xb128-80e_h36m
+#   params:
+#     checkpoint: videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-81frm-supv_8xb128-80e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 38.9
+
+# - name: vid-pl_videopose3d-243frm-supv_8xb128-80e_h36m
+#   params:
+#     checkpoint: videopose_h36m_243frames_fullconv_supervised-880bea25_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised-880bea25_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv_8xb128-80e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 37.6
+
+# - name: vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m
+#   params:
+#     checkpoint: videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 52.9
+
+# - name: vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m
+#   params:
+#     checkpoint: videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-243frm-supv-cpn-ft_8xb128-200e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 47.9
+
+# - name: vid-pl_videopose3d-27frm-semi-supv_8xb64-200e_h36m
+#   params:
+#     checkpoint: videopose_h36m_27frames_fullconv_semi-supervised-54aef83b_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised-54aef83b_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-27frm-semi-supv_8xb64-200e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 58.1
+
+# - name: vid-pl_videopose3d-27frm-semi-supv-cpn-ft_8xb64-200e_h36m
+#   params:
+#     checkpoint: videopose_h36m_27frames_fullconv_semi-supervised_cpn_ft-71be9cde_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised_cpn_ft-71be9cde_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-27frm-semi-supv-cpn-ft_8xb64-200e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 67.4
+
+- name: rtmpose-m_8xb32-60e_coco-wholebody-face-256x256
+  params:
+    checkpoint: rtmpose-m_simcc-coco-wholebody-face_pt-aic-coco_60e-256x256-62026ef2_20230228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody-face_pt-aic-coco_60e-256x256-62026ef2_20230228.pth
+    config: configs/face_2d_keypoint/rtmpose/coco_wholebody_face/rtmpose-m_8xb32-60e_coco-wholebody-face-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO-WholeBody-Face
+    eval: NME
+    metrics:
+      NME: 0.0466
+
+- name: rtmpose-m_8xb64-60e_wflw-256x256
+  params:
+    checkpoint: rtmpose-m_simcc-wflw_pt-aic-coco_60e-256x256-dc1dcdcf_20230228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-wflw_pt-aic-coco_60e-256x256-dc1dcdcf_20230228.pth
+    config: configs/face_2d_keypoint/rtmpose/wflw/rtmpose-m_8xb64-60e_wflw-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: WFLW
+    eval: NME
+    metrics:
+      NME: 4.01
+
+- name: rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256
+  params:
+    checkpoint: rtmpose-m_simcc-coco-wholebody-hand_pt-aic-coco_210e-256x256-99477206_20230228.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco-wholebody-hand_pt-aic-coco_210e-256x256-99477206_20230228.pth
+    config: configs/hand_2d_keypoint/rtmpose/coco_wholebody_hand/rtmpose-m_8xb32-210e_coco-wholebody-hand-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO-WholeBody-Hand
+    eval: AUC
+    metrics:
+      AUC: 0.815
+
+- name: rtmpose-m_8xb64-120e_lapa-256x256
+  params:
+    checkpoint: rtmpose-m_simcc-lapa_pt-aic-coco_120e-256x256-762b1ae2_20230422.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-lapa_pt-aic-coco_120e-256x256-762b1ae2_20230422.pth
+    config: configs/face_2d_keypoint/rtmpose/lapa/rtmpose-m_8xb64-120e_lapa-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: LaPa
+    eval: NME
+    metrics:
+      NME: 0.0129
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256-08bf96cb_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256-08bf96cb_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P1-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.6323
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256-2396cc58_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256-2396cc58_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P2-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.3741
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256-845085f9_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256-845085f9_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_amphibian-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.5358
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256-566feff5_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256-566feff5_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_bird-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.7671
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256-76c3999f_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256-76c3999f_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_fish-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.6406
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256-e8aadf02_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256-e8aadf02_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_mammal-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.571
+
+- name: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256
+  params:
+    checkpoint: td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256-e8440c16_20230519.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/animal_2d_keypoint/topdown_heatmap/animal_kingdom/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256-e8440c16_20230519.pth
+    config: configs/animal_2d_keypoint/topdown_heatmap/ak/td-hm_hrnet-w32_8xb32-300e_animalkingdom_P3_reptile-256x256.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: AnimalKingdom
+    eval: PCK
+    metrics:
+      PCK: 0.51
+
+- name: td-hm_ViTPose-small_8xb64-210e_humanart-256x192
+  params:
+    checkpoint: td-hm_ViTPose-small_8xb64-210e_humanart-256x192-5cbe2bfc_20230611.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-small_8xb64-210e_humanart-256x192-5cbe2bfc_20230611.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-small_8xb64-210e_humanart-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: Human-Art
+    eval: AP
+    metrics:
+      AP: 0.381
+
+- name: td-hm_ViTPose-base_8xb64-210e_humanart-256x192
+  params:
+    checkpoint: td-hm_ViTPose-base_8xb64-210e_humanart-256x192-b417f546_20230611.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_ViTPose-base_8xb64-210e_humanart-256x192-b417f546_20230611.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_ViTPose-base_8xb64-210e_humanart-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: Human-Art
+    eval: AP
+    metrics:
+      AP: 0.410
+
+
+- name: yoloxpose_s_8xb32-300e_coco-640
+  params:
+    checkpoint: yoloxpose_s_8xb32-300e_coco-640-56c79c1f_20230829.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/yolox_pose/yoloxpose_s_8xb32-300e_coco-640-56c79c1f_20230829.pth
+    config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_s_8xb32-300e_coco-640.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.641
+
+- name: internet_res50_4xb16-20e_interhand3d-256x256
+  params:
+    checkpoint: res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
+    config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_s_8xb32-300e_coco-640.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: InterHand2.6M (H+M)
+    eval: MPJPE-all
+    metrics:
+      MPJPE-all: 11.86
+
+# s集群：s1或者s2, s1就是填，s2就填2
+cluster_num: '2'
+# 默认的结果允许的浮动值
+default_floating_range: 0.2
+# 指定模型的结果允许的浮动值
+model_floating_ranges: {}
+# 测试分区
+partition: mm_dev
+# repo名字
+repo: mmpose
+# 测试repo的
+branch: test-1.x
+# train or test
+task_type: test
+# 需要安装的第三方库
+third_part_libs: ['pip install openmim','pip install -r ../requirements/albu.txt','mim install mmpretrain']

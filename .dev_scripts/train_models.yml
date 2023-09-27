@@ -1,0 +1,103 @@
+# 测试用例列表
+cases:
+- name: rtmpose-m_8xb256-420e_coco-256x192
+  params:
+    checkpoint: rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
+    config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.746
+
+- name: simcc_res50_8xb64-210e_coco-256x192
+  params:
+    checkpoint: simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth
+    config: configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.721
+
+- name: td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192
+  params:
+    checkpoint: td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192-3feaef8f_20220913.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192-3feaef8f_20220913.pth
+    config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_udp-8xb32-210e_coco-256x192.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.768
+
+- name: yoloxpose_s_8xb32-300e_coco-640
+  params:
+    checkpoint: yoloxpose_s_8xb32-300e_coco-640-56c79c1f_20230829.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/yolox_pose/yoloxpose_s_8xb32-300e_coco-640-56c79c1f_20230829.pth
+    config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_s_8xb32-300e_coco-640.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: COCO
+    eval: AP
+    metrics:
+      AP: 0.641
+
+- name: internet_res50_4xb16-20e_interhand3d-256x256
+  params:
+    checkpoint: res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
+    checkpoint_url: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
+    config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_s_8xb32-300e_coco-640.py
+    cpus_per_node: 4
+    gpus: 8
+    gpus_per_node: 8
+  results:
+    dataset: InterHand2.6M (H+M)
+    eval: MPJPE-all
+    metrics:
+      MPJPE-all: 11.86
+
+# - name: vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m
+#   params:
+#     checkpoint: videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+#     checkpoint_url: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+#     config: configs/body_3d_keypoint/video_pose_lift/h36m/vid-pl_videopose3d-1frm-supv-cpn-ft_8xb128-80e_h36m.py
+#     cpus_per_node: 4
+#     gpus: 8
+#     gpus_per_node: 8
+#   results:
+#     dataset: Human3.6M
+#     eval: MPJPE
+#     metrics:
+#       MPJPE: 52.9
+
+
+# s集群：s1或者s2, s1就是填，s2就填2
+cluster_num: '2'
+# 默认的结果允许的浮动值
+default_floating_range: 0.2
+# 指定模型的结果允许的浮动值
+model_floating_ranges: {}
+# 测试分区
+partition: mm_dev
+# repo名字
+repo: mmpose
+# 测试repo的
+branch: dev-1.x
+# train or test
+task_type: train
+# 需要安装的第三方库
+third_part_libs: ['pip install openmim','pip install -r ../requirements/albu.txt','mim install mmpretrain']
