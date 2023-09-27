@@ -201,9 +201,11 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
             visualization = self.visualize(ori_inputs, preds,
                                            **visualize_kwargs)
-            results = self.postprocess(preds, visualization,
-                                       return_datasamples,
-                                       **postprocess_kwargs)
+            results = self.postprocess(
+                preds,
+                visualization,
+                return_datasamples=return_datasamples,
+                **postprocess_kwargs)
             yield results
 
         if self._video_input:

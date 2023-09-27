@@ -268,7 +268,10 @@ def main():
                     instance_info=pred_instances_list),
                 f,
                 indent='\t')
-        print(f'predictions have been saved at {args.pred_save_path}')
+        print_log(
+            f'predictions have been saved at {args.pred_save_path}',
+            logger='current',
+            level=logging.INFO)
 
     if output_file is not None:
         input_type = input_type.replace('webcam', 'video')

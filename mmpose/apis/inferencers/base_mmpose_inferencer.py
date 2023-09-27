@@ -4,7 +4,7 @@ import mimetypes
 import os
 from collections import defaultdict
 from typing import (Callable, Dict, Generator, Iterable, List, Optional,
-                    Sequence, Union)
+                    Sequence, Tuple, Union)
 
 import cv2
 import mmcv
@@ -15,7 +15,7 @@ from mmengine.config import Config, ConfigDict
 from mmengine.dataset import Compose
 from mmengine.fileio import (get_file_backend, isdir, join_path,
                              list_dir_or_file)
-from mmengine.infer.infer import BaseInferencer
+from mmengine.infer.infer import BaseInferencer, ModelType
 from mmengine.logging import print_log
 from mmengine.registry import init_default_scope
 from mmengine.runner.checkpoint import _load_checkpoint_to_model
@@ -23,7 +23,15 @@ from mmengine.structures import InstanceData
 from mmengine.utils import mkdir_or_exist
 
 from mmpose.apis.inference import dataset_meta_from_config
+from mmpose.registry import DATASETS
 from mmpose.structures import PoseDataSample, split_instances
+from .utils import default_det_models
+
+try:
+    from mmdet.apis.det_inferencer import DetInferencer
+    has_mmdet = True
+except (ImportError, ModuleNotFoundError):
+    has_mmdet = False
 
 InstanceList = List[InstanceData]
 InputType = Union[str, np.ndarray]
@@ -44,6 +52,44 @@ class BaseMMPoseInferencer(BaseInferencer):
         'kpt_thr', 'vis_out_dir', 'black_background'
     }
     postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
+
+    def _init_detector(
+        self,
+        det_model: Optional[Union[ModelType, str]] = None,
+        det_weights: Optional[str] = None,
+        det_cat_ids: Optional[Union[int, Tuple]] = None,
+        device: Optional[str] = None,
+    ):
+        object_type = DATASETS.get(self.cfg.dataset_type).__module__.split(
+            'datasets.')[-1].split('.')[0].lower()
+
+        if det_model in ('whole_image', 'whole-image') or \
+            (det_model is None and
+                object_type not in default_det_models):
+            self.detector = None
+
+        else:
+            det_scope = 'mmdet'
+            if det_model is None:
+                det_info = default_det_models[object_type]
+                det_model, det_weights, det_cat_ids = det_info[
+                    'model'], det_info['weights'], det_info['cat_ids']
+            elif os.path.exists(det_model):
+                det_cfg = Config.fromfile(det_model)
+                det_scope = det_cfg.default_scope
+
+            if has_mmdet:
+                self.detector = DetInferencer(
+                    det_model, det_weights, device=device, scope=det_scope)
+            else:
+                raise RuntimeError(
+                    'MMDetection (v3.0.0 or above) is required to build '
+                    'inferencers for top-down pose estimation models.')
+
+            if isinstance(det_cat_ids, (tuple, list)):
+                self.det_cat_ids = det_cat_ids
+            else:
+                self.det_cat_ids = (det_cat_ids, )
 
     def _load_weights_to_model(self, model: nn.Module,
                                checkpoint: Optional[dict],
@@ -266,6 +312,101 @@ class BaseMMPoseInferencer(BaseInferencer):
             # only supports inference with batch size 1
             yield self.collate_fn(data_infos), [input]
 
+    def __call__(
+        self,
+        inputs: InputsType,
+        return_datasamples: bool = False,
+        batch_size: int = 1,
+        out_dir: Optional[str] = None,
+        **kwargs,
+    ) -> dict:
+        """Call the inferencer.
+
+        Args:
+            inputs (InputsType): Inputs for the inferencer.
+            return_datasamples (bool): Whether to return results as
+                :obj:`BaseDataElement`. Defaults to False.
+            batch_size (int): Batch size. Defaults to 1.
+            out_dir (str, optional): directory to save visualization
+                results and predictions. Will be overoden if vis_out_dir or
+                pred_out_dir are given. Defaults to None
+            **kwargs: Key words arguments passed to :meth:`preprocess`,
+                :meth:`forward`, :meth:`visualize` and :meth:`postprocess`.
+                Each key in kwargs should be in the corresponding set of
+                ``preprocess_kwargs``, ``forward_kwargs``,
+                ``visualize_kwargs`` and ``postprocess_kwargs``.
+
+        Returns:
+            dict: Inference and visualization results.
+        """
+        if out_dir is not None:
+            if 'vis_out_dir' not in kwargs:
+                kwargs['vis_out_dir'] = f'{out_dir}/visualizations'
+            if 'pred_out_dir' not in kwargs:
+                kwargs['pred_out_dir'] = f'{out_dir}/predictions'
+
+        (
+            preprocess_kwargs,
+            forward_kwargs,
+            visualize_kwargs,
+            postprocess_kwargs,
+        ) = self._dispatch_kwargs(**kwargs)
+
+        self.update_model_visualizer_settings(**kwargs)
+
+        # preprocessing
+        if isinstance(inputs, str) and inputs.startswith('webcam'):
+            inputs = self._get_webcam_inputs(inputs)
+            batch_size = 1
+            if not visualize_kwargs.get('show', False):
+                print_log(
+                    'The display mode is closed when using webcam '
+                    'input. It will be turned on automatically.',
+                    logger='current',
+                    level=logging.WARNING)
+            visualize_kwargs['show'] = True
+        else:
+            inputs = self._inputs_to_list(inputs)
+
+        # check the compatibility between inputs/outputs
+        if not self._video_input and len(inputs) > 0:
+            vis_out_dir = visualize_kwargs.get('vis_out_dir', None)
+            if vis_out_dir is not None:
+                _, file_extension = os.path.splitext(vis_out_dir)
+                assert not file_extension, f'the argument `vis_out_dir` ' \
+                    f'should be a folder while the input contains multiple ' \
+                    f'images, but got {vis_out_dir}'
+
+        if 'bbox_thr' in self.forward_kwargs:
+            forward_kwargs['bbox_thr'] = preprocess_kwargs.get('bbox_thr', -1)
+        inputs = self.preprocess(
+            inputs, batch_size=batch_size, **preprocess_kwargs)
+
+        preds = []
+
+        for proc_inputs, ori_inputs in inputs:
+            preds = self.forward(proc_inputs, **forward_kwargs)
+
+            visualization = self.visualize(ori_inputs, preds,
+                                           **visualize_kwargs)
+            results = self.postprocess(
+                preds,
+                visualization,
+                return_datasamples=return_datasamples,
+                **postprocess_kwargs)
+            yield results
+
+        if self._video_input:
+            self._finalize_video_processing(
+                postprocess_kwargs.get('pred_out_dir', ''))
+
+        # In 3D Inferencers, some intermediate results (e.g. 2d keypoints)
+        # will be temporarily stored in `self._buffer`. It's essential to
+        # clear this information to prevent any interference with subsequent
+        # inferences.
+        if hasattr(self, '_buffer'):
+            self._buffer.clear()
+
     def visualize(self,
                   inputs: list,
                   preds: List[PoseDataSample],
@@ -349,43 +490,51 @@ class BaseMMPoseInferencer(BaseInferencer):
             results.append(visualization)
 
             if vis_out_dir:
-                out_img = mmcv.rgb2bgr(visualization)
-                _, file_extension = os.path.splitext(vis_out_dir)
-                if file_extension:
-                    dir_name = os.path.dirname(vis_out_dir)
-                    file_name = os.path.basename(vis_out_dir)
-                else:
-                    dir_name = vis_out_dir
-                    file_name = None
-                mkdir_or_exist(dir_name)
-
-                if self._video_input:
-
-                    if self.video_info['writer'] is None:
-                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                        if file_name is None:
-                            file_name = os.path.basename(
-                                self.video_info['name'])
-                        out_file = join_path(dir_name, file_name)
-                        self.video_info['output_file'] = out_file
-                        self.video_info['writer'] = cv2.VideoWriter(
-                            out_file, fourcc, self.video_info['fps'],
-                            (visualization.shape[1], visualization.shape[0]))
-                    self.video_info['writer'].write(out_img)
-
-                else:
-                    file_name = file_name if file_name else img_name
-                    out_file = join_path(dir_name, file_name)
-                    mmcv.imwrite(out_img, out_file)
-                    print_log(
-                        f'the output image has been saved at {out_file}',
-                        logger='current',
-                        level=logging.INFO)
+                self.save_visualization(
+                    visualization,
+                    vis_out_dir,
+                    img_name=img_name,
+                )
 
         if return_vis:
             return results
         else:
             return []
+
+    def save_visualization(self, visualization, vis_out_dir, img_name=None):
+        out_img = mmcv.rgb2bgr(visualization)
+        _, file_extension = os.path.splitext(vis_out_dir)
+        if file_extension:
+            dir_name = os.path.dirname(vis_out_dir)
+            file_name = os.path.basename(vis_out_dir)
+        else:
+            dir_name = vis_out_dir
+            file_name = None
+        mkdir_or_exist(dir_name)
+
+        if self._video_input:
+
+            if self.video_info['writer'] is None:
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                if file_name is None:
+                    file_name = os.path.basename(self.video_info['name'])
+                out_file = join_path(dir_name, file_name)
+                self.video_info['output_file'] = out_file
+                self.video_info['writer'] = cv2.VideoWriter(
+                    out_file, fourcc, self.video_info['fps'],
+                    (visualization.shape[1], visualization.shape[0]))
+            self.video_info['writer'].write(out_img)
+
+        else:
+            if file_name is None:
+                file_name = img_name if img_name else 'visualization.jpg'
+
+            out_file = join_path(dir_name, file_name)
+            mmcv.imwrite(out_img, out_file)
+            print_log(
+                f'the output image has been saved at {out_file}',
+                logger='current',
+                level=logging.INFO)
 
     def postprocess(
         self,
