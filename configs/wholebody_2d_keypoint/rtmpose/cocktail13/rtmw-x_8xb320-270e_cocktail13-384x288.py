@@ -42,7 +42,7 @@ base_lr = 5e-4
 train_batch_size = 320
 val_batch_size = 32
 
-train_cfg = dict(max_epochs=max_epochs, val_interval=10)
+train_cfg.update(max_epochs=max_epochs, val_interval=10)  # noqa
 randomness = dict(seed=21)
 
 # optimizer
@@ -584,7 +584,7 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # hooks
-default_hooks = dict(
+default_hooks.update(  # noqa
     checkpoint=dict(
         save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
 custom_hooks = [
