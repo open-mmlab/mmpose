@@ -114,6 +114,9 @@ class PackPoseInputs(BaseTransform):
         # using gt_instances.bbox_scales. To unsure correspondence with
         # previous version, this key is preserved here.
         bbox_scale='bbox_scales',
+        # `head_size` is used for computing MpiiPCKAccuracy metric,
+        # namely, PCKh
+        head_size='head_size',
     )
 
     # items in `field_mapping_table` will be packed into
