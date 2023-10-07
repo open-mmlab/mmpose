@@ -94,21 +94,33 @@ class H36MWholeBodyDataset(Human36mDataset):
     SUPPORTED_keypoint_2d_src = {'gt', 'detection', 'pipeline'}
 
     def __init__(self, ann_file: str, data_root: str, data_prefix: dict,
-                 **kwargs):
+                 joint_2d_src: str, **kwargs):
         self.ann_file = ann_file
         self.data_root = data_root
         self.data_prefix = data_prefix
+        self.joint_2d_src = joint_2d_src
 
-        # Process img_names
-        _ann_file = osp.join(data_root, ann_file)
-        with get_local_path(_ann_file) as local_path:
-            self.ann_data = json.load(open(local_path))
-            self._process_image_names(self.ann_data)
         super().__init__(
             ann_file=ann_file,
             data_root=data_root,
             data_prefix=data_prefix,
             **kwargs)
+
+    def _load_ann_file(self, ann_file: str) -> dict:
+        """Load annotation file to get image information.
+
+        Args:
+            ann_file (str): Annotation file path.
+
+        Returns:
+            dict: Annotation information.
+        """
+
+        with get_local_path(ann_file) as local_path:
+            self.ann_data = json.load(open(local_path))
+        with get_local_path(self.joint_2d_src) as local_path:
+            self.joint_2d_ann = json.load(open(local_path))
+        self._process_image_names(self.ann_data)
 
     def _process_image_names(self, ann_data: dict) -> List[str]:
         """Process image names."""
@@ -144,10 +156,11 @@ class H36MWholeBodyDataset(Human36mDataset):
         centers = np.zeros((num_imgs, 2), dtype=np.float32)
 
         kpts_3d, kpts_2d = [], []
-        for _, ann in self.ann_data.items():
-            if not isinstance(ann, dict):
+        for k in self.ann_data.keys():
+            if not isinstance(self.ann_data[k], dict):
                 continue
-            kpts_2d_i, kpts_3d_i = self._get_kpts(ann)
+            ann, ann_2d = self.ann_data[k], self.joint_2d_ann[k]
+            kpts_2d_i, kpts_3d_i = self._get_kpts(ann, ann_2d)
             kpts_3d.append(kpts_3d_i)
             kpts_2d.append(kpts_2d_i)
 
@@ -220,11 +233,15 @@ class H36MWholeBodyDataset(Human36mDataset):
 
         return instance_list, image_list
 
-    def _get_kpts(self, ann: dict) -> Tuple[np.ndarray, np.ndarray]:
+    def _get_kpts(self, ann: dict,
+                  ann_2d: dict) -> Tuple[np.ndarray, np.ndarray]:
         """Get 2D keypoints and 3D keypoints from annotation."""
         kpts = ann['keypoints_3d']
+        kpts_2d = ann_2d['keypoints_2d']
         kpts_3d = np.array([[v for _, v in joint.items()]
                             for _, joint in kpts.items()],
                            dtype=np.float32).reshape(1, -1, 3)
-        kpts_2d = kpts_3d[..., :2]
+        kpts_2d = np.array([[v for _, v in joint.items()]
+                            for _, joint in kpts_2d.items()],
+                           dtype=np.float32).reshape(1, -1, 2)
         return kpts_2d, kpts_3d
