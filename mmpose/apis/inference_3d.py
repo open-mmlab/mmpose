@@ -29,7 +29,7 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
     keypoints_new = np.zeros((keypoints.shape[0], 17, keypoints.shape[2]),
                              dtype=keypoints.dtype)
     if pose_lift_dataset in ['h36m', 'h3wb']:
-        if pose_det_dataset in ['h36m', 'h3wb']:
+        if pose_det_dataset in ['h36m', 'coco_wholebody']:
             keypoints_new = keypoints
         elif pose_det_dataset in ['coco', 'posetrack18']:
             # pelvis (root) is in the middle of l_hip and r_hip

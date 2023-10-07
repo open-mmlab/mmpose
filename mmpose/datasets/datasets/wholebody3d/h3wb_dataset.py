@@ -118,7 +118,8 @@ class H36MWholeBodyDataset(Human36mDataset):
 
         with get_local_path(ann_file) as local_path:
             self.ann_data = json.load(open(local_path))
-        with get_local_path(self.joint_2d_src) as local_path:
+        with get_local_path(osp.join(self.data_root,
+                                     self.joint_2d_src)) as local_path:
             self.joint_2d_ann = json.load(open(local_path))
         self._process_image_names(self.ann_data)
 
@@ -227,9 +228,10 @@ class H36MWholeBodyDataset(Human36mDataset):
             instance_list.append(instance_info)
 
         image_list = []
-        for idx, img_name in enumerate(img_names):
-            img_info = self.get_img_info(idx, img_name)
-            image_list.append(img_info)
+        if self.data_mode == 'bottomup':
+            for idx, img_name in enumerate(img_names):
+                img_info = self.get_img_info(idx, img_name)
+                image_list.append(img_info)
 
         return instance_list, image_list
 
