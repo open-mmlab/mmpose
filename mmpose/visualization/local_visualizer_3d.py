@@ -199,7 +199,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
 
                 x_3d, y_3d, z_3d = np.split(kpts_valid[:, :3], [1, 2], axis=1)
 
-                kpt_color = kpt_color[valid][..., ::-1] / 255.
+                kpt_color = kpt_color[valid] / 255.
 
                 ax.scatter(x_3d, y_3d, z_3d, marker='o', c=kpt_color)
 
@@ -230,7 +230,7 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                         if kpt_score.min() > kpt_thr and kpt_score_2d.min(
                         ) > kpt_thr:
                             # matplotlib uses RGB color in [0, 1] value range
-                            _color = link_color[sk_id][::-1] / 255.
+                            _color = link_color[sk_id] / 255.
                             ax.plot(
                                 xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
 
