@@ -89,9 +89,9 @@ class H36MWholeBodyDataset(Human36mDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(
-        from_file='configs/_base_/datasets/coco_wholebody.py')
-    SUPPORTED_keypoint_2d_src = {'gt', 'detection', 'pipeline'}
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/h3wb.py')
+
+    # SUPPORTED_keypoint_2d_src = {'gt', 'detection', 'pipeline'}
 
     def __init__(self, ann_file: str, data_root: str, data_prefix: dict,
                  joint_2d_src: str, **kwargs):

@@ -23,13 +23,13 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
         ndarray[K, 2 or 3]: the transformed 2D keypoints.
     """
     assert pose_lift_dataset in [
-        'h36m'], '`pose_lift_dataset` should be ' \
+        'h36m', 'h3wb'], '`pose_lift_dataset` should be ' \
         f'`h36m`, but got {pose_lift_dataset}.'
 
     keypoints_new = np.zeros((keypoints.shape[0], 17, keypoints.shape[2]),
                              dtype=keypoints.dtype)
-    if pose_lift_dataset == 'h36m':
-        if pose_det_dataset in ['h36m']:
+    if pose_lift_dataset in ['h36m', 'h3wb']:
+        if pose_det_dataset in ['h36m', 'h3wb']:
             keypoints_new = keypoints
         elif pose_det_dataset in ['coco', 'posetrack18']:
             # pelvis (root) is in the middle of l_hip and r_hip
