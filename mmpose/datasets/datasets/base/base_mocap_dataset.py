@@ -361,9 +361,10 @@ class BaseMocapDataset(BaseDataset):
 
             instance_list.append(instance_info)
 
-        for idx, imgname in enumerate(img_names):
-            img_info = self.get_img_info(idx, imgname)
-            image_list.append(img_info)
+        if self.data_mode == 'bottomup':
+            for idx, imgname in enumerate(img_names):
+                img_info = self.get_img_info(idx, imgname)
+                image_list.append(img_info)
 
         return instance_list, image_list
 
