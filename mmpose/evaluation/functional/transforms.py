@@ -45,13 +45,21 @@ def transform_keypoints(kpt_info: Union[dict, list], num_keypoints: int,
         if 'keypoints' in each:
             keypoints = np.array(each['keypoints'])
             if len(keypoints.shape) > 1:
-                c = keypoints.shape[-1]
+                # transform predictions
+                N, _, C = keypoints.shape
+                new_keypoints = np.zeros((N, num_keypoints, C),
+                                         dtype=keypoints.dtype)
+                new_keypoints[:, target_index] = keypoints[:, source_index]
+                each['keypoints'] = new_keypoints
             else:
-                c = 3
-            keypoints = keypoints.reshape(-1, c)
-            new_keypoints = np.zeros((num_keypoints, c), dtype=keypoints.dtype)
-            new_keypoints[target_index] = keypoints[source_index]
-            each['keypoints'] = new_keypoints.reshape(-1).tolist()
+                # transform annotations
+                C = 3
+                keypoints = keypoints.reshape(-1, C)
+                new_keypoints = np.zeros((num_keypoints, C),
+                                         dtype=keypoints.dtype)
+                new_keypoints[target_index] = keypoints[source_index]
+                each['keypoints'] = new_keypoints.reshape(-1).tolist()
+
         if 'num_keypoints' in each:
             each['num_keypoints'] = num_keypoints
 
