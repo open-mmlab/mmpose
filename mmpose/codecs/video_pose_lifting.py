@@ -59,7 +59,8 @@ class VideoPoseLifting(BaseKeypointCodec):
                  save_index: bool = False,
                  reshape_keypoints: bool = True,
                  concat_vis: bool = False,
-                 normalize_camera: bool = False):
+                 normalize_camera: bool = False,
+                 normalize_target: bool = False):
         super().__init__()
 
         self.num_keypoints = num_keypoints
@@ -70,6 +71,7 @@ class VideoPoseLifting(BaseKeypointCodec):
         self.reshape_keypoints = reshape_keypoints
         self.concat_vis = concat_vis
         self.normalize_camera = normalize_camera
+        self.normalize_target = normalize_target
 
     def encode(self,
                keypoints: np.ndarray,
@@ -197,6 +199,9 @@ class VideoPoseLifting(BaseKeypointCodec):
             _camera_param['f'] = _camera_param['f'] / scale
             _camera_param['c'] = (_camera_param['c'] - center[:, None]) / scale
             encoded['camera_param'] = _camera_param
+
+        if self.normalize_target:
+            lifting_target_label = lifting_target_label / _camera_param['w']
 
         if self.concat_vis:
             keypoints_visible_ = keypoints_visible
