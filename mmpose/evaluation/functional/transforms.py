@@ -9,7 +9,7 @@ def transform_sigmas(sigmas: Union[List, np.ndarray], num_keypoints: int,
                                                                       int]]]):
     """Transforms the sigmas based on the mapping."""
     if len(mapping):
-        source_index, target_index = zip(*mapping)
+        source_index, target_index = map(list, zip(*mapping))
     else:
         source_index, target_index = [], []
 
@@ -32,7 +32,7 @@ def transform_keypoints(kpt_info: Union[dict, list], num_keypoints: int,
                                        List[Tuple[Tuple, int]]]):
     """Transforms anns and predictions of keypoints based on the mapping."""
     if len(mapping):
-        source_index, target_index = zip(*mapping)
+        source_index, target_index = map(list, zip(*mapping))
     else:
         source_index, target_index = [], []
 
@@ -44,7 +44,10 @@ def transform_keypoints(kpt_info: Union[dict, list], num_keypoints: int,
     for each in kpt_info:
         if 'keypoints' in each:
             keypoints = np.array(each['keypoints'])
-            c = keypoints.shape[-1]
+            if len(keypoints.shape) > 1:
+                c = keypoints.shape[-1]
+            else:
+                c = 3
             keypoints = keypoints.reshape(-1, c)
             new_keypoints = np.zeros((num_keypoints, c), dtype=keypoints.dtype)
             new_keypoints[target_index] = keypoints[source_index]
