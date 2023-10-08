@@ -36,7 +36,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                              keypoint_order: List[int],
                              val_thr: float,
                              tag_thr: float = 1.0,
-                             max_groups: Optional[int] = None):
+                             max_groups: Optional[int] = None) -> np.ndarray:
     """Group the keypoints by tags using Munkres algorithm.
 
     Note:
@@ -69,19 +69,20 @@ def _group_keypoints_by_tags(vals: np.ndarray,
         dimenssion is the concatenated keypoint coordinates and scores.
     """
 
+    tag_k, loc_k, val_k = tags, locs, vals
     K, M, D = locs.shape
     assert vals.shape == tags.shape[:2] == (K, M)
     assert len(keypoint_order) == K
 
-    default_ = np.zeros((K, 3 + tags.shape[2]), dtype=np.float32)
+    default_ = np.zeros((K, 3 + tag_k.shape[2]), dtype=np.float32)
 
     joint_dict = {}
     tag_dict = {}
     for i in range(K):
         idx = keypoint_order[i]
 
-        tags = tags[idx]
-        joints = np.concatenate((locs[idx], vals[idx, :, None], tags), 1)
+        tags = tag_k[idx]
+        joints = np.concatenate((loc_k[idx], val_k[idx, :, None], tags), 1)
         mask = joints[:, 2] > val_thr
         tags = tags[mask]  # shape: [M, L]
         joints = joints[mask]  # shape: [M, 3 + L], 3: x, y, val
@@ -130,7 +131,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
                         joints[row]
                     tag_dict[key] = [tags[row]]
 
-    joint_dict_keys = list(joint_dict.keys())
+    joint_dict_keys = list(joint_dict.keys())[:max_groups]
 
     if joint_dict_keys:
         results = np.array([joint_dict[i]
@@ -212,8 +213,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
         decode_gaussian_kernel: int = 3,
         decode_keypoint_thr: float = 0.1,
         decode_tag_thr: float = 1.0,
-        decode_topk: int = 20,
-        decode_center_shift: float = 0.0,
+        decode_topk: int = 30,
+        decode_center_shift=0.0,
         decode_max_instances: Optional[int] = None,
     ) -> None:
         super().__init__()
@@ -225,8 +226,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.decode_keypoint_thr = decode_keypoint_thr
         self.decode_tag_thr = decode_tag_thr
         self.decode_topk = decode_topk
-        self.decode_max_instances = decode_max_instances
         self.decode_center_shift = decode_center_shift
+        self.decode_max_instances = decode_max_instances
         self.decode_keypoint_order = decode_keypoint_order.copy()
 
         if self.use_udp:
@@ -478,7 +479,6 @@ class AssociativeEmbedding(BaseKeypointCodec):
         # Group keypoint candidates into groups (instances)
         batch_groups = self._group_keypoints(batch_topk_vals, batch_topk_tags,
                                              batch_topk_locs)
-        # batch_groups = self.adjust(batch_groups, batch_heatmaps)
 
         # Convert to numpy
         batch_heatmaps_np = to_numpy(batch_heatmaps)

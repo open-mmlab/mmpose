@@ -37,6 +37,7 @@ codec = dict(
     heatmap_size=(128, 128),
     sigma=2,
     decode_topk=30,
+    decode_center_shift=0.5,
     decode_keypoint_order=[
         0, 1, 2, 3, 4, 5, 6, 11, 12, 7, 8, 9, 10, 13, 14, 15, 16
     ],
