@@ -27,32 +27,32 @@ def transform_sigmas(sigmas: Union[List, np.ndarray], num_keypoints: int,
     return new_sigmas
 
 
-def transform_ann(ann_info: Union[dict, list], num_keypoints: int,
-                  mapping: Union[List[Tuple[int, int]], List[Tuple[Tuple,
-                                                                   int]]]):
-    """Transforms the annotations based on the mapping."""
+def transform_keypoints(kpt_info: Union[dict, list], num_keypoints: int,
+                        mapping: Union[List[Tuple[int, int]],
+                                       List[Tuple[Tuple, int]]]):
+    """Transforms anns and predictions of keypoints based on the mapping."""
     if len(mapping):
         source_index, target_index = zip(*mapping)
     else:
         source_index, target_index = [], []
 
     list_input = True
-    if not isinstance(ann_info, list):
-        ann_info = [ann_info]
+    if not isinstance(kpt_info, list):
+        kpt_info = [kpt_info]
         list_input = False
 
-    for ann in ann_info:
-        if 'keypoints' in ann:
-            keypoints = np.array(ann['keypoints'])
+    for each in kpt_info:
+        if 'keypoints' in each:
+            keypoints = np.array(each['keypoints'])
             c = keypoints.shape[-1]
             keypoints = keypoints.reshape(-1, c)
             new_keypoints = np.zeros((num_keypoints, c), dtype=keypoints.dtype)
             new_keypoints[target_index] = keypoints[source_index]
-            ann['keypoints'] = new_keypoints.reshape(-1).tolist()
-        if 'num_keypoints' in ann:
-            ann['num_keypoints'] = num_keypoints
+            each['keypoints'] = new_keypoints.reshape(-1).tolist()
+        if 'num_keypoints' in each:
+            each['num_keypoints'] = num_keypoints
 
     if not list_input:
-        ann_info = ann_info[0]
+        kpt_info = kpt_info[0]
 
-    return ann_info
+    return kpt_info

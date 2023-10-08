@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.evaluation.functional import transform_ann, transform_sigmas
+from mmpose.evaluation.functional import transform_keypoints, transform_sigmas
 
 
 class TestKeypointEval(TestCase):
@@ -19,19 +19,19 @@ class TestKeypointEval(TestCase):
         for i, j in mapping:
             self.assertEqual(sigmas[i], new_sigmas[j])
 
-    def test_transform_ann(self):
+    def test_transform_keypoints(self):
         mapping = [(3, 0), (6, 1), (16, 2), (5, 3)]
         num_keypoints = 5
 
-        ann_info = dict(
+        kpt_info = dict(
             num_keypoints=17,
             keypoints=np.random.randint(3, size=(17 * 3, )).tolist())
-        ann_info_copy = deepcopy(ann_info)
+        kpt_info_copy = deepcopy(kpt_info)
 
-        _ = transform_ann(ann_info, num_keypoints, mapping)
+        _ = transform_keypoints(kpt_info, num_keypoints, mapping)
 
-        self.assertEqual(ann_info['num_keypoints'], 5)
-        self.assertEqual(len(ann_info['keypoints']), 15)
+        self.assertEqual(kpt_info['num_keypoints'], 5)
+        self.assertEqual(len(kpt_info['keypoints']), 15)
         for i, j in mapping:
-            self.assertListEqual(ann_info_copy['keypoints'][i * 3:i * 3 + 3],
-                                 ann_info['keypoints'][j * 3:j * 3 + 3])
+            self.assertListEqual(kpt_info_copy['keypoints'][i * 3:i * 3 + 3],
+                                 kpt_info['keypoints'][j * 3:j * 3 + 3])
