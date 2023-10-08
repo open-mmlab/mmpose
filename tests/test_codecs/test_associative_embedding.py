@@ -146,8 +146,8 @@ class TestAssociativeEmbedding(TestCase):
         batch_heatmaps = torch.from_numpy(heatmaps[None])
         batch_tags = torch.from_numpy(tags[None])
 
-        batch_keypoints, batch_keypoint_scores = codec.batch_decode(
-            batch_heatmaps, batch_tags)
+        batch_keypoints, batch_keypoint_scores, batch_instance_scores = \
+            codec.batch_decode(batch_heatmaps, batch_tags)
 
         self.assertIsInstance(batch_keypoints, list)
         self.assertIsInstance(batch_keypoint_scores, list)
@@ -184,8 +184,8 @@ class TestAssociativeEmbedding(TestCase):
         batch_heatmaps = torch.from_numpy(heatmaps[None])
         batch_tags = torch.from_numpy(tags[None])
 
-        batch_keypoints, batch_keypoint_scores = codec.batch_decode(
-            batch_heatmaps, batch_tags)
+        batch_keypoints, batch_keypoint_scores, batch_instance_scores = \
+            codec.batch_decode(batch_heatmaps, batch_tags)
 
         self.assertIsInstance(batch_keypoints, list)
         self.assertIsInstance(batch_keypoint_scores, list)
@@ -222,8 +222,8 @@ class TestAssociativeEmbedding(TestCase):
         batch_heatmaps = torch.from_numpy(heatmaps[None])
         batch_tags = torch.from_numpy(tags[None])
 
-        batch_keypoints, batch_keypoint_scores = codec.batch_decode(
-            batch_heatmaps, batch_tags)
+        batch_keypoints, batch_keypoint_scores, batch_instance_scores = \
+            codec.batch_decode(batch_heatmaps, batch_tags)
 
         self.assertIsInstance(batch_keypoints, list)
         self.assertIsInstance(batch_keypoint_scores, list)

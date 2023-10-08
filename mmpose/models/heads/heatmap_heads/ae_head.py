@@ -2,14 +2,15 @@
 from typing import List, Optional, Sequence, Tuple, Union
 
 import torch
-from mmengine.structures import PixelData
+from mmengine.structures import InstanceData, PixelData
 from mmengine.utils import is_list_of
 from torch import Tensor
 
 from mmpose.models.utils.tta import aggregate_heatmaps, flip_heatmaps
 from mmpose.registry import MODELS
-from mmpose.utils.typing import (ConfigType, Features, OptConfigType,
-                                 OptSampleList, Predictions)
+from mmpose.utils.tensor_utils import to_numpy
+from mmpose.utils.typing import (ConfigType, Features, InstanceList,
+                                 OptConfigType, OptSampleList, Predictions)
 from .heatmap_head import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -225,6 +226,57 @@ class AssociativeEmbeddingHead(HeatmapHead):
             tags[..., 1:] = tags[..., :-1].clone()
 
         return tags
+
+    def decode(self, batch_outputs: Union[Tensor,
+                                          Tuple[Tensor]]) -> InstanceList:
+        """Decode keypoints from outputs.
+
+        Args:
+            batch_outputs (Tensor | Tuple[Tensor]): The network outputs of
+                a data batch
+
+        Returns:
+            List[InstanceData]: A list of InstanceData, each contains the
+            decoded pose information of the instances of one data sample.
+        """
+
+        def _pack_and_call(args, func):
+            if not isinstance(args, tuple):
+                args = (args, )
+            return func(*args)
+
+        if self.decoder is None:
+            raise RuntimeError(
+                f'The decoder has not been set in {self.__class__.__name__}. '
+                'Please set the decoder configs in the init parameters to '
+                'enable head methods `head.predict()` and `head.decode()`')
+
+        if self.decoder.support_batch_decoding:
+            batch_keypoints, batch_scores, batch_instance_scores = \
+                _pack_and_call(batch_outputs, self.decoder.batch_decode)
+
+        else:
+            batch_output_np = to_numpy(batch_outputs, unzip=True)
+            batch_keypoints = []
+            batch_scores = []
+            batch_instance_scores = []
+            for outputs in batch_output_np:
+                keypoints, scores, instance_scores = _pack_and_call(
+                    outputs, self.decoder.decode)
+                batch_keypoints.append(keypoints)
+                batch_scores.append(scores)
+                batch_instance_scores.append(instance_scores)
+
+        preds = [
+            InstanceData(
+                bbox_scores=instance_scores,
+                keypoints=keypoints,
+                keypoint_scores=scores)
+            for keypoints, scores, instance_scores in zip(
+                batch_keypoints, batch_scores, batch_instance_scores)
+        ]
+
+        return preds
 
     def forward(self, feats: Tuple[Tensor]) -> Tuple[Tensor, Tensor]:
         """Forward the network. The input is multi scale feature maps and the
