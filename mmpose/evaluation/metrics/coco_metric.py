@@ -14,7 +14,7 @@ from xtcocotools.cocoeval import COCOeval
 
 from mmpose.registry import METRICS
 from mmpose.structures.bbox import bbox_xyxy2xywh
-from ..functional import (oks_nms, soft_oks_nms, transform_keypoints,
+from ..functional import (oks_nms, soft_oks_nms, transform_ann, transform_pred,
                           transform_sigmas)
 
 
@@ -394,7 +394,7 @@ class CocoMetric(BaseMetric):
             self.coco = COCO(coco_json_path)
         if self.gt_converter is not None:
             for id_, ann in self.coco.anns.items():
-                self.coco.anns[id_] = transform_keypoints(
+                self.coco.anns[id_] = transform_ann(
                     ann, self.gt_converter['num_keypoints'],
                     self.gt_converter['mapping'])
 
@@ -405,9 +405,9 @@ class CocoMetric(BaseMetric):
             img_id = pred['img_id']
 
             if self.pred_converter is not None:
-                pred = transform_keypoints(
-                    pred, self.pred_converter['num_keypoints'],
-                    self.pred_converter['mapping'])
+                pred = transform_pred(pred,
+                                      self.pred_converter['num_keypoints'],
+                                      self.pred_converter['mapping'])
 
             for idx, keypoints in enumerate(pred['keypoints']):
 
