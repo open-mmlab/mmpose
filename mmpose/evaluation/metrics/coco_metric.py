@@ -101,7 +101,7 @@ class CocoMetric(BaseMetric):
                  nms_mode: str = 'oks_nms',
                  nms_thr: float = 0.9,
                  format_only: bool = False,
-                 pred_conveter: Dict = None,
+                 pred_converter: Dict = None,
                  gt_converter: Dict = None,
                  outfile_prefix: Optional[str] = None,
                  collect_device: str = 'cpu',
@@ -148,7 +148,7 @@ class CocoMetric(BaseMetric):
 
         self.format_only = format_only
         self.outfile_prefix = outfile_prefix
-        self.pred_conveter = pred_conveter
+        self.pred_converter = pred_converter
         self.gt_converter = gt_converter
 
     @property
@@ -403,9 +403,10 @@ class CocoMetric(BaseMetric):
         for pred in preds:
             img_id = pred['img_id']
 
-            if self.pred_conveter is not None:
-                pred = transform_ann(pred, self.pred_conveter['num_keypoints'],
-                                     self.pred_conveter['mapping'])
+            if self.pred_converter is not None:
+                pred = transform_ann(pred,
+                                     self.pred_converter['num_keypoints'],
+                                     self.pred_converter['mapping'])
 
             for idx, keypoints in enumerate(pred['keypoints']):
 
