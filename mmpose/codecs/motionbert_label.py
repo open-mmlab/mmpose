@@ -110,9 +110,6 @@ class MotionBERTLabel(BaseKeypointCodec):
         if keypoints_visible is None:
             keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
-        if lifting_target is None:
-            lifting_target = [keypoints[..., 0, :, :]]
-
         # set initial value for `lifting_target_weight`
         if lifting_target_visible is None:
             lifting_target_visible = np.ones(
@@ -127,6 +124,7 @@ class MotionBERTLabel(BaseKeypointCodec):
 
         encoded = dict()
 
+        assert lifting_target is not None
         lifting_target_label = lifting_target.copy()
         keypoint_labels = keypoints.copy()
 
@@ -154,9 +152,7 @@ class MotionBERTLabel(BaseKeypointCodec):
         if self.mode == 'train':
             w, h = w / 1000, h / 1000
             lifting_target_label[
-                ..., :2] = lifting_target_label[..., :2] / w * 2 - [
-                    0.001, h / w
-                ]
+                ..., :2] = lifting_target_label[..., :2] / w * 2 - [1, h / w]
             lifting_target_label[..., 2] = lifting_target_label[..., 2] / w * 2
         lifting_target_label[..., :, :] = lifting_target_label[
             ..., :, :] - lifting_target_label[...,
