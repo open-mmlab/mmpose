@@ -439,7 +439,10 @@ class CocoMetric(BaseMetric):
         # score the prediction results according to `score_mode`
         # and perform NMS according to `nms_mode`
         valid_kpts = defaultdict(list)
-        num_keypoints = self.dataset_meta['num_keypoints']
+        if self.pred_converter is not None:
+            num_keypoints = self.pred_converter['num_keypoints']
+        else:
+            num_keypoints = self.dataset_meta['num_keypoints']
         for img_id, instances in kpts.items():
             for instance in instances:
                 # concatenate the keypoint coordinates and scores
