@@ -30,7 +30,7 @@ def transform_sigmas(sigmas: Union[List, np.ndarray], num_keypoints: int,
 def transform_ann(ann_info: Union[dict, list], num_keypoints: int,
                   mapping: Union[List[Tuple[int, int]], List[Tuple[Tuple,
                                                                    int]]]):
-    """Transforms annotations based on the mapping."""
+    """Transforms COCO-format annotations based on the mapping."""
     if len(mapping):
         source_index, target_index = map(list, zip(*mapping))
     else:
@@ -45,7 +45,7 @@ def transform_ann(ann_info: Union[dict, list], num_keypoints: int,
         if 'keypoints' in each:
             keypoints = np.array(each['keypoints'])
 
-            C = 3
+            C = 3  # COCO-format: x, y, score
             keypoints = keypoints.reshape(-1, C)
             new_keypoints = np.zeros((num_keypoints, C), dtype=keypoints.dtype)
             new_keypoints[target_index] = keypoints[source_index]
