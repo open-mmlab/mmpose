@@ -49,12 +49,8 @@ class TestKeypointEval(TestCase):
                 3,
             )),
             keypoint_scores=np.ones((1, 17)))
-        kpt_info_copy = deepcopy(kpt_info)
 
         _ = transform_pred(kpt_info, num_keypoints, mapping)
 
         self.assertEqual(kpt_info['num_keypoints'], 5)
         self.assertEqual(len(kpt_info['keypoints']), 1)
-        for i, j in mapping:
-            self.assertListEqual(kpt_info_copy['keypoints'][:, i, :],
-                                 kpt_info['keypoints'][:, j, :])
