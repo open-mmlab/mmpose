@@ -47,7 +47,8 @@ class TestKeypointEval(TestCase):
                 1,
                 17,
                 3,
-            )))
+            )),
+            keypoint_scores=np.ones((1, 17)))
         kpt_info_copy = deepcopy(kpt_info)
 
         _ = transform_pred(kpt_info, num_keypoints, mapping)
