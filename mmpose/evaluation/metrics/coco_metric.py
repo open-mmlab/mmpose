@@ -12,9 +12,10 @@ from mmengine.logging import MessageHub, MMLogger, print_log
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
-from mmpose.registry import METRICS, TRANSFORMS
+from mmpose.registry import METRICS
 from mmpose.structures.bbox import bbox_xyxy2xywh
-from ..functional import oks_nms, soft_oks_nms
+from ..functional import (oks_nms, soft_oks_nms, transform_ann, transform_pred,
+                          transform_sigmas)
 
 
 @METRICS.register_module()
@@ -73,10 +74,12 @@ class CocoMetric(BaseMetric):
             test submission when the ground truth annotations are absent. If
             set to ``True``, ``outfile_prefix`` should specify the path to
             store the output results. Defaults to ``False``
+        pred_converter (dict, optional): Config dictionary for the prediction
+            converter. The dictionary has the same parameters as
+            'KeypointConverter'. Defaults to None.
         gt_converter (dict, optional): Config dictionary for the ground truth
-            converter. The dictionary must contain the key 'type' set to
-            'KeypointConverter' to indicate the type of ground truth converter
-            to be used. Defaults to None.
+            converter. The dictionary has the same parameters as
+            'KeypointConverter'. Defaults to None.
         outfile_prefix (str | None): The prefix of json files. It includes
             the file path and the prefix of filename, e.g., ``'a/b/prefix'``.
             If not specified, a temp file will be created. Defaults to ``None``
@@ -99,7 +102,8 @@ class CocoMetric(BaseMetric):
                  nms_mode: str = 'oks_nms',
                  nms_thr: float = 0.9,
                  format_only: bool = False,
-                 gt_converter: Optional[dict] = None,
+                 pred_converter: Dict = None,
+                 gt_converter: Dict = None,
                  outfile_prefix: Optional[str] = None,
                  collect_device: str = 'cpu',
                  prefix: Optional[str] = None) -> None:
@@ -145,13 +149,8 @@ class CocoMetric(BaseMetric):
 
         self.format_only = format_only
         self.outfile_prefix = outfile_prefix
-
-        if gt_converter is not None:
-            assert gt_converter.get('type', None) == 'KeypointConverter', \
-                'the type of `gt_converter` must be \'KeypointConverter\''
-            self.gt_converter = TRANSFORMS.build(gt_converter)
-        else:
-            self.gt_converter = None
+        self.pred_converter = pred_converter
+        self.gt_converter = gt_converter
 
     @property
     def dataset_meta(self) -> Optional[dict]:
@@ -162,8 +161,9 @@ class CocoMetric(BaseMetric):
     def dataset_meta(self, dataset_meta: dict) -> None:
         """Set the dataset meta info to the metric."""
         if self.gt_converter is not None:
-            dataset_meta['sigmas'] = self.gt_converter.transform_sigmas(
-                dataset_meta['sigmas'])
+            dataset_meta['sigmas'] = transform_sigmas(
+                dataset_meta['sigmas'], self.gt_converter['num_keypoints'],
+                self.gt_converter['mapping'])
             dataset_meta['num_keypoints'] = len(dataset_meta['sigmas'])
         self._dataset_meta = dataset_meta
 
@@ -394,19 +394,28 @@ class CocoMetric(BaseMetric):
             self.coco = COCO(coco_json_path)
         if self.gt_converter is not None:
             for id_, ann in self.coco.anns.items():
-                self.coco.anns[id_] = self.gt_converter.transform_ann(ann)
+                self.coco.anns[id_] = transform_ann(
+                    ann, self.gt_converter['num_keypoints'],
+                    self.gt_converter['mapping'])
 
         kpts = defaultdict(list)
 
         # group the preds by img_id
         for pred in preds:
             img_id = pred['img_id']
-            for idx in range(len(pred['keypoints'])):
+
+            if self.pred_converter is not None:
+                pred = transform_pred(pred,
+                                      self.pred_converter['num_keypoints'],
+                                      self.pred_converter['mapping'])
+
+            for idx, keypoints in enumerate(pred['keypoints']):
+
                 instance = {
                     'id': pred['id'],
                     'img_id': pred['img_id'],
                     'category_id': pred['category_id'],
-                    'keypoints': pred['keypoints'][idx],
+                    'keypoints': keypoints,
                     'keypoint_scores': pred['keypoint_scores'][idx],
                     'bbox_score': pred['bbox_scores'][idx],
                 }
@@ -417,7 +426,6 @@ class CocoMetric(BaseMetric):
                     instance['area'] = pred['areas'][idx]
                 else:
                     # use keypoint to calculate bbox and get area
-                    keypoints = pred['keypoints'][idx]
                     area = (
                         np.max(keypoints[:, 0]) - np.min(keypoints[:, 0])) * (
                             np.max(keypoints[:, 1]) - np.min(keypoints[:, 1]))
@@ -431,7 +439,10 @@ class CocoMetric(BaseMetric):
         # score the prediction results according to `score_mode`
         # and perform NMS according to `nms_mode`
         valid_kpts = defaultdict(list)
-        num_keypoints = self.dataset_meta['num_keypoints']
+        if self.pred_converter is not None:
+            num_keypoints = self.pred_converter['num_keypoints']
+        else:
+            num_keypoints = self.dataset_meta['num_keypoints']
         for img_id, instances in kpts.items():
             for instance in instances:
                 # concatenate the keypoint coordinates and scores
