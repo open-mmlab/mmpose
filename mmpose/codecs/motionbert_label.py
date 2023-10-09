@@ -74,8 +74,8 @@ class MotionBERTLabel(BaseKeypointCodec):
 
     def encode(self,
                keypoints: np.ndarray,
-               lifting_target: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None,
+               lifting_target: Optional[np.ndarray] = None,
                lifting_target_visible: Optional[np.ndarray] = None,
                camera_param: Optional[dict] = None,
                factor: Optional[np.ndarray] = None) -> dict:
@@ -83,10 +83,10 @@ class MotionBERTLabel(BaseKeypointCodec):
 
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (B, T, K, D).
-            lifting_target (np.ndarray, optional): 3d target coordinate in
-                shape (T, K, C).
             keypoints_visible (np.ndarray, optional): Keypoint visibilities in
                 shape (B, T, K).
+            lifting_target (np.ndarray, optional): 3d target coordinate in
+                shape (T, K, C).
             lifting_target_visible (np.ndarray, optional): Target coordinate in
                 shape (T, K, ).
             camera_param (dict, optional): The camera parameter dictionary.
@@ -124,6 +124,7 @@ class MotionBERTLabel(BaseKeypointCodec):
 
         encoded = dict()
 
+        assert lifting_target is not None
         lifting_target_label = lifting_target.copy()
         keypoint_labels = keypoints.copy()
 
