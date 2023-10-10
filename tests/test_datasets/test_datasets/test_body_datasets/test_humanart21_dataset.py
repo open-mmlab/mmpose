@@ -77,7 +77,7 @@ class TestHumanart21Dataset(TestCase):
         self.assertEqual(dataset.metainfo['dataset_name'], 'Human-Art')
 
         # test number of keypoints
-        num_keypoints = 17
+        num_keypoints = 21
         self.assertEqual(dataset.metainfo['num_keypoints'], num_keypoints)
         self.assertEqual(
             len(dataset.metainfo['keypoint_colors']), num_keypoints)

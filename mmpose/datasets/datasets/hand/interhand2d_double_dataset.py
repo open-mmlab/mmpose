@@ -313,7 +313,6 @@ class InterHand2DDoubleDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img['img_path'],
-            'rotation': 0,
             'keypoints': joints_3d[:, :, :2],
             'keypoints_visible': joints_3d_visible,
             'hand_type': self.encode_handtype(ann['hand_type']),

@@ -51,16 +51,10 @@ class TestInterHand2DDoubleDataset(TestCase):
                 img_path=str,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
-                rotation=int,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
                 hand_type=np.ndarray,
                 hand_type_valid=np.ndarray,
-                rel_root_depth=np.float32,
-                rel_root_valid=np.float32,
-                abs_depth=list,
-                focal=np.ndarray,
-                principal_pt=np.ndarray,
                 num_keypoints=int,
                 iscrowd=bool,
                 id=int)
@@ -70,16 +64,10 @@ class TestInterHand2DDoubleDataset(TestCase):
                 img_path=str,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
-                rotation=list,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
                 hand_type=np.ndarray,
                 hand_type_valid=np.ndarray,
-                rel_root_depth=list,
-                rel_root_valid=list,
-                abs_depth=list,
-                focal=np.ndarray,
-                principal_pt=np.ndarray,
                 num_keypoints=list,
                 iscrowd=list,
                 invalid_segs=list,
@@ -95,7 +83,7 @@ class TestInterHand2DDoubleDataset(TestCase):
         dataset = self.build_interhand2d_dataset()
         self.check_metainfo_keys(dataset.metainfo)
         # test dataset_name
-        self.assertEqual(dataset.metainfo['dataset_name'], 'interhand2d')
+        self.assertEqual(dataset.metainfo['dataset_name'], 'interhand3d')
 
         # test number of keypoints
         num_keypoints = 42
