@@ -18,11 +18,11 @@ from mmpose.datasets import (AicDataset, CocoWholeBodyDataset, COFWDataset,
                              CombinedDataset, CrowdPoseDataset,
                              Face300WDataset, GenerateTarget,
                              GetBBoxCenterScale, HalpeDataset,
-                             HumanArt21Dataset, JhmdbDataset,
-                             KeypointConverter, LapaDataset, LoadImage,
-                             MpiiDataset, PackPoseInputs, PoseTrack18Dataset,
-                             RandomFlip, RandomHalfBody, TopdownAffine,
-                             UBody2dDataset, WFLWDataset)
+                             HumanArt21Dataset, InterHand2DDoubleDataset,
+                             JhmdbDataset, KeypointConverter, LapaDataset,
+                             LoadImage, MpiiDataset, PackPoseInputs,
+                             PoseTrack18Dataset, RandomFlip, RandomHalfBody,
+                             TopdownAffine, UBody2dDataset, WFLWDataset)
 from mmpose.datasets.transforms.common_transforms import (
     Albumentation, PhotometricDistortion, RandomBBoxTransform)
 from mmpose.engine.hooks import ExpMomentumEMA
@@ -180,7 +180,6 @@ val_pipeline = [
     dict(type=TopdownAffine, input_size=codec['input_size']),
     dict(type=PackPoseInputs)
 ]
-
 train_pipeline_stage2 = [
     dict(type=LoadImage, backend_args=backend_args),
     dict(type=GetBBoxCenterScale),
@@ -197,15 +196,6 @@ train_pipeline_stage2 = [
         transforms=[
             dict(type=Blur, p=0.1),
             dict(type=MedianBlur, p=0.1),
-            dict(
-                type=CoarseDropout,
-                max_holes=1,
-                max_height=0.4,
-                max_width=0.4,
-                min_holes=1,
-                min_height=0.2,
-                min_width=0.2,
-                p=0.5),
         ]),
     dict(
         type=GenerateTarget, encoder=codec, use_dataset_keypoint_weights=True),
@@ -301,7 +291,7 @@ dataset_aic = dict(
                      '_train_20170902/keypoint_train_images_20170902/'),
     pipeline=[
         dict(
-            type='KeypointConverter',
+            type=KeypointConverter,
             num_keypoints=num_keypoints,
             mapping=aic_coco133)
     ],
@@ -419,18 +409,17 @@ dataset_ubody = dict(
 
 face_pipeline = [
     dict(type=LoadImage, backend_args=backend_args),
-    dict(type=GetBBoxCenterScale),
+    dict(type=GetBBoxCenterScale, padding=1.25),
     dict(
         type=RandomBBoxTransform,
         shift_factor=0.,
-        scale_factor=[0.3, 0.5],
+        scale_factor=[1.5, 2.0],
         rotate_factor=0),
-    dict(type=TopdownAffine, input_size=codec['input_size']),
 ]
 
-wflw_coco133 = [(i * 2, 20 + i)
-                for i in range(17)] + [(33 + i, 41 + i) for i in range(5)] + [
-                    (42 + i, 46 + i) for i in range(5)
+wflw_coco133 = [(i * 2, 23 + i)
+                for i in range(17)] + [(33 + i, 40 + i) for i in range(5)] + [
+                    (42 + i, 45 + i) for i in range(5)
                 ] + [(51 + i, 50 + i)
                      for i in range(9)] + [(60, 59), (61, 60), (63, 61),
                                            (64, 62), (65, 63), (67, 64),
@@ -452,7 +441,7 @@ dataset_wflw = dict(
     ],
 )
 
-mapping_300w_coco133 = [(i, 20 + i) for i in range(68)]
+mapping_300w_coco133 = [(i, 23 + i) for i in range(68)]
 dataset_300w = dict(
     type=Face300WDataset,
     data_root=data_root,
@@ -467,10 +456,10 @@ dataset_300w = dict(
     ],
 )
 
-cofw_coco133 = [(0, 41), (2, 45), (4, 43), (1, 47), (3, 49), (6, 45), (8, 59),
+cofw_coco133 = [(0, 40), (2, 44), (4, 42), (1, 49), (3, 45), (6, 47), (8, 59),
                 (10, 62), (9, 68), (11, 65), (18, 54), (19, 58), (20, 53),
                 (21, 56), (22, 71), (23, 77), (24, 74), (25, 85), (26, 89),
-                (27, 80), (28, 28)]
+                (27, 80), (28, 31)]
 dataset_cofw = dict(
     type=COFWDataset,
     data_root=data_root,
@@ -485,9 +474,9 @@ dataset_cofw = dict(
     ],
 )
 
-lapa_coco133 = [(i * 2, 20 + i) for i in range(17)] + [
-    (33 + i, 41 + i) for i in range(5)
-] + [(42 + i, 46 + i) for i in range(5)] + [
+lapa_coco133 = [(i * 2, 23 + i) for i in range(17)] + [
+    (33 + i, 40 + i) for i in range(5)
+] + [(42 + i, 45 + i) for i in range(5)] + [
     (51 + i, 50 + i) for i in range(4)
 ] + [(58 + i, 54 + i) for i in range(5)] + [(66, 59), (67, 60), (69, 61),
                                             (70, 62), (71, 63), (73, 64),
@@ -545,17 +534,58 @@ dataset_face = dict(
     test_mode=False,
 )
 
-train_datasets = [
-    dataset_wb,
-    dataset_body,
-    dataset_face,
+hand_pipeline = [
+    dict(type=LoadImage, backend_args=backend_args),
+    dict(type=GetBBoxCenterScale),
+    dict(
+        type=RandomBBoxTransform,
+        shift_factor=0.,
+        scale_factor=[1.5, 2.0],
+        rotate_factor=0),
 ]
+
+interhand_left = [(21, 95), (22, 94), (23, 93), (24, 92), (25, 99), (26, 98),
+                  (27, 97), (28, 96), (29, 103), (30, 102), (31, 101),
+                  (32, 100), (33, 107), (34, 106), (35, 105), (36, 104),
+                  (37, 111), (38, 110), (39, 109), (40, 108), (41, 91)]
+interhand_right = [(i - 21, j + 21) for i, j in interhand_left]
+interhand_coco133 = interhand_right + interhand_left
+
+dataset_interhand2d = dict(
+    type=InterHand2DDoubleDataset,
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='interhand26m/annotations/all/InterHand2.6M_train_data.json',
+    camera_param_file='interhand26m/annotations/all/'
+    'InterHand2.6M_train_camera.json',
+    joint_file='interhand26m/annotations/all/'
+    'InterHand2.6M_train_joint_3d.json',
+    data_prefix=dict(img='interhand2.6m/images/train/'),
+    sample_interval=10,
+    pipeline=[
+        dict(
+            type=KeypointConverter,
+            num_keypoints=num_keypoints,
+            mapping=interhand_coco133,
+        ), *hand_pipeline
+    ],
+)
+
+dataset_hand = dict(
+    type=CombinedDataset,
+    metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
+    datasets=[dataset_interhand2d],
+    pipeline=[],
+    test_mode=False,
+)
+
+train_datasets = [dataset_wb, dataset_body, dataset_face, dataset_hand]
 
 # data loaders
 train_dataloader = dict(
     batch_size=train_batch_size,
-    num_workers=10,
-    pin_memory=True,
+    num_workers=4,
+    pin_memory=False,
     persistent_workers=True,
     sampler=dict(type=DefaultSampler, shuffle=True),
     dataset=dict(
@@ -587,6 +617,7 @@ test_dataloader = val_dataloader
 default_hooks.update(  # noqa
     checkpoint=dict(
         save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
+
 custom_hooks = [
     dict(
         type=EMAHook,
