@@ -41,7 +41,7 @@ ______________________________________________________________________
 ## 🥳 最新进展 [🔝](#-table-of-contents)
 
 - 2023 年 9 月：
-  - 发布混合数据集上训练的 RTMW 模型。Alpha 版本的 RTMW-x 在 COCO-Wholebody 验证集上取得了 70.2 mAP。技术报告正在撰写中。
+  - 发布混合数据集上训练的 RTMW 模型。Alpha 版本的 RTMW-x 在 COCO-Wholebody 验证集上取得了 70.2 mAP。[在线 Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose) 已支持 RTMW。技术报告正在撰写中。
   - 增加 HumanArt 上训练的 YOLOX 和 RTMDet 模型。
 - 2023 年 8 月：
   - 支持基于 RTMPose 模型蒸馏的 133 点 WholeBody 模型（由 [DWPose](https://github.com/IDEA-Research/DWPose/tree/main) 提供）。
@@ -302,8 +302,8 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
-| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmpose-l_8xb64-270e_coco-wholebody-256x192.py) |  256x192   |   67.2   |   75.4   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-256x192-fbef0d61_20230925.pth) |
-| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmpose-x_8xb32-270e_coco-wholebody-384x288.py) |  384x288   |   70.2   |   77.9   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-384x288-0949e3a9_20230925.pth) |
+| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail13-256x192.py) |  256x192   |   67.2   |   75.4   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-256x192-fbef0d61_20230925.pth) |
+| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail13-384x288.py) |  384x288   |   70.2   |   77.9   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-384x288-0949e3a9_20230925.pth) |
 
 </details>
 
