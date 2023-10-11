@@ -202,18 +202,32 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
-        """A hook function to convert old-version state dict of
+        """A hook function to.
+
+        1) convert old-version state dict of
         :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
         compatible format of :class:`HeatmapHead`.
 
+        2) remove the weights in data_preprocessor to avoid warning
+        `unexpected key in source state_dict: ...`. These weights are
+        initialized with given arguments and remain same during training
+        and inference.
+
         The hook will be automatically registered during initialization.
         """
+
+        keys = list(state_dict.keys())
+
+        # remove the keys in data_preprocessor to avoid warning
+        for k in keys:
+            if k in ('data_preprocessor.mean', 'data_preprocessor.std'):
+                del state_dict[k]
+
         version = local_meta.get('version', None)
         if version and version >= self._version:
             return
 
         # convert old-version state dict
-        keys = list(state_dict.keys())
         for k in keys:
             if 'keypoint_head' in k:
                 v = state_dict.pop(k)
