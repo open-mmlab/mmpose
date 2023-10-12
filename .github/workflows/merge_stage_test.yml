@@ -192,6 +192,7 @@ jobs:
     strategy:
       matrix:
         torch: [1.8.1, 2.1.0]
+        torchvision: [0.9.1, 0.16.0]
         include:
           - torch: 1.8.1
             torchvision: 0.9.1
