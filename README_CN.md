@@ -96,12 +96,21 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 我们支持了三个新的数据集:
-  - (CVPR 2023) [Human-Art](https://github.com/IDEA-Research/HumanArt)
-  - (CVPR 2022) [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom)
-  - (AAAI 2020) [LaPa](https://github.com/JDAI-CV/lapa-dataset/)
+- 我们支持了两个新的数据集:
 
-![yolox-pose_intro](https://user-images.githubusercontent.com/26127467/226655503-3cee746e-6e42-40be-82ae-6e7cae2a4c7e.jpg)
+  - (CVPR 2023) [UBody](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#ubody-cvpr-2023)
+  - [300W-LP](https://github.com/open-mmlab/mmpose/tree/main/configs/face_2d_keypoint/topdown_heatmap/300wlp)
+
+- 支持四个新算法：
+
+  - (ICCV 2023) [MotionBERT](https://github.com/open-mmlab/mmpose/tree/main/configs/body_3d_keypoint/motionbert)
+  - (ICCVW 2023) [DWPose](https://github.com/open-mmlab/mmpose/tree/main/configs/wholebody_2d_keypoint/dwpose)
+  - (ICLR 2023) [EDPose](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/body_2d_keypoint.html#edpose-edpose-on-coco)
+  - (ICLR 2022) [Uniformer](https://github.com/open-mmlab/mmpose/tree/main/projects/uniformer)
+
+- 发布首个在 COCO-Wholebody 上精度超过 70 AP 的全身姿态估计模型 RTMW，具体请参考 [RTMPose](/projects/rtmpose/)。[在线试玩](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
+
+![rtmw](https://github.com/open-mmlab/mmpose/assets/13503330/635c4618-c459-45e8-84a5-eb68cf338d00)
 
 - 欢迎使用 [*MMPose 项目*](/projects/README.md)。在这里，您可以发现 MMPose 中的最新功能和算法，并且可以通过最快的方式与社区分享自己的创意和代码实现。向 MMPose 中添加新功能从此变得简单丝滑：
 
@@ -113,19 +122,21 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
     - [Simple Keypoints](/projects/skps/)
+    - [Just Dance](/projects/just_dance/)
+    - [Uniformer](/projects/uniformer/)
   - 从简单的 [示例项目](/projects/example_project/) 开启您的 MMPose 代码贡献者之旅吧，让我们共同打造更好用的 MMPose！
 
 <br/>
 
-- 2023-07-04：MMPose [v1.1.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) 正式发布了，主要更新包括:
+- 2023-10-12：MMPose [v1.2.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) 正式发布了，主要更新包括:
 
-  - 支持新数据集：Human-Art、Animal Kingdom、LaPa。
-  - 支持新的配置文件风格，支持 IDE 跳转和搜索。
-  - 提供更强性能的 RTMPose 模型。
-  - 迁移 3D 姿态估计算法。
-  - 加速推理脚本，全部 demo 脚本支持摄像头推理。
+  - 支持新数据集：UBody、300W-LP。
+  - 支持新算法：MotionBERT、DWPose、EDPose、Uniformer
+  - 迁移 Associate Embedding、InterNet、YOLOX-Pose 算法。
+  - 迁移 DeepFashion2 数据集。
+  - 支持 Badcase 可视化分析、多数据集评测、关键点可见性预测功能。
 
-  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) 以了解更多 MMPose v1.1.0 带来的更新!
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) 以了解更多 MMPose v1.2.0 带来的更新!
 
 ## 0.x / 1.x 迁移
 
@@ -149,9 +160,9 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
    - [配置文件](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/configs.html)
    - [准备数据集](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/prepare_datasets.html)
    - [训练与测试](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/train_and_test.html)
-   - [模型部署](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/how_to_deploy.html)
-   - [模型分析工具](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/model_analysis.html)
-   - [数据集标注与预处理脚本](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/dataset_tools.html)
+   - [模型部署](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/how_to_deploy.html)
+   - [模型分析工具](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/model_analysis.html)
+   - [数据集标注与预处理脚本](https://mmpose.readthedocs.io/zh_CN/latest/user_guides/dataset_tools.html)
 
 2. 对于希望基于 MMPose 进行开发的研究者和开发者：
 
@@ -160,6 +171,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
    - [实现新模型](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/implement_new_models.html)
    - [自定义数据集](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_datasets.html)
    - [自定义数据变换](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_transforms.html)
+   - [自定义指标](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_evaluation.html)
    - [自定义优化器](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_optimizer.html)
    - [自定义日志](https://mmpose.readthedocs.io/zh_CN/latest/advanced_guides/customize_logging.html)
    - [迁移指南](https://mmpose.readthedocs.io/zh_CN/latest/migration.html)
@@ -195,7 +207,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 - [x] [SCNet](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
 - [ ] [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
 - [x] [RSN](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/backbones.html#rsn-eccv-2020) (ECCV'2020)
-- [ ] [InterNet](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
+- [x] [InterNet](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
 - [ ] [VoxelPose](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020)
 - [x] [LiteHRNet](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
 - [x] [ViPNAS](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
@@ -255,6 +267,7 @@ MMPose v1.0.0 是一个重大更新，包括了大量的 API 和配置文件的�
 - [x] [Horse-10](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#horse-10-wacv-2021) \[[主页](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
 - [x] [Human-Art](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#human-art-cvpr-2023) \[[主页](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
 - [x] [LaPa](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#lapa-aaai-2020) \[[主页](https://github.com/JDAI-CV/lapa-dataset)\] (AAAI'2020)
+- [x] [UBody](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#ubody-cvpr-2023) \[[主页](https://github.com/IDEA-Research/OSX)\] (CVPR'2023)
 
 </details>
 

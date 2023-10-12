@@ -98,36 +98,47 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## What's New
 
-- We are glad to support 3 new datasets:
-  - (CVPR 2023) [Human-Art](https://github.com/IDEA-Research/HumanArt)
-  - (CVPR 2022) [Animal Kingdom](https://github.com/sutdcv/Animal-Kingdom)
-  - (AAAI 2020) [LaPa](https://github.com/JDAI-CV/lapa-dataset/)
+- We have added support for two new datasets:
 
-![image](https://github.com/open-mmlab/mmpose/assets/13503330/c9171dbb-7e7a-4c39-98e3-c92932182efb)
+  - (CVPR 2023) [UBody](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#ubody-cvpr-2023)
+  - [300W-LP](https://github.com/open-mmlab/mmpose/tree/main/configs/face_2d_keypoint/topdown_heatmap/300wlp)
 
-- Welcome to [*projects of MMPose*](/projects/README.md), where you can access to the latest features of MMPose, and share your ideas and codes with the community at once. Contribution to MMPose will be simple and smooth:
+- Support for four new algorithms:
 
-  - Provide an easy and agile way to integrate algorithms, features and applications into MMPose
-  - Allow flexible code structure and style; only need a short code review process
-  - Build individual projects with full power of MMPose but not bound up with heavy frameworks
-  - Checkout new projects:
+  - (ICCV 2023) [MotionBERT](https://github.com/open-mmlab/mmpose/tree/main/configs/body_3d_keypoint/motionbert)
+  - (ICCVW 2023) [DWPose](https://github.com/open-mmlab/mmpose/tree/main/configs/wholebody_2d_keypoint/dwpose)
+  - (ICLR 2023) [EDPose](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/body_2d_keypoint.html#edpose-edpose-on-coco)
+  - (ICLR 2022) [Uniformer](https://github.com/open-mmlab/mmpose/tree/main/projects/uniformer)
+
+- Released the first whole-body pose estimation model, RTMW, with accuracy exceeding 70 AP on COCO-Wholebody. For details, refer to [RTMPose](/projects/rtmpose/). [Try it now!](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
+
+![rtmw](https://github.com/open-mmlab/mmpose/assets/13503330/635c4618-c459-45e8-84a5-eb68cf338d00)
+
+- Welcome to use the [*MMPose project*](/projects/README.md). Here, you can discover the latest features and algorithms in MMPose and quickly share your ideas and code implementations with the community. Adding new features to MMPose has become smoother:
+
+  - Provides a simple and fast way to add new algorithms, features, and applications to MMPose.
+  - More flexible code structure and style, fewer restrictions, and a shorter code review process.
+  - Utilize the powerful capabilities of MMPose in the form of independent projects without being constrained by the code framework.
+  - Newly added projects include:
     - [RTMPose](/projects/rtmpose/)
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
     - [Simple Keypoints](/projects/skps/)
-  - Become a contributors and make MMPose greater. Start your journey from the [example project](/projects/example_project/)
+    - [Just Dance](/projects/just_dance/)
+    - [Uniformer](/projects/uniformer/)
+  - Start your journey as an MMPose contributor with a simple [example project](/projects/example_project/), and let's build a better MMPose together!
 
 <br/>
 
-- 2023-07-04: MMPose [v1.1.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) is officially released, with the main updates including:
+- October 12, 2023: MMPose [v1.2.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) has been officially released, with major updates including:
 
-  - Support new datasets: Human-Art, Animal Kingdom and LaPa.
-  - Support new config type that is more user-friendly and flexible.
-  - Improve RTMPose with better performance.
-  - Migrate 3D pose estimation models on h36m.
-  - Inference speedup and webcam inference with all demo scripts.
+  - Support for new datasets: UBody, 300W-LP.
+  - Support for new algorithms: MotionBERT, DWPose, EDPose, Uniformer.
+  - Migration of Associate Embedding, InterNet, YOLOX-Pose algorithms.
+  - Migration of the DeepFashion2 dataset.
+  - Support for Badcase visualization analysis, multi-dataset evaluation, and keypoint visibility prediction features.
 
-  Please refer to the [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.1.0) for more updates brought by MMPose v1.1.0!
+  Please check the complete [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) for more details on the updates brought by MMPose v1.2.0!
 
 ## 0.x / 1.x Migration
 
@@ -151,9 +162,9 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
    - [Configs](https://mmpose.readthedocs.io/en/latest/user_guides/configs.html)
    - [Prepare Datasets](https://mmpose.readthedocs.io/en/latest/user_guides/prepare_datasets.html)
    - [Train and Test](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html)
-   - [Deployment](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/how_to_deploy.html)
-   - [Model Analysis](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/model_analysis.html)
-   - [Dataset Annotation and Preprocessing](https://mmpose.readthedocs.io/en/dev-1.x/user_guides/dataset_tools.html)
+   - [Deployment](https://mmpose.readthedocs.io/en/latest/user_guides/how_to_deploy.html)
+   - [Model Analysis](https://mmpose.readthedocs.io/en/latest/user_guides/model_analysis.html)
+   - [Dataset Annotation and Preprocessing](https://mmpose.readthedocs.io/en/latest/user_guides/dataset_tools.html)
 
 2. For developers who wish to develop based on MMPose:
 
@@ -162,6 +173,7 @@ We provided a series of tutorials about the basic usage of MMPose for new users:
    - [Implement New Models](https://mmpose.readthedocs.io/en/latest/advanced_guides/implement_new_models.html)
    - [Customize Datasets](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_datasets.html)
    - [Customize Data Transforms](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_transforms.html)
+   - [Customize Evaluation](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_evaluation.html)
    - [Customize Optimizer](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_optimizer.html)
    - [Customize Logging](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_logging.html)
    - [How to Deploy](https://mmpose.readthedocs.io/en/latest/user_guides/how_to_deploy.html)
@@ -199,7 +211,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [SCNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
 - [ ] [HigherHRNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
 - [x] [RSN](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#rsn-eccv-2020) (ECCV'2020)
-- [ ] [InterNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
+- [x] [InterNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
 - [ ] [VoxelPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020)
 - [x] [LiteHRNet](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
 - [x] [ViPNAS](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
@@ -259,6 +271,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [Horse-10](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#horse-10-wacv-2021) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
 - [x] [Human-Art](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#human-art-cvpr-2023) \[[homepage](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
 - [x] [LaPa](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#lapa-aaai-2020) \[[homepage](https://github.com/JDAI-CV/lapa-dataset)\] (AAAI'2020)
+- [x] [UBody](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ubody-cvpr-2023) \[[homepage](https://github.com/IDEA-Research/OSX)\] (CVPR'2023)
 
 </details>
 
