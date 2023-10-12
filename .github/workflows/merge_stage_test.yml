@@ -188,7 +188,7 @@ jobs:
           coverage report -m
 
   build_windows:
-    runs-on: windows-2022
+    runs-on: windows-2019
     strategy:
       matrix:
         torch: [1.8.1, 2.1.0]
