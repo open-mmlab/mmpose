@@ -1,0 +1,45 @@
+Collections:
+- Name: MotionBERT
+  Paper:
+    Title: "Learning Human Motion Representations: A Unified Perspective"
+    URL: https://arxiv.org/abs/2210.06551
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/motionbert.md
+Models:
+- Config: configs/body_3d_keypoint/motionbert/h36m/motionbert_dstformer-243frm_8xb32-240e_h36m.py
+  In Collection: MotionBERT
+  Metadata:
+    Architecture: &id001
+    - MotionBERT
+    Training Data: Human3.6M (MotionBERT)
+  Name: motionbert_dstformer-243frm_8xb32-240e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 34.5
+      P-MPJPE: 27.1
+    Task: Body 3D Keypoint
+  - Dataset: Human3.6M (MotionBERT)
+    Metrics:
+      MPJPE: 39.8
+      P-MPJPE: 33.4
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_h36m-f554954f_20230531.pth
+- Config: configs/body_3d_keypoint/motionbert/h36m/motionbert_dstformer-ft-243frm_8xb32-120e_h36m.py
+  In Collection: MotionBERT
+  Alias: human3d
+  Metadata:
+    Architecture: *id001
+    Training Data: Human3.6M (MotionBERT)
+  Name: motionbert_dstformer-ft-243frm_8xb32-120e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 26.9
+      P-MPJPE: 21.0
+    Task: Body 3D Keypoint
+  - Dataset: Human3.6M (MotionBERT)
+    Metrics:
+      MPJPE: 37.7
+      P-MPJPE: 32.2
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth

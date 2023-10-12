@@ -147,12 +147,16 @@ class TopdownPoseEstimator(BasePoseEstimator):
             gt_instances = data_sample.gt_instances
 
             # convert keypoint coordinates from input space to image space
-            bbox_centers = gt_instances.bbox_centers
-            bbox_scales = gt_instances.bbox_scales
+            input_center = data_sample.metainfo['input_center']
+            input_scale = data_sample.metainfo['input_scale']
             input_size = data_sample.metainfo['input_size']
 
-            pred_instances.keypoints = pred_instances.keypoints / input_size \
-                * bbox_scales + bbox_centers - 0.5 * bbox_scales
+            pred_instances.keypoints[..., :2] = \
+                pred_instances.keypoints[..., :2] / input_size * input_scale \
+                + input_center - 0.5 * input_scale
+            if 'keypoints_visible' not in pred_instances:
+                pred_instances.keypoints_visible = \
+                    pred_instances.keypoint_scores
 
             if output_keypoint_indices is not None:
                 # select output keypoints with given indices

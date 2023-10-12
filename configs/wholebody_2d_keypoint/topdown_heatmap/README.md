@@ -18,9 +18,18 @@ Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO
 |   HRNet-w32+Dark    |  256x192   |  0.582   |  0.671   |  [hrnet_dark_coco-wholebody.md](./coco-wholebody/hrnet_dark_coco-wholebody.md)  |
 |      HRNet-w48      |  256x192   |  0.579   |  0.681   |       [hrnet_coco-wholebody.md](./coco-wholebody/hrnet_coco-wholebody.md)       |
 |      CSPNeXt-m      |  256x192   |  0.567   |  0.641   | [cspnext_udp_coco-wholebody.md](./coco-wholebody/cspnext_udp_coco-wholebody.md) |
+|      HRNet-w32      |  256x192   |  0.549   |  0.646   |    [hrnet_ubody-coco-wholebody.md](./ubody2d/hrnet_ubody-coco-wholebody.md)     |
 |     ResNet-152      |  256x192   |  0.548   |  0.661   |      [resnet_coco-wholebody.md](./coco-wholebody/resnet_coco-wholebody.md)      |
 |      HRNet-w32      |  256x192   |  0.536   |  0.636   |       [hrnet_coco-wholebody.md](./coco-wholebody/hrnet_coco-wholebody.md)       |
 |     ResNet-101      |  256x192   |  0.531   |  0.645   |      [resnet_coco-wholebody.md](./coco-wholebody/resnet_coco-wholebody.md)      |
 | S-ViPNAS-Res50+Dark |  256x192   |  0.528   |  0.632   | [vipnas_dark_coco-wholebody.md](./coco-wholebody/vipnas_dark_coco-wholebody.md) |
 |      ResNet-50      |  256x192   |  0.521   |  0.633   |      [resnet_coco-wholebody.md](./coco-wholebody/resnet_coco-wholebody.md)      |
 |   S-ViPNAS-Res50    |  256x192   |  0.495   |  0.607   |      [vipnas_coco-wholebody.md](./coco-wholebody/vipnas_coco-wholebody.md)      |
+
+### UBody2D Dataset
+
+Result on UBody val set, computed with gt keypoints.
+
+|   Model   | Input Size | Whole AP | Whole AR |                           Details and Download                           |
+| :-------: | :--------: | :------: | :------: | :----------------------------------------------------------------------: |
+| HRNet-w32 |  256x192   |  0.690   |  0.729   | [hrnet_ubody-coco-wholebody.md](./ubody2d/hrnet_ubody-coco-wholebody.md) |

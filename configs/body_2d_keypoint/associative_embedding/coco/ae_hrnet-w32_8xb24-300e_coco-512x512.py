@@ -36,6 +36,8 @@ codec = dict(
     input_size=(512, 512),
     heatmap_size=(128, 128),
     sigma=2,
+    decode_topk=30,
+    decode_center_shift=0.5,
     decode_keypoint_order=[
         0, 1, 2, 3, 4, 5, 6, 11, 12, 7, 8, 9, 10, 13, 14, 15, 16
     ],
@@ -97,7 +99,7 @@ model = dict(
     test_cfg=dict(
         multiscale_test=False,
         flip_test=True,
-        shift_heatmap=True,
+        shift_heatmap=False,
         restore_heatmap_size=True,
         align_corners=False))
 
@@ -113,9 +115,14 @@ val_pipeline = [
     dict(
         type='BottomupResize',
         input_size=codec['input_size'],
-        size_factor=32,
+        size_factor=64,
         resize_mode='expand'),
-    dict(type='PackPoseInputs')
+    dict(
+        type='PackPoseInputs',
+        meta_keys=('id', 'img_id', 'img_path', 'crowd_index', 'ori_shape',
+                   'img_shape', 'input_size', 'input_center', 'input_scale',
+                   'flip', 'flip_direction', 'flip_indices', 'raw_ann_info',
+                   'skeleton_links'))
 ]
 
 # data loaders
@@ -154,6 +161,6 @@ val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json',
     nms_mode='none',
-    score_mode='keypoint',
+    score_mode='bbox',
 )
 test_evaluator = val_evaluator

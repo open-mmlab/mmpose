@@ -88,8 +88,8 @@ config/_base_/datasets/custom.py
   1. `name`: 关键点名称，必须是唯一的，例如 `nose`、`left_eye` 等。
   2. `id`: 关键点 ID，必须是唯一的，从 0 开始。
   3. `color`: 关键点可视化时的颜色，以 (\[B, G, R\]) 格式组织起来，用于可视化。
-  4. `type`: 关键点类型，可以是 `upper`、`lower` 或 \`\`，用于数据增强。
-  5. `swap`: 关键点交换关系，用于水平翻转数据增强。
+  4. `type`: 关键点类型，可以是 `upper`、`lower` 或 `''`，用于数据增强 [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/b225a773d168fc2afd48cde5f76c0202d1ba2f52/mmpose/datasets/transforms/common_transforms.py#L263)。
+  5. `swap`: 关键点交换关系，用于水平翻转数据增强 [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94)。
 - `skeleton_info`：骨架连接关系，用于可视化。
 - `joint_weights`：每个关键点的权重，用于损失函数计算。
 - `sigma`：标准差，用于计算 OKS 分数，详细信息请参考 [keypoints-eval](https://cocodataset.org/#keypoints-eval)。
@@ -217,14 +217,14 @@ test_dataloader = dict(
 
 ## 数据集封装
 
-目前 [MMEngine](https://github.com/open-mmlab/mmengine) 支持以下数据集封装：
+在 MMPose 中，支持使用 MMPose 实现的数据集封装和 [MMEngine](https://github.com/open-mmlab/mmengine) 实现的数据集封装。目前 [MMEngine](https://github.com/open-mmlab/mmengine) 支持以下数据集封装：
 
 - [ConcatDataset](https://mmengine.readthedocs.io/zh_CN/latest/advanced_tutorials/basedataset.html#concatdataset)
 - [RepeatDataset](https://mmengine.readthedocs.io/zh_CN/latest/advanced_tutorials/basedataset.html#repeatdataset)
 
 ### CombinedDataset
 
-MMPose 提供了一个 `CombinedDataset` 类，它可以将多个数据集封装成一个数据集。它的使用方法如下：
+MMPose 提供了一个 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 类，它可以将多个数据集封装成一个数据集。它的使用方法如下：
 
 ```python
 dataset_1 = dict(

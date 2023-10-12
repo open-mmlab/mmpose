@@ -20,8 +20,8 @@ Take [animalpose model](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -39,14 +39,14 @@ The augement `--det-cat-id=15` selected detected bounding boxes with label 'cat'
 **COCO-animals**
 In COCO dataset, there are 80 object categories, including 10 common `animal` categories (14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe').
 
-For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [detection model zoo](/demo/docs/en/mmdet_modelzoo.md).
+For other animals, we have also provided some pre-trained animal detection models. Supported models can be found in [detection model zoo](/demo/docs/en/mmdet_modelzoo.md).
 
 To save visualized results on disk:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -57,8 +57,8 @@ To save predicted results on disk:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -69,8 +69,8 @@ To run demos on CPU:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_tiny_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_tiny_8xb32-300e_coco/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input tests/data/animalpose/ca110.jpeg \
@@ -85,8 +85,8 @@ For example,
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
-    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    demo/mmdetection_cfg/rtmdet_m_8xb32-300e_coco.py \
+    https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth \
     configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py \
     https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth \
     --input demo/resources/<demo_dog.mp4> \

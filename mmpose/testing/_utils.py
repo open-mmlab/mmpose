@@ -101,6 +101,14 @@ def get_packed_inputs(batch_size=2,
         image = rng.randint(0, 255, size=(3, h, w), dtype=np.uint8)
         inputs['inputs'] = torch.from_numpy(image)
 
+        # attributes
+        bboxes = _rand_bboxes(rng, num_instances, w, h)
+        bbox_centers, bbox_scales = bbox_xyxy2cs(bboxes)
+
+        keypoints = _rand_keypoints(rng, bboxes, num_keypoints)
+        keypoints_visible = np.ones((num_instances, num_keypoints),
+                                    dtype=np.float32)
+
         # meta
         img_meta = {
             'id': idx,
@@ -108,6 +116,8 @@ def get_packed_inputs(batch_size=2,
             'img_path': '<demo>.png',
             'img_shape': img_shape,
             'input_size': input_size,
+            'input_center': bbox_centers,
+            'input_scale': bbox_scales,
             'flip': False,
             'flip_direction': None,
             'flip_indices': list(range(num_keypoints))
@@ -119,12 +129,6 @@ def get_packed_inputs(batch_size=2,
         # gt_instance
         gt_instances = InstanceData()
         gt_instance_labels = InstanceData()
-        bboxes = _rand_bboxes(rng, num_instances, w, h)
-        bbox_centers, bbox_scales = bbox_xyxy2cs(bboxes)
-
-        keypoints = _rand_keypoints(rng, bboxes, num_keypoints)
-        keypoints_visible = np.ones((num_instances, num_keypoints),
-                                    dtype=np.float32)
 
         # [N, K] -> [N, num_levels, K]
         # keep the first dimension as the num_instances

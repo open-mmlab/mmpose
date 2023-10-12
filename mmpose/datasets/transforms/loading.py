@@ -48,19 +48,24 @@ class LoadImage(LoadImageFromFile):
         Returns:
             dict: The result dict.
         """
+        try:
+            if 'img' not in results:
+                # Load image from file by :meth:`LoadImageFromFile.transform`
+                results = super().transform(results)
+            else:
+                img = results['img']
+                assert isinstance(img, np.ndarray)
+                if self.to_float32:
+                    img = img.astype(np.float32)
 
-        if 'img' not in results:
-            # Load image from file by :meth:`LoadImageFromFile.transform`
-            results = super().transform(results)
-        else:
-            img = results['img']
-            assert isinstance(img, np.ndarray)
-            if self.to_float32:
-                img = img.astype(np.float32)
-
-            if 'img_path' not in results:
-                results['img_path'] = None
-            results['img_shape'] = img.shape[:2]
-            results['ori_shape'] = img.shape[:2]
+                if 'img_path' not in results:
+                    results['img_path'] = None
+                results['img_shape'] = img.shape[:2]
+                results['ori_shape'] = img.shape[:2]
+        except Exception as e:
+            e = type(e)(
+                f'`{str(e)}` occurs when loading `{results["img_path"]}`.'
+                'Please check whether the file exists.')
+            raise e
 
         return results

@@ -1,7 +1,6 @@
 Models:
 - Config: configs/face_2d_keypoint/rtmpose/wflw/rtmpose-m_8xb64-60e_wflw-256x256.py
   In Collection: RTMPose
-  Alias: face
   Metadata:
     Architecture:
     - RTMPose

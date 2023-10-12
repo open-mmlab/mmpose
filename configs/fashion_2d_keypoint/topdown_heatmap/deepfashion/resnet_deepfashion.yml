@@ -1,0 +1,51 @@
+Collections:
+- Name: SimpleBaseline2D
+  Paper:
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
+Models:
+- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_res50_8xb64-210e_deepfashion_upper-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: DeepFashion
+  Name: td-hm_res50_8xb64-210e_deepfashion_upper-256x192
+  Results:
+  - Dataset: DeepFashion
+    Metrics:
+      AUC: 57.8
+      EPE: 16.8
+      PCK@0.2: 95.4
+    Task: Fashion 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_upper_256x192-41794f03_20210124.pth
+- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_res50_8xb64-210e_deepfashion_lower-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: DeepFashion
+  Name: td-hm_res50_8xb64-210e_deepfashion_lower-256x192
+  Results:
+  - Dataset: DeepFashion
+    Metrics:
+      AUC: 74.4
+      EPE: 96.5
+      PCK@0.2: 10.5
+    Task: Fashion 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_lower_256x192-1292a839_20210124.pth
+- Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_res50_8xb64-210e_deepfashion_full-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: DeepFashion
+  Name: td-hm_res50_8xb64-210e_deepfashion_full-256x192
+  Results:
+  - Dataset: DeepFashion
+    Metrics:
+      AUC: 66.4
+      EPE: 12.7
+      PCK@0.2: 97.7
+    Task: Fashion 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_full_256x192-0dbd6e42_20210124.pth

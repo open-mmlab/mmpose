@@ -5,7 +5,7 @@ from ..base import BaseCocoStyleDataset
 
 @DATASETS.register_module()
 class HumanArtDataset(BaseCocoStyleDataset):
-    """Human-Art dataset for pose estimation.
+    """Human-Art dataset for pose estimation with 17 kpts.
 
     "Human-Art: A Versatile Human-Centric Dataset
     Bridging Natural and Artificial Scenes", CVPR'2023.

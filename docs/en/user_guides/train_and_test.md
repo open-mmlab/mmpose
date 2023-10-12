@@ -14,7 +14,6 @@ python tools/train.py ${CONFIG_FILE} [ARGS]
 
 ```{note}
 By default, MMPose prefers GPU to CPU. If you want to train a model on CPU, please empty `CUDA_VISIBLE_DEVICES` or set it to -1 to make GPU invisible to the program.
-
 ```
 
 ```shell
@@ -214,6 +213,31 @@ python ./tools/train.py \
 
 - `randomness.deterministic=True`, set the deterministic option for `cuDNN` backend, i.e., set `torch.backends.cudnn.deterministic` to `True` and `torch.backends.cudnn.benchmark` to `False`. Defaults to `False`. See [Pytorch Randomness](https://pytorch.org/docs/stable/notes/randomness.html) for more details.
 
+## Training Log
+
+During training, the training log will be printed in the console as follows:
+
+```shell
+07/14 08:26:50 - mmengine - INFO - Epoch(train) [38][ 6/38]  base_lr: 5.148343e-04 lr: 5.148343e-04  eta: 0:15:34  time: 0.540754  data_time: 0.394292  memory: 3141  loss: 0.006220  loss_kpt: 0.006220  acc_pose: 1.000000
+```
+
+The training log contains the following information:
+
+- `07/14 08:26:50`: The current time.
+- `mmengine`: The name of the program.
+- `INFO` or `WARNING`: The log level.
+- `Epoch(train)`: The current training stage. `train` means the training stage, `val` means the validation stage.
+- `[38][ 6/38]`: The current epoch and the current iteration.
+- `base_lr`: The base learning rate.
+- `lr`: The current (real) learning rate.
+- `eta`: The estimated time of arrival.
+- `time`: The elapsed time (minutes) of the current iteration.
+- `data_time`: The elapsed time (minutes) of data processing (i/o and transforms).
+- `memory`: The GPU memory (MB) allocated by the program.
+- `loss`: The total loss value of the current iteration.
+- `loss_kpt`: The loss value you passed in head module.
+- `acc_pose`: The accuracy value you passed in head module.
+
 ## Visualize training process
 
 Monitoring the training process is essential for understanding the performance of your model and making necessary adjustments. In this section, we will introduce two methods to visualize the training process of your MMPose model: TensorBoard and the MMEngine Visualizer.
@@ -261,7 +285,6 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [ARGS]
 
 ```{note}
 By default, MMPose prefers GPU to CPU. If you want to test a model on CPU, please empty `CUDA_VISIBLE_DEVICES` or set it to -1 to make GPU invisible to the program.
-
 ```
 
 ```shell
@@ -367,3 +390,121 @@ Here are the environment variables that can be used to configure the slurm job.
 | `GPUS_PER_NODE` | The number of GPUs to be allocated per node. Defaults to 8.                                                |
 | `CPUS_PER_TASK` | The number of CPUs to be allocated per task (Usually one GPU corresponds to one task). Defaults to 5.      |
 | `SRUN_ARGS`     | The other arguments of `srun`. Available options can be found [here](https://slurm.schedmd.com/srun.html). |
+
+## Custom Testing Features
+
+### Test with Custom Metrics
+
+If you're looking to assess models using unique metrics not already supported by MMPose, you'll need to code these metrics yourself and include them in your config file. For guidance on how to accomplish this, check out our [customized evaluation guide](https://mmpose.readthedocs.io/en/latest/advanced_guides/customize_evaluation.html).
+
+### Evaluating Across Multiple Datasets
+
+MMPose offers a handy tool known as `MultiDatasetEvaluator` for streamlined assessment across multiple datasets. Setting up this evaluator in your config file is a breeze. Below is a quick example demonstrating how to evaluate a model using both the COCO and AIC datasets:
+
+```python
+# Set up validation datasets
+coco_val = dict(type='CocoDataset', ...)
+aic_val = dict(type='AicDataset', ...)
+val_dataset = dict(
+        type='CombinedDataset',
+        datasets=[coco_val, aic_val],
+        pipeline=val_pipeline,
+        ...)
+
+# configurate the evaluator
+val_evaluator = dict(
+    type='MultiDatasetEvaluator',
+    metrics=[  # metrics for each dataset
+        dict(type='CocoMetric',
+             ann_file='data/coco/annotations/person_keypoints_val2017.json'),
+        dict(type='CocoMetric',
+            ann_file='data/aic/annotations/aic_val.json',
+            use_area=False,
+            prefix='aic')
+    ],
+    # the number and order of datasets must align with metrics
+    datasets=[coco_val, aic_val],
+    )
+```
+
+Keep in mind that different datasets, like COCO and AIC, have various keypoint definitions. Yet, the model's output keypoints are standardized. This results in a discrepancy between the model outputs and the actual ground truth. To address this, you can employ `KeypointConverter` to align the keypoint configurations between different datasets. Here’s a full example that shows how to leverage `KeypointConverter` to align AIC keypoints with COCO keypoints:
+
+```python
+aic_to_coco_converter = dict(
+            type='KeypointConverter',
+            num_keypoints=17,
+            mapping=[
+                (0, 6),
+                (1, 8),
+                (2, 10),
+                (3, 5),
+                (4, 7),
+                (5, 9),
+                (6, 12),
+                (7, 14),
+                (8, 16),
+                (9, 11),
+                (10, 13),
+                (11, 15),
+            ])
+
+# val datasets
+coco_val = dict(
+    type='CocoDataset',
+    data_root='data/coco/',
+    data_mode='topdown',
+    ann_file='annotations/person_keypoints_val2017.json',
+    bbox_file='data/coco/person_detection_results/'
+    'COCO_val2017_detections_AP_H_56_person.json',
+    data_prefix=dict(img='val2017/'),
+    test_mode=True,
+    pipeline=[],
+)
+
+aic_val = dict(
+        type='AicDataset',
+        data_root='data/aic/',
+        data_mode=data_mode,
+        ann_file='annotations/aic_val.json',
+        data_prefix=dict(img='ai_challenger_keypoint_validation_20170911/'
+                         'keypoint_validation_images_20170911/'),
+        test_mode=True,
+        pipeline=[],
+    )
+
+val_dataset = dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        datasets=[coco_val, aic_val],
+        pipeline=val_pipeline,
+        test_mode=True,
+    )
+
+val_dataloader = dict(
+    batch_size=32,
+    num_workers=2,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=val_dataset)
+
+test_dataloader = val_dataloader
+
+val_evaluator = dict(
+    type='MultiDatasetEvaluator',
+    metrics=[
+        dict(type='CocoMetric',
+             ann_file=data_root + 'annotations/person_keypoints_val2017.json'),
+        dict(type='CocoMetric',
+            ann_file='data/aic/annotations/aic_val.json',
+            use_area=False,
+            gt_converter=aic_to_coco_converter,
+            prefix='aic')
+    ],
+    datasets=val_dataset['datasets'],
+    )
+
+test_evaluator = val_evaluator
+```
+
+For further clarification on converting AIC keypoints to COCO keypoints, please consult [this guide](https://mmpose.readthedocs.io/en/latest/user_guides/mixed_datasets.html#merge-aic-into-coco).

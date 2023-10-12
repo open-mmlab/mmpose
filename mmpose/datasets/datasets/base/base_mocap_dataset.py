@@ -1,14 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import itertools
+import logging
 import os.path as osp
 from copy import deepcopy
 from itertools import filterfalse, groupby
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
+import cv2
 import numpy as np
 from mmengine.dataset import BaseDataset, force_full_init
 from mmengine.fileio import exists, get_local_path, load
+from mmengine.logging import print_log
 from mmengine.utils import is_abs
-from PIL import Image
 
 from mmpose.registry import DATASETS
 from ..utils import parse_pose_metainfo
@@ -21,6 +24,8 @@ class BaseMocapDataset(BaseDataset):
     Args:
         ann_file (str): Annotation file path. Default: ''.
         seq_len (int): Number of frames in a sequence. Default: 1.
+        multiple_target (int): If larger than 0, merge every
+            ``multiple_target`` sequence together. Default: 0.
         causal (bool): If set to ``True``, the rightmost input frame will be
             the target frame. Otherwise, the middle input frame will be the
             target frame. Default: ``True``.
@@ -63,6 +68,7 @@ class BaseMocapDataset(BaseDataset):
     def __init__(self,
                  ann_file: str = '',
                  seq_len: int = 1,
+                 multiple_target: int = 0,
                  causal: bool = True,
                  subset_frac: float = 1.0,
                  camera_param_file: Optional[str] = None,
@@ -87,20 +93,28 @@ class BaseMocapDataset(BaseDataset):
         _ann_file = ann_file
         if not is_abs(_ann_file):
             _ann_file = osp.join(data_root, _ann_file)
-        assert exists(_ann_file), 'Annotation file does not exist.'
-        with get_local_path(_ann_file) as local_path:
-            self.ann_data = np.load(local_path)
+        assert exists(_ann_file), (
+            f'Annotation file `{_ann_file}` does not exist.')
+
+        self._load_ann_file(_ann_file)
 
         self.camera_param_file = camera_param_file
         if self.camera_param_file:
             if not is_abs(self.camera_param_file):
                 self.camera_param_file = osp.join(data_root,
                                                   self.camera_param_file)
-            assert exists(self.camera_param_file)
+            assert exists(self.camera_param_file), (
+                f'Camera parameters file `{self.camera_param_file}` does not '
+                'exist.')
             self.camera_param = load(self.camera_param_file)
 
         self.seq_len = seq_len
         self.causal = causal
+
+        self.multiple_target = multiple_target
+        if self.multiple_target:
+            assert (self.seq_len == 1), (
+                'Multi-target data sample only supports seq_len=1.')
 
         assert 0 < subset_frac <= 1, (
             f'Unsupported `subset_frac` {subset_frac}. Supported range '
@@ -121,6 +135,19 @@ class BaseMocapDataset(BaseDataset):
             test_mode=test_mode,
             lazy_init=lazy_init,
             max_refetch=max_refetch)
+
+    def _load_ann_file(self, ann_file: str) -> dict:
+        """Load annotation file to get image information.
+
+        Args:
+            ann_file (str): Annotation file path.
+
+        Returns:
+            dict: Annotation information.
+        """
+
+        with get_local_path(ann_file) as local_path:
+            self.ann_data = np.load(local_path)
 
     @classmethod
     def _load_metainfo(cls, metainfo: dict = None) -> dict:
@@ -207,10 +234,13 @@ class BaseMocapDataset(BaseDataset):
         try:
             with get_local_path(osp.join(self.data_prefix['img'],
                                          img_name)) as local_path:
-                im = Image.open(local_path)
-                w, h = im.size
-                im.close()
+                im = cv2.imread(local_path)
+                h, w, _ = im.shape
         except:  # noqa: E722
+            print_log(
+                f'Failed to read image {img_name}.',
+                logger='current',
+                level=logging.DEBUG)
             return None
 
         img = {
@@ -241,6 +271,17 @@ class BaseMocapDataset(BaseDataset):
             sequence_indices = [[idx] for idx in range(num_imgs)]
         else:
             raise NotImplementedError('Multi-frame data sample unsupported!')
+
+        if self.multiple_target > 0:
+            sequence_indices_merged = []
+            for i in range(0, len(sequence_indices), self.multiple_target):
+                if i + self.multiple_target > len(sequence_indices):
+                    break
+                sequence_indices_merged.append(
+                    list(
+                        itertools.chain.from_iterable(
+                            sequence_indices[i:i + self.multiple_target])))
+            sequence_indices = sequence_indices_merged
         return sequence_indices
 
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
@@ -274,7 +315,13 @@ class BaseMocapDataset(BaseDataset):
         image_list = []
 
         for idx, frame_ids in enumerate(self.sequence_indices):
-            assert len(frame_ids) == self.seq_len
+            expected_num_frames = self.seq_len
+            if self.multiple_target:
+                expected_num_frames = self.multiple_target
+
+            assert len(frame_ids) == (expected_num_frames), (
+                f'Expected `frame_ids` == {expected_num_frames}, but '
+                f'got {len(frame_ids)} ')
 
             _img_names = img_names[frame_ids]
 
@@ -286,7 +333,9 @@ class BaseMocapDataset(BaseDataset):
             keypoints_3d = _keypoints_3d[..., :3]
             keypoints_3d_visible = _keypoints_3d[..., 3]
 
-            target_idx = -1 if self.causal else int(self.seq_len) // 2
+            target_idx = [-1] if self.causal else [int(self.seq_len) // 2]
+            if self.multiple_target:
+                target_idx = list(range(self.multiple_target))
 
             instance_info = {
                 'num_keypoints': num_keypoints,
@@ -312,9 +361,10 @@ class BaseMocapDataset(BaseDataset):
 
             instance_list.append(instance_info)
 
-        for idx, imgname in enumerate(img_names):
-            img_info = self.get_img_info(idx, imgname)
-            image_list.append(img_info)
+        if self.data_mode == 'bottomup':
+            for idx, imgname in enumerate(img_names):
+                img_info = self.get_img_info(idx, imgname)
+                image_list.append(img_info)
 
         return instance_list, image_list
 

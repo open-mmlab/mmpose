@@ -1,21 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
-import warnings
 from collections import defaultdict
 from functools import partial
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
-import cv2
 import mmcv
 import numpy as np
 import torch
 from mmengine.config import Config, ConfigDict
-from mmengine.fileio import join_path
 from mmengine.infer.infer import ModelType
 from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
-from mmengine.utils import mkdir_or_exist
 
 from mmpose.apis import (_track_by_iou, _track_by_oks, collate_pose_sequence,
                          convert_keypoint_definition, extract_pose_sequence)
@@ -67,9 +63,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
 
     preprocess_kwargs: set = {
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
-        'norm_pose_2d'
+        'disable_norm_pose_2d'
     }
-    forward_kwargs: set = {'rebase_keypoint_height'}
+    forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
         'return_vis',
         'show',
@@ -77,10 +73,11 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         'draw_bbox',
         'radius',
         'thickness',
+        'num_instances',
         'kpt_thr',
         'vis_out_dir',
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def __init__(self,
                  model: Union[ModelType, str],
@@ -109,9 +106,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         # helper functions
         self._keypoint_converter = partial(
             convert_keypoint_definition,
-            pose_det_dataset=self.pose2d_model.cfg.test_dataloader.
-            dataset['type'],
-            pose_lift_dataset=self.cfg.test_dataloader.dataset['type'],
+            pose_det_dataset=self.pose2d_model.model.
+            dataset_meta['dataset_name'],
+            pose_lift_dataset=self.model.dataset_meta['dataset_name'],
         )
 
         self._pose_seq_extractor = partial(
@@ -132,7 +129,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                                         np.ndarray] = [],
                           use_oks_tracking: bool = False,
                           tracking_thr: float = 0.3,
-                          norm_pose_2d: bool = False):
+                          disable_norm_pose_2d: bool = False):
         """Process a single input into a model-feedable format.
 
         Args:
@@ -149,8 +146,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 whether OKS-based tracking should be used. Defaults to False.
             tracking_thr (float, optional): The threshold for tracking.
                 Defaults to 0.3.
-            norm_pose_2d (bool, optional): A flag that indicates whether 2D
-                pose normalization should be used. Defaults to False.
+            disable_norm_pose_2d (bool, optional): A flag that indicates
+                whether 2D pose normalization should be used.
+                Defaults to False.
 
         Yields:
             Any: The data processed by the pipeline and collate_fn.
@@ -168,7 +166,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 nms_thr=nms_thr,
                 bboxes=bboxes,
                 merge_results=False,
-                return_datasample=True))['predictions']
+                return_datasamples=True))['predictions']
 
         for ds in results_pose2d:
             ds.pred_instances.set_field(
@@ -231,14 +229,24 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         bbox_center = stats_info.get('bbox_center', None)
         bbox_scale = stats_info.get('bbox_scale', None)
 
-        for i, pose_res in enumerate(pose_results_2d):
-            for j, data_sample in enumerate(pose_res):
+        pose_results_2d_copy = []
+        for pose_res in pose_results_2d:
+            pose_res_copy = []
+            for data_sample in pose_res:
+
+                data_sample_copy = PoseDataSample()
+                data_sample_copy.gt_instances = \
+                    data_sample.gt_instances.clone()
+                data_sample_copy.pred_instances = \
+                    data_sample.pred_instances.clone()
+                data_sample_copy.track_id = data_sample.track_id
+
                 kpts = data_sample.pred_instances.keypoints
                 bboxes = data_sample.pred_instances.bboxes
                 keypoints = []
                 for k in range(len(kpts)):
                     kpt = kpts[k]
-                    if norm_pose_2d:
+                    if not disable_norm_pose_2d:
                         bbox = bboxes[k]
                         center = np.array([[(bbox[0] + bbox[2]) / 2,
                                             (bbox[1] + bbox[3]) / 2]])
@@ -247,9 +255,12 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                                          bbox_scale + bbox_center)
                     else:
                         keypoints.append(kpt[:, :2])
-                pose_results_2d[i][j].pred_instances.keypoints = np.array(
-                    keypoints)
-        pose_sequences_2d = collate_pose_sequence(pose_results_2d, True,
+                data_sample_copy.pred_instances.set_field(
+                    np.array(keypoints), 'keypoints')
+                pose_res_copy.append(data_sample_copy)
+
+            pose_results_2d_copy.append(pose_res_copy)
+        pose_sequences_2d = collate_pose_sequence(pose_results_2d_copy, True,
                                                   target_idx)
         if not pose_sequences_2d:
             return []
@@ -271,8 +282,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 K,
             ),
                                                      dtype=np.float32)
-            data_info['lifting_target'] = np.zeros((K, 3), dtype=np.float32)
-            data_info['lifting_target_visible'] = np.ones((K, 1),
+            data_info['lifting_target'] = np.zeros((1, K, 3), dtype=np.float32)
+            data_info['factor'] = np.zeros((T, ), dtype=np.float32)
+            data_info['lifting_target_visible'] = np.ones((1, K, 1),
                                                           dtype=np.float32)
             data_info['camera_param'] = dict(w=width, h=height)
 
@@ -287,19 +299,18 @@ class Pose3DInferencer(BaseMMPoseInferencer):
     @torch.no_grad()
     def forward(self,
                 inputs: Union[dict, tuple],
-                rebase_keypoint_height: bool = False):
+                disable_rebase_keypoint: bool = False):
         """Perform forward pass through the model and process the results.
 
         Args:
             inputs (Union[dict, tuple]): The inputs for the model.
-            rebase_keypoint_height (bool, optional): Flag to rebase the
-                height of the keypoints (z-axis). Defaults to False.
+            disable_rebase_keypoint (bool, optional): Flag to disable rebasing
+                the height of the keypoints. Defaults to False.
 
         Returns:
             list: A list of data samples, each containing the model's output
                 results.
         """
-
         pose_lift_results = self.model.test_step(inputs)
 
         # Post-processing of pose estimation results
@@ -309,14 +320,22 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             pose_lift_res.track_id = pose_est_results_converted[idx].get(
                 'track_id', 1e4)
 
-            # Invert x and z values of the keypoints
+            # align the shape of output keypoints coordinates and scores
             keypoints = pose_lift_res.pred_instances.keypoints
+            keypoint_scores = pose_lift_res.pred_instances.keypoint_scores
+            if keypoint_scores.ndim == 3:
+                pose_lift_results[idx].pred_instances.keypoint_scores = \
+                    np.squeeze(keypoint_scores, axis=1)
+            if keypoints.ndim == 4:
+                keypoints = np.squeeze(keypoints, axis=1)
+
+            # Invert x and z values of the keypoints
             keypoints = keypoints[..., [0, 2, 1]]
             keypoints[..., 0] = -keypoints[..., 0]
             keypoints[..., 2] = -keypoints[..., 2]
 
             # If rebase_keypoint_height is True, adjust z-axis values
-            if rebase_keypoint_height:
+            if not disable_rebase_keypoint:
                 keypoints[..., 2] -= np.min(
                     keypoints[..., 2], axis=-1, keepdims=True)
 
@@ -328,78 +347,6 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         data_samples = [merge_data_samples(pose_lift_results)]
         return data_samples
 
-    def __call__(
-        self,
-        inputs: InputsType,
-        return_datasample: bool = False,
-        batch_size: int = 1,
-        out_dir: Optional[str] = None,
-        **kwargs,
-    ) -> dict:
-        """Call the inferencer.
-
-        Args:
-            inputs (InputsType): Inputs for the inferencer.
-            return_datasample (bool): Whether to return results as
-                :obj:`BaseDataElement`. Defaults to False.
-            batch_size (int): Batch size. Defaults to 1.
-            out_dir (str, optional): directory to save visualization
-                results and predictions. Will be overoden if vis_out_dir or
-                pred_out_dir are given. Defaults to None
-            **kwargs: Key words arguments passed to :meth:`preprocess`,
-                :meth:`forward`, :meth:`visualize` and :meth:`postprocess`.
-                Each key in kwargs should be in the corresponding set of
-                ``preprocess_kwargs``, ``forward_kwargs``,
-                ``visualize_kwargs`` and ``postprocess_kwargs``.
-
-        Returns:
-            dict: Inference and visualization results.
-        """
-        if out_dir is not None:
-            if 'vis_out_dir' not in kwargs:
-                kwargs['vis_out_dir'] = f'{out_dir}/visualizations'
-            if 'pred_out_dir' not in kwargs:
-                kwargs['pred_out_dir'] = f'{out_dir}/predictions'
-
-        (
-            preprocess_kwargs,
-            forward_kwargs,
-            visualize_kwargs,
-            postprocess_kwargs,
-        ) = self._dispatch_kwargs(**kwargs)
-
-        self.update_model_visualizer_settings(**kwargs)
-
-        # preprocessing
-        if isinstance(inputs, str) and inputs.startswith('webcam'):
-            inputs = self._get_webcam_inputs(inputs)
-            batch_size = 1
-            if not visualize_kwargs.get('show', False):
-                warnings.warn('The display mode is closed when using webcam '
-                              'input. It will be turned on automatically.')
-            visualize_kwargs['show'] = True
-        else:
-            inputs = self._inputs_to_list(inputs)
-
-        inputs = self.preprocess(
-            inputs, batch_size=batch_size, **preprocess_kwargs)
-
-        preds = []
-
-        for proc_inputs, ori_inputs in inputs:
-            preds = self.forward(proc_inputs, **forward_kwargs)
-
-            visualization = self.visualize(ori_inputs, preds,
-                                           **visualize_kwargs)
-            results = self.postprocess(preds, visualization, return_datasample,
-                                       **postprocess_kwargs)
-            yield results
-
-        if self._video_input:
-            self._finalize_video_processing(
-                postprocess_kwargs.get('pred_out_dir', ''))
-        self._buffer.clear()
-
     def visualize(self,
                   inputs: list,
                   preds: List[PoseDataSample],
@@ -410,6 +357,7 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                   radius: int = 3,
                   thickness: int = 1,
                   kpt_thr: float = 0.3,
+                  num_instances: int = 1,
                   vis_out_dir: str = '',
                   window_name: str = '',
                   window_close_event_handler: Optional[Callable] = None
@@ -470,6 +418,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
             # thereby eliminating the issue of inference getting stuck.
             wait_time = 1e-5 if self._video_input else wait_time
 
+            if num_instances < 0:
+                num_instances = len(pred.pred_instances)
+
             visualization = self.visualizer.add_datasample(
                 window_name,
                 img,
@@ -479,38 +430,21 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                 draw_bbox=draw_bbox,
                 show=show,
                 wait_time=wait_time,
-                kpt_thr=kpt_thr)
+                dataset_2d=self.pose2d_model.model.
+                dataset_meta['dataset_name'],
+                dataset_3d=self.model.dataset_meta['dataset_name'],
+                kpt_thr=kpt_thr,
+                num_instances=num_instances)
             results.append(visualization)
 
             if vis_out_dir:
-                out_img = mmcv.rgb2bgr(visualization)
-                _, file_extension = os.path.splitext(vis_out_dir)
-                if file_extension:
-                    dir_name = os.path.dirname(vis_out_dir)
-                    file_name = os.path.basename(vis_out_dir)
-                else:
-                    dir_name = vis_out_dir
-                    file_name = None
-                mkdir_or_exist(dir_name)
-
-                if self._video_input:
-
-                    if self.video_info['writer'] is None:
-                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                        if file_name is None:
-                            file_name = os.path.basename(
-                                self.video_info['name'])
-                        out_file = join_path(dir_name, file_name)
-                        self.video_info['writer'] = cv2.VideoWriter(
-                            out_file, fourcc, self.video_info['fps'],
-                            (visualization.shape[1], visualization.shape[0]))
-                    self.video_info['writer'].write(out_img)
-
-                else:
-                    img_name = os.path.basename(pred.metainfo['img_path'])
-                    file_name = file_name if file_name else img_name
-                    out_file = join_path(dir_name, file_name)
-                    mmcv.imwrite(out_img, out_file)
+                img_name = os.path.basename(pred.metainfo['img_path']) \
+                    if 'img_path' in pred.metainfo else None
+                self.save_visualization(
+                    visualization,
+                    vis_out_dir,
+                    img_name=img_name,
+                )
 
         if return_vis:
             return results

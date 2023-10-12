@@ -9,6 +9,7 @@ from mmengine.infer.infer import ModelType
 from mmengine.structures import InstanceData
 
 from .base_mmpose_inferencer import BaseMMPoseInferencer
+from .hand3d_inferencer import Hand3DInferencer
 from .pose2d_inferencer import Pose2DInferencer
 from .pose3d_inferencer import Pose3DInferencer
 
@@ -56,15 +57,15 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
     preprocess_kwargs: set = {
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
-        'norm_pose_2d'
+        'disable_norm_pose_2d'
     }
-    forward_kwargs: set = {'rebase_keypoint_height'}
+    forward_kwargs: set = {'disable_rebase_keypoint'}
     visualize_kwargs: set = {
         'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
         'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap',
-        'black_background'
+        'black_background', 'num_instances'
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def __init__(self,
                  pose2d: Optional[str] = None,
@@ -79,10 +80,15 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         self.visualizer = None
         if pose3d is not None:
-            self.inferencer = Pose3DInferencer(pose3d, pose3d_weights, pose2d,
-                                               pose2d_weights, device, scope,
-                                               det_model, det_weights,
-                                               det_cat_ids)
+            if 'hand3d' in pose3d:
+                self.inferencer = Hand3DInferencer(pose3d, pose3d_weights,
+                                                   device, scope, det_model,
+                                                   det_weights, det_cat_ids)
+            else:
+                self.inferencer = Pose3DInferencer(pose3d, pose3d_weights,
+                                                   pose2d, pose2d_weights,
+                                                   device, scope, det_model,
+                                                   det_weights, det_cat_ids)
         elif pose2d is not None:
             self.inferencer = Pose2DInferencer(pose2d, pose2d_weights, device,
                                                scope, det_model, det_weights,
@@ -126,7 +132,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
     def __call__(
         self,
         inputs: InputsType,
-        return_datasample: bool = False,
+        return_datasamples: bool = False,
         batch_size: int = 1,
         out_dir: Optional[str] = None,
         **kwargs,
@@ -135,7 +141,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         Args:
             inputs (InputsType): Inputs for the inferencer.
-            return_datasample (bool): Whether to return results as
+            return_datasamples (bool): Whether to return results as
                 :obj:`BaseDataElement`. Defaults to False.
             batch_size (int): Batch size. Defaults to 1.
             out_dir (str, optional): directory to save visualization
@@ -201,8 +207,11 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
             visualization = self.visualize(ori_inputs, preds,
                                            **visualize_kwargs)
-            results = self.postprocess(preds, visualization, return_datasample,
-                                       **postprocess_kwargs)
+            results = self.postprocess(
+                preds,
+                visualization,
+                return_datasamples=return_datasamples,
+                **postprocess_kwargs)
             yield results
 
         if self._video_input:

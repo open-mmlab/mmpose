@@ -58,7 +58,7 @@ class TestMMPoseInferencer(TestCase):
             len(results1['predictions'][0]), len(results2['predictions'][0]))
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
                                  results2['predictions'][0][0]['keypoints'])
-        results2 = next(inferencer(inputs, return_datasample=True))
+        results2 = next(inferencer(inputs, return_datasamples=True))
         self.assertIsInstance(results2['predictions'][0], PoseDataSample)
 
         # `inputs` is path to a directory
@@ -127,3 +127,15 @@ class TestMMPoseInferencer(TestCase):
                 '164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.json',
                 os.listdir(f'{tmp_dir}/predictions'))
         self.assertTrue(inferencer._video_input)
+
+    def test_hand3d_call(self):
+
+        inferencer = MMPoseInferencer(pose3d='hand3d')
+
+        # `inputs` is path to a video
+        inputs = 'tests/data/interhand2.6m/image29590.jpg'
+        results1 = next(inferencer(inputs, return_vis=True))
+        self.assertIn('visualization', results1)
+        self.assertIn('predictions', results1)
+        self.assertIn('keypoints', results1['predictions'][0][0])
+        self.assertEqual(len(results1['predictions'][0][0]['keypoints']), 42)

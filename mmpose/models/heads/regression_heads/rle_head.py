@@ -155,8 +155,8 @@ class RLEHead(BaseHead):
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
         """A hook function to convert old-version state dict of
-        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`HeatmapHead`.
+        :class:`DeepposeRegressionHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`RegressionHead`.
 
         The hook will be automatically registered during initialization.
         """

@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from collections import namedtuple
 from itertools import product
 from typing import Any, List, Optional, Tuple
 
@@ -14,6 +13,21 @@ from .base import BaseKeypointCodec
 from .utils import (batch_heatmap_nms, generate_gaussian_heatmaps,
                     generate_udp_gaussian_heatmaps, refine_keypoints,
                     refine_keypoints_dark_udp)
+
+
+def _py_max_match(scores):
+    """Apply munkres algorithm to get the best match.
+
+    Args:
+        scores(np.ndarray): cost matrix.
+
+    Returns:
+        np.ndarray: best match.
+    """
+    m = Munkres()
+    tmp = m.compute(scores)
+    tmp = np.array(tmp).astype(int)
+    return tmp
 
 
 def _group_keypoints_by_tags(vals: np.ndarray,
@@ -54,89 +68,78 @@ def _group_keypoints_by_tags(vals: np.ndarray,
         np.ndarray: grouped keypoints in shape (G, K, D+1), where the last
         dimenssion is the concatenated keypoint coordinates and scores.
     """
+
+    tag_k, loc_k, val_k = tags, locs, vals
     K, M, D = locs.shape
     assert vals.shape == tags.shape[:2] == (K, M)
     assert len(keypoint_order) == K
 
-    # Build Munkres instance
-    munkres = Munkres()
+    default_ = np.zeros((K, 3 + tag_k.shape[2]), dtype=np.float32)
 
-    # Build a group pool, each group contains the keypoints of an instance
-    groups = []
+    joint_dict = {}
+    tag_dict = {}
+    for i in range(K):
+        idx = keypoint_order[i]
 
-    Group = namedtuple('Group', field_names=['kpts', 'scores', 'tag_list'])
+        tags = tag_k[idx]
+        joints = np.concatenate((loc_k[idx], val_k[idx, :, None], tags), 1)
+        mask = joints[:, 2] > val_thr
+        tags = tags[mask]  # shape: [M, L]
+        joints = joints[mask]  # shape: [M, 3 + L], 3: x, y, val
 
-    def _init_group():
-        """Initialize a group, which is composed of the keypoints, keypoint
-        scores and the tag of each keypoint."""
-        _group = Group(
-            kpts=np.zeros((K, D), dtype=np.float32),
-            scores=np.zeros(K, dtype=np.float32),
-            tag_list=[])
-        return _group
-
-    for i in keypoint_order:
-        # Get all valid candidate of the i-th keypoints
-        valid = vals[i] > val_thr
-        if not valid.any():
+        if joints.shape[0] == 0:
             continue
 
-        tags_i = tags[i, valid]  # (M', L)
-        vals_i = vals[i, valid]  # (M',)
-        locs_i = locs[i, valid]  # (M', D)
+        if i == 0 or len(joint_dict) == 0:
+            for tag, joint in zip(tags, joints):
+                key = tag[0]
+                joint_dict.setdefault(key, np.copy(default_))[idx] = joint
+                tag_dict[key] = [tag]
+        else:
+            # shape: [M]
+            grouped_keys = list(joint_dict.keys())
+            # shape: [M, L]
+            grouped_tags = [np.mean(tag_dict[i], axis=0) for i in grouped_keys]
 
-        if len(groups) == 0:  # Initialize the group pool
-            for tag, val, loc in zip(tags_i, vals_i, locs_i):
-                group = _init_group()
-                group.kpts[i] = loc
-                group.scores[i] = val
-                group.tag_list.append(tag)
+            # shape: [M, M, L]
+            diff = joints[:, None, 3:] - np.array(grouped_tags)[None, :, :]
+            # shape: [M, M]
+            diff_normed = np.linalg.norm(diff, ord=2, axis=2)
+            diff_saved = np.copy(diff_normed)
+            diff_normed = np.round(diff_normed) * 100 - joints[:, 2:3]
 
-                groups.append(group)
+            num_added = diff.shape[0]
+            num_grouped = diff.shape[1]
 
-        else:  # Match keypoints to existing groups
-            groups = groups[:max_groups]
-            group_tags = [np.mean(g.tag_list, axis=0) for g in groups]
+            if num_added > num_grouped:
+                diff_normed = np.concatenate(
+                    (diff_normed,
+                     np.zeros((num_added, num_added - num_grouped),
+                              dtype=np.float32) + 1e10),
+                    axis=1)
 
-            # Calculate distance matrix between group tags and tag candidates
-            # of the i-th keypoint
-            # Shape: (M', 1, L) , (1, G, L) -> (M', G, L)
-            diff = tags_i[:, None] - np.array(group_tags)[None]
-            dists = np.linalg.norm(diff, ord=2, axis=2)
-            num_kpts, num_groups = dists.shape[:2]
-
-            # Experimental cost function for keypoint-group matching
-            costs = np.round(dists) * 100 - vals_i[..., None]
-            if num_kpts > num_groups:
-                padding = np.full((num_kpts, num_kpts - num_groups),
-                                  1e10,
-                                  dtype=np.float32)
-                costs = np.concatenate((costs, padding), axis=1)
-
-            # Match keypoints and groups by Munkres algorithm
-            matches = munkres.compute(costs)
-            for kpt_idx, group_idx in matches:
-                if group_idx < num_groups and dists[kpt_idx,
-                                                    group_idx] < tag_thr:
-                    # Add the keypoint to the matched group
-                    group = groups[group_idx]
+            pairs = _py_max_match(diff_normed)
+            for row, col in pairs:
+                if (row < num_added and col < num_grouped
+                        and diff_saved[row][col] < tag_thr):
+                    key = grouped_keys[col]
+                    joint_dict[key][idx] = joints[row]
+                    tag_dict[key].append(tags[row])
                 else:
-                    # Initialize a new group with unmatched keypoint
-                    group = _init_group()
-                    groups.append(group)
+                    key = tags[row][0]
+                    joint_dict.setdefault(key, np.copy(default_))[idx] = \
+                        joints[row]
+                    tag_dict[key] = [tags[row]]
 
-                group.kpts[i] = locs_i[kpt_idx]
-                group.scores[i] = vals_i[kpt_idx]
-                group.tag_list.append(tags_i[kpt_idx])
+    joint_dict_keys = list(joint_dict.keys())[:max_groups]
 
-    groups = groups[:max_groups]
-    if groups:
-        grouped_keypoints = np.stack(
-            [np.r_['1', g.kpts, g.scores[:, None]] for g in groups])
+    if joint_dict_keys:
+        results = np.array([joint_dict[i]
+                            for i in joint_dict_keys]).astype(np.float32)
+        results = results[..., :D + 1]
     else:
-        grouped_keypoints = np.empty((0, K, D + 1))
-
-    return grouped_keypoints
+        results = np.empty((0, K, D + 1), dtype=np.float32)
+    return results
 
 
 @KEYPOINT_CODECS.register_module()
@@ -210,7 +213,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
         decode_gaussian_kernel: int = 3,
         decode_keypoint_thr: float = 0.1,
         decode_tag_thr: float = 1.0,
-        decode_topk: int = 20,
+        decode_topk: int = 30,
+        decode_center_shift=0.0,
         decode_max_instances: Optional[int] = None,
     ) -> None:
         super().__init__()
@@ -222,8 +226,9 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.decode_keypoint_thr = decode_keypoint_thr
         self.decode_tag_thr = decode_tag_thr
         self.decode_topk = decode_topk
+        self.decode_center_shift = decode_center_shift
         self.decode_max_instances = decode_max_instances
-        self.dedecode_keypoint_order = decode_keypoint_order.copy()
+        self.decode_keypoint_order = decode_keypoint_order.copy()
 
         if self.use_udp:
             self.scale_factor = ((np.array(input_size) - 1) /
@@ -376,7 +381,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 vals,
                 tags,
                 locs,
-                keypoint_order=self.dedecode_keypoint_order,
+                keypoint_order=self.decode_keypoint_order,
                 val_thr=self.decode_keypoint_thr,
                 tag_thr=self.decode_tag_thr,
                 max_groups=self.decode_max_instances)
@@ -463,13 +468,13 @@ class AssociativeEmbedding(BaseKeypointCodec):
             f'tagging map ({batch_tags.shape})')
 
         # Heatmap NMS
-        batch_heatmaps = batch_heatmap_nms(batch_heatmaps,
-                                           self.decode_nms_kernel)
+        batch_heatmaps_peak = batch_heatmap_nms(batch_heatmaps,
+                                                self.decode_nms_kernel)
 
         # Get top-k in each heatmap and and convert to numpy
         batch_topk_vals, batch_topk_tags, batch_topk_locs = to_numpy(
             self._get_batch_topk(
-                batch_heatmaps, batch_tags, k=self.decode_topk))
+                batch_heatmaps_peak, batch_tags, k=self.decode_topk))
 
         # Group keypoint candidates into groups (instances)
         batch_groups = self._group_keypoints(batch_topk_vals, batch_topk_tags,
@@ -482,16 +487,14 @@ class AssociativeEmbedding(BaseKeypointCodec):
         # Refine the keypoint prediction
         batch_keypoints = []
         batch_keypoint_scores = []
+        batch_instance_scores = []
         for i, (groups, heatmaps, tags) in enumerate(
                 zip(batch_groups, batch_heatmaps_np, batch_tags_np)):
 
             keypoints, scores = groups[..., :-1], groups[..., -1]
+            instance_scores = scores.mean(axis=-1)
 
             if keypoints.size > 0:
-                # identify missing keypoints
-                keypoints, scores = self._fill_missing_keypoints(
-                    keypoints, scores, heatmaps, tags)
-
                 # refine keypoint coordinates according to heatmap distribution
                 if self.use_udp:
                     keypoints = refine_keypoints_dark_udp(
@@ -500,13 +503,20 @@ class AssociativeEmbedding(BaseKeypointCodec):
                         blur_kernel_size=self.decode_gaussian_kernel)
                 else:
                     keypoints = refine_keypoints(keypoints, heatmaps)
+                keypoints += self.decode_center_shift * \
+                    (scores > 0).astype(keypoints.dtype)[..., None]
+
+                # identify missing keypoints
+                keypoints, scores = self._fill_missing_keypoints(
+                    keypoints, scores, heatmaps, tags)
 
             batch_keypoints.append(keypoints)
             batch_keypoint_scores.append(scores)
+            batch_instance_scores.append(instance_scores)
 
         # restore keypoint scale
         batch_keypoints = [
             kpts * self.scale_factor for kpts in batch_keypoints
         ]
 
-        return batch_keypoints, batch_keypoint_scores
+        return batch_keypoints, batch_keypoint_scores, batch_instance_scores

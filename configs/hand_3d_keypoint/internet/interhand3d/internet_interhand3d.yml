@@ -1,0 +1,35 @@
+Collections:
+- Name: InterNet
+  Paper:
+    Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
+      from a Single RGB Image'
+    URL: https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/internet.md
+Models:
+- Config: configs/hand_3d_keypoint/internet/interhand3d/internet_res50_4xb16-20e_interhand3d-256x256.py
+  In Collection: InterNet
+  Alias: hand3d
+  Metadata:
+    Architecture: &id001
+    - InterNet
+    - ResNet
+    Training Data: InterHand2.6M
+  Name: internet_res50_4xb16-20e_interhand3d-256x256
+  Results:
+  - Dataset: InterHand2.6M (H+M)
+    Metrics:
+      APh: 0.99
+      MPJPE-all: 11.86
+      MPJPE-interacting: 13.72
+      MPJPE-single: 9.69
+      MRRPE: 29.27
+    Task: Hand 3D Keypoint
+  - Dataset: InterHand2.6M (M)
+    Metrics:
+      APh: 0.98
+      MPJPE-all: 13.36
+      MPJPE-interacting: 15.57
+      MPJPE-single: 11.30
+      MRRPE: 32.15
+    Task: Hand 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth

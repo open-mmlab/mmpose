@@ -1,6 +1,6 @@
 # Human Body 3D Pose Estimation
 
-3D human body pose estimation aims at predicting the X, Y, Z coordinates of human body joints. Based on the camera number to capture the images or videos, existing works can be further divided into multi-view methods and single-view (monocular) methods.
+3D pose estimation is the detection and analysis of X, Y, Z coordinates of human body joints from RGB images. For single-person 3D pose estimation from a monocular camera, existing works can be classified into three categories: (1) from 2D poses to 3D poses (2D-to-3D pose lifting) (2) jointly learning 2D and 3D poses, and (3) directly regressing 3D poses from images.
 
 ## Data preparation
 
