@@ -99,6 +99,9 @@ model = dict(
             loss_weight=0.002,
         ),
         decoder=codec,
+        # This rescore net is adapted from the official repo.
+        # If you are not using the original COCO dataset for training,
+        # please make sure to remove the `rescore_cfg` item
         rescore_cfg=dict(
             in_channels=74,
             norm_indexes=(5, 6),
