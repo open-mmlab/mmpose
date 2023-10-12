@@ -172,7 +172,7 @@ jobs:
       - name: Install lmdb
         run: python -m pip install lmdb
       - name: Install PyTorch
-        run: python -m pip install torch==${{matrix.torch}}+${{matrix.platform}} torchvision==${{matrix.torchvision}}+${{matrix.platform}} -f https://download.pytorch.org/whl/${{matrix.platform}}/torch_stable.html
+        run: python -m pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/${{matrix.platform}}/torch_stable.html
       - name: Install mmpose dependencies
         run: |
           python -m pip install -U numpy
