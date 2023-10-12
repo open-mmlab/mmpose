@@ -67,7 +67,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
-        torch: [1.8.0, 1.8.1, 1.9.1, 1.10.1, 1.11.0, 1.12.1, 1.13.0]
+        torch: [1.8.0, 1.8.1, 1.9.1, 1.10.1, 1.11.0, 1.12.1, 1.13.0, 2.0.0, 2.1.0]
         include:
           - torch: 1.8.0
             torchvision: 0.9.0
@@ -86,6 +86,14 @@ jobs:
           - torch: 2.0.0
             torchvision: 0.15.1
             python-version: 3.8
+          - torch: 2.1.0
+            torchvision: 0.16.0
+            python-version: 3.8
+        exclude:
+          - torch: 2.0.0
+            python-version: 3.7
+          - torch: 2.1.0
+            python-version: 3.7
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -183,16 +191,14 @@ jobs:
     runs-on: windows-2022
     strategy:
       matrix:
-        os: [windows-2022]
-        python: [3.7]
-        platform: [cpu, cu111]
-        torch: [1.8.1]
-        torchvision: [0.9.1]
+        torch: [1.8.1, 2.1.0]
         include:
-          - python-version: 3.8
-            platform: cu117
-            torch: 2.0.0
-            torchvision: 0.15.1
+          - torch: 1.8.1
+            torchvision: 0.9.1
+            python-version: 3.7
+          - torch: 2.1.0
+            torchvision: 0.16.0
+            python-version: 3.8
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}

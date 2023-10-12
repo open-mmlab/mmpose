@@ -154,15 +154,14 @@ jobs:
     strategy:
       matrix:
         os: [windows-2022]
-        python: [3.7]
-        platform: [cpu, cu111]
-        torch: [1.8.1]
-        torchvision: [0.9.1]
+        torch: [1.8.1, 2.1.0]
         include:
+          - python-version: 3.7
+            torch: 1.8.0
+            torchvision: 0.9.1
           - python-version: 3.8
-            platform: cu117
-            torch: 2.0.0
-            torchvision: 0.15.1
+            torch: 2.1.0
+            torchvision: 0.16.0
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
