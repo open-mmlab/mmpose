@@ -1,18 +1,6 @@
-Collections:
-- Name: HRNet
-  Paper:
-    Title: Deep high-resolution representation learning for human pose estimation
-    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/hrnet.md
-- Name: UDP
-  Paper:
-    Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
-      Human Pose Estimation'
-    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/udp.md
 Models:
 - Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192.py
-  In Collection: HRNet, UDP
+  In Collection: UDP
   Metadata:
     Architecture: &id001
     - HRNet
@@ -28,7 +16,7 @@ Models:
     Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_lower-256x192-ddaf747d_20230810.pth
 - Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_upper-256x192.py
-  In Collection: HRNet, UDP
+  In Collection: UDP
   Metadata:
     Architecture: *id001
     Training Data: DeepFashion
@@ -42,7 +30,7 @@ Models:
     Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/v1/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_upper-256x192-de7c0eb1_20230810.pth
 - Config: configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/td-hm_hrnet-w48_udp_8xb32-210e_deepfashion_full-256x192.py
-  In Collection: HRNet, UDP
+  In Collection: UDP
   Metadata:
     Architecture: *id001
     Training Data: DeepFashion

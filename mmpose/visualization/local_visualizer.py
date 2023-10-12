@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import math
+import warnings
 from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
@@ -117,6 +118,12 @@ class PoseLocalVisualizer(OpencvBackendVisualizer):
                  show_keypoint_weight: bool = False,
                  backend: str = 'opencv',
                  alpha: float = 1.0):
+
+        warnings.filterwarnings(
+            'ignore',
+            message='.*please provide the `save_dir` argument.*',
+            category=UserWarning)
+
         super().__init__(
             name=name,
             image=image,
