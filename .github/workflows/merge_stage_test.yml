@@ -192,7 +192,6 @@ jobs:
     strategy:
       matrix:
         torch: [1.8.1, 2.1.0]
-        torchvision: [0.9.1, 0.16.0]
         include:
           - torch: 1.8.1
             torchvision: 0.9.1
@@ -201,9 +200,9 @@ jobs:
             torchvision: 0.16.0
             python-version: 3.8
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Upgrade pip
