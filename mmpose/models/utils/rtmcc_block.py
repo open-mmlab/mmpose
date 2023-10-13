@@ -198,13 +198,15 @@ class RTMCCBlock(nn.Module):
 
         nn.init.xavier_uniform_(self.uv.weight)
 
-        if act_fn == 'SiLU':
+        if act_fn == 'SiLU' or act_fn == nn.SiLU:
             assert digit_version(TORCH_VERSION) >= digit_version('1.7.0'), \
                 'SiLU activation requires PyTorch version >= 1.7'
 
             self.act_fn = nn.SiLU(True)
-        else:
+        elif act_fn == 'ReLU' or act_fn == nn.ReLU:
             self.act_fn = nn.ReLU(True)
+        else:
+            raise NotImplementedError
 
         if in_token_dims == out_token_dims:
             self.shortcut = True
