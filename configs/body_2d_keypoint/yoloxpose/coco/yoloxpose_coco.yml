@@ -1,0 +1,72 @@
+Collections:
+- Name: YOLOXPose
+  Paper:
+    Title: 'YOLO-Pose: Enhancing YOLO for Multi Person Pose Estimation Using Object Keypoint Similarity Loss'
+    URL: https://arxiv.org/abs/2204.06806
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/yolopose.md
+Models:
+- Config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_tiny_4xb64-300e_coco-416.py
+  In Collection: YOLOXPose
+  Metadata:
+    Architecture: &id001
+    - YOLOXPose
+    Training Data: COCO
+  Name: yoloxpose_tiny_4xb64-300e_coco-416
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.526
+      AP@0.5: 0.793
+      AP@0.75: 0.556
+      AR: 0.571
+      AR@0.5: 0.833
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/yolox_pose/yoloxpose_tiny_4xb64-300e_coco-416-76eb44ca_20230829.pth
+- Config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_s_8xb32-300e_coco-640.py
+  In Collection: YOLOXPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: yoloxpose_s_8xb32-300e_coco-640
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.641
+      AP@0.5: 0.872
+      AP@0.75: 0.702
+      AR: 0.682
+      AR@0.5: 0.902
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/yolox_pose/yoloxpose_s_8xb32-300e_coco-640-56c79c1f_20230829.pth
+- Config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_m_8xb32-300e_coco-640.py
+  In Collection: YOLOXPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: yoloxpose_m_8xb32-300e_coco-640
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.695
+      AP@0.5: 0.899
+      AP@0.75: 0.766
+      AR: 0.733
+      AR@0.5: 0.926
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/yolox_pose/yoloxpose_m_8xb32-300e_coco-640-84e9a538_20230829.pth
+- Config: configs/body_2d_keypoint/yoloxpose/coco/yoloxpose_l_8xb32-300e_coco-640.py
+  In Collection: YOLOXPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: yoloxpose_l_8xb32-300e_coco-640
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.712
+      AP@0.5: 0.901
+      AP@0.75: 0.782
+      AR: 0.749
+      AR@0.5: 0.926
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/yolox_pose/yoloxpose_l_8xb32-300e_coco-640-de0f8dee_20230829.pth

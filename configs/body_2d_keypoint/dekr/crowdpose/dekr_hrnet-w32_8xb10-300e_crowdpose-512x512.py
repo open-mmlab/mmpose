@@ -98,6 +98,9 @@ model = dict(
             loss_weight=0.004,
         ),
         decoder=codec,
+        # This rescore net is adapted from the official repo.
+        # If you are not using the original CrowdPose dataset for training,
+        # please make sure to remove the `rescore_cfg` item
         rescore_cfg=dict(
             in_channels=59,
             norm_indexes=(0, 1),

@@ -1,11 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
 from torch import Tensor, nn
 
-from mmpose.evaluation.functional import keypoint_pck_accuracy
+from mmpose.evaluation.functional import keypoint_mpjpe
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -101,7 +100,7 @@ class TemporalRegressionHead(BaseHead):
         else:
             target_root = torch.stack([
                 torch.empty((0), dtype=torch.float32)
-                for _ in batch_data_samples[0].metainfo
+                for _ in batch_data_samples
             ])
 
         preds = self.decode((batch_coords, target_root))
@@ -120,27 +119,26 @@ class TemporalRegressionHead(BaseHead):
             d.gt_instance_labels.lifting_target_label
             for d in batch_data_samples
         ])
-        lifting_target_weights = torch.cat([
-            d.gt_instance_labels.lifting_target_weights
+        lifting_target_weight = torch.cat([
+            d.gt_instance_labels.lifting_target_weight
             for d in batch_data_samples
         ])
 
         # calculate losses
         losses = dict()
         loss = self.loss_module(pred_outputs, lifting_target_label,
-                                lifting_target_weights.unsqueeze(-1))
+                                lifting_target_weight.unsqueeze(-1))
 
         losses.update(loss_pose3d=loss)
 
         # calculate accuracy
-        _, avg_acc, _ = keypoint_pck_accuracy(
+        mpjpe_err = keypoint_mpjpe(
             pred=to_numpy(pred_outputs),
             gt=to_numpy(lifting_target_label),
-            mask=to_numpy(lifting_target_weights) > 0,
-            thr=0.05,
-            norm_factor=np.ones((pred_outputs.size(0), 3), dtype=np.float32))
+            mask=to_numpy(lifting_target_weight) > 0)
 
-        mpjpe_pose = torch.tensor(avg_acc, device=lifting_target_label.device)
+        mpjpe_pose = torch.tensor(
+            mpjpe_err, device=lifting_target_label.device)
         losses.update(mpjpe=mpjpe_pose)
 
         return losses

@@ -8,7 +8,9 @@ MMPose 1.0 introduced a new module **Codec** to integrate the encoding and decod
 
 Here is a diagram to show where the `Codec` is:
 
-![codec-en](https://user-images.githubusercontent.com/13503330/187112635-c01f13d1-a07e-420f-be50-3b8818524dec.png)
+![pose_estimator_en](https://github.com/open-mmlab/mmpose/assets/13503330/0764baab-41c7-4a1d-ab64-5d7f9dfc8eec)
+
+## Basic Concepts
 
 A typical codec consists of two parts:
 
@@ -60,7 +62,23 @@ def encode(self,
     return encoded
 ```
 
-The encoded data is converted to Tensor format in `PackPoseInputs` and packed in `data_sample.gt_instance_labels` for model calls, which is generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
+The encoded data is converted to Tensor format in `PackPoseInputs` and packed in `data_sample.gt_instance_labels` for model calls. By default it will consist of the following encoded fields:
+
+- `keypoint_labels`
+- `keypoint_weights`
+- `keypoints_visible_weights`
+
+To specify data fields to be packed, you can define the `label_mapping_table` attribute in the codec. For example, in `VideoPoseLifting`:
+
+```Python
+label_mapping_table = dict(
+        trajectory_weights='trajectory_weights',
+        lifting_target_label='lifting_target_label',
+        lifting_target_weight='lifting_target_weight',
+)
+```
+
+`data_sample.gt_instance_labels` are generally used for loss calculation, as demonstrated by `loss()` in `RegressionHead`.
 
 ```Python
 def loss(self,
@@ -84,6 +102,10 @@ def loss(self,
 
     losses.update(loss_kpt=loss)
     ### Omitted ###
+```
+
+```{note}
+Encoder also defines data to be packed in `data_sample.gt_instances` and `data_sample.gt_fields`. Modify `instance_mapping_table` and `field_mapping_table` in the codec will specify values to be packed respectively. For default values, please check [BaseKeypointCodec](https://github.com/open-mmlab/mmpose/blob/main/mmpose/codecs/base.py).
 ```
 
 ### Decoder
@@ -225,3 +247,225 @@ test_pipeline = [
     dict(type='PackPoseInputs')
 ]
 ```
+
+## Supported Codecs
+
+Supported codecs are in [$MMPOSE/mmpose/codecs/](https://github.com/open-mmlab/mmpose/tree/dev-1.x/mmpose/codecs). Here is a list:
+
+- [RegressionLabel](#RegressionLabel)
+- [IntegralRegressionLabel](#IntegralRegressionLabel)
+- [MSRAHeatmap](#MSRAHeatmap)
+- [UDPHeatmap](#UDPHeatmap)
+- [MegviiHeatmap](#MegviiHeatmap)
+- [SPR](#SPR)
+- [SimCC](#SimCC)
+- [DecoupledHeatmap](#DecoupledHeatmap)
+- [ImagePoseLifting](#ImagePoseLifting)
+- [VideoPoseLifting](#VideoPoseLifting)
+- [MotionBERTLabel](#MotionBERTLabel)
+
+### RegressionLabel
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/regression_label.py#L12)
+
+The `RegressionLabel` codec is used to generate normalized coordinates as the regression targets.
+
+**Input**
+
+- Encoding keypoints from input image space to normalized space.
+
+**Output**
+
+- Decoding normalized coordinates from normalized space to input image space.
+
+Related works:
+
+- [DeepPose](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#deeppose-cvpr-2014)
+- [RLE](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#rle-iccv-2021)
+
+### IntegralRegressionLabel
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/integral_regression_label.py)
+
+The `IntegralRegressionLabel` codec is used to generate normalized coordinates as the regression targets.
+
+**Input**
+
+- Encoding keypoints from input image space to normalized space, and generate Gaussian heatmaps as well.
+
+**Output**
+
+- Decoding normalized coordinates from normalized space to input image space.
+
+Related works:
+
+- [IPR](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#ipr-eccv-2018)
+- [DSNT](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#dsnt-2018)
+- [Debias IPR](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#debias-ipr-iccv-2021)
+
+### MSRAHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/msra_heatmap.py)
+
+The `MSRAHeatmap` codec is used to generate Gaussian heatmaps as the targets.
+
+**Input**
+
+- Encoding keypoints from input image space to output space as 2D Gaussian heatmaps.
+
+**Output**
+
+- Decoding 2D Gaussian heatmaps from output space to input image space as coordinates.
+
+Related works:
+
+- [SimpleBaseline2D](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#simplebaseline2d-eccv-2018)
+- [CPM](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#cpm-cvpr-2016)
+- [HRNet](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#hrnet-cvpr-2019)
+- [DARK](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#darkpose-cvpr-2020)
+
+### UDPHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/udp_heatmap.py)
+
+The `UDPHeatmap` codec is used to generate Gaussian heatmaps as the targets.
+
+**Input**
+
+- Encoding keypoints from input image space to output space as 2D Gaussian heatmaps.
+
+**Output**
+
+- Decoding 2D Gaussian heatmaps from output space to input image space as coordinates.
+
+Related works:
+
+- [UDP](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#udp-cvpr-2020)
+
+### MegviiHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/megvii_heatmap.py)
+
+The `MegviiHeatmap` codec is used to generate Gaussian heatmaps as the targets, which is usually used in Megvii's works.
+
+**Input**
+
+- Encoding keypoints from input image space to output space as 2D Gaussian heatmaps.
+
+**Output**
+
+- Decoding 2D Gaussian heatmaps from output space to input image space as coordinates.
+
+Related works:
+
+- [MSPN](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#mspn-arxiv-2019)
+- [RSN](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#rsn-eccv-2020)
+
+### SPR
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/spr.py)
+
+The `SPR` codec is used to generate Gaussian heatmaps of instances' center, and offsets as the targets.
+
+**Input**
+
+- Encoding keypoints from input image space to output space as 2D Gaussian heatmaps and offsets.
+
+**Output**
+
+- Decoding 2D Gaussian heatmaps and offsets from output space to input image space as coordinates.
+
+Related works:
+
+- [DEKR](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#dekr-cvpr-2021)
+
+### SimCC
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/simcc_label.py)
+
+The `SimCC` codec is used to generate 1D Gaussian representations as the targets.
+
+**Input**
+
+- Encoding keypoints from input image space to output space as 1D Gaussian representations.
+
+**Output**
+
+- Decoding 1D Gaussian representations from output space to input image space as coordinates.
+
+Related works:
+
+- [SimCC](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#simcc-eccv-2022)
+- [RTMPose](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#rtmpose-arxiv-2023)
+
+### DecoupledHeatmap
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/decoupled_heatmap.py)
+
+The `DecoupledHeatmap` codec is used to generate Gaussian heatmaps as the targets.
+
+**Input**
+
+- Encoding human center points and keypoints from input image space to output space as 2D Gaussian heatmaps.
+
+**Output**
+
+- Decoding 2D Gaussian heatmaps from output space to input image space as coordinates.
+
+Related works:
+
+- [CID](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#cid-cvpr-2022)
+
+### ImagePoseLifting
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/image_pose_lifting.py)
+
+The `ImagePoseLifting` codec is used for image 2D-to-3D pose lifting.
+
+**Input**
+
+- Encoding 2d keypoints from input image space to normalized 3d space.
+
+**Output**
+
+- Decoding 3d keypoints from normalized space to input image space.
+
+Related works:
+
+- [SimpleBaseline3D](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#simplebaseline3d-iccv-2017)
+
+### VideoPoseLifting
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/video_pose_lifting.py)
+
+The `VideoPoseLifting` codec is used for video 2D-to-3D pose lifting.
+
+**Input**
+
+- Encoding 2d keypoints from input image space to normalized 3d space.
+
+**Output**
+
+- Decoding 3d keypoints from normalized space to input image space.
+
+Related works:
+
+- [VideoPose3D](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo_papers/algorithms.html#videopose3d-cvpr-2019)
+
+### MotionBERTLabel
+
+[\[Github\]](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/codecs/motionbert_label.py)
+
+The `MotionBERTLabel` codec is used for video 2D-to-3D pose lifting.
+
+**Input**
+
+- Encoding 2d keypoints from input image space to normalized 3d space.
+
+**Output**
+
+- Decoding 3d keypoints from normalized space to input image space.
+
+Related works:
+
+- [MotionBERT](https://mmpose.readthedocs.io/zh_CN/dev-1.x/model_zoo/body_3d_keypoint.html#pose-lift-motionbert-on-h36m)

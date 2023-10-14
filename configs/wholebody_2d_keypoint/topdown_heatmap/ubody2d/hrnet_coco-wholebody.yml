@@ -1,0 +1,23 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/ubody2d/td-hm_hrnet-w32_8xb64-210e_ubody-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: UBody-COCO-WholeBody
+  Name: td-hm_hrnet-w32_8xb64-210e_ubody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.678
+      Body AR: 0.755
+      Face AP: 0.630
+      Face AR: 0.708
+      Foot AP: 0.543
+      Foot AR: 0.661
+      Hand AP: 0.467
+      Hand AR: 0.566
+      Whole AP: 0.536
+      Whole AR: 0.636
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/wholebody_2d_keypoint/ubody/td-hm_hrnet-w32_8xb64-210e_ubody-coco-256x192-7c227391_20230807.pth

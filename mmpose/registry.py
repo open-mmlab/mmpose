@@ -91,18 +91,22 @@ OPTIM_WRAPPER_CONSTRUCTORS = Registry(
 PARAM_SCHEDULERS = Registry(
     'parameter scheduler',
     parent=MMENGINE_PARAM_SCHEDULERS,
-    locations=['mmpose.engine'])
+    locations=['mmpose.engine.schedulers'])
 
 # manage all kinds of metrics
 METRICS = Registry(
     'metric', parent=MMENGINE_METRICS, locations=['mmpose.evaluation.metrics'])
 # manage all kinds of evaluators
 EVALUATORS = Registry(
-    'evaluator', parent=MMENGINE_EVALUATOR, locations=['mmpose.evaluation'])
+    'evaluator',
+    parent=MMENGINE_EVALUATOR,
+    locations=['mmpose.evaluation.evaluators'])
 
 # manage task-specific modules like anchor generators and box coders
 TASK_UTILS = Registry(
-    'task util', parent=MMENGINE_TASK_UTILS, locations=['mmpose.models'])
+    'task util',
+    parent=MMENGINE_TASK_UTILS,
+    locations=['mmpose.models.task_modules'])
 
 # Registries For Visualizer and the related
 # manage visualizer

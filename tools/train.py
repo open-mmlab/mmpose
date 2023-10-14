@@ -98,7 +98,8 @@ def merge_args(cfg, args):
     if args.amp is True:
         from mmengine.optim import AmpOptimWrapper, OptimWrapper
         optim_wrapper = cfg.optim_wrapper.get('type', OptimWrapper)
-        assert optim_wrapper in (OptimWrapper, AmpOptimWrapper), \
+        assert optim_wrapper in (OptimWrapper, AmpOptimWrapper,
+                                 'OptimWrapper', 'AmpOptimWrapper'), \
             '`--amp` is not supported custom optimizer wrapper type ' \
             f'`{optim_wrapper}.'
         cfg.optim_wrapper.type = 'AmpOptimWrapper'

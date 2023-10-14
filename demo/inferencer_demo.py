@@ -97,19 +97,27 @@ def parse_args():
         action='store_true',
         help='Whether to use OKS as similarity in tracking')
     parser.add_argument(
-        '--norm-pose-2d',
+        '--disable-norm-pose-2d',
         action='store_true',
-        help='Scale the bbox (along with the 2D pose) to the average bbox '
-        'scale of the dataset, and move the bbox (along with the 2D pose) to '
-        'the average bbox center of the dataset. This is useful when bbox '
-        'is small, especially in multi-person scenarios.')
+        help='Whether to scale the bbox (along with the 2D pose) to the '
+        'average bbox scale of the dataset, and move the bbox (along with the '
+        '2D pose) to the average bbox center of the dataset. This is useful '
+        'when bbox is small, especially in multi-person scenarios.')
     parser.add_argument(
-        '--rebase-keypoint-height',
+        '--disable-rebase-keypoint',
         action='store_true',
-        help='Rebase the predicted 3D pose so its lowest keypoint has a '
-        'height of 0 (landing on the ground). This is useful for '
-        'visualization when the model do not predict the global position '
-        'of the 3D pose.')
+        default=False,
+        help='Whether to disable rebasing the predicted 3D pose so its '
+        'lowest keypoint has a height of 0 (landing on the ground). Rebase '
+        'is useful for visualization when the model do not predict the '
+        'global position of the 3D pose.')
+    parser.add_argument(
+        '--num-instances',
+        type=int,
+        default=1,
+        help='The number of 3D poses to be visualized in every frame. If '
+        'less than 0, it will be set to the number of pose results in the '
+        'first frame.')
     parser.add_argument(
         '--radius',
         type=int,

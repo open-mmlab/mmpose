@@ -1,4 +1,4 @@
-# 20 分钟了解 MMPose 架构设计
+# 20 分钟上手 MMPose
 
 MMPose 1.0 与之前的版本有较大改动，对部分模块进行了重新设计和组织，降低代码冗余度，提升运行效率，降低学习难度。
 
@@ -18,7 +18,8 @@ MMPose 1.0 采用了全新的模块结构设计以精简代码，提升运行效
 
 以下是这篇教程的目录：
 
-- [20 分钟了解 MMPose 架构设计](#20-分钟了解-mmpose-架构设计)
+- [20 分钟上手 MMPose](#20-分钟上手-mmpose)
+  - [文件结构](#文件结构)
   - [总览](#总览)
   - [Step1：配置文件](#step1配置文件)
   - [Step2：数据](#step2数据)
@@ -34,6 +35,47 @@ MMPose 1.0 采用了全新的模块结构设计以精简代码，提升运行效
     - [主干网络（Backbone）](#主干网络backbone)
     - [颈部模块（Neck）](#颈部模块neck)
     - [预测头（Head）](#预测头head)
+
+## 文件结构
+
+MMPose 1.0 的文件结构如下所示：
+
+```shell
+mmpose
+|----apis
+|----structures
+|----datasets
+     |----transforms
+|----codecs
+|----models
+     |----pose_estimators
+     |----data_preprocessors
+     |----backbones
+     |----necks
+     |----heads
+     |----losses
+|----engine
+     |----hooks
+|----evaluation
+|----visualization
+```
+
+- **apis** 提供用于模型推理的高级 API
+- **structures** 提供 bbox、keypoint 和 PoseDataSample 等数据结构
+- **datasets** 支持用于姿态估计的各种数据集
+  - **transforms** 包含各种数据增强变换
+- **codecs** 提供姿态编解码器：编码器用于将姿态信息（通常为关键点坐标）编码为模型学习目标（如热力图），解码器则用于将模型输出解码为姿态估计结果
+- **models** 以模块化结构提供了姿态估计模型的各类组件
+  - **pose_estimators** 定义了所有姿态估计模型类
+  - **data_preprocessors** 用于预处理模型的输入数据
+  - **backbones** 包含各种骨干网络
+  - **necks** 包含各种模型颈部组件
+  - **heads** 包含各种模型头部
+  - **losses** 包含各种损失函数
+- **engine** 包含与姿态估计任务相关的运行时组件
+  - **hooks** 提供运行时的各种钩子
+- **evaluation** 提供各种评估模型性能的指标
+- **visualization** 用于可视化关键点骨架和热力图等信息
 
 ## 总览
 
@@ -55,25 +97,25 @@ MMPose 1.0 采用了全新的模块结构设计以精简代码，提升运行效
 
 ## Step1：配置文件
 
-在MMPose中，我们通常 python 格式的配置文件，用于整个项目的定义、参数管理，因此我们强烈建议第一次接触 MMPose 的开发者，查阅 [配置文件](./user_guides/configs.md) 学习配置文件的定义。
+在MMPose中，我们通常 python 格式的配置文件，用于整个项目的定义、参数管理，因此我们强烈建议第一次接触 MMPose 的开发者，查阅 [【用户教程 - 如何看懂配置文件】](./user_guides/configs.md) 学习配置文件的定义。
 
-需要注意的是，所有新增的模块都需要使用注册器（Registry）进行注册，并在对应目录的 `__init__.py` 中进行 `import`，以便能够使用配置文件构建其实例。
+需要注意的是，所有新增的模块都需要使用注册器进行注册，并在对应目录的 `__init__.py` 中进行 `import`，以便能够使用配置文件构建其实例。
 
 ## Step2：数据
 
 MMPose 数据的组织主要包含三个方面：
 
-- 数据集元信息
+- 数据集元信息（meta info）
 
-- 数据集
+- 数据集（dataset）
 
-- 数据流水线
+- 数据流水线（pipeline）
 
 ### 数据集元信息
 
-元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 `$MMPOSE/configs/_base_/datasets` 目录下。
+元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 [$MMPOSE/configs/_base_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets) 目录下。
 
-在 MMPose 中使用自定义数据集时，你需要增加对应的元信息配置文件。以 MPII 数据集（`$MMPOSE/configs/_base_/datasets/mpii.py`）为例：
+在 MMPose 中使用自定义数据集时，你需要增加对应的元信息配置文件。以 MPII 数据集（[$MMPOSE/configs/\_base\_/datasets/mpii.py](https://github.com/open-mmlab/mmpose/blob/main/configs/_base_/datasets/mpii.py)）为例：
 
 ```Python
 dataset_info = dict(
@@ -113,7 +155,19 @@ dataset_info = dict(
     ])
 ```
 
-在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/_base_/datasets/custom.py`，指定方式如下：
+在这份元信息配置文件中：
+
+- `keypoint_info`：每个关键点的信息：
+  1. `name`: 关键点名称，必须是唯一的，例如 `nose`、`left_eye` 等。
+  2. `id`: 关键点 ID，必须是唯一的，从 0 开始。
+  3. `color`: 关键点可视化时的颜色，以 (\[B, G, R\]) 格式组织起来，用于可视化。
+  4. `type`: 关键点类型，可以是 `upper`、`lower` 或 `''`，用于数据增强 [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/b225a773d168fc2afd48cde5f76c0202d1ba2f52/mmpose/datasets/transforms/common_transforms.py#L263)。
+  5. `swap`: 关键点交换关系，用于水平翻转数据增强 [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94)。
+- `skeleton_info`：骨架连接关系，用于可视化。
+- `joint_weights`：每个关键点的权重，用于损失函数计算。
+- `sigma`：标准差，用于计算 OKS 分数，详细信息请参考 [keypoints-eval](https://cocodataset.org/#keypoints-eval)。
+
+在模型配置文件中，你需要为自定义数据集指定对应的元信息配置文件。假如该元信息配置文件路径为 `$MMPOSE/configs/_base_/datasets/{your_dataset}.py`，指定方式如下：
 
 ```python
 # dataset and dataloader settings
@@ -122,9 +176,9 @@ train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
+        data_root='root of your train data',
+        ann_file='path to your json file',
+        data_prefix=dict(img='path to your train img'),
         # 指定对应的元信息配置文件
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
@@ -133,9 +187,9 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
+        data_root='root of your val data',
+        ann_file='path to your val json',
+        data_prefix=dict(img='path to your val img'),
         # 指定对应的元信息配置文件
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
@@ -143,126 +197,128 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 ```
 
+下面是一个更加具体的例子，假设你的数据集按照以下结构进行组织：
+
+```shell
+data
+├── annotations
+│   ├── train.json
+│   ├── val.json
+├── train
+│   ├── images
+│   │   ├── 000001.jpg
+├── val
+│   ├── images
+│   │   ├── 000002.jpg
+```
+
+你的数据集路径应该如下所示：
+
+```
+dataset=dict(
+    ...
+    data_root='data/',
+    ann_file='annotations/train.json',
+    data_prefix=dict(img='train/images/'),
+    ...),
+```
+
 ### 数据集
 
 在 MMPose 中使用自定义数据集时，我们推荐将数据转化为已支持的格式（如 COCO 或 MPII），并直接使用我们提供的对应数据集实现。如果这种方式不可行，则用户需要实现自己的数据集类。
 
-MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了基类 [BaseCocoStyleDataset](/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
+更多自定义数据集的使用方式，请前往 [【进阶教程 - 自定义数据集】](./advanced_guides/customize_datasets.md)。
+
+````{note}
+如果你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)
+
+
+#### 2D 数据集
+MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了基类 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ```{note}
 关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
-```
+````
 
-```{note}
-在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在`$MMPOSE/mmpose/structures/bbox/transforms.py`。
-```
+在 MMPose 中 bbox 的数据格式采用 `xyxy`，而不是 `xywh`，这与 [MMDetection](https://github.com/open-mmlab/mmdetection) 等其他 OpenMMLab 成员保持一致。为了实现不同 bbox 格式之间的转换，我们提供了丰富的函数：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等。这些函数定义在 [$MMPOSE/mmpose/structures/bbox/transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/structures/bbox/transforms.py)。
 
-下面我们以MPII数据集的实现（`$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py`）为例：
+下面我们以 COCO 格式标注的 CrowdPose 数据集的实现（[$MMPOSE/mmpose/datasets/datasets/body/crowdpose_dataset.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/body/crowdpose_dataset.py)）为例：
 
 ```Python
 @DATASETS.register_module()
-class MpiiDataset(BaseCocoStyleDataset):
-    METAINFO: dict = dict(from_file='configs/_base_/datasets/mpii.py')
+class CrowdPoseDataset(BaseCocoStyleDataset):
+    """CrowdPose dataset for pose estimation.
 
-    def __init__(self,
-                 ## 内容省略
-                 headbox_file: Optional[str] = None,
-                 ## 内容省略):
+    "CrowdPose: Efficient Crowded Scenes Pose Estimation and
+    A New Benchmark", CVPR'2019.
+    More details can be found in the `paper
+    <https://arxiv.org/abs/1812.00324>`__.
 
-        if headbox_file:
-            if data_mode != 'topdown':
-                raise ValueError(
-                    f'{self.__class__.__name__} is set to {data_mode}: '
-                    'mode, while "headbox_file" is only '
-                    'supported in topdown mode.')
+    CrowdPose keypoints::
 
-            if not test_mode:
-                raise ValueError(
-                    f'{self.__class__.__name__} has `test_mode==False` '
-                    'while "headbox_file" is only '
-                    'supported when `test_mode==True`.')
+        0: 'left_shoulder',
+        1: 'right_shoulder',
+        2: 'left_elbow',
+        3: 'right_elbow',
+        4: 'left_wrist',
+        5: 'right_wrist',
+        6: 'left_hip',
+        7: 'right_hip',
+        8: 'left_knee',
+        9: 'right_knee',
+        10: 'left_ankle',
+        11: 'right_ankle',
+        12: 'top_head',
+        13: 'neck'
 
-            headbox_file_type = headbox_file[-3:]
-            allow_headbox_file_type = ['mat']
-            if headbox_file_type not in allow_headbox_file_type:
-                raise KeyError(
-                    f'The head boxes file type {headbox_file_type} is not '
-                    f'supported. Should be `mat` but got {headbox_file_type}.')
-        self.headbox_file = headbox_file
+    Args:
+        ann_file (str): Annotation file path. Default: ''.
+        bbox_file (str, optional): Detection result file path. If
+            ``bbox_file`` is set, detected bboxes loaded from this file will
+            be used instead of ground-truth bboxes. This setting is only for
+            evaluation, i.e., ignored when ``test_mode`` is ``False``.
+            Default: ``None``.
+        data_mode (str): Specifies the mode of data samples: ``'topdown'`` or
+            ``'bottomup'``. In ``'topdown'`` mode, each data sample contains
+            one instance; while in ``'bottomup'`` mode, each data sample
+            contains all instances in a image. Default: ``'topdown'``
+        metainfo (dict, optional): Meta information for dataset, such as class
+            information. Default: ``None``.
+        data_root (str, optional): The root directory for ``data_prefix`` and
+            ``ann_file``. Default: ``None``.
+        data_prefix (dict, optional): Prefix for training data. Default:
+            ``dict(img=None, ann=None)``.
+        filter_cfg (dict, optional): Config for filter data. Default: `None`.
+        indices (int or Sequence[int], optional): Support using first few
+            data in annotation file to facilitate training/testing on a smaller
+            dataset. Default: ``None`` which means using all ``data_infos``.
+        serialize_data (bool, optional): Whether to hold memory using
+            serialized objects, when enabled, data loader workers can use
+            shared RAM from master process instead of making a copy.
+            Default: ``True``.
+        pipeline (list, optional): Processing pipeline. Default: [].
+        test_mode (bool, optional): ``test_mode=True`` means in test phase.
+            Default: ``False``.
+        lazy_init (bool, optional): Whether to load annotation during
+            instantiation. In some cases, such as visualization, only the meta
+            information of the dataset is needed, which is not necessary to
+            load annotation file. ``Basedataset`` can skip load annotations to
+            save time by set ``lazy_init=False``. Default: ``False``.
+        max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
+            None img. The maximum extra number of cycles to get a valid
+            image. Default: 1000.
+    """
 
-        super().__init__(
-            ## 内容省略
-            )
-
-    def _load_annotations(self) -> List[dict]:
-        """Load data from annotations in MPII format."""
-        check_file_exist(self.ann_file)
-        with open(self.ann_file) as anno_file:
-            anns = json.load(anno_file)
-
-        if self.headbox_file:
-            check_file_exist(self.headbox_file)
-            headbox_dict = loadmat(self.headbox_file)
-            headboxes_src = np.transpose(headbox_dict['headboxes_src'],
-                                         [2, 0, 1])
-            SC_BIAS = 0.6
-
-        data_list = []
-        ann_id = 0
-
-        # mpii bbox scales are normalized with factor 200.
-        pixel_std = 200.
-
-        for idx, ann in enumerate(anns):
-            center = np.array(ann['center'], dtype=np.float32)
-            scale = np.array([ann['scale'], ann['scale']],
-                             dtype=np.float32) * pixel_std
-
-            # Adjust center/scale slightly to avoid cropping limbs
-            if center[0] != -1:
-                center[1] = center[1] + 15. / pixel_std * scale[1]
-
-            # MPII uses matlab format, index is 1-based,
-            # we should first convert to 0-based index
-            center = center - 1
-
-            # unify shape with coco datasets
-            center = center.reshape(1, -1)
-            scale = scale.reshape(1, -1)
-            bbox = bbox_cs2xyxy(center, scale)
-
-            # load keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
-            keypoints = np.array(ann['joints']).reshape(1, -1, 2)
-            keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
-
-            data_info = {
-                'id': ann_id,
-                'img_id': int(ann['image'].split('.')[0]),
-                'img_path': osp.join(self.data_prefix['img'], ann['image']),
-                'bbox_center': center,
-                'bbox_scale': scale,
-                'bbox': bbox,
-                'bbox_score': np.ones(1, dtype=np.float32),
-                'keypoints': keypoints,
-                'keypoints_visible': keypoints_visible,
-            }
-
-            if self.headbox_file:
-                # calculate the diagonal length of head box as norm_factor
-                headbox = headboxes_src[idx]
-                head_size = np.linalg.norm(headbox[1] - headbox[0], axis=0)
-                head_size *= SC_BIAS
-                data_info['head_size'] = head_size.reshape(1, -1)
-
-            data_list.append(data_info)
-            ann_id = ann_id + 1
-
-        return data_list
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/crowdpose.py')
 ```
 
-在对MPII数据集进行支持时，由于MPII需要读入 `head_size` 信息来计算 `PCKh`，因此我们在`__init__()`中增加了 `headbox_file`，并重载了 `_load_annotations()` 来完成数据组织。
+对于使用 COCO 格式标注的数据集，只需要继承 [BaseCocoStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_coco_style_dataset.py) 并指定 `METAINFO`，就可以十分轻松地集成到 MMPose 中参与训练。
 
-如果自定义数据集无法被 `BaseCocoStyleDataset` 支持，你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)。
+````
+
+
+#### 3D 数据集
+我们提供了基类 [BaseMocapStyleDataset](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/datasets/base/base_mocap_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ### 数据流水线
 
@@ -286,7 +342,7 @@ test_pipeline = [
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
-```
+````
 
 在关键点检测任务中，数据一般会在三个尺度空间中变换：
 
@@ -298,55 +354,52 @@ test_pipeline = [
 
 数据在三个空间中变换的流程如图所示：
 
-![migration-cn](https://user-images.githubusercontent.com/13503330/187831574-13804daf-f498-47c2-ba43-64b8e6ffe3dd.png)
+![tour_cn](https://github.com/open-mmlab/mmpose/assets/13503330/4c989d86-e824-49ea-9ba8-b3978548db37)
 
-在MMPose中，数据变换所需要的模块在`$MMPOSE/mmpose/datasets/transforms`目录下，它们的工作流程如图所示：
+在MMPose中，数据变换所需要的模块在 [$MMPOSE/mmpose/datasets/transforms](https://github.com/open-mmlab/mmpose/tree/main/mmpose/datasets/transforms) 目录下，它们的工作流程如图所示：
 
 ![transforms-cn](https://user-images.githubusercontent.com/13503330/187831611-8db89e20-95c7-42bc-8b0d-700fadf60328.png)
 
 #### i. 数据增强
 
-数据增强中常用的变换存放在 `$MMPOSE/mmpose/datasets/transforms/common_transforms.py` 中，如 `RandomFlip`、`RandomHalfBody` 等。
+数据增强中常用的变换存放在 [$MMPOSE/mmpose/datasets/transforms/common_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py) 中，如 [RandomFlip](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L94)、[RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L263) 等。对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 [RandomBBoxTransform](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L433) 来实现；对于 bottom-up 方法，这些则是由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 实现。
 
-对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于 bottom-up 方法，这些则是由 `BottomupRandomAffine` 实现。
+3D 姿态数据的变换存放在 [$MMPOSE/mmpose/datasets/transforms/pose3d_transforms.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/pose3d_transforms.py) 中。
 
 ```{note}
-值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 `GetBBoxCenterScale` 来得到。
+值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 [GetBBoxCenterScale](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L31) 来得到。
 ```
 
 #### ii. 数据变换
 
-我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 `TopdownAffine` 完成，在 bottom-up 方法中则由 `BottomupRandomAffine` 完成。
+对于二维图片输入，我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 [TopdownAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/topdown_transforms.py#L14) 完成，在 bottom-up 方法中则由 [BottomupRandomAffine](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/bottomup_transforms.py#L134) 完成。
+
+对于 3D 姿态提升任务，变换被合并进[数据编码](./guide_to_framework.md#iii-数据编码)。
 
 #### iii. 数据编码
 
-在模型训练时，数据从原始空间变换到输入图片空间后，需要使用 `GenerateTarget` 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
+在模型训练时，数据从原始空间变换到输入图片空间后，需要使用 [GenerateTarget](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/common_transforms.py#L873) 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
 
 在 MMPose 中，我们将编码和解码过程集合成一个编解码器（Codec），在其中实现 `encode()` 和 `decode()`。
 
 目前 MMPose 支持生成以下类型的监督目标：
 
 - `heatmap`: 高斯热图
-
 - `keypoint_label`: 关键点标签（如归一化的坐标值）
-
 - `keypoint_xy_label`: 单个坐标轴关键点标签
-
 - `heatmap+keypoint_label`: 同时生成高斯热图和关键点标签
-
 - `multiscale_heatmap`: 多尺度高斯热图
+- `lifting_target_label`: 3D 提升目标的关键点标签
 
 生成的监督目标会按以下关键字进行封装：
 
 - `heatmaps`：高斯热图
-
 - `keypoint_labels`：关键点标签（如归一化的坐标值）
-
 - `keypoint_x_labels`：x 轴关键点标签
-
 - `keypoint_y_labels`：y 轴关键点标签
-
 - `keypoint_weights`：关键点权重
+- `lifting_target_label`: 3D 提升目标的关键点标签
+- `lifting_target_weight`: 3D 提升目标的关键点权重
 
 ```Python
 @TRANSFORMS.register_module()
@@ -362,23 +415,23 @@ class GenerateTarget(BaseTransform):
     """
 ```
 
-值得注意的是，我们对 top-down 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
+值得注意的是，我们对 top-down，pose-lifting 和 bottom-up 的数据格式进行了统一，这意味着标注信息中会新增一个维度来代表同一张图里的不同目标（如人），格式为：
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
 ```
 
-- top-down：`[B, 1, K, D]`
+- top-down 和 pose-lifting：`[B, 1, K, D]`
 
-- Bottom-up: `[B, N, K, D]`
+- bottom-up: `[B, N, K, D]`
 
-当前已经支持的编解码器定义在 `$MMPOSE/mmpose/codecs` 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
+当前已经支持的编解码器定义在 [$MMPOSE/mmpose/codecs](https://github.com/open-mmlab/mmpose/tree/main/mmpose/codecs) 目录下，如果你需要自定新的编解码器，可以前往[编解码器](./user_guides/codecs.md)了解更多详情。
 
 #### iv. 数据打包
 
-数据经过前处理变换后，最终需要通过 `PackPoseInputs` 打包成数据样本。该操作定义在 `$MMPOSE/mmpose/datasets/transforms/formatting.py` 中。
+数据经过前处理变换后，最终需要通过 [PackPoseInputs](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/formatting.py) 打包成数据样本。
 
-打包过程会将数据流水线中用字典 `results` 存储的数据转换成用 MMPose 所需的标准数据结构， 如 `InstanceData`，`PixelData`，`PoseDataSample` 等。
+打包过程会将数据流水线中用字典 `results` 存储的数据转换成用 MMPose 所需的标准数据结构， 如 `InstanceData`，`PixelData`，[PoseDataSample](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/structures/pose_data_sample.py) 等。
 
 具体而言，我们将数据样本内容分为 `gt`（标注真值） 和 `pred`（模型预测）两部分，它们都包含以下数据项：
 
@@ -388,7 +441,7 @@ class GenerateTarget(BaseTransform):
 
 - **fields**(torch.tensor)：像素级别的训练标签（如高斯热图）或预测结果，属于输出尺度空间
 
-下面是 `PoseDataSample` 底层实现的例子：
+下面是 [PoseDataSample](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/structures/pose_data_sample.py) 底层实现的例子：
 
 ```Python
 def get_pose_data_sample(self):
@@ -443,7 +496,7 @@ def get_pose_data_sample(self):
 
 - **预测头（Head）**：用于实现核心算法功能和损失函数定义
 
-我们在 `$MMPOSE/models/pose_estimators/base.py` 下为姿态估计模型定义了一个基类 `BasePoseEstimator`，所有的模型（如 `TopdownPoseEstimator`）都需要继承这个基类，并重载对应的方法。
+我们在 [$MMPOSE/mmpose/models/pose_estimators/base.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/pose_estimators/base.py) 下为姿态估计模型定义了一个基类 [BasePoseEstimator](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/pose_estimators/base.py)，所有的模型（如 [TopdownPoseEstimator](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/pose_estimators/topdown.py)）都需要继承这个基类，并重载对应的方法。
 
 在模型的 `forward()` 方法中提供了三种不同的模式：
 
@@ -495,7 +548,7 @@ data_preprocessor=dict(
 
 ### 主干网络（Backbone）
 
-MMPose 实现的主干网络存放在 `$MMPOSE/mmpose/models/backbones` 目录下。
+MMPose 实现的主干网络存放在 [$MMPOSE/mmpose/models/backbones](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/backbones) 目录下。
 
 在实际开发中，开发者经常会使用预训练的网络权重进行迁移学习，这能有效提升模型在小数据集上的性能。 在 MMPose 中，只需要在配置文件 `backbone` 的 `init_cfg` 中设置：
 
@@ -531,9 +584,11 @@ init_cfg=dict(
 class YourBackbone(BaseBackbone):
 ```
 
-同时在 `$MMPOSE/mmpose/models/backbones/__init__.py` 下进行 `import`，并加入到 `__all__` 中，才能被配置文件正确地调用。
+同时在 [$MMPOSE/mmpose/models/backbones/\_\_init\_\_.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/backbones/__init__.py) 下进行 `import`，并加入到 `__all__` 中，才能被配置文件正确地调用。
 
 ### 颈部模块（Neck）
+
+MMPose 中 Neck 相关的模块定义在 [$MMPOSE/mmpose/models/necks](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/necks) 目录下.
 
 颈部模块通常是介于主干网络和预测头之间的模块，在部分模型算法中会用到，常见的颈部模块有：
 
@@ -543,7 +598,7 @@ class YourBackbone(BaseBackbone):
 
 - Feature Map Processor (FMP)
 
-  `FeatureMapProcessor` 是一个通用的 PyTorch 模块，旨在通过选择、拼接和缩放等非参数变换将主干网络输出的特征图转换成适合预测头的格式。以下是一些操作的配置方式及效果示意图:
+  [FeatureMapProcessor](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/models/necks/fmap_proc_neck.py) 是一个通用的 PyTorch 模块，旨在通过选择、拼接和缩放等非参数变换将主干网络输出的特征图转换成适合预测头的格式。以下是一些操作的配置方式及效果示意图:
 
   - 选择操作
 
@@ -575,7 +630,7 @@ class YourBackbone(BaseBackbone):
 
 通常来说，预测头是模型算法实现的核心，用于控制模型的输出，并进行损失函数计算。
 
-MMPose 中 Head 相关的模块定义在 `$MMPOSE/mmpose/models/heads` 目录下，开发者在自定义预测头时需要继承我们提供的基类 `BaseHead`，并重载以下三个方法对应模型推理的三种模式：
+MMPose 中 Head 相关的模块定义在 [$MMPOSE/mmpose/models/heads](https://github.com/open-mmlab/mmpose/tree/main/mmpose/models/heads) 目录下，开发者在自定义预测头时需要继承我们提供的基类 [BaseHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py)，并重载以下三个方法对应模型推理的三种模式：
 
 - forward()
 
@@ -583,11 +638,11 @@ MMPose 中 Head 相关的模块定义在 `$MMPOSE/mmpose/models/heads` 目录下
 
 - loss()
 
-具体而言，`predict()` 返回的应是输入图片尺度下的结果，因此需要调用 `self.decode()` 对网络输出进行解码，这一过程实现在 `BaseHead` 中已经实现，它会调用编解码器提供的 `decode()` 方法来完成解码。
+具体而言，`predict()` 返回的应是输入图片尺度下的结果，因此需要调用 `self.decode()` 对网络输出进行解码，这一过程实现在 [BaseHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/base_head.py) 中已经实现，它会调用编解码器提供的 `decode()` 方法来完成解码。
 
 另一方面，我们会在 `predict()` 中进行测试时增强。在进行预测时，一个常见的测试时增强技巧是进行翻转集成。即，将一张图片先进行一次推理，再将图片水平翻转进行一次推理，推理的结果再次水平翻转回去，对两次推理的结果进行平均。这个技巧能有效提升模型的预测稳定性。
 
-下面是在 `RegressionHead` 中定义 `predict()` 的例子：
+下面是在 [RegressionHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/regression_heads/regression_head.py) 中定义 `predict()` 的例子：
 
 ```Python
 def predict(self,
@@ -641,7 +696,7 @@ keypoint_weights = torch.cat([
 ])
 ```
 
-以下为 `RegressionHead` 中完整的 `loss()` 实现：
+以下为 [RegressionHead](https://github.com/open-mmlab/mmpose/blob/main/mmpose/models/heads/regression_heads/regression_head.py) 中完整的 `loss()` 实现：
 
 ```Python
 def loss(self,
@@ -679,4 +734,12 @@ def loss(self,
     losses.update(acc_pose=acc_pose)
 
     return losses
+```
+
+```{note}
+如果你想了解更多模型实现的内容，如：
+- 支持关键点可见性预测的头部
+- 2D-to-3D 模型实现
+
+请前往 [【进阶教程 - 实现新模型】](./advanced_guides/implement_new_models.md)
 ```

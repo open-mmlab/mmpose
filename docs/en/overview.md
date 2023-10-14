@@ -43,6 +43,9 @@ We have prepared detailed guidelines for all types of users:
    - [Configs](./user_guides/configs.md)
    - [Prepare Datasets](./user_guides/prepare_datasets.md)
    - [Train and Test](./user_guides/train_and_test.md)
+   - [Deployment](./user_guides/how_to_deploy.md)
+   - [Model Analysis](./user_guides/model_analysis.md)
+   - [Dataset Annotation and Preprocessing](./user_guides/dataset_tools.md)
 
 3. For developers who wish to develop based on MMPose:
 
@@ -53,8 +56,6 @@ We have prepared detailed guidelines for all types of users:
    - [Customize Data Transforms](./advanced_guides/customize_transforms.md)
    - [Customize Optimizer](./advanced_guides/customize_optimizer.md)
    - [Customize Logging](./advanced_guides/customize_logging.md)
-   - [How to Deploy](./advanced_guides/how_to_deploy.md)
-   - [Model Analysis](./advanced_guides/model_analysis.md)
    - [Migration Guide](./migration.md)
 
 4. For researchers and developers who are willing to contribute to MMPose:

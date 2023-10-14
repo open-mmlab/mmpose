@@ -1,0 +1,21 @@
+Collections:
+- Name: SimpleBaseline3D
+  Paper:
+    Title: A simple yet effective baseline for 3d human pose estimation
+    URL: http://openaccess.thecvf.com/content_iccv_2017/html/Martinez_A_Simple_yet_ICCV_2017_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/en/papers/algorithms/simplebaseline3d.md
+Models:
+- Config: configs/body_3d_keypoint/image_pose_lift/h36m/image-pose-lift_tcn_8xb64-200e_h36m.py
+  In Collection: SimpleBaseline3D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline3D
+    Training Data: Human3.6M
+  Name: image-pose-lift_tcn_8xb64-200e_h36m
+  Results:
+  - Dataset: Human3.6M
+    Metrics:
+      MPJPE: 43.4
+      P-MPJPE: 34.3
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth

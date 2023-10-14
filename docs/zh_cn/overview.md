@@ -11,30 +11,20 @@ MMPose 是一款基于 Pytorch 的姿态估计开源工具箱，是 OpenMMLab �
 MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs、models、engine、evaluation 和 visualization。
 
 - **apis** 提供用于模型推理的高级 API
-
 - **structures** 提供 bbox、keypoint 和 PoseDataSample 等数据结构
-
 - **datasets** 支持用于姿态估计的各种数据集
-
   - **transforms** 包含各种数据增强变换
-
 - **codecs** 提供姿态编解码器：编码器用于将姿态信息（通常为关键点坐标）编码为模型学习目标（如热力图），解码器则用于将模型输出解码为姿态估计结果
-
 - **models** 以模块化结构提供了姿态估计模型的各类组件
-
   - **pose_estimators** 定义了所有姿态估计模型类
   - **data_preprocessors** 用于预处理模型的输入数据
   - **backbones** 包含各种骨干网络
   - **necks** 包含各种模型颈部组件
   - **heads** 包含各种模型头部
   - **losses** 包含各种损失函数
-
 - **engine** 包含与姿态估计任务相关的运行时组件
-
   - **hooks** 提供运行时的各种钩子
-
 - **evaluation** 提供各种评估模型性能的指标
-
 - **visualization** 用于可视化关键点骨架和热力图等信息
 
 ## 如何使用本指南
@@ -53,6 +43,9 @@ MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs�
    - [配置文件](./user_guides/configs.md)
    - [准备数据集](./user_guides/prepare_datasets.md)
    - [训练与测试](./user_guides/train_and_test.md)
+   - [模型部署](./user_guides/how_to_deploy.md)
+   - [模型分析工具](./user_guides/model_analysis.md)
+   - [数据集标注与预处理脚本](./user_guides/dataset_tools.md)
 
 3. 对于希望基于 MMPose 进行开发的研究者和开发者：
 
@@ -63,8 +56,6 @@ MMPose 由 **8** 个主要部分组成，apis、structures、datasets、codecs�
    - [自定义数据变换](./advanced_guides/customize_transforms.md)
    - [自定义优化器](./advanced_guides/customize_optimizer.md)
    - [自定义日志](./advanced_guides/customize_logging.md)
-   - [模型部署](./advanced_guides/how_to_deploy.md)
-   - [模型分析工具](./advanced_guides/model_analysis.md)
    - [迁移指南](./migration.md)
 
 4. 对于希望加入开源社区，向 MMPose 贡献代码的研究者和开发者：

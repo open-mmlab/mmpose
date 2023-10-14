@@ -158,7 +158,7 @@ The heatmap target will be visualized together if it is generated in the pipelin
 
 ## Download dataset via MIM
 
-By using [OpenDataLab](https://opendatalab.com/), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
+By using [OpenXLab](https://openxlab.org.cn/datasets), you can obtain free formatted datasets in various fields. Through the search function of the platform, you may address the dataset they look for quickly and easily. Using the formatted datasets from the platform, you can efficiently conduct tasks across datasets.
 
 If you use MIM to download, make sure that the version is greater than v0.3.8. You can use the following command to update, install, login and download the dataset:
 
@@ -166,10 +166,10 @@ If you use MIM to download, make sure that the version is greater than v0.3.8. Y
 # upgrade your MIM
 pip install -U openmim
 
-# install OpenDataLab CLI tools
-pip install -U opendatalab
-# log in OpenDataLab, registry
-odl login
+# install OpenXLab CLI tools
+pip install -U openxlab
+# log in OpenXLab
+openxlab login
 
 # download coco2017 and preprocess by MIM
 mim download mmpose --dataset coco2017

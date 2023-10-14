@@ -15,11 +15,10 @@ default_det_models = dict(
         'yolo-x_8xb8-300e_coco-face_13274d7c.pth',
         cat_ids=(0, )),
     hand=dict(
-        model=osp.join(
-            mmpose_path, '.mim', 'demo/mmdetection_cfg/'
-            'ssdlite_mobilenetv2_scratch_600e_onehand.py'),
-        weights='https://download.openmmlab.com/mmpose/mmdet_pretrained/'
-        'ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth',
+        model=osp.join(mmpose_path, '.mim', 'demo/mmdetection_cfg/'
+                       'rtmdet_nano_320-8xb32_hand.py'),
+        weights='https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/'
+        'rtmdet_nano_8xb32-300e_hand-267f9c8f.pth',
         cat_ids=(0, )),
     animal=dict(
         model='rtmdet-m',

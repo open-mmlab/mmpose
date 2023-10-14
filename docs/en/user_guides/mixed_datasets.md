@@ -1,10 +1,10 @@
 # Use Mixed Datasets for Training
 
-MMPose offers a convenient and versatile solution for training with mixed datasets through its `CombinedDataset` tool. Acting as a wrapper, it allows for the inclusion of multiple datasets and seamlessly reads and converts data from varying sources into a unified format for model training. The data processing pipeline utilizing `CombinedDataset` is illustrated in the following figure.
+MMPose offers a convenient and versatile solution for training with mixed datasets through its [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) tool. Acting as a wrapper, it allows for the inclusion of multiple datasets and seamlessly reads and converts data from varying sources into a unified format for model training. The data processing pipeline utilizing [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) is illustrated in the following figure.
 
 ![combined_dataset_pipeline](https://user-images.githubusercontent.com/26127467/223333154-fb88e511-810a-423c-b755-c791d296bc43.jpg)
 
-The following section will provide a detailed description of how to configure `CombinedDataset` with an example that combines the COCO and AI Challenger (AIC) datasets.
+The following section will provide a detailed description of how to configure [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) with an example that combines the COCO and AI Challenger (AIC) datasets.
 
 ## COCO & AIC example
 
@@ -39,7 +39,7 @@ dataset_coco = dict(
 )
 ```
 
-For AIC dataset, the order of the keypoints needs to be transformed. MMPose provides a `KeypointConverter` transform to achieve this. Here's an example of how to configure the AIC sub dataset:
+For AIC dataset, the order of the keypoints needs to be transformed. MMPose provides a [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) transform to achieve this. Here's an example of how to configure the AIC sub dataset:
 
 ```python
 dataset_aic = dict(
@@ -70,9 +70,9 @@ dataset_aic = dict(
 )
 ```
 
-By using the `KeypointConverter`, the indices of keypoints with indices 0 to 11 will be transformed to corresponding indices among 5 to 16. Meanwhile, the keypoints with indices 12 and 13 will be removed. For the target keypoints with indices 0 to 4, which are not defined in the `mapping` argument, they will be set as invisible and won't be used in training.
+By using the [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11), the indices of keypoints with indices 0 to 11 will be transformed to corresponding indices among 5 to 16. Meanwhile, the keypoints with indices 12 and 13 will be removed. For the target keypoints with indices 0 to 4, which are not defined in the `mapping` argument, they will be set as invisible and won't be used in training.
 
-Once the sub datasets are configured, the `CombinedDataset` wrapper can be defined as follows:
+Once the sub datasets are configured, the [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) wrapper can be defined as follows:
 
 ```python
 dataset = dict(
@@ -84,6 +84,11 @@ dataset = dict(
     # The pipeline includes typical transforms, such as loading the
     # image and data augmentation
     pipeline=train_pipeline,
+    # The sample_ratio_factor controls the sampling ratio of
+    # each dataset in the combined dataset. The length of sample_ratio_factor
+    # should match the number of datasets. Each factor indicates the sampling
+    # ratio of the corresponding dataset relative to its original length.
+    sample_ratio_factor=[1.0, 0.5]
 )
 ```
 
@@ -95,7 +100,7 @@ The previously mentioned method discards some annotations in the AIC dataset. If
 
 <img src="https://user-images.githubusercontent.com/26127467/223356617-075e0ab1-0ed3-426d-bc88-4f16be93f0ba.png" height="200px" alt><br>
 
-In this scenario, both COCO and AIC datasets need to adjust the keypoint indices using `KeypointConverter`:
+In this scenario, both COCO and AIC datasets need to adjust the keypoint indices using [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11):
 
 ```python
 dataset_coco = dict(
@@ -157,3 +162,53 @@ dataset = dict(
 ```
 
 Additionally, the output channel number of the model should be adjusted as the number of keypoints changes. If the users aim to evaluate the model on the COCO dataset, a subset of model outputs must be chosen. This subset can be customized using the `output_keypoint_indices` argument in `test_cfg`. Users can refer to the [config file](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py), which combines the COCO and AIC dataset, for more details and use it as a template to create their custom dataset.
+
+## Sampling Strategy for Mixed Datasets
+
+When training with mixed datasets, users often encounter the problem of inconsistent data distributions between different datasets. To address this issue, we provide two different sampling strategies:
+
+1. Adjust the sampling ratio of each sub dataset
+2. Adjust the ratio of each sub dataset in each batch
+
+### Adjust the sampling ratio of each sub dataset
+
+In [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15), we provide the `sample_ratio_factor` argument to adjust the sampling ratio of each sub dataset.
+
+For example:
+
+- If `sample_ratio_factor` is `[1.0, 0.5]`, then all data from the first sub dataset will be included in the training, and the second sub dataset will be sampled at a ratio of 0.5.
+- If `sample_ratio_factor` is `[1.0, 2.0]`, then all data from the first sub dataset will be included in the training, and the second sub dataset will be sampled at a ratio of 2 times its total number.
+
+### Adjust the ratio of each sub dataset in each batch
+
+In [$MMPOSE/datasets/samplers.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py) we provide [MultiSourceSampler](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py#L15) to adjust the ratio of each sub dataset in each batch.
+
+For example:
+
+- If `sample_ratio_factor` is `[1.0, 0.5]`, then the data volume of the first sub dataset in each batch will be `1.0 / (1.0 + 0.5) = 66.7%`, and the data volume of the second sub dataset will be `0.5 / (1.0 + 0.5) = 33.3%`. That is, the first sub dataset will be twice as large as the second sub dataset in each batch.
+
+Users can set the `sampler` argument in the configuration file:
+
+```python
+# data loaders
+train_bs = 256
+train_dataloader = dict(
+    batch_size=train_bs,
+    num_workers=4,
+    persistent_workers=True,
+    sampler=dict(
+        type='MultiSourceSampler',
+        batch_size=train_bs,
+        # ratio of sub datasets in each batch
+        source_ratio=[1.0, 0.5],
+        shuffle=True,
+        round_up=True),
+    dataset=dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        # set sub datasets
+        datasets=[sub_dataset1, sub_dataset2],
+        pipeline=train_pipeline,
+        test_mode=False,
+    ))
+```

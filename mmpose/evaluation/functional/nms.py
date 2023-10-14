@@ -7,6 +7,10 @@
 from typing import List, Optional
 
 import numpy as np
+import torch
+from torch import Tensor
+
+from mmpose.structures.bbox import bbox_overlaps
 
 
 def nms(dets: np.ndarray, thr: float) -> List[int]:
@@ -325,3 +329,40 @@ def nearby_joints_nms(
         keep_pose_inds = [keep_pose_inds[i] for i in sub_inds]
 
     return keep_pose_inds
+
+
+def nms_torch(bboxes: Tensor,
+              scores: Tensor,
+              threshold: float = 0.65,
+              iou_calculator=bbox_overlaps,
+              return_group: bool = False):
+    """Perform Non-Maximum Suppression (NMS) on a set of bounding boxes using
+    their corresponding scores.
+
+    Args:
+
+        bboxes (Tensor): list of bounding boxes (each containing 4 elements
+            for x1, y1, x2, y2).
+        scores (Tensor): scores associated with each bounding box.
+        threshold (float): IoU threshold to determine overlap.
+        iou_calculator (function): method to calculate IoU.
+        return_group (bool): if True, returns groups of overlapping bounding
+            boxes, otherwise returns the main bounding boxes.
+    """
+
+    _, indices = scores.sort(descending=True)
+    groups = []
+    while len(indices):
+        idx, indices = indices[0], indices[1:]
+        bbox = bboxes[idx]
+        ious = iou_calculator(bbox, bboxes[indices])
+        close_indices = torch.where(ious > threshold)[1]
+        keep_indices = torch.ones_like(indices, dtype=torch.bool)
+        keep_indices[close_indices] = 0
+        groups.append(torch.cat((idx[None], indices[close_indices])))
+        indices = indices[keep_indices]
+
+    if return_group:
+        return groups
+    else:
+        return torch.cat([g[:1] for g in groups])

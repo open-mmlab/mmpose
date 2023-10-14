@@ -1,8 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
 from copy import deepcopy
-from typing import Any, Callable, List, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
+import numpy as np
 from mmengine.dataset import BaseDataset
 from mmengine.registry import build_from_cfg
 
@@ -18,21 +19,37 @@ class CombinedDataset(BaseDataset):
         metainfo (dict): The meta information of combined dataset.
         datasets (list): The configs of datasets to be combined.
         pipeline (list, optional): Processing pipeline. Defaults to [].
+        sample_ratio_factor (list, optional): A list of sampling ratio
+            factors for each dataset. Defaults to None
     """
 
     def __init__(self,
                  metainfo: dict,
                  datasets: list,
                  pipeline: List[Union[dict, Callable]] = [],
+                 sample_ratio_factor: Optional[List[float]] = None,
                  **kwargs):
 
         self.datasets = []
+        self.resample = sample_ratio_factor is not None
 
         for cfg in datasets:
             dataset = build_from_cfg(cfg, DATASETS)
             self.datasets.append(dataset)
 
         self._lens = [len(dataset) for dataset in self.datasets]
+        if self.resample:
+            assert len(sample_ratio_factor) == len(datasets), f'the length ' \
+                f'of `sample_ratio_factor` {len(sample_ratio_factor)} does ' \
+                f'not match the length of `datasets` {len(datasets)}'
+            assert min(sample_ratio_factor) >= 0.0, 'the ratio values in ' \
+                '`sample_ratio_factor` should not be negative.'
+            self._lens_ori = self._lens
+            self._lens = [
+                round(l * sample_ratio_factor[i])
+                for i, l in enumerate(self._lens_ori)
+            ]
+
         self._len = sum(self._lens)
 
         super(CombinedDataset, self).__init__(pipeline=pipeline, **kwargs)
@@ -71,6 +88,12 @@ class CombinedDataset(BaseDataset):
         while index >= self._lens[subset_index]:
             index -= self._lens[subset_index]
             subset_index += 1
+
+        if self.resample:
+            gap = (self._lens_ori[subset_index] -
+                   1e-4) / self._lens[subset_index]
+            index = round(gap * index + np.random.rand() * gap - 0.5)
+
         return subset_index, index
 
     def prepare_data(self, idx: int) -> Any:
@@ -86,6 +109,11 @@ class CombinedDataset(BaseDataset):
 
         data_info = self.get_data_info(idx)
 
+        # the assignment of 'dataset' should not be performed within the
+        # `get_data_info` function. Otherwise, it can lead to the mixed
+        # data augmentation process getting stuck.
+        data_info['dataset'] = self
+
         return self.pipeline(data_info)
 
     def get_data_info(self, idx: int) -> dict:
@@ -99,6 +127,9 @@ class CombinedDataset(BaseDataset):
         subset_idx, sample_idx = self._get_subset_index(idx)
         # Get data sample processed by ``subset.pipeline``
         data_info = self.datasets[subset_idx][sample_idx]
+
+        if 'dataset' in data_info:
+            data_info.pop('dataset')
 
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [

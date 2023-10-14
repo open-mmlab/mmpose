@@ -45,6 +45,10 @@ class Human36mDataset(BaseMocapDataset):
         seq_len (int): Number of frames in a sequence. Default: 1.
         seq_step (int): The interval for extracting frames from the video.
             Default: 1.
+        multiple_target (int): If larger than 0, merge every
+            ``multiple_target`` sequence together. Default: 0.
+        multiple_target_step (int): The interval for merging sequence. Only
+            valid when ``multiple_target`` is larger than 0. Default: 0.
         pad_video_seq (bool): Whether to pad the video so that poses will be
             predicted for every frame in the video. Default: ``False``.
         causal (bool): If set to ``True``, the rightmost input frame will be
@@ -65,6 +69,9 @@ class Human36mDataset(BaseMocapDataset):
             If set, 2d keypoint loaded from this file will be used instead of
             ground-truth keypoints. This setting is only when
             ``keypoint_2d_src`` is ``'detection'``. Default: ``None``.
+        factor_file (str, optional): The projection factors' file. If set,
+            factor loaded from this file will be used instead of calculated
+            factors. Default: ``None``.
         camera_param_file (str): Cameras' parameters file. Default: ``None``.
         data_mode (str): Specifies the mode of data samples: ``'topdown'`` or
             ``'bottomup'``. In ``'topdown'`` mode, each data sample contains
@@ -104,11 +111,14 @@ class Human36mDataset(BaseMocapDataset):
                  ann_file: str = '',
                  seq_len: int = 1,
                  seq_step: int = 1,
+                 multiple_target: int = 0,
+                 multiple_target_step: int = 0,
                  pad_video_seq: bool = False,
                  causal: bool = True,
                  subset_frac: float = 1.0,
                  keypoint_2d_src: str = 'gt',
                  keypoint_2d_det_file: Optional[str] = None,
+                 factor_file: Optional[str] = None,
                  camera_param_file: Optional[str] = None,
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
@@ -138,9 +148,21 @@ class Human36mDataset(BaseMocapDataset):
         self.seq_step = seq_step
         self.pad_video_seq = pad_video_seq
 
+        if factor_file:
+            if not is_abs(factor_file):
+                factor_file = osp.join(data_root, factor_file)
+            assert exists(factor_file), (f'`factor_file`: {factor_file}'
+                                         'does not exist.')
+        self.factor_file = factor_file
+
+        if multiple_target > 0 and multiple_target_step == 0:
+            multiple_target_step = multiple_target
+        self.multiple_target_step = multiple_target_step
+
         super().__init__(
             ann_file=ann_file,
             seq_len=seq_len,
+            multiple_target=multiple_target,
             causal=causal,
             subset_frac=subset_frac,
             camera_param_file=camera_param_file,
@@ -171,41 +193,55 @@ class Human36mDataset(BaseMocapDataset):
         sequence_indices = []
         _len = (self.seq_len - 1) * self.seq_step + 1
         _step = self.seq_step
-        for _, _indices in sorted(video_frames.items()):
-            n_frame = len(_indices)
 
-            if self.pad_video_seq:
-                # Pad the sequence so that every frame in the sequence will be
-                # predicted.
-                if self.causal:
-                    frames_left = self.seq_len - 1
-                    frames_right = 0
-                else:
-                    frames_left = (self.seq_len - 1) // 2
-                    frames_right = frames_left
-                for i in range(n_frame):
-                    pad_left = max(0, frames_left - i // _step)
-                    pad_right = max(0,
-                                    frames_right - (n_frame - 1 - i) // _step)
-                    start = max(i % _step, i - frames_left * _step)
-                    end = min(n_frame - (n_frame - 1 - i) % _step,
-                              i + frames_right * _step + 1)
-                    sequence_indices.append([_indices[0]] * pad_left +
-                                            _indices[start:end:_step] +
-                                            [_indices[-1]] * pad_right)
-            else:
+        if self.multiple_target:
+            for _, _indices in sorted(video_frames.items()):
+                n_frame = len(_indices)
                 seqs_from_video = [
-                    _indices[i:(i + _len):_step]
-                    for i in range(0, n_frame - _len + 1)
-                ]
+                    _indices[i:(i + self.multiple_target):_step]
+                    for i in range(0, n_frame, self.multiple_target_step)
+                ][:(n_frame + self.multiple_target_step -
+                    self.multiple_target) // self.multiple_target_step]
                 sequence_indices.extend(seqs_from_video)
+
+        else:
+            for _, _indices in sorted(video_frames.items()):
+                n_frame = len(_indices)
+
+                if self.pad_video_seq:
+                    # Pad the sequence so that every frame in the sequence will
+                    # be predicted.
+                    if self.causal:
+                        frames_left = self.seq_len - 1
+                        frames_right = 0
+                    else:
+                        frames_left = (self.seq_len - 1) // 2
+                        frames_right = frames_left
+                    for i in range(n_frame):
+                        pad_left = max(0, frames_left - i // _step)
+                        pad_right = max(
+                            0, frames_right - (n_frame - 1 - i) // _step)
+                        start = max(i % _step, i - frames_left * _step)
+                        end = min(n_frame - (n_frame - 1 - i) % _step,
+                                  i + frames_right * _step + 1)
+                        sequence_indices.append([_indices[0]] * pad_left +
+                                                _indices[start:end:_step] +
+                                                [_indices[-1]] * pad_right)
+                else:
+                    seqs_from_video = [
+                        _indices[i:(i + _len):_step]
+                        for i in range(0, n_frame - _len + 1)
+                    ]
+                    sequence_indices.extend(seqs_from_video)
 
         # reduce dataset size if needed
         subset_size = int(len(sequence_indices) * self.subset_frac)
         start = np.random.randint(0, len(sequence_indices) - subset_size + 1)
         end = start + subset_size
 
-        return sequence_indices[start:end]
+        sequence_indices = sequence_indices[start:end]
+
+        return sequence_indices
 
     def _load_annotations(self) -> Tuple[List[dict], List[dict]]:
         instance_list, image_list = super()._load_annotations()
@@ -214,11 +250,19 @@ class Human36mDataset(BaseMocapDataset):
         kpts_3d = h36m_data['S']
 
         if self.keypoint_2d_src == 'detection':
-            assert exists(self.keypoint_2d_det_file)
+            assert exists(self.keypoint_2d_det_file), (
+                f'`keypoint_2d_det_file`: `{self.keypoint_2d_det_file}`'
+                'does not exist.')
             kpts_2d = self._load_keypoint_2d_detection(
                 self.keypoint_2d_det_file)
-            assert kpts_2d.shape[0] == kpts_3d.shape[0]
-            assert kpts_2d.shape[2] == 3
+            assert kpts_2d.shape[0] == kpts_3d.shape[0], (
+                f'Number of `kpts_2d` ({kpts_2d.shape[0]}) does not match '
+                f'number of `kpts_3d` ({kpts_3d.shape[0]}).')
+
+            assert kpts_2d.shape[2] == 3, (
+                f'Expect `kpts_2d.shape[2]` == 3, but got '
+                f'{kpts_2d.shape[2]}. Please check the format of '
+                f'{self.keypoint_2d_det_file}')
 
             for idx, frame_ids in enumerate(self.sequence_indices):
                 kpt_2d = kpts_2d[frame_ids].astype(np.float32)
@@ -230,6 +274,18 @@ class Human36mDataset(BaseMocapDataset):
                     'keypoints_visible':
                     keypoints_visible
                 })
+        if self.factor_file:
+            with get_local_path(self.factor_file) as local_path:
+                factors = np.load(local_path).astype(np.float32)
+        else:
+            factors = np.zeros((kpts_3d.shape[0], ), dtype=np.float32)
+        assert factors.shape[0] == kpts_3d.shape[0], (
+            f'Number of `factors` ({factors.shape[0]}) does not match '
+            f'number of `kpts_3d` ({kpts_3d.shape[0]}).')
+
+        for idx, frame_ids in enumerate(self.sequence_indices):
+            factor = factors[frame_ids].astype(np.float32)
+            instance_list[idx].update({'factor': factor})
 
         return instance_list, image_list
 

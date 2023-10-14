@@ -66,7 +66,7 @@ model = dict(
         arch='P5',
         expand_ratio=0.5,
         deepen_factor=1.33,
-        widen_factor=1.28,
+        widen_factor=1.25,
         out_indices=(4, ),
         channel_attention=True,
         norm_cfg=dict(type='SyncBN'),

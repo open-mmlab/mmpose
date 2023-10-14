@@ -68,6 +68,15 @@ Note that some of the demo scripts in MMPose require [MMDetection](https://githu
 mim install "mmdet>=3.1.0"
 ```
 
+```{note}
+Here are the version correspondences between mmdet, mmpose and mmcv:
+
+- mmdet 2.x <=> mmpose 0.x <=> mmcv 1.x
+- mmdet 3.x <=> mmpose 1.x <=> mmcv 2.x
+
+If you encounter version incompatibility issues, please check the correspondence using `pip list | grep mm` and upgrade or downgrade the dependencies accordingly. Please note that `mmcv-full` is only for `mmcv 1.x`, so please uninstall it first, and then use `mim install mmcv` to install `mmcv 2.x`.
+```
+
 ## Best Practices
 
 ### Build MMPose from source
@@ -102,7 +111,7 @@ To verify that MMPose is installed correctly, you can run an inference demo with
 mim download mmpose --config td-hm_hrnet-w48_8xb32-210e_coco-256x192  --dest .
 ```
 
-The downloading will take several seconds or more, depending on your network environment. When it is done, you will find two files `td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` and `hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth` in your current folder.
+The downloading will take several seconds or more, depending on your network environment. When it is done, you will find two files `td-hm_hrnet-w48_8xb32-210e_coco-256x192.py` and `td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth` in your current folder.
 
 **Step 2.** Run the inference demo.
 
@@ -112,7 +121,7 @@ Option (A). If you install mmpose from source, just run the following command un
 python demo/image_demo.py \
     tests/data/coco/000000000785.jpg \
     td-hm_hrnet-w48_8xb32-210e_coco-256x192.py \
-    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth \
     --out-file vis_results.jpg \
     --draw-heatmap
 ```
@@ -130,7 +139,7 @@ from mmpose.utils import register_all_modules
 register_all_modules()
 
 config_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
-checkpoint_file = 'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
+checkpoint_file = 'td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth'
 model = init_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
 
 # please prepare an image with person
@@ -140,6 +149,15 @@ results = inference_topdown(model, 'demo.jpg')
 The `demo.jpg` can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/main/tests/data/coco/000000000785.jpg).
 
 The inference results will be a list of `PoseDataSample`, and the predictions are in the `pred_instances`, indicating the detected keypoint locations and scores.
+
+```{note}
+MMCV version should match PyTorch version strictly. If you encounter the following issues:
+
+- No module named 'mmcv.ops'
+- No module named 'mmcv._ext'
+
+It means that the current PyTorch version does not match the CUDA version. You can check the CUDA version using `nvidia-smi`, and it should match the `+cu1xx` in PyTorch version in `pip list | grep torch`. Otherwise, you need to uninstall PyTorch and reinstall it, then reinstall MMCV (the installation order **CAN NOT** be swapped).
+```
 
 ## Customize Installation
 

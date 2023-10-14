@@ -1,10 +1,10 @@
 # 混合数据集训练
 
-MMPose 提供了一个灵活、便捷的工具 `CombinedDataset` 来进行混合数据集训练。它作为一个封装器，可以包含多个子数据集，并将来自不同子数据集的数据转换成一个统一的格式，以用于模型训练。使用 `CombinedDataset` 的数据处理流程如下图所示。
+MMPose 提供了一个灵活、便捷的工具 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 来进行混合数据集训练。它作为一个封装器，可以包含多个子数据集，并将来自不同子数据集的数据转换成一个统一的格式，以用于模型训练。使用 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 的数据处理流程如下图所示。
 
 ![combined_dataset_pipeline](https://user-images.githubusercontent.com/26127467/223333154-fb88e511-810a-423c-b755-c791d296bc43.jpg)
 
-本篇教程的后续部分将通过一个结合 COCO 和 AI Challenger (AIC) 数据集的例子详细介绍如何配置 `CombinedDataset`。
+本篇教程的后续部分将通过一个结合 COCO 和 AI Challenger (AIC) 数据集的例子详细介绍如何配置 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15)。
 
 ## COCO & AIC 数据集混合案例
 
@@ -39,7 +39,7 @@ dataset_coco = dict(
 )
 ```
 
-对于 AIC 数据集，需要转换关键点的顺序。MMPose 提供了一个 `KeypointConverter` 转换器来实现这一点。以下是配置 AIC 子数据集的示例：
+对于 AIC 数据集，需要转换关键点的顺序。MMPose 提供了一个 [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) 转换器来实现这一点。以下是配置 AIC 子数据集的示例：
 
 ```python
 dataset_aic = dict(
@@ -70,9 +70,9 @@ dataset_aic = dict(
 )
 ```
 
-`KeypointConverter` 会将原序号在 0 到 11 之间的关键点的序号转换为在 5 到 16 之间的对应序号。同时，在 AIC 中序号为为 12 和 13 的关键点将被删除。另外，目标序号在 0 到 4 之间的关键点在 `mapping` 参数中没有定义，这些点将被设为不可见，并且不会在训练中使用。
+[KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) 会将原序号在 0 到 11 之间的关键点的序号转换为在 5 到 16 之间的对应序号。同时，在 AIC 中序号为为 12 和 13 的关键点将被删除。另外，目标序号在 0 到 4 之间的关键点在 `mapping` 参数中没有定义，这些点将被设为不可见，并且不会在训练中使用。
 
-子数据集都完成配置后, 混合数据集 `CombinedDataset` 可以通过如下方式配置:
+子数据集都完成配置后, 混合数据集 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 可以通过如下方式配置:
 
 ```python
 dataset = dict(
@@ -84,6 +84,9 @@ dataset = dict(
     # `train_pipeline` 包含了常用的数据预处理，
     # 比如图片读取、数据增广等
     pipeline=train_pipeline,
+    # sample_ratio_factor 参数是用来调节每个子数据集
+    # 在组合数据集中的样本数量比例的
+    sample_ratio_factor=[1.0, 0.5]
 )
 ```
 
@@ -95,7 +98,7 @@ MMPose 提供了一份完整的 [配置文件](https://github.com/open-mmlab/mmp
 
 <img src="https://user-images.githubusercontent.com/26127467/223356617-075e0ab1-0ed3-426d-bc88-4f16be93f0ba.png" height="200px" alt><br>
 
-在这种情况下，COCO 和 AIC 数据集都需要使用 `KeypointConverter` 来调整它们关键点的顺序：
+在这种情况下，COCO 和 AIC 数据集都需要使用 [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) 来调整它们关键点的顺序：
 
 ```python
 dataset_coco = dict(
@@ -142,7 +145,7 @@ dataset_aic = dict(
 - 在 `skeleton_info` 中添加了“头顶”和“颈部”间的连线；
 - 拓展 `joint_weights` 和 `sigmas` 以添加新增关键点的信息。
 
-完成以上步骤后，合并数据集 `CombinedDataset` 可以通过以下方式配置：
+完成以上步骤后，合并数据集 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) 可以通过以下方式配置：
 
 ```python
 dataset = dict(
@@ -157,3 +160,53 @@ dataset = dict(
 ```
 
 此外，在使用混合数据集时，由于关键点数量的变化，模型的输出通道数也要做相应调整。如果用户用混合数据集训练了模型，但是要在 COCO 数据集上评估模型，就需要从模型输出的关键点中取出一个子集来匹配 COCO 中的关键点格式。可以通过 `test_cfg` 中的 `output_keypoint_indices` 参数自定义此子集。这个 [配置文件](https://github.com/open-mmlab/mmpose/blob/dev-1.x/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py) 展示了如何用 AIC 和 COCO 合并后的数据集训练模型并在 COCO 数据集上进行测试。用户可以查阅这个文件以获取更多细节，或者参考这个文件来构建新的混合数据集。
+
+## 调整混合数据集采样策略
+
+在混合数据集训练中，常常面临着不同数据集的数据分布不统一问题，对此我们提供了两种不同的采样策略：
+
+1. 调整每个子数据集的采样比例
+2. 调整每个 batch 中每个子数据集的比例
+
+### 调整每个子数据集的采样比例
+
+在 [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15)  中，我们提供了 `sample_ratio_factor` 参数来调整每个子数据集的采样比例。
+
+例如：
+
+- 如果 `sample_ratio_factor` 为 `[1.0, 0.5]`，则第一个子数据集全部数据加入训练，第二个子数据集抽样出 0.5 加入训练。
+- 如果 `sample_ratio_factor` 为 `[1.0, 2.0]`，则第一个子数据集全部数据加入训练，第二个子数据集抽样出其总数的 2 倍加入训练。
+
+### 调整每个 batch 中每个子数据集的比例
+
+在 [$MMPOSE/datasets/samplers.py](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py) 中，我们提供了 [MultiSourceSampler](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/samplers.py#L15) 来调整每个 batch 中每个子数据集的比例。
+
+例如：
+
+- 如果 `sample_ratio_factor` 为 `[1.0, 0.5]`，则每个 batch 中第一个子数据集的数据量为 `1.0 / (1.0 + 0.5) = 66.7%`，第二个子数据集的数据量为 `0.5 / (1.0 + 0.5) = 33.3%`。即，第一个子数据集在 batch 中的占比为第二个子数据集的 2 倍。
+
+用户可以在配置文件中通过 `sampler` 参数来进行设置：
+
+```python
+# data loaders
+train_bs = 256
+train_dataloader = dict(
+    batch_size=train_bs,
+    num_workers=4,
+    persistent_workers=True,
+    sampler=dict(
+        type='MultiSourceSampler',
+        batch_size=train_bs,
+        # 设置子数据集比例
+        source_ratio=[1.0, 0.5],
+        shuffle=True,
+        round_up=True),
+    dataset=dict(
+        type='CombinedDataset',
+        metainfo=dict(from_file='configs/_base_/datasets/coco.py'),
+        # 子数据集
+        datasets=[sub_dataset1, sub_dataset2],
+        pipeline=train_pipeline,
+        test_mode=False,
+    ))
+```

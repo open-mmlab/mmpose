@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
-import warnings
+import logging
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import mmcv
@@ -8,21 +7,15 @@ import numpy as np
 import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.infer.infer import ModelType
+from mmengine.logging import print_log
 from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
 
 from mmpose.evaluation.functional import nms
-from mmpose.registry import DATASETS, INFERENCERS
+from mmpose.registry import INFERENCERS
 from mmpose.structures import merge_data_samples
 from .base_mmpose_inferencer import BaseMMPoseInferencer
-from .utils import default_det_models
-
-try:
-    from mmdet.apis.det_inferencer import DetInferencer
-    has_mmdet = True
-except (ImportError, ModuleNotFoundError):
-    has_mmdet = False
 
 InstanceList = List[InstanceData]
 InputType = Union[str, np.ndarray]
@@ -77,7 +70,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         'draw_heatmap',
         'black_background',
     }
-    postprocess_kwargs: set = {'pred_out_dir'}
+    postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
     def __init__(self,
                  model: Union[ModelType, str],
@@ -98,36 +91,12 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         # initialize detector for top-down models
         if self.cfg.data_mode == 'topdown':
-            object_type = DATASETS.get(self.cfg.dataset_type).__module__.split(
-                'datasets.')[-1].split('.')[0].lower()
-
-            if det_model in ('whole_image', 'whole-image') or \
-                (det_model is None and
-                 object_type not in default_det_models):
-                self.detector = None
-
-            else:
-                det_scope = 'mmdet'
-                if det_model is None:
-                    det_info = default_det_models[object_type]
-                    det_model, det_weights, det_cat_ids = det_info[
-                        'model'], det_info['weights'], det_info['cat_ids']
-                elif os.path.exists(det_model):
-                    det_cfg = Config.fromfile(det_model)
-                    det_scope = det_cfg.default_scope
-
-                if has_mmdet:
-                    self.detector = DetInferencer(
-                        det_model, det_weights, device=device, scope=det_scope)
-                else:
-                    raise RuntimeError(
-                        'MMDetection (v3.0.0 or above) is required to build '
-                        'inferencers for top-down pose estimation models.')
-
-                if isinstance(det_cat_ids, (tuple, list)):
-                    self.det_cat_ids = det_cat_ids
-                else:
-                    self.det_cat_ids = (det_cat_ids, )
+            self._init_detector(
+                det_model=det_model,
+                det_weights=det_weights,
+                det_cat_ids=det_cat_ids,
+                device=device,
+            )
 
         self._video_input = False
 
@@ -182,9 +151,21 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         data_info.update(self.model.dataset_meta)
 
         if self.cfg.data_mode == 'topdown':
+            bboxes = []
             if self.detector is not None:
-                det_results = self.detector(
-                    input, return_datasample=True)['predictions']
+                try:
+                    det_results = self.detector(
+                        input, return_datasamples=True)['predictions']
+                except ValueError:
+                    print_log(
+                        'Support for mmpose and mmdet versions up to 3.1.0 '
+                        'will be discontinued in upcoming releases. To '
+                        'ensure ongoing compatibility, please upgrade to '
+                        'mmdet version 3.2.0 or later.',
+                        logger='current',
+                        level=logging.WARNING)
+                    det_results = self.detector(
+                        input, return_datasample=True)['predictions']
                 pred_instance = det_results[0].pred_instances.cpu().numpy()
                 bboxes = np.concatenate(
                     (pred_instance.bboxes, pred_instance.scores[:, None]),
@@ -253,75 +234,3 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                     ds.pred_instances = ds.pred_instances[
                         ds.pred_instances.bbox_scores > bbox_thr]
         return data_samples
-
-    def __call__(
-        self,
-        inputs: InputsType,
-        return_datasample: bool = False,
-        batch_size: int = 1,
-        out_dir: Optional[str] = None,
-        **kwargs,
-    ) -> dict:
-        """Call the inferencer.
-
-        Args:
-            inputs (InputsType): Inputs for the inferencer.
-            return_datasample (bool): Whether to return results as
-                :obj:`BaseDataElement`. Defaults to False.
-            batch_size (int): Batch size. Defaults to 1.
-            out_dir (str, optional): directory to save visualization
-                results and predictions. Will be overoden if vis_out_dir or
-                pred_out_dir are given. Defaults to None
-            **kwargs: Key words arguments passed to :meth:`preprocess`,
-                :meth:`forward`, :meth:`visualize` and :meth:`postprocess`.
-                Each key in kwargs should be in the corresponding set of
-                ``preprocess_kwargs``, ``forward_kwargs``,
-                ``visualize_kwargs`` and ``postprocess_kwargs``.
-
-        Returns:
-            dict: Inference and visualization results.
-        """
-        if out_dir is not None:
-            if 'vis_out_dir' not in kwargs:
-                kwargs['vis_out_dir'] = f'{out_dir}/visualizations'
-            if 'pred_out_dir' not in kwargs:
-                kwargs['pred_out_dir'] = f'{out_dir}/predictions'
-
-        (
-            preprocess_kwargs,
-            forward_kwargs,
-            visualize_kwargs,
-            postprocess_kwargs,
-        ) = self._dispatch_kwargs(**kwargs)
-
-        self.update_model_visualizer_settings(**kwargs)
-
-        # preprocessing
-        if isinstance(inputs, str) and inputs.startswith('webcam'):
-            inputs = self._get_webcam_inputs(inputs)
-            batch_size = 1
-            if not visualize_kwargs.get('show', False):
-                warnings.warn('The display mode is closed when using webcam '
-                              'input. It will be turned on automatically.')
-            visualize_kwargs['show'] = True
-        else:
-            inputs = self._inputs_to_list(inputs)
-
-        forward_kwargs['bbox_thr'] = preprocess_kwargs.get('bbox_thr', -1)
-        inputs = self.preprocess(
-            inputs, batch_size=batch_size, **preprocess_kwargs)
-
-        preds = []
-
-        for proc_inputs, ori_inputs in inputs:
-            preds = self.forward(proc_inputs, **forward_kwargs)
-
-            visualization = self.visualize(ori_inputs, preds,
-                                           **visualize_kwargs)
-            results = self.postprocess(preds, visualization, return_datasample,
-                                       **postprocess_kwargs)
-            yield results
-
-        if self._video_input:
-            self._finalize_video_processing(
-                postprocess_kwargs.get('pred_out_dir', ''))

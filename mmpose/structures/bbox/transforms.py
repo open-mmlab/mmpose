@@ -63,9 +63,8 @@ def bbox_xyxy2cs(bbox: np.ndarray,
     if dim == 1:
         bbox = bbox[None, :]
 
-    x1, y1, x2, y2 = np.hsplit(bbox, [1, 2, 3])
-    center = np.hstack([x1 + x2, y1 + y2]) * 0.5
-    scale = np.hstack([x2 - x1, y2 - y1]) * padding
+    scale = (bbox[..., 2:] - bbox[..., :2]) * padding
+    center = (bbox[..., 2:] + bbox[..., :2]) * 0.5
 
     if dim == 1:
         center = center[0]
@@ -172,6 +171,103 @@ def bbox_cs2xywh(center: np.ndarray,
     return bbox
 
 
+def bbox_xyxy2corner(bbox: np.ndarray):
+    """Convert bounding boxes from xyxy format to corner format.
+
+    Given a numpy array containing bounding boxes in the format
+    (xmin, ymin, xmax, ymax), this function converts the bounding
+    boxes to the corner format, where each box is represented by four
+    corner points (top-left, top-right, bottom-right, bottom-left).
+
+    Args:
+        bbox (numpy.ndarray): Input array of shape (N, 4) representing
+            N bounding boxes.
+
+    Returns:
+        numpy.ndarray: An array of shape (N, 4, 2) containing the corner
+            points of the bounding boxes.
+
+    Example:
+        bbox = np.array([[0, 0, 100, 50], [10, 20, 200, 150]])
+        corners = bbox_xyxy2corner(bbox)
+    """
+    dim = bbox.ndim
+    if dim == 1:
+        bbox = bbox[None]
+
+    bbox = np.tile(bbox, 2).reshape(-1, 4, 2)
+    bbox[:, 1:3, 0] = bbox[:, 0:2, 0]
+
+    if dim == 1:
+        bbox = bbox[0]
+
+    return bbox
+
+
+def bbox_corner2xyxy(bbox: np.ndarray):
+    """Convert bounding boxes from corner format to xyxy format.
+
+    Given a numpy array containing bounding boxes in the corner
+    format (four corner points for each box), this function converts
+    the bounding boxes to the (xmin, ymin, xmax, ymax) format.
+
+    Args:
+        bbox (numpy.ndarray): Input array of shape (N, 4, 2) representing
+            N bounding boxes.
+
+    Returns:
+        numpy.ndarray: An array of shape (N, 4) containing the bounding
+            boxes in xyxy format.
+
+    Example:
+        corners = np.array([[[0, 0], [100, 0], [100, 50], [0, 50]],
+            [[10, 20], [200, 20], [200, 150], [10, 150]]])
+        bbox = bbox_corner2xyxy(corners)
+    """
+    if bbox.shape[-1] == 8:
+        bbox = bbox.reshape(*bbox.shape[:-1], 4, 2)
+
+    dim = bbox.ndim
+    if dim == 2:
+        bbox = bbox[None]
+
+    bbox = np.concatenate((bbox.min(axis=1), bbox.max(axis=1)), axis=1)
+
+    if dim == 2:
+        bbox = bbox[0]
+
+    return bbox
+
+
+def bbox_clip_border(bbox: np.ndarray, shape: Tuple[int, int]) -> np.ndarray:
+    """Clip bounding box coordinates to fit within a specified shape.
+
+    Args:
+        bbox (np.ndarray): Bounding box coordinates of shape (..., 4)
+            or (..., 2).
+        shape (Tuple[int, int]): Shape of the image to which bounding
+            boxes are being clipped in the format of (w, h)
+
+    Returns:
+        np.ndarray: Clipped bounding box coordinates.
+
+    Example:
+        >>> bbox = np.array([[10, 20, 30, 40], [40, 50, 80, 90]])
+        >>> shape = (50, 50)  # Example image shape
+        >>> clipped_bbox = bbox_clip_border(bbox, shape)
+    """
+    width, height = shape[:2]
+
+    if bbox.shape[-1] == 2:
+        bbox[..., 0] = np.clip(bbox[..., 0], a_min=0, a_max=width)
+        bbox[..., 1] = np.clip(bbox[..., 1], a_min=0, a_max=height)
+    else:
+        bbox[..., ::2] = np.clip(bbox[..., ::2], a_min=0, a_max=width)
+        bbox[..., 1::2] = np.clip(bbox[..., 1::2], a_min=0, a_max=height)
+
+    return bbox
+
+
 def flip_bbox(bbox: np.ndarray,
               image_size: Tuple[int, int],
               bbox_format: str = 'xywh',
@@ -209,17 +305,19 @@ def flip_bbox(bbox: np.ndarray,
         if bbox_format == 'xywh' or bbox_format == 'center':
             bbox_flipped[..., 0] = w - bbox[..., 0] - 1
         elif bbox_format == 'xyxy':
-            bbox_flipped[..., ::2] = w - bbox[..., ::2] - 1
+            bbox_flipped[..., ::2] = w - bbox[..., -2::-2] - 1
     elif direction == 'vertical':
         if bbox_format == 'xywh' or bbox_format == 'center':
             bbox_flipped[..., 1] = h - bbox[..., 1] - 1
         elif bbox_format == 'xyxy':
-            bbox_flipped[..., 1::2] = h - bbox[..., 1::2] - 1
+            bbox_flipped[..., 1::2] = h - bbox[..., ::-2] - 1
     elif direction == 'diagonal':
         if bbox_format == 'xywh' or bbox_format == 'center':
             bbox_flipped[..., :2] = [w, h] - bbox[..., :2] - 1
         elif bbox_format == 'xyxy':
             bbox_flipped[...] = [w, h, w, h] - bbox - 1
+            bbox_flipped = np.concatenate(
+                (bbox_flipped[..., 2:], bbox_flipped[..., :2]), axis=-1)
 
     return bbox_flipped
 
@@ -324,6 +422,61 @@ def get_warp_matrix(center: np.ndarray,
     else:
         warp_mat = cv2.getAffineTransform(np.float32(src), np.float32(dst))
     return warp_mat
+
+
+def get_pers_warp_matrix(center: np.ndarray, translate: np.ndarray,
+                         scale: float, rot: float,
+                         shear: np.ndarray) -> np.ndarray:
+    """Compute a perspective warp matrix based on specified transformations.
+
+    Args:
+        center (np.ndarray): Center of the transformation.
+        translate (np.ndarray): Translation vector.
+        scale (float): Scaling factor.
+        rot (float): Rotation angle in degrees.
+        shear (np.ndarray): Shearing angles in degrees along x and y axes.
+
+    Returns:
+        np.ndarray: Perspective warp matrix.
+
+    Example:
+        >>> center = np.array([0, 0])
+        >>> translate = np.array([10, 20])
+        >>> scale = 1.2
+        >>> rot = 30.0
+        >>> shear = np.array([15.0, 0.0])
+        >>> warp_matrix = get_pers_warp_matrix(center, translate,
+                                               scale, rot, shear)
+    """
+    translate_mat = np.array([[1, 0, translate[0] + center[0]],
+                              [0, 1, translate[1] + center[1]], [0, 0, 1]],
+                             dtype=np.float32)
+
+    shear_x = math.radians(shear[0])
+    shear_y = math.radians(shear[1])
+    shear_mat = np.array([[1, np.tan(shear_x), 0], [np.tan(shear_y), 1, 0],
+                          [0, 0, 1]],
+                         dtype=np.float32)
+
+    rotate_angle = math.radians(rot)
+    rotate_mat = np.array([[np.cos(rotate_angle), -np.sin(rotate_angle), 0],
+                           [np.sin(rotate_angle),
+                            np.cos(rotate_angle), 0], [0, 0, 1]],
+                          dtype=np.float32)
+
+    scale_mat = np.array([[scale, 0, 0], [0, scale, 0], [0, 0, 1]],
+                         dtype=np.float32)
+
+    recover_center_mat = np.array([[1, 0, -center[0]], [0, 1, -center[1]],
+                                   [0, 0, 1]],
+                                  dtype=np.float32)
+
+    warp_matrix = np.dot(
+        np.dot(
+            np.dot(np.dot(translate_mat, shear_mat), rotate_mat), scale_mat),
+        recover_center_mat)
+
+    return warp_matrix
 
 
 def _rotate_point(pt: np.ndarray, angle_rad: float) -> np.ndarray:

@@ -72,19 +72,15 @@ configs/_base_/datasets/custom.py
 
 An example of the dataset config is as follows.
 
-`keypoint_info` contains the information about each keypoint.
-
-1. `name`: the keypoint name. The keypoint name must be unique.
-2. `id`: the keypoint id.
-3. `color`: (\[B, G, R\]) is used for keypoint visualization.
-4. `type`: 'upper' or 'lower', will be used in data augmentation.
-5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
-
-`skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
-
-`joint_weights` assigns different loss weights to different keypoints.
-
-`sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
+- `keypoint_info` contains the information about each keypoint.
+  1. `name`: the keypoint name. The keypoint name must be unique.
+  2. `id`: the keypoint id.
+  3. `color`: (\[B, G, R\]) is used for keypoint visualization.
+  4. `type`: 'upper' or 'lower', will be used in data augmentation [RandomHalfBody](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py#L263).
+  5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part, used in data augmentation [RandomFlip](https://github.com/open-mmlab/mmpose/blob/main/mmpose/datasets/transforms/common_transforms.py#L94). We need to flip the keypoints accordingly.
+- `skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
+- `joint_weights` assigns different loss weights to different keypoints.
+- `sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
 
 Here is an simplified example of dataset_info config file ([full text](/configs/_base_/datasets/coco.py)).
 
@@ -217,7 +213,7 @@ The following dataset wrappers are supported in [MMEngine](https://github.com/op
 
 ### CombinedDataset
 
-MMPose provides `CombinedDataset` to combine multiple datasets with different annotations. A combined dataset can be defined in config files as:
+MMPose provides [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) to combine multiple datasets with different annotations. A combined dataset can be defined in config files as:
 
 ```python
 dataset_1 = dict(
@@ -254,6 +250,6 @@ combined_dataset = dict(
 
 - **MetaInfo of combined dataset** determines the annotation format. Either metainfo of a sub-dataset or a customed dataset metainfo is valid here. To custom a dataset metainfo, please refer to [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset).
 
-- **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then `KeypointConverter` can be used to unify the keypoints number and order.
+- **Converter transforms of sub-datasets** are applied when there exist mismatches of annotation format between sub-datasets and the combined dataset. For example, the number and order of keypoints might be different in the combined dataset and the sub-datasets. Then [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) can be used to unify the keypoints number and order.
 
-- More details about `CombinedDataset` and `KeypointConverter` can be found in Advanced Guides-[Training with Mixed Datasets](../user_guides/mixed_datasets.md).
+- More details about [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/dataset_wrappers.py#L15) and [KeypointConverter](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/datasets/transforms/converting.py#L11) can be found in [Advanced Guides - Training with Mixed Datasets](../user_guides/mixed_datasets.md).

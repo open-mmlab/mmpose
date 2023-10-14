@@ -122,7 +122,7 @@ class TestPose2DInferencer(TestCase):
             len(results1['predictions'][0]), len(results2['predictions'][0]))
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
                                  results2['predictions'][0][0]['keypoints'])
-        results2 = next(inferencer(inputs, return_datasample=True))
+        results2 = next(inferencer(inputs, return_datasamples=True))
         self.assertIsInstance(results2['predictions'][0], PoseDataSample)
 
         # `inputs` is path to a directory
@@ -143,6 +143,10 @@ class TestPose2DInferencer(TestCase):
         self.assertEqual(len(results3['predictions']), 4)
         self.assertSequenceEqual(results1['predictions'][0][0]['keypoints'],
                                  results3['predictions'][3][0]['keypoints'])
+
+        with self.assertRaises(AssertionError):
+            for res in inferencer(inputs, vis_out_dir=f'{tmp_dir}/1.jpg'):
+                pass
 
         # `inputs` is path to a video
         inputs = 'tests/data/posetrack18/videos/000001_mpiinew_test/' \

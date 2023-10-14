@@ -53,7 +53,8 @@ def dataset_meta_from_config(config: Config,
             import mmpose.datasets.datasets  # noqa: F401, F403
             from mmpose.registry import DATASETS
 
-            dataset_class = DATASETS.get(dataset_cfg.type)
+            dataset_class = dataset_cfg.type if isinstance(
+                dataset_cfg.type, type) else DATASETS.get(dataset_cfg.type)
             metainfo = dataset_class.METAINFO
 
         metainfo = parse_pose_metainfo(metainfo)

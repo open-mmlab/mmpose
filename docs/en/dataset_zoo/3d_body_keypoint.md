@@ -8,6 +8,7 @@ MMPose supported datasets:
 - [Human3.6M](#human36m) \[ [Homepage](http://vision.imar.ro/human3.6m/description.php) \]
 - [CMU Panoptic](#cmu-panoptic) \[ [Homepage](http://domedb.perception.cs.cmu.edu/) \]
 - [Campus/Shelf](#campus-and-shelf) \[ [Homepage](http://campar.in.tum.de/Chair/MultiHumanPose) \]
+- [UBody](#ubody3d) \[ [Homepage](https://osx-ubody.github.io/) \]
 
 ## Human3.6M
 
@@ -196,4 +197,101 @@ mmpose
     |   ├── calibration_shelf.json
     |   ├── pred_shelf_maskrcnn_hrnet_coco.pkl
     |   ├── actorsGT.mat
+```
+
+## UBody3d
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2303.16160">UBody (CVPR'2023)</a></summary>
+
+```bibtex
+@article{lin2023one,
+  title={One-Stage 3D Whole-Body Mesh Recovery with Component Aware Transformer},
+  author={Lin, Jing and Zeng, Ailing and Wang, Haoqian and Zhang, Lei and Li, Yu},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2023},
+}
+```
+
+</details>
+
+<div align="center">
+  <img src="https://github.com/open-mmlab/mmpose/assets/15952744/0c97e43a-46a9-46a3-a5dd-b84bf9d6d6f2" height="300px">
+</div>
+
+For [Ubody](https://github.com/IDEA-Research/OSX) dataset, videos and annotations can be downloaded from [OSX homepage](https://github.com/IDEA-Research/OSX).
+
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── UBody
+        ├── annotations
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+        ├── splits
+        │   ├── inter_scene_test_list.npy
+        │   └── intra_scene_test_list.npy
+        ├── videos
+        │   ├── ConductMusic
+        │   ├── Entertainment
+        │   ├── Fitness
+        │   ├── Interview
+        │   ├── LiveVlog
+        │   ├── Magic_show
+        │   ├── Movie
+        │   ├── Olympic
+        │   ├── Online_class
+        │   ├── SignLanguage
+        │   ├── Singing
+        │   ├── Speech
+        │   ├── TVShow
+        │   ├── TalkShow
+        │   └── VideoConference
+```
+
+Convert videos to images then split them into train/val set:
+
+```shell
+python tools/dataset_converters/ubody_kpts_to_coco.py
+```
+
+Before generating 3D keypoints, you need to install SMPLX tools and download human models, please refer to [Github](https://github.com/vchoutas/smplx#installation) and [SMPLX](https://smpl-x.is.tue.mpg.de/download.php).
+
+```shell
+pip install smplx
+```
+
+The directory tree of human models should be like this:
+
+```text
+human_model_path
+|── smplx
+    ├── SMPLX_NEUTRAL.npz
+    ├── SMPLX_NEUTRAL.pkl
+```
+
+After the above preparations are finished, execute the following script:
+
+```shell
+python tools/dataset_converters/ubody_smplx_to_coco.py --data-root {$MMPOSE/data/UBody} --human-model-path {$MMPOSE/data/human_model_path/}
 ```
