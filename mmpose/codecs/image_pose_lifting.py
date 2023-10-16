@@ -67,6 +67,7 @@ class ImagePoseLifting(BaseKeypointCodec):
         self.num_keypoints = num_keypoints
         if isinstance(root_index, int):
             root_index = [root_index]
+        self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
         self.reshape_keypoints = reshape_keypoints
@@ -167,7 +168,7 @@ class ImagePoseLifting(BaseKeypointCodec):
 
         # Zero-center the target pose around a given root keypoint
         assert (lifting_target.ndim >= 2 and
-                lifting_target.shape[-2] > self.root_index), \
+                lifting_target.shape[-2] > max(self.root_index)), \
             f'Got invalid joint shape {lifting_target.shape}'
 
         root = lifting_target[..., self.root_index, :]

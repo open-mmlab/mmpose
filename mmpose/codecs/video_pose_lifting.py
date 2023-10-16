@@ -67,6 +67,7 @@ class VideoPoseLifting(BaseKeypointCodec):
         self.zero_center = zero_center
         if isinstance(root_index, int):
             root_index = [root_index]
+        self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
         self.reshape_keypoints = reshape_keypoints
