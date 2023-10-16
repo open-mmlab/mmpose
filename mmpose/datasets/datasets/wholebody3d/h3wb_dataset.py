@@ -91,14 +91,18 @@ class H36MWholeBodyDataset(Human36mDataset):
 
     METAINFO: dict = dict(from_file='configs/_base_/datasets/h3wb.py')
 
-    # SUPPORTED_keypoint_2d_src = {'gt', 'detection', 'pipeline'}
-
-    def __init__(self, ann_file: str, data_root: str, data_prefix: dict,
-                 joint_2d_src: str, **kwargs):
+    def __init__(self,
+                 ann_file: str,
+                 data_root: str,
+                 data_prefix: dict,
+                 joint_2d_src: str,
+                 normalize_with_dataset_stats: bool = False,
+                 **kwargs):
         self.ann_file = ann_file
         self.data_root = data_root
         self.data_prefix = data_prefix
         self.joint_2d_src = joint_2d_src
+        self.normalize_with_dataset_stats = normalize_with_dataset_stats
 
         super().__init__(
             ann_file=ann_file,
@@ -169,6 +173,20 @@ class H36MWholeBodyDataset(Human36mDataset):
         kpts_2d = np.concatenate(kpts_2d, axis=0)
         kpts_visible = np.ones_like(kpts_2d[..., 0], dtype=np.float32)
 
+        # Normalize 3D keypoints like H36M
+        # Ref: https://github.com/open-mmlab/mmpose/blob/main/tools/dataset_converters/preprocess_h36m.py#L324 # noqa
+        kpts_3d /= 1000.0
+
+        # Get stats of dataset
+        kpts_2d_std, kpts_2d_mean = kpts_2d.std(axis=0), kpts_2d.mean(axis=0)
+        kpts_3d_std, kpts_3d_mean = kpts_3d.std(axis=0), kpts_3d.mean(axis=0)
+        normalize_params = {
+            'keypoints_std': kpts_2d_std,
+            'keypoints_mean': kpts_2d_mean,
+            'target_std': kpts_3d_std,
+            'target_mean': kpts_3d_mean
+        }
+
         if self.factor_file:
             with get_local_path(self.factor_file) as local_path:
                 factors = np.load(local_path).astype(np.float32)
@@ -212,6 +230,7 @@ class H36MWholeBodyDataset(Human36mDataset):
                 'lifting_target': _kpts_3d[target_idx],
                 'lifting_target_visible': _kpts_visible[target_idx],
                 'target_img_path': _img_names[target_idx],
+                'normalize_params': normalize_params,
             }
 
             if self.camera_param_file:
@@ -242,8 +261,8 @@ class H36MWholeBodyDataset(Human36mDataset):
         kpts_2d = ann_2d['keypoints_2d']
         kpts_3d = np.array([[v for _, v in joint.items()]
                             for _, joint in kpts.items()],
-                           dtype=np.float32).reshape(1, -1, 3)
+                           dtype=np.float32)[np.newaxis, ...]
         kpts_2d = np.array([[v for _, v in joint.items()]
                             for _, joint in kpts_2d.items()],
-                           dtype=np.float32).reshape(1, -1, 2)
+                           dtype=np.float32)[np.newaxis, ...]
         return kpts_2d, kpts_3d

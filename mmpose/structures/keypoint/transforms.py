@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -71,7 +71,7 @@ def flip_keypoints_custom_center(keypoints: np.ndarray,
                                  flip_indices: List[int],
                                  center_mode: str = 'static',
                                  center_x: float = 0.5,
-                                 center_index: int = 0):
+                                 center_index: Union[int, List] = 0):
     """Flip human joints horizontally.
 
     Note:
@@ -91,9 +91,9 @@ def flip_keypoints_custom_center(keypoints: np.ndarray,
             Defaults: ``'static'``.
         center_x (float): Set the x-axis location of the flip center. Only used
             when ``center_mode`` is ``'static'``. Defaults: 0.5.
-        center_index (int): Set the index of the root joint, whose x location
-            will be used as the flip center. Only used when ``center_mode`` is
-            ``'root'``. Defaults: 0.
+        center_index (Union[int, List]): Set the index of the root joint, whose
+            x location will be used as the flip center. Only used when
+            ``center_mode`` is ``'root'``. Defaults: 0.
 
     Returns:
         np.ndarray([..., K, C]): Flipped joints.
@@ -109,7 +109,14 @@ def flip_keypoints_custom_center(keypoints: np.ndarray,
         x_c = center_x
     elif center_mode == 'root':
         assert keypoints.shape[-2] > center_index
-        x_c = keypoints[..., center_index, 0]
+        if isinstance(center_index, int):
+            x_c = keypoints[..., center_index, 0][..., np.newaxis]
+        elif isinstance(center_index, list):
+            x_c = keypoints[..., center_index, 0].mean(axis=-1)[...,
+                                                                np.newaxis]
+        else:
+            raise TypeError(
+                f'Invalid type of center_index: {type(center_index)}')
 
     keypoints_flipped = keypoints.copy()
     keypoints_visible_flipped = keypoints_visible.copy()

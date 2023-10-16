@@ -44,11 +44,11 @@ class RandomFlipAroundRoot(BaseTransform):
     """
 
     def __init__(self,
-                 keypoints_flip_cfg,
-                 target_flip_cfg,
-                 flip_prob=0.5,
-                 flip_camera=False,
-                 flip_label=False):
+                 keypoints_flip_cfg: dict,
+                 target_flip_cfg: dict,
+                 flip_prob: float = 0.5,
+                 flip_camera: bool = False,
+                 flip_label: bool = False):
         self.keypoints_flip_cfg = keypoints_flip_cfg
         self.target_flip_cfg = target_flip_cfg
         self.flip_prob = flip_prob
@@ -104,11 +104,20 @@ class RandomFlipAroundRoot(BaseTransform):
             _camera_param = deepcopy(results['camera_param'])
 
             keypoints, keypoints_visible = flip_keypoints_custom_center(
-                keypoints, keypoints_visible, flip_indices,
-                **self.keypoints_flip_cfg)
+                keypoints,
+                keypoints_visible,
+                flip_indices,
+                center_mode=self.keypoints_flip_cfg.get(
+                    'center_mode', 'static'),
+                center_x=self.keypoints_flip_cfg.get('center_x', 0.5),
+                center_index=self.keypoints_flip_cfg.get('center_index', 0))
             lifting_target, lifting_target_visible = flip_keypoints_custom_center(  # noqa
-                lifting_target, lifting_target_visible, flip_indices,
-                **self.target_flip_cfg)
+                lifting_target,
+                lifting_target_visible,
+                flip_indices,
+                center_mode=self.target_flip_cfg.get('center_mode', 'static'),
+                center_x=self.target_flip_cfg.get('center_x', 0.5),
+                center_index=self.target_flip_cfg.get('center_index', 0))
 
             results[keypoints_key] = keypoints
             results[keypoints_visible_key] = keypoints_visible

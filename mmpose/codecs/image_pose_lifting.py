@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -20,7 +20,7 @@ class ImagePoseLifting(BaseKeypointCodec):
 
     Args:
         num_keypoints (int): The number of keypoints in the dataset.
-        root_index (int): Root keypoint index in the pose.
+        root_index (Union[int, List]): Root keypoint index in the pose.
         remove_root (bool): If true, remove the root keypoint from the pose.
             Default: ``False``.
         save_index (bool): If true, store the root position separated from the
@@ -52,7 +52,7 @@ class ImagePoseLifting(BaseKeypointCodec):
 
     def __init__(self,
                  num_keypoints: int,
-                 root_index: int,
+                 root_index: Union[int, List] = 0,
                  remove_root: bool = False,
                  save_index: bool = False,
                  reshape_keypoints: bool = True,
@@ -60,11 +60,13 @@ class ImagePoseLifting(BaseKeypointCodec):
                  keypoints_mean: Optional[np.ndarray] = None,
                  keypoints_std: Optional[np.ndarray] = None,
                  target_mean: Optional[np.ndarray] = None,
-                 target_std: Optional[np.ndarray] = None):
+                 target_std: Optional[np.ndarray] = None,
+                 additional_encode_keys: Optional[List[str]] = None):
         super().__init__()
 
         self.num_keypoints = num_keypoints
-        self.root_index = root_index
+        if isinstance(root_index, int):
+            root_index = [root_index]
         self.remove_root = remove_root
         self.save_index = save_index
         self.reshape_keypoints = reshape_keypoints
@@ -96,11 +98,15 @@ class ImagePoseLifting(BaseKeypointCodec):
         self.target_mean = target_mean
         self.target_std = target_std
 
+        if additional_encode_keys is not None:
+            self.auxiliary_encode_keys.update(additional_encode_keys)
+
     def encode(self,
                keypoints: np.ndarray,
                keypoints_visible: Optional[np.ndarray] = None,
                lifting_target: Optional[np.ndarray] = None,
-               lifting_target_visible: Optional[np.ndarray] = None) -> dict:
+               lifting_target_visible: Optional[np.ndarray] = None,
+               normalize_params: Optional[dict] = None) -> dict:
         """Encoding keypoints from input image space to normalized space.
 
         Args:
@@ -191,24 +197,37 @@ class ImagePoseLifting(BaseKeypointCodec):
 
         # Normalize the 2D keypoint coordinate with mean and std
         keypoint_labels = keypoints.copy()
-        if self.keypoints_mean is not None:
-            assert self.keypoints_mean.shape[1:] == keypoints.shape[1:], (
-                f'self.keypoints_mean.shape[1:] {self.keypoints_mean.shape[1:]} '  # noqa
-                f'!= keypoints.shape[1:] {keypoints.shape[1:]}')
-            encoded['keypoints_mean'] = self.keypoints_mean.copy()
-            encoded['keypoints_std'] = self.keypoints_std.copy()
+        if normalize_params is None:
+            if self.keypoints_mean is not None:
+                assert self.keypoints_mean.shape[1:] == keypoints.shape[1:], (
+                    f'self.keypoints_mean.shape[1:] {self.keypoints_mean.shape[1:]} '  # noqa
+                    f'!= keypoints.shape[1:] {keypoints.shape[1:]}')
+                encoded['keypoints_mean'] = self.keypoints_mean.copy()
+                encoded['keypoints_std'] = self.keypoints_std.copy()
 
+                keypoint_labels = (keypoint_labels -
+                                   self.keypoints_mean) / self.keypoints_std
+            if self.target_mean is not None:
+                assert self.target_mean.shape == lifting_target_label.shape, (
+                    f'self.target_mean.shape {self.target_mean.shape} '
+                    f'!= lifting_target_label.shape {lifting_target_label.shape}'  # noqa
+                )
+                encoded['target_mean'] = self.target_mean.copy()
+                encoded['target_std'] = self.target_std.copy()
+
+                lifting_target_label = (lifting_target_label -
+                                        self.target_mean) / self.target_std
+        else:
+            keypoints_std = normalize_params['keypoints_std']
+            keypoints_mean = normalize_params['keypoints_mean']
+            target_std = normalize_params['target_std']
+            target_mean = normalize_params['target_mean']
             keypoint_labels = (keypoint_labels -
-                               self.keypoints_mean) / self.keypoints_std
-        if self.target_mean is not None:
-            assert self.target_mean.shape == lifting_target_label.shape, (
-                f'self.target_mean.shape {self.target_mean.shape} '
-                f'!= lifting_target_label.shape {lifting_target_label.shape}')
-            encoded['target_mean'] = self.target_mean.copy()
-            encoded['target_std'] = self.target_std.copy()
-
+                               keypoints_mean) / keypoints_std
             lifting_target_label = (lifting_target_label -
-                                    self.target_mean) / self.target_std
+                                    target_mean) / target_std
+            # Update self.keypoints_mean and self.keypoints_std for decoding
+            self.target_mean, self.target_std = target_mean, target_std
 
         # Generate reshaped keypoint coordinates
         assert keypoint_labels.ndim in {

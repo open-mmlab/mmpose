@@ -265,8 +265,26 @@ def inference_pose_lifter_model(model,
             bbox_center = dataset_info['stats_info']['bbox_center']
             bbox_scale = dataset_info['stats_info']['bbox_scale']
         else:
-            bbox_center = None
-            bbox_scale = None
+            if norm_pose_2d:
+                # compute the average bbox center and scale from the
+                # datasamples in pose_results_2d
+                bbox_center = np.zeros((1, 2), dtype=np.float32)
+                bbox_scale = 0
+                num_bbox = 0
+                for pose_res in pose_results_2d:
+                    for data_sample in pose_res:
+                        for bbox in data_sample.pred_instances.bboxes:
+                            bbox_center += np.array([[(bbox[0] + bbox[2]) / 2,
+                                                      (bbox[1] + bbox[3]) / 2]
+                                                     ])
+                            bbox_scale += max(bbox[2] - bbox[0],
+                                              bbox[3] - bbox[1])
+                            num_bbox += 1
+                bbox_center /= num_bbox
+                bbox_scale /= num_bbox
+            else:
+                bbox_center = None
+                bbox_scale = None
 
     pose_results_2d_copy = []
     for i, pose_res in enumerate(pose_results_2d):
