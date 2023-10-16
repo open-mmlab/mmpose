@@ -171,15 +171,16 @@ class ImagePoseLifting(BaseKeypointCodec):
                 lifting_target.shape[-2] > max(self.root_index)), \
             f'Got invalid joint shape {lifting_target.shape}'
 
-        root = lifting_target[..., self.root_index, :]
-        lifting_target_label = lifting_target - lifting_target[
-            ..., self.root_index:self.root_index + 1, :]
+        root = np.mean(
+            lifting_target[..., self.root_index, :], axis=-2, dtype=np.float32)
+        lifting_target_label = lifting_target - root[np.newaxis, ...]
 
-        if self.remove_root:
+        if self.remove_root and len(self.root_index) == 1:
+            root_index = self.root_index[0]
             lifting_target_label = np.delete(
-                lifting_target_label, self.root_index, axis=-2)
+                lifting_target_label, root_index, axis=-2)
             lifting_target_visible = np.delete(
-                lifting_target_visible, self.root_index, axis=-2)
+                lifting_target_visible, root_index, axis=-2)
             assert lifting_target_weight.ndim in {
                 2, 3
             }, (f'lifting_target_weight.ndim {lifting_target_weight.ndim} '
@@ -187,14 +188,14 @@ class ImagePoseLifting(BaseKeypointCodec):
 
             axis_to_remove = -2 if lifting_target_weight.ndim == 3 else -1
             lifting_target_weight = np.delete(
-                lifting_target_weight, self.root_index, axis=axis_to_remove)
+                lifting_target_weight, root_index, axis=axis_to_remove)
             # Add a flag to avoid latter transforms that rely on the root
             # joint or the original joint index
             encoded['target_root_removed'] = True
 
             # Save the root index which is necessary to restore the global pose
             if self.save_index:
-                encoded['target_root_index'] = self.root_index
+                encoded['target_root_index'] = root_index
 
         # Normalize the 2D keypoint coordinate with mean and std
         keypoint_labels = keypoints.copy()

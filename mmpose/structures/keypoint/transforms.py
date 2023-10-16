@@ -108,15 +108,10 @@ def flip_keypoints_custom_center(keypoints: np.ndarray,
     if center_mode == 'static':
         x_c = center_x
     elif center_mode == 'root':
-        assert keypoints.shape[-2] > center_index
-        if isinstance(center_index, int):
-            x_c = keypoints[..., center_index, 0][..., np.newaxis]
-        elif isinstance(center_index, list):
-            x_c = keypoints[..., center_index, 0].mean(axis=-1)[...,
-                                                                np.newaxis]
-        else:
-            raise TypeError(
-                f'Invalid type of center_index: {type(center_index)}')
+        center_index = [center_index] if isinstance(center_index, int) else \
+            center_index
+        assert keypoints.shape[-2] > max(center_index)
+        x_c = keypoints[..., center_index, 0].mean(axis=-1)[..., np.newaxis]
 
     keypoints_flipped = keypoints.copy()
     keypoints_visible_flipped = keypoints_visible.copy()
