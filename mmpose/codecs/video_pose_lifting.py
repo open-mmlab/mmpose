@@ -150,7 +150,7 @@ class VideoPoseLifting(BaseKeypointCodec):
                 f'Got invalid joint shape {lifting_target.shape}'
 
             root = np.mean(lifting_target[..., self.root_index, :], axis=-2)
-            lifting_target_label -= root[np.newaxis, ...]
+            lifting_target_label -= root[..., np.newaxis, :]
             encoded['target_root'] = root
 
             if self.remove_root and len(self.root_index) == 1:
