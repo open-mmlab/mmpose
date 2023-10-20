@@ -7,6 +7,7 @@ from mmengine import Config
 
 from mmpose.evaluation.functional import nms
 from mmpose.registry import DATASETS
+from mmpose.structures import bbox_xyxy2xywh
 from mmpose.utils import register_all_modules
 
 try:
@@ -53,14 +54,16 @@ def main():
                                 axis=1)
         bboxes = bboxes[bboxes[..., -1] > args.score_thr]
         bboxes = bboxes[nms(bboxes, args.nms_thr)]
-        for bbox in bboxes:
-            bbox = bbox.tolist()
+        scores = bboxes[..., -1]
+        bboxes = bbox_xyxy2xywh(bboxes[..., :4])
+
+        for bbox, score in zip(bboxes, scores):
             new_bbox_files.append(
                 dict(
                     category_id=1,
                     image_id=image_id,
-                    score=bbox[-1],
-                    bbox=bbox[:-1]))
+                    score=score,
+                    bbox=bbox.tolist()))
 
     with open(args.output, 'w') as f:
         json.dump(new_bbox_files, f, indent='')
