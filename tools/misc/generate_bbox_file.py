@@ -54,16 +54,12 @@ def main():
                                 axis=1)
         bboxes = bboxes[bboxes[..., -1] > args.score_thr]
         bboxes = bboxes[nms(bboxes, args.nms_thr)]
-        scores = bboxes[..., -1]
-        bboxes = bbox_xyxy2xywh(bboxes[..., :4])
+        scores = bboxes[..., -1].tolist()
+        bboxes = bbox_xyxy2xywh(bboxes[..., :4]).tolist()
 
         for bbox, score in zip(bboxes, scores):
             new_bbox_files.append(
-                dict(
-                    category_id=1,
-                    image_id=image_id,
-                    score=score,
-                    bbox=bbox.tolist()))
+                dict(category_id=1, image_id=image_id, score=score, bbox=bbox))
 
     with open(args.output, 'w') as f:
         json.dump(new_bbox_files, f, indent='')
