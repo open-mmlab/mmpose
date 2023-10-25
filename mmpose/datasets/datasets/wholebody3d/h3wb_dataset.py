@@ -177,16 +177,6 @@ class H36MWholeBodyDataset(Human36mDataset):
         # Ref: https://github.com/open-mmlab/mmpose/blob/main/tools/dataset_converters/preprocess_h36m.py#L324 # noqa
         kpts_3d /= 1000.0
 
-        # Get stats of dataset
-        kpts_2d_std, kpts_2d_mean = kpts_2d.std(axis=0), kpts_2d.mean(axis=0)
-        kpts_3d_std, kpts_3d_mean = kpts_3d.std(axis=0), kpts_3d.mean(axis=0)
-        normalize_params = {
-            'keypoints_std': kpts_2d_std,
-            'keypoints_mean': kpts_2d_mean,
-            'target_std': kpts_3d_std,
-            'target_mean': kpts_3d_mean
-        }
-
         if self.factor_file:
             with get_local_path(self.factor_file) as local_path:
                 factors = np.load(local_path).astype(np.float32)
@@ -230,7 +220,6 @@ class H36MWholeBodyDataset(Human36mDataset):
                 'lifting_target': _kpts_3d[target_idx],
                 'lifting_target_visible': _kpts_visible[target_idx],
                 'target_img_path': _img_names[target_idx],
-                'normalize_params': normalize_params,
             }
 
             if self.camera_param_file:
@@ -259,10 +248,8 @@ class H36MWholeBodyDataset(Human36mDataset):
         """Get 2D keypoints and 3D keypoints from annotation."""
         kpts = ann['keypoints_3d']
         kpts_2d = ann_2d['keypoints_2d']
-        kpts_3d = np.array([[v for _, v in joint.items()]
-                            for _, joint in kpts.items()],
+        kpts_3d = np.array([[j['x'], j['y'], j['z']] for _, j in kpts.items()],
                            dtype=np.float32)[np.newaxis, ...]
-        kpts_2d = np.array([[v for _, v in joint.items()]
-                            for _, joint in kpts_2d.items()],
+        kpts_2d = np.array([[j['x'], j['y']] for _, j in kpts_2d.items()],
                            dtype=np.float32)[np.newaxis, ...]
         return kpts_2d, kpts_3d
