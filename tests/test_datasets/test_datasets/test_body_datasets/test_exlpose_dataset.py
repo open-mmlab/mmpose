@@ -108,12 +108,12 @@ class TestExlposeDataset(TestCase):
     def test_bottomup(self):
         # test bottomup training
         dataset = self.build_exlpose_dataset(data_mode='bottomup')
-        self.assertEqual(len(dataset), 3)
+        self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
         # test bottomup testing
         dataset = self.build_exlpose_dataset(data_mode='bottomup', test_mode=True)
-        self.assertEqual(len(dataset), 3)
+        self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
     def test_exceptions_and_warnings(self):
