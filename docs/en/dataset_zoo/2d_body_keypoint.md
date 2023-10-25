@@ -14,7 +14,7 @@ MMPose supported datasets:
   - [OCHuman](#ochuman) \[ [Homepage](https://github.com/liruilong940607/OCHumanApi) \]
   - [MHP](#mhp) \[ [Homepage](https://lv-mhp.github.io/dataset) \]
   - [Human-Art](#humanart) \[ [Homepage](https://idea-research.github.io/HumanArt/) \]
-  - [ExLPose][ [Homepage]( [Homepage](http://cg.postech.ac.kr/research/ExLPose/) ]
+  - \[ExLPose\]\[ \[Homepage\]( [Homepage](http://cg.postech.ac.kr/research/ExLPose/) \]
 - Videos
   - [PoseTrack18](#posetrack18) \[ [Homepage](https://posetrack.net/users/download.php) \]
   - [sub-JHMDB](#sub-jhmdb-dataset) \[ [Homepage](http://jhmdb.is.tue.mpg.de/dataset) \]
@@ -593,8 +593,6 @@ mmpose
 <details>
 <summary align="right"><a href="http://cg.postech.ac.kr/research/ExLPose/">ExLPose (2023)</a></summary>
 
-
-
 ```bibtex
 @inproceedings{ExLPose_2023_CVPR,
  title={Human Pose Estimation in Extremely Low-Light Conditions},
@@ -635,6 +633,3 @@ mmpose
             |	|--...
 
 ```
-
-
-

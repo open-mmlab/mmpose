@@ -100,8 +100,8 @@ class TestExlposeDataset(TestCase):
         self.check_data_info_keys(dataset[0], data_mode='topdown')
 
         # test topdown testing
-        dataset = self.build_exlpose_dataset(data_mode='topdown',
-                                             test_mode=True)
+        dataset = self.build_exlpose_dataset(
+            data_mode='topdown', test_mode=True)
         self.assertEqual(dataset.bbox_file, None)
         self.assertEqual(len(dataset), 6)
         self.check_data_info_keys(dataset[0], data_mode='topdown')
@@ -113,8 +113,8 @@ class TestExlposeDataset(TestCase):
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
         # test bottomup testing
-        dataset = self.build_exlpose_dataset(data_mode='bottomup',
-                                             test_mode=True)
+        dataset = self.build_exlpose_dataset(
+            data_mode='bottomup', test_mode=True)
         self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 

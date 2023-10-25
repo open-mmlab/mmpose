@@ -20,7 +20,6 @@
 <details>
 <summary align="right"><a href="http://cg.postech.ac.kr/research/ExLPose/">ExLPose (2023)</a></summary>
 
-
 ```bibtex
 @inproceedings{ExLPose_2023_CVPR,
  title={Human Pose Estimation in Extremely Low-Light Conditions},
@@ -34,6 +33,6 @@
 
 Results on ExLPose-LLA val set with ground-truth bounding boxes
 
-| Arch                                                         | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                             ckpt                             |                             log                              |
-| :----------------------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
 | [pose_hrnet_w32](/configs/body_2d_keypoint/topdown_heatmap/exlpose/td-hm_hrnet-w32_8xb64-210e_exlpose-256x192.py) |  256x192   | 0.401 |      0.64       |      0.40       | 0.452 |      0.693      | [ckpt](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/exlpose/td-hm_hrnet-w32_8xb64-210e_exlpose-ll-256x192.pth) | [log](https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/exlpose/td-hm_hrnet-w32_8xb64-210e_exlpose-ll-256x192.json) |

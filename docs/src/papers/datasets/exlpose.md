@@ -5,8 +5,6 @@
 <details>
 <summary align="right"><a href="http://cg.postech.ac.kr/research/ExLPose/">ExLPose (CVPR'2023)</a></summary>
 
-
-
 ```bibtex
 @inproceedings{ExLPose_2023_CVPR,
  title={Human Pose Estimation in Extremely Low-Light Conditions},
