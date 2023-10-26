@@ -14,7 +14,7 @@ MMPose supported datasets:
   - [OCHuman](#ochuman) \[ [Homepage](https://github.com/liruilong940607/OCHumanApi) \]
   - [MHP](#mhp) \[ [Homepage](https://lv-mhp.github.io/dataset) \]
   - [Human-Art](#humanart) \[ [Homepage](https://idea-research.github.io/HumanArt/) \]
-  - [ExLPose](#exlpose-dataset)\[ [Homepage](http://cg.postech.ac.kr/research/ExLPose/) \]
+  - [ExLPose](#exlpose-dataset) \[ [Homepage](http://cg.postech.ac.kr/research/ExLPose/) \]
 - Videos
   - [PoseTrack18](#posetrack18) \[ [Homepage](https://posetrack.net/users/download.php) \]
   - [sub-JHMDB](#sub-jhmdb-dataset) \[ [Homepage](http://jhmdb.is.tue.mpg.de/dataset) \]
@@ -621,15 +621,15 @@ mmpose
 `── data
     │── ExLPose
         │-- Annotations
-        	|	|-- ExLPose
-                │   │	|-- ExLPose_train_LL.json
-                │   |	|-- ExLPose_test_LL-A.json
-                │   │	|-- ExLPose_test_LL-E.json
-                │   |	|-- ExLPose_test_LL-H.json
-                │   │	|-- ExLPose_test_LL-N.json
+        |	|-- ExLPose
+        │   	|-- ExLPose_train_LL.json
+        │   	|-- ExLPose_test_LL-A.json
+        │   	|-- ExLPose_test_LL-E.json
+        │   	|-- ExLPose_test_LL-H.json
+        │   	|-- ExLPose_test_LL-N.json
         |-- dark
-            |	|--00001.png
-            |	|--00002.png
-            |	|--...
+            |--00001.png
+            |--00002.png
+            |--...
 
 ```
