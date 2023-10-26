@@ -8,9 +8,9 @@ class ExlposeDataset(BaseCocoStyleDataset):
     """Exlpose dataset for pose estimation.
 
     "Human Pose Estimation in Extremely Low-Light Conditions",
-    arXiv'2023.
+    CVPR'2023.
     More details can be found in the `paper
-    <https://arxiv.org/abs/2303.15410>`__
+    <http://cg.postech.ac.kr/research/ExLPose/>`__.
 
     AIC keypoints:
         0: "left_shoulder",
