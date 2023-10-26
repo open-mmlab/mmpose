@@ -12,7 +12,7 @@ class ExlposeDataset(BaseCocoStyleDataset):
     More details can be found in the `paper
     <http://cg.postech.ac.kr/research/ExLPose/>`__.
 
-    AIC keypoints:
+    ExLPose keypoints:
         0: "left_shoulder",
         1: "right_shoulder",
         2: "left_elbow",
