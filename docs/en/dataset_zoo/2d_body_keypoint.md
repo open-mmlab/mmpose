@@ -439,6 +439,54 @@ mmpose
 
 You can choose whether to download other annotation files in Human-Art. If you want to use additional annotation files (e.g. validation set of cartoon), you need to edit the corresponding code in config file.
 
+## ExLPose dataset
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="http://cg.postech.ac.kr/research/ExLPose/">ExLPose (2023)</a></summary>
+
+```bibtex
+@inproceedings{ExLPose_2023_CVPR,
+ title={Human Pose Estimation in Extremely Low-Light Conditions},
+ author={Sohyun Lee, Jaesung Rim, Boseung Jeong, Geonu Kim, ByungJu Woo, Haechan Lee, Sunghyun Cho, Suha Kwak},
+ booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+ year={2023}
+}
+```
+
+</details>
+
+<div align="center">
+  <img src="https://github.com/open-mmlab/mmpose/assets/71805205/d2c7d552-249a-4ac0-8ac3-1467ace59f2f" height="300px">
+</div>
+
+For [ExLPose](http://cg.postech.ac.kr/research/ExLPose/) data, please download from [ExLPose](https://drive.google.com/drive/folders/1E0Is4_cShxvsbJlep_aNEYLJpmHzq9FL),
+Move them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ExLPose
+        │-- annotations
+        |	|-- ExLPose
+        │   |-- ExLPose_train_LL.json
+        │   |-- ExLPose_test_LL-A.json
+        │   |-- ExLPose_test_LL-E.json
+        │   |-- ExLPose_test_LL-H.json
+        │   |-- ExLPose_test_LL-N.json
+        |-- dark
+            |--00001.png
+            |--00002.png
+            |--...
+
+```
+
 ## PoseTrack18
 
 <!-- [DATASET] -->
@@ -461,6 +509,7 @@ You can choose whether to download other annotation files in Human-Art. If you w
 <div align="center">
   <img src="https://user-images.githubusercontent.com/100993824/227865114-3f98c673-f6d0-4518-ae99-653f475f9fc8.png" height="300px">
 </div>
+
 For [PoseTrack18](https://posetrack.net/users/download.php) data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
 Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).
 We have merged the video-wise separated official annotation files into two json files (posetrack18_train & posetrack18_val.json). We also generate the [mask files](https://download.openmmlab.com/mmpose/datasets/posetrack18_mask.tar) to speed up training.
@@ -556,6 +605,7 @@ pip install git+https://github.com/svenkreiss/poseval.git
 <div align="center">
   <img src="https://user-images.githubusercontent.com/100993824/227865619-d65f64ae-991d-4693-99c2-caecd1beb1fc.png" height="300px">
 </div>
+
 For [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) data, please download the [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
 Move them under $MMPOSE/data, and make them look like this:
@@ -583,53 +633,5 @@ mmpose
             |   │   │--00002.png
             │-- catch
             │-- ...
-
-```
-
-## ExLPose dataset
-
-<!-- [DATASET] -->
-
-<details>
-<summary align="right"><a href="http://cg.postech.ac.kr/research/ExLPose/">ExLPose (2023)</a></summary>
-
-```bibtex
-@inproceedings{ExLPose_2023_CVPR,
- title={Human Pose Estimation in Extremely Low-Light Conditions},
- author={Sohyun Lee, Jaesung Rim, Boseung Jeong, Geonu Kim, ByungJu Woo, Haechan Lee, Sunghyun Cho, Suha Kwak},
- booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
- year={2023}
-}
-```
-
-</details>
-
-<div align="center">
-  <img src="https://github.com/open-mmlab/mmpose/assets/71805205/d2c7d552-249a-4ac0-8ac3-1467ace59f2f" height="300px">
-</div>
-
-For [ExLPose](http://cg.postech.ac.kr/research/ExLPose/) data, please download from [ExLPose](https://drive.google.com/drive/folders/1E0Is4_cShxvsbJlep_aNEYLJpmHzq9FL),
-Move them under $MMPOSE/data, and make them look like this:
-
-```text
-mmpose
-├── mmpose
-├── docs
-├── tests
-├── tools
-├── configs
-`── data
-    │── ExLPose
-        │-- Annotations
-        |	|-- ExLPose
-        │   	|-- ExLPose_train_LL.json
-        │   	|-- ExLPose_test_LL-A.json
-        │   	|-- ExLPose_test_LL-E.json
-        │   	|-- ExLPose_test_LL-H.json
-        │   	|-- ExLPose_test_LL-N.json
-        |-- dark
-            |--00001.png
-            |--00002.png
-            |--...
 
 ```
