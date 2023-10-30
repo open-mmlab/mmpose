@@ -131,3 +131,14 @@ Import:
 - configs/fashion_2d_keypoint/topdown_heatmap/deepfashion2/res50_deepfasion2.yml
 - configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/hrnet_deepfashion.yml
 - configs/fashion_2d_keypoint/topdown_heatmap/deepfashion/resnet_deepfashion.yml
+- configs/face_2d_keypoint/topdown_regression/wflw/resnet_wflw.yml
+- configs/face_2d_keypoint/topdown_regression/wflw/resnet_wingloss_wflw.yml
+- configs/face_2d_keypoint/topdown_regression/wflw/resnet_softwingloss_wflw.yml
+- configs/face_2d_keypoint/rtmpose/lapa/rtmpose_lapa.yml
+- configs/face_2d_keypoint/topdown_heatmap/300wlp/hrnetv2_300wlp.yml
+- configs/body_2d_keypoint/topdown_heatmap/humanart/vitpose_humanart.yml
+- configs/body_2d_keypoint/topdown_heatmap/humanart/hrnet_humanart.yml
+- configs/body_2d_keypoint/topdown_heatmap/exlpose/hrnet_exlpose.yml
+- configs/body_2d_keypoint/associative_embedding/coco/hrnet_coco.yml
+- configs/wholebody_2d_keypoint/topdown_heatmap/ubody2d/hrnet_coco-wholebody.yml
+- configs/animal_2d_keypoint/topdown_heatmap/ak/hrnet_animalkingdom.yml
