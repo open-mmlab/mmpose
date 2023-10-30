@@ -81,6 +81,7 @@ class MMPoseInferencer(BaseMMPoseInferencer):
                  show_progress: bool = False) -> None:
 
         self.visualizer = None
+        self.show_progress = show_progress
         if pose3d is not None:
             if 'hand3d' in pose3d:
                 self.inferencer = Hand3DInferencer(pose3d, pose3d_weights,
