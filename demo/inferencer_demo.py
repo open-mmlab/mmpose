@@ -168,9 +168,9 @@ def parse_args():
     for init_kw in init_kws:
         init_args[init_kw] = call_args.pop(init_kw)
 
-    diaplay_alias = call_args.pop('show_alias')
+    display_alias = call_args.pop('show_alias')
 
-    return init_args, call_args, diaplay_alias
+    return init_args, call_args, display_alias
 
 
 def display_model_aliases(model_aliases: Dict[str, str]) -> None:
@@ -184,8 +184,8 @@ def display_model_aliases(model_aliases: Dict[str, str]) -> None:
 
 
 def main():
-    init_args, call_args, diaplay_alias = parse_args()
-    if diaplay_alias:
+    init_args, call_args, display_alias = parse_args()
+    if display_alias:
         model_alises = get_model_aliases(init_args['scope'])
         display_model_aliases(model_alises)
     else:
