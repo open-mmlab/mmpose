@@ -66,6 +66,10 @@ def parse_args():
         help='Device used for inference. '
         'If not specified, the available device will be automatically used.')
     parser.add_argument(
+        '--show-progress',
+        action='store_true',
+        help='Display the progress bar during inference.')
+    parser.add_argument(
         '--show',
         action='store_true',
         help='Display the image/video in a popup window.')
@@ -157,7 +161,8 @@ def parse_args():
 
     init_kws = [
         'pose2d', 'pose2d_weights', 'scope', 'device', 'det_model',
-        'det_weights', 'det_cat_ids', 'pose3d', 'pose3d_weights'
+        'det_weights', 'det_cat_ids', 'pose3d', 'pose3d_weights',
+        'show_progress'
     ]
     init_args = {}
     for init_kw in init_kws:
