@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import inspect
 import logging
 import mimetypes
 import os
@@ -79,8 +80,18 @@ class BaseMMPoseInferencer(BaseInferencer):
                 det_scope = det_cfg.default_scope
 
             if has_mmdet:
-                self.detector = DetInferencer(
-                    det_model, det_weights, device=device, scope=det_scope)
+                det_kwargs = dict(
+                    model=det_model,
+                    weights=det_weights,
+                    device=device,
+                    scope=det_scope,
+                )
+                # for compatibility with low version of mmdet
+                if 'show_progress' in inspect.signature(
+                        DetInferencer).parameters:
+                    det_kwargs['show_progress'] = False
+
+                self.detector = DetInferencer(**det_kwargs)
             else:
                 raise RuntimeError(
                     'MMDetection (v3.0.0 or above) is required to build '
