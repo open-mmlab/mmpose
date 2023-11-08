@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import inspect
 import logging
 import mimetypes
 import os
@@ -21,6 +22,7 @@ from mmengine.registry import init_default_scope
 from mmengine.runner.checkpoint import _load_checkpoint_to_model
 from mmengine.structures import InstanceData
 from mmengine.utils import mkdir_or_exist
+from rich.progress import track
 
 from mmpose.apis.inference import dataset_meta_from_config
 from mmpose.registry import DATASETS
@@ -53,6 +55,15 @@ class BaseMMPoseInferencer(BaseInferencer):
     }
     postprocess_kwargs: set = {'pred_out_dir', 'return_datasample'}
 
+    def __init__(self,
+                 model: Union[ModelType, str, None] = None,
+                 weights: Optional[str] = None,
+                 device: Optional[str] = None,
+                 scope: Optional[str] = None,
+                 show_progress: bool = False) -> None:
+        super().__init__(
+            model, weights, device, scope, show_progress=show_progress)
+
     def _init_detector(
         self,
         det_model: Optional[Union[ModelType, str]] = None,
@@ -79,8 +90,18 @@ class BaseMMPoseInferencer(BaseInferencer):
                 det_scope = det_cfg.default_scope
 
             if has_mmdet:
-                self.detector = DetInferencer(
-                    det_model, det_weights, device=device, scope=det_scope)
+                det_kwargs = dict(
+                    model=det_model,
+                    weights=det_weights,
+                    device=device,
+                    scope=det_scope,
+                )
+                # for compatibility with low version of mmdet
+                if 'show_progress' in inspect.signature(
+                        DetInferencer).parameters:
+                    det_kwargs['show_progress'] = False
+
+                self.detector = DetInferencer(**det_kwargs)
             else:
                 raise RuntimeError(
                     'MMDetection (v3.0.0 or above) is required to build '
@@ -384,7 +405,8 @@ class BaseMMPoseInferencer(BaseInferencer):
 
         preds = []
 
-        for proc_inputs, ori_inputs in inputs:
+        for proc_inputs, ori_inputs in (track(inputs, description='Inference')
+                                        if self.show_progress else inputs):
             preds = self.forward(proc_inputs, **forward_kwargs)
 
             visualization = self.visualize(ori_inputs, preds,
