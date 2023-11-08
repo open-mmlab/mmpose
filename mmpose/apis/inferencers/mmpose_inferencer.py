@@ -7,6 +7,7 @@ import torch
 from mmengine.config import Config, ConfigDict
 from mmengine.infer.infer import ModelType
 from mmengine.structures import InstanceData
+from rich.progress import track
 
 from .base_mmpose_inferencer import BaseMMPoseInferencer
 from .hand3d_inferencer import Hand3DInferencer
@@ -76,23 +77,27 @@ class MMPoseInferencer(BaseMMPoseInferencer):
                  scope: str = 'mmpose',
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
-                 det_cat_ids: Optional[Union[int, List]] = None) -> None:
+                 det_cat_ids: Optional[Union[int, List]] = None,
+                 show_progress: bool = False) -> None:
 
         self.visualizer = None
+        self.show_progress = show_progress
         if pose3d is not None:
             if 'hand3d' in pose3d:
                 self.inferencer = Hand3DInferencer(pose3d, pose3d_weights,
                                                    device, scope, det_model,
-                                                   det_weights, det_cat_ids)
+                                                   det_weights, det_cat_ids,
+                                                   show_progress)
             else:
                 self.inferencer = Pose3DInferencer(pose3d, pose3d_weights,
                                                    pose2d, pose2d_weights,
                                                    device, scope, det_model,
-                                                   det_weights, det_cat_ids)
+                                                   det_weights, det_cat_ids,
+                                                   show_progress)
         elif pose2d is not None:
             self.inferencer = Pose2DInferencer(pose2d, pose2d_weights, device,
                                                scope, det_model, det_weights,
-                                               det_cat_ids)
+                                               det_cat_ids, show_progress)
         else:
             raise ValueError('Either 2d or 3d pose estimation algorithm '
                              'should be provided.')
@@ -202,7 +207,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
 
         preds = []
 
-        for proc_inputs, ori_inputs in inputs:
+        for proc_inputs, ori_inputs in (track(inputs, description='Inference')
+                                        if self.show_progress else inputs):
             preds = self.forward(proc_inputs, **forward_kwargs)
 
             visualization = self.visualize(ori_inputs, preds,
