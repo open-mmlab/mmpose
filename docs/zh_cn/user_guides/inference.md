@@ -108,11 +108,15 @@ results = [result for result in result_generator]
 [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 提供了几种可用于自定义所使用的模型的方法：
 
 ```python
-# 使用模型别名构建推断器
+# 使用 2D 模型别名构建推断器
 inferencer = MMPoseInferencer('human')
+# 使用 3D 模型别名构建推断器
+inferencer = MMPoseInferencer(pose3d="human3d")
 
-# 使用模型配置名构建推断器
+# 使用 2D 模型配置名构建推断器
 inferencer = MMPoseInferencer('td-hm_hrnet-w32_8xb64-210e_coco-256x192')
+# 使用 3D 模型配置名构建推断器
+inferencer = MMPoseInferencer(pose3d="motionbert_dstformer-ft-243frm_8xb32-120e_h36m")
 
 # 使用模型配置文件和权重文件的路径或 URL 构建推断器
 inferencer = MMPoseInferencer(
