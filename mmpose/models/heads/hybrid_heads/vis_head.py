@@ -185,7 +185,7 @@ class VisPredictHead(BaseHead):
         correct = (predictions == vis_labels).float()
         if vis_weights is not None:
             accuracy = (correct * vis_weights).sum(dim=1) / (
-                vis_weights.sum(dim=1, keepdims=True) + 1e-6)
+                vis_weights.sum(dim=1) + 1e-6)
         else:
             accuracy = correct.mean(dim=1)
         return accuracy.mean()
