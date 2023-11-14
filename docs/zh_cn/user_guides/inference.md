@@ -22,7 +22,7 @@ from mmpose.apis import MMPoseInferencer
 
 img_path = 'tests/data/coco/000000000785.jpg'   # 将img_path替换给你自己的路径
 
-# 使用模型别名创建推断器
+# 使用模型别名创建推理器
 inferencer = MMPoseInferencer('human')
 
 # MMPoseInferencer采用了惰性推断方法，在给定输入时创建一个预测生成器
@@ -108,17 +108,15 @@ results = [result for result in result_generator]
 [MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 提供了几种可用于自定义所使用的模型的方法：
 
 ```python
-# 使用 2D 模型别名构建推断器
+# 使用模型别名构建推理器
 inferencer = MMPoseInferencer('human')
-# 使用 3D 模型别名构建推断器
-inferencer = MMPoseInferencer(pose3d="human3d")
 
-# 使用 2D 模型配置名构建推断器
+# 使用模型配置名构建推理器
 inferencer = MMPoseInferencer('td-hm_hrnet-w32_8xb64-210e_coco-256x192')
-# 使用 3D 模型配置名构建推断器
+# 使用 3D 模型配置名构建推理器
 inferencer = MMPoseInferencer(pose3d="motionbert_dstformer-ft-243frm_8xb32-120e_h36m")
 
-# 使用模型配置文件和权重文件的路径或 URL 构建推断器
+# 使用模型配置文件和权重文件的路径或 URL 构建推理器
 inferencer = MMPoseInferencer(
     pose2d='configs/body_2d_keypoint/topdown_heatmap/coco/' \
            'td-hm_hrnet-w32_8xb64-210e_coco-256x192.py',
@@ -128,6 +126,24 @@ inferencer = MMPoseInferencer(
 ```
 
 模型别名的完整列表可以在模型别名部分中找到。
+
+上述代码为 2D 模型推理器的构建例子。3D 模型的推理器可以用类似的方式通过 `pose3d` 参数构建：
+
+```python
+# 使用 3D 模型别名构建推理器
+inferencer = MMPoseInferencer(pose3d="human3d")
+
+# 使用 3D 模型配置名构建推理器
+inferencer = MMPoseInferencer(pose3d="motionbert_dstformer-ft-243frm_8xb32-120e_h36m")
+
+# 使用 3D 模型配置文件和权重文件的路径或 URL 构建推理器
+inferencer = MMPoseInferencer(
+    pose3d='configs/body_3d_keypoint/motionbert/h36m/' \
+           'motionbert_dstformer-ft-243frm_8xb32-120e_h36m.py',
+    pose3d_weights='https://download.openmmlab.com/mmpose/v1/body_3d_keypoint/' \
+                   'pose_lift/h36m/motionbert_ft_h36m-d80af323_20230531.pth'
+)
+```
 
 此外，自顶向下的姿态估计器还需要一个对象检测模型。[MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 能够推断用 MMPose 支持的数据集训练的模型的实例类型，然后构建必要的对象检测模型。用户也可以通过以下方式手动指定检测模型:
 
@@ -149,7 +165,7 @@ inferencer = MMPoseInferencer(
     det_cat_ids=[0],  # 指定'human'类的类别id
 )
 
-# 使用模型配置文件和权重文件的路径或URL构建推断器
+# 使用模型配置文件和权重文件的路径或URL构建推理器
 inferencer = MMPoseInferencer(
     pose2d='human',
     det_model=f'{PATH_TO_MMDET}/configs/yolox/yolox_l_8x8_300e_coco.py',
@@ -214,7 +230,7 @@ result = next(result_generator)
 
 ### 推理器参数
 
-[MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 提供了各种自定义姿态估计、可视化和保存预测结果的参数。下面是<mark>初始化</mark>推断器时可用的参数列表及对这些参数的描述：
+[MMPoseInferencer](https://github.com/open-mmlab/mmpose/blob/dev-1.x/mmpose/apis/inferencers/mmpose_inferencer.py#L24) 提供了各种自定义姿态估计、可视化和保存预测结果的参数。下面是<mark>初始化</mark>推理器时可用的参数列表及对这些参数的描述：
 
 | Argument         | Description                                                  |
 | ---------------- | ------------------------------------------------------------ |
