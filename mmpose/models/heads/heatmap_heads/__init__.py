@@ -5,9 +5,10 @@ from .cpm_head import CPMHead
 from .heatmap_head import HeatmapHead
 from .internet_head import InternetHead
 from .mspn_head import MSPNHead
+from .star_head import STARHead
 from .vipnas_head import ViPNASHead
 
 __all__ = [
     'HeatmapHead', 'CPMHead', 'MSPNHead', 'ViPNASHead',
-    'AssociativeEmbeddingHead', 'CIDHead', 'InternetHead'
+    'AssociativeEmbeddingHead', 'CIDHead', 'STARHead', 'InternetHead'
 ]
