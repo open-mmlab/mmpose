@@ -280,23 +280,27 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
                                  'data sample must contain '
                                  '"lifting_target" or "keypoints_gt"')
 
-            _draw_3d_instances_kpts(keypoints, scores, keypoints_visible, 2,
-                                    show_kpt_idx, 'Ground Truth')
+            if scores_2d is None:
+                scores_2d = np.ones(keypoints.shape[:-1])
+
+            _draw_3d_instances_kpts(keypoints, scores, scores_2d,
+                                    keypoints_visible, 2, show_kpt_idx,
+                                    'Ground Truth')
 
         # convert figure to numpy array
         fig.tight_layout()
         fig.canvas.draw()
 
-        pred_img_data = fig.canvas.tostring_rgb()
         pred_img_data = np.frombuffer(
             fig.canvas.tostring_rgb(), dtype=np.uint8)
 
         if not pred_img_data.any():
             pred_img_data = np.full((vis_height, vis_width, 3), 255)
         else:
-            pred_img_data = pred_img_data.reshape(vis_height,
-                                                  vis_width * num_instances,
-                                                  -1)
+            width, height = fig.get_size_inches() * fig.get_dpi()
+            pred_img_data = pred_img_data.reshape(
+                int(height),
+                int(width) * num_instances, 3)
 
         plt.close(fig)
 
