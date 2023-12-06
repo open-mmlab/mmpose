@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Tuple
+from typing import Optional, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -28,6 +28,8 @@ class SimOTAAssigner:
         vis_weight (float): Weight of keypoint visibility cost. Defaults to 0.0
         dynamic_k_indicator (str): Cost type for calculating dynamic-k,
             either 'iou' or 'oks'. Defaults to 'iou'.
+        use_keypoints_for_center (bool): Whether to use keypoints to determine
+            if a prior is in the center of a gt. Defaults to False.
         iou_calculator (dict): Config of IoU calculation method.
             Defaults to dict(type='BBoxOverlaps2D').
         oks_calculator (dict): Config of OKS calculation method.
@@ -42,6 +44,7 @@ class SimOTAAssigner:
                  oks_weight: float = 3.0,
                  vis_weight: float = 0.0,
                  dynamic_k_indicator: str = 'iou',
+                 use_keypoints_for_center: bool = False,
                  iou_calculator: ConfigType = dict(type='BBoxOverlaps2D'),
                  oks_calculator: ConfigType = dict(type='PoseOKS')):
         self.center_radius = center_radius
@@ -55,6 +58,7 @@ class SimOTAAssigner:
             f'but got {dynamic_k_indicator}'
         self.dynamic_k_indicator = dynamic_k_indicator
 
+        self.use_keypoints_for_center = use_keypoints_for_center
         self.iou_calculator = TASK_UTILS.build(iou_calculator)
         self.oks_calculator = TASK_UTILS.build(oks_calculator)
 
@@ -108,7 +112,7 @@ class SimOTAAssigner:
                 labels=assigned_labels)
 
         valid_mask, is_in_boxes_and_center = self.get_in_gt_and_in_center_info(
-            priors, gt_bboxes)
+            priors, gt_bboxes, gt_keypoints, gt_keypoints_visible)
         valid_decoded_bbox = decoded_bboxes[valid_mask]
         valid_pred_scores = pred_scores[valid_mask]
         valid_pred_kpts = keypoints[valid_mask]
@@ -203,8 +207,13 @@ class SimOTAAssigner:
             max_overlaps=max_overlaps,
             labels=assigned_labels)
 
-    def get_in_gt_and_in_center_info(self, priors: Tensor, gt_bboxes: Tensor
-                                     ) -> Tuple[Tensor, Tensor]:
+    def get_in_gt_and_in_center_info(
+        self,
+        priors: Tensor,
+        gt_bboxes: Tensor,
+        gt_keypoints: Optional[Tensor] = None,
+        gt_keypoints_visible: Optional[Tensor] = None,
+    ) -> Tuple[Tensor, Tensor]:
         """Get the information of which prior is in gt bboxes and gt center
         priors."""
         num_gt = gt_bboxes.size(0)
@@ -227,6 +236,15 @@ class SimOTAAssigner:
         # is prior centers in gt centers
         gt_cxs = (gt_bboxes[:, 0] + gt_bboxes[:, 2]) / 2.0
         gt_cys = (gt_bboxes[:, 1] + gt_bboxes[:, 3]) / 2.0
+        if self.use_keypoints_for_center and gt_keypoints_visible is not None:
+            gt_kpts_cts = (gt_keypoints * gt_keypoints_visible.unsqueeze(-1)
+                           ).sum(dim=-2) / gt_keypoints_visible.sum(
+                               dim=-1, keepdims=True).clip(min=0)
+            gt_kpts_cts = gt_kpts_cts.to(gt_bboxes)
+            valid_mask = gt_keypoints_visible.sum(-1) > 0
+            gt_cxs[valid_mask] = gt_kpts_cts[valid_mask][..., 0]
+            gt_cys[valid_mask] = gt_kpts_cts[valid_mask][..., 1]
+
         ct_box_l = gt_cxs - self.center_radius * repeated_stride_x
         ct_box_t = gt_cys - self.center_radius * repeated_stride_y
         ct_box_r = gt_cxs + self.center_radius * repeated_stride_x

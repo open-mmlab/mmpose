@@ -453,3 +453,87 @@ class FocalHeatmapLoss(KeypointMSELoss):
         else:
             loss = -(pos_loss.sum() + neg_loss.sum()) / num_pos
         return loss * self.loss_weight
+
+
+@MODELS.register_module()
+class MLECCLoss(nn.Module):
+    """Maximum Likelihood Estimation loss for Coordinate Classification.
+
+    This loss function is designed to work with coordinate classification
+    problems where the likelihood of each target coordinate is maximized.
+
+    Args:
+        reduction (str): Specifies the reduction to apply to the output:
+            'none' | 'mean' | 'sum'. Default: 'mean'.
+        mode (str): Specifies the mode of calculating loss:
+            'linear' | 'square' | 'log'. Default: 'log'.
+        use_target_weight (bool): If True, uses weighted loss. Different
+            joint types may have different target weights. Defaults to False.
+        loss_weight (float): Weight of the loss. Defaults to 1.0.
+
+    Raises:
+        AssertionError: If the `reduction` or `mode` arguments are not in the
+                        expected choices.
+        NotImplementedError: If the selected mode is not implemented.
+    """
+
+    def __init__(self,
+                 reduction: str = 'mean',
+                 mode: str = 'log',
+                 use_target_weight: bool = False,
+                 loss_weight: float = 1.0):
+        super().__init__()
+        assert reduction in ('mean', 'sum', 'none'), \
+            f"`reduction` should be either 'mean', 'sum', or 'none', " \
+            f'but got {reduction}'
+        assert mode in ('linear', 'square', 'log'), \
+            f"`mode` should be either 'linear', 'square', or 'log', " \
+            f'but got {mode}'
+
+        self.reduction = reduction
+        self.mode = mode
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
+
+    def forward(self, outputs, targets, target_weight=None):
+        """Forward pass for the MLECCLoss.
+
+        Args:
+            outputs (torch.Tensor): The predicted outputs.
+            targets (torch.Tensor): The ground truth targets.
+            target_weight (torch.Tensor, optional): Optional tensor of weights
+                for each target.
+
+        Returns:
+            torch.Tensor: Calculated loss based on the specified mode and
+                reduction.
+        """
+
+        assert len(outputs) == len(targets), \
+            'Outputs and targets must have the same length'
+
+        prob = 1.0
+        for o, t in zip(outputs, targets):
+            prob *= (o * t).sum(dim=-1)
+
+        if self.mode == 'linear':
+            loss = 1.0 - prob
+        elif self.mode == 'square':
+            loss = 1.0 - prob.pow(2)
+        elif self.mode == 'log':
+            loss = -torch.log(prob + 1e-4)
+
+        loss[torch.isnan(loss)] = 0.0
+
+        if self.use_target_weight:
+            assert target_weight is not None
+            for i in range(loss.ndim - target_weight.ndim):
+                target_weight = target_weight.unsqueeze(-1)
+            loss = loss * target_weight
+
+        if self.reduction == 'sum':
+            loss = loss.flatten(1).sum(dim=1)
+        elif self.reduction == 'mean':
+            loss = loss.flatten(1).mean(dim=1)
+
+        return loss * self.loss_weight

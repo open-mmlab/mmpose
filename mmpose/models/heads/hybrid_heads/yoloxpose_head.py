@@ -259,7 +259,8 @@ class YOLOXPoseHead(BaseModule):
 
         # build losses
         self.loss_cls = MODELS.build(loss_cls)
-        self.loss_obj = MODELS.build(loss_obj)
+        if loss_obj is not None:
+            self.loss_obj = MODELS.build(loss_obj)
         self.loss_bbox = MODELS.build(loss_bbox)
         self.loss_oks = MODELS.build(loss_oks)
         self.loss_vis = MODELS.build(loss_vis)
@@ -362,6 +363,7 @@ class YOLOXPoseHead(BaseModule):
             # 3.5 classification loss
             cls_preds = flatten_cls_scores.view(-1,
                                                 self.num_classes)[pos_masks]
+            losses['overlaps'] = cls_targets
             cls_targets = cls_targets.pow(self.overlaps_power).detach()
             losses['loss_cls'] = self.loss_cls(cls_preds,
                                                cls_targets) / num_total_samples
@@ -417,7 +419,8 @@ class YOLOXPoseHead(BaseModule):
         for i, target in enumerate(targets):
             if torch.is_tensor(target[0]):
                 target = tuple(filter(lambda x: x.size(0) > 0, target))
-                targets[i] = torch.cat(target)
+                if len(target) > 0:
+                    targets[i] = torch.cat(target)
 
         foreground_masks, cls_targets, obj_targets, obj_weights, \
             bbox_targets, kpt_targets, vis_targets, vis_weights, pos_areas, \
@@ -477,19 +480,28 @@ class YOLOXPoseHead(BaseModule):
                 truth annotations for current image.
 
         Returns:
-            # TODO: modify the description of returned values
-            tuple:
-                foreground_mask (list[Tensor]): Binary mask of foreground
-                targets.
-                cls_target (list[Tensor]): Classification targets of an image.
-                obj_target (list[Tensor]): Objectness targets of an image.
-                bbox_target (list[Tensor]): BBox targets of an image.
-                bbox_aux_target (int): BBox aux targets of an image.
-                num_pos_per_img (int): Number of positive samples in an image.
+            tuple: A tuple containing various target tensors for training:
+                - foreground_mask (Tensor): Binary mask indicating foreground
+                    priors.
+                - cls_target (Tensor): Classification targets.
+                - obj_target (Tensor): Objectness targets.
+                - obj_weight (Tensor): Weights for objectness targets.
+                - bbox_target (Tensor): BBox targets.
+                - kpt_target (Tensor): Keypoints targets.
+                - vis_target (Tensor): Visibility targets for keypoints.
+                - vis_weight (Tensor): Weights for keypoints visibility
+                    targets.
+                - pos_areas (Tensor): Areas of positive samples.
+                - pos_priors (Tensor): Priors corresponding to positive
+                    samples.
+                - group_index (List[Tensor]): Indices of groups for positive
+                    samples.
+                - num_pos_per_img (int): Number of positive samples.
         """
         # TODO: change the shape of objectness to [num_priors]
         num_priors = priors.size(0)
         gt_instances = data_sample.gt_instance_labels
+        gt_fields = data_sample.get('gt_fields', dict())
         num_gts = len(gt_instances)
 
         # No target
@@ -548,7 +560,22 @@ class YOLOXPoseHead(BaseModule):
         # obj target
         obj_target = torch.zeros_like(objectness)
         obj_target[pos_inds] = 1
-        obj_weight = obj_target.new_ones(obj_target.shape)
+
+        invalid_mask = gt_fields.get('heatmap_mask', None)
+        if invalid_mask is not None and (invalid_mask != 0.0).any():
+            # ignore the tokens that predict the unlabled instances
+            pred_vis = (kpt_vis.unsqueeze(-1) > 0.3).float()
+            mean_kpts = (decoded_kpts * pred_vis).sum(dim=1) / pred_vis.sum(
+                dim=1).clamp(min=1e-8)
+            mean_kpts = mean_kpts.reshape(1, -1, 1, 2)
+            wh = invalid_mask.shape[-1]
+            grids = mean_kpts / (wh - 1) * 2 - 1
+            mask = invalid_mask.unsqueeze(0).float()
+            weight = F.grid_sample(
+                mask, grids, mode='bilinear', padding_mode='zeros')
+            obj_weight = 1.0 - weight.reshape(num_priors, 1)
+        else:
+            obj_weight = obj_target.new_ones(obj_target.shape)
 
         # misc
         foreground_mask = torch.zeros_like(objectness.squeeze()).to(torch.bool)
@@ -748,5 +775,8 @@ class YOLOXPoseHead(BaseModule):
     def _flatten_predictions(self, preds: List[Tensor]):
         """Flattens the predictions from a list of tensors to a single
         tensor."""
+        if len(preds) == 0:
+            return None
+
         preds = [x.permute(0, 2, 3, 1).flatten(1, 2) for x in preds]
         return torch.cat(preds, dim=1)
