@@ -129,7 +129,7 @@ class RTMOHeadModule(BaseModule):
 
     def _init_reg_branch(self):
         """Initialize classification branch for all level feature maps."""
-        self.conv_reg = nn.ModuleList()
+        self.conv_pose = nn.ModuleList()
         out_chn = self.num_groups * self.channels_per_group
         for _ in self.featmap_strides:
             stacked_convs = []
@@ -148,21 +148,22 @@ class RTMOHeadModule(BaseModule):
                         norm_cfg=self.norm_cfg,
                         act_cfg=self.act_cfg,
                         bias=self.conv_bias))
-            self.conv_reg.append(nn.Sequential(*stacked_convs))
+            self.conv_pose.append(nn.Sequential(*stacked_convs))
 
         # output layers
         self.out_bbox = nn.ModuleList()
-        self.out_kpt = nn.ModuleList()
+        self.out_kpt_reg = nn.ModuleList()
         self.out_kpt_vis = nn.ModuleList()
         for _ in self.featmap_strides:
             self.out_bbox.append(nn.Conv2d(out_chn, 4, 1))
-            self.out_kpt.append(nn.Conv2d(out_chn, self.num_keypoints * 2, 1))
+            self.out_kpt_reg.append(
+                nn.Conv2d(out_chn, self.num_keypoints * 2, 1))
             self.out_kpt_vis.append(nn.Conv2d(out_chn, self.num_keypoints, 1))
 
         if self.pose_vec_channels > 0:
-            self.out_pose_vecs = nn.ModuleList()
+            self.out_pose = nn.ModuleList()
             for _ in self.featmap_strides:
-                self.out_pose_vecs.append(
+                self.out_pose.append(
                     nn.Conv2d(out_chn, self.pose_vec_channels, 1))
 
     def init_weights(self):
@@ -190,27 +191,27 @@ class RTMOHeadModule(BaseModule):
 
         cls_scores, bbox_preds = [], []
         kpt_offsets, kpt_vis = [], []
-        pose_vecs = []
+        pose_feats = []
 
         for i in range(len(x)):
 
             cls_feat, reg_feat = x[i].split(x[i].size(1) // 2, 1)
 
             cls_feat = self.conv_cls[i](cls_feat)
-            reg_feat = self.conv_reg[i](reg_feat)
+            reg_feat = self.conv_pose[i](reg_feat)
 
             cls_scores.append(self.out_cls[i](cls_feat))
             bbox_preds.append(self.out_bbox[i](reg_feat))
             if self.training:
-                kpt_offsets.append(self.out_kpt[i](reg_feat))
+                kpt_offsets.append(self.out_kpt_reg[i](reg_feat))
             kpt_vis.append(self.out_kpt_vis[i](reg_feat))
 
             if self.pose_vec_channels > 0:
-                pose_vecs.append(self.out_pose_vecs[i](reg_feat))
+                pose_feats.append(self.out_pose[i](reg_feat))
             else:
-                pose_vecs.append(reg_feat)
+                pose_feats.append(reg_feat)
 
-        return cls_scores, bbox_preds, kpt_offsets, kpt_vis, pose_vecs
+        return cls_scores, bbox_preds, kpt_offsets, kpt_vis, pose_feats
 
 
 class DCC(BaseModule):
@@ -252,7 +253,7 @@ class DCC(BaseModule):
         # GAU encoder
         if self.gau_cfg is not None:
             gau_cfg = self.gau_cfg.copy()
-            gau_cfg['in_token_dims'] = self.in_channels
+            gau_cfg['in_token_dims'] = self.feat_channels
             gau_cfg['out_token_dims'] = self.feat_channels
             self.gau = GAUEncoder(**gau_cfg)
             if gau_cfg.get('pos_enc', 'none') in ('add', 'rope'):
@@ -278,9 +279,9 @@ class DCC(BaseModule):
 
     def _build_basic_bins(self):
         # build basic grid coordinates for x, y
-        self.register_buffer('grid_y',
+        self.register_buffer('y_bins',
                              torch.linspace(-0.5, 0.5, self.num_bins[1]))
-        self.register_buffer('grid_x',
+        self.register_buffer('x_bins',
                              torch.linspace(-0.5, 0.5, self.num_bins[0]))
 
     def _apply_softmax(self, x_hms, y_hms):
@@ -300,17 +301,17 @@ class DCC(BaseModule):
         center, scale = bbox_cs.split(2, dim=-1)
         center = center - grids
 
-        grid_x, grid_y = self.grid_x, self.grid_y
+        x_bins, y_bins = self.x_bins, self.y_bins
 
-        grid_x = grid_x.view(*((1,) * (scale.ndim-1)), -1) \
+        x_bins = x_bins.view(*((1,) * (scale.ndim-1)), -1) \
             * scale[..., 0:1] + center[..., 0:1]  # [B, ?opt, 1]
-        grid_y = grid_y.view(*((1,) * (scale.ndim-1)), -1) \
+        y_bins = y_bins.view(*((1,) * (scale.ndim-1)), -1) \
             * scale[..., 1:2] + center[..., 1:2]
 
         spe_x = self.x_fc(self.spe(
-            position=grid_x))  # [B, ?opt, bins, feats_channels]
+            position=x_bins))  # [B, ?opt, bins, feats_channels]
         spe_y = self.y_fc(self.spe(
-            position=grid_y))  # [B, ?opt, bins, feats_channels]
+            position=y_bins))  # [B, ?opt, bins, feats_channels]
 
         return spe_x, spe_y
 
@@ -336,15 +337,15 @@ class DCC(BaseModule):
             center, scale = bbox_cs.split(2, dim=-1)
             # center = center
 
-            grid_x, grid_y = self.grid_x, self.grid_y
+            x_bins, y_bins = self.x_bins, self.y_bins
 
-            grid_x = grid_x.view(*((1,) * (scale.ndim-1)), -1) \
+            x_bins = x_bins.view(*((1,) * (scale.ndim-1)), -1) \
                 * scale[..., 0:1] + center[..., 0:1]  # [B, ?opt, 1]
-            grid_y = grid_y.view(*((1,) * (scale.ndim-1)), -1) \
+            y_bins = y_bins.view(*((1,) * (scale.ndim-1)), -1) \
                 * scale[..., 1:2] + center[..., 1:2]
 
-            x = (x_hms * grid_x.unsqueeze(1)).sum(dim=-1)
-            y = (y_hms * grid_y.unsqueeze(1)).sum(dim=-1)
+            x = (x_hms * x_bins.unsqueeze(1)).sum(dim=-1)
+            y = (y_hms * y_bins.unsqueeze(1)).sum(dim=-1)
 
         else:
 
@@ -360,15 +361,15 @@ class DCC(BaseModule):
 
     def generate_target_heatmap(self, kpt_targets, bbox_cs, sigmas, areas):
         center, scale = bbox_cs.split(2, dim=-1)
-        grid_x = self.grid_x.view(*((1,) * (scale.ndim-1)), -1) \
+        x_bins = self.x_bins.view(*((1,) * (scale.ndim-1)), -1) \
             * scale[..., 0:1] + center[..., 0:1]
-        grid_y = self.grid_y.view(*((1,) * (scale.ndim-1)), -1) \
+        y_bins = self.y_bins.view(*((1,) * (scale.ndim-1)), -1) \
             * scale[..., 1:2] + center[..., 1:2]
 
         dist_x = torch.abs(kpt_targets.narrow(2, 0, 1) -
-                           grid_x.unsqueeze(1))  # [n, num_keypoints, bins]
+                           x_bins.unsqueeze(1))  # [n, num_keypoints, bins]
         dist_y = torch.abs(kpt_targets.narrow(2, 1, 1) -
-                           grid_y.unsqueeze(1))  # [n, num_keypoints, bins]
+                           y_bins.unsqueeze(1))  # [n, num_keypoints, bins]
 
         # normalize
         areas = areas.pow(0.5).clip(min=1).reshape(-1, 1, 1)
@@ -465,8 +466,8 @@ class DCC(BaseModule):
 
         # 3. forward_test
 
-        grid_x_ = self.grid_x.view(1, 1, -1).detach().cpu()
-        grid_y_ = self.grid_y.view(1, 1, -1).detach().cpu()
+        x_bins_ = self.x_bins.view(1, 1, -1).detach().cpu()
+        y_bins_ = self.y_bins.view(1, 1, -1).detach().cpu()
         dim_t = self.spe.dim_t.view(1, 1, 1, -1).detach().cpu()
         # freq = position.unsqueeze(-1) / dim_t
         # pos_enc = torch.cat((freq.cos(), freq.sin()), dim=-1)
@@ -476,14 +477,14 @@ class DCC(BaseModule):
             center, scale = bbox_cs.split(2, dim=-1)
             center = center - grids
 
-            # grid_x, grid_y = self.grid_x, self.grid_y
+            # x_bins, y_bins = self.x_bins, self.y_bins
 
-            grid_x = grid_x_ * scale[..., 0:1] + center[..., 0:1]
-            grid_y = grid_y_ * scale[..., 1:2] + center[..., 1:2]
+            x_bins = x_bins_ * scale[..., 0:1] + center[..., 0:1]
+            y_bins = y_bins_ * scale[..., 1:2] + center[..., 1:2]
 
-            freq_x = grid_x.unsqueeze(-1) / dim_t
+            freq_x = x_bins.unsqueeze(-1) / dim_t
             spe_x = torch.cat((freq_x.cos(), freq_x.sin()), dim=-1)
-            freq_y = grid_y.unsqueeze(-1) / dim_t
+            freq_y = y_bins.unsqueeze(-1) / dim_t
             spe_y = torch.cat((freq_y.cos(), freq_y.sin()), dim=-1)
 
             spe_x = self.x_fc(spe_x)  # [B, ?opt, bins, feats_channels]
@@ -506,15 +507,15 @@ class DCC(BaseModule):
                 center, scale = bbox_cs.split(2, dim=-1)
                 # center = center
 
-                grid_x, grid_y = self.grid_x, self.grid_y
+                x_bins, y_bins = self.x_bins, self.y_bins
 
-                grid_x = grid_x.view(*((1,) * (scale.ndim-1)), -1) \
+                x_bins = x_bins.view(*((1,) * (scale.ndim-1)), -1) \
                     * scale[..., 0:1] + center[..., 0:1]  # [B, ?opt, 1]
-                grid_y = grid_y.view(*((1,) * (scale.ndim-1)), -1) \
+                y_bins = y_bins.view(*((1,) * (scale.ndim-1)), -1) \
                     * scale[..., 1:2] + center[..., 1:2]
 
-                x = (x_hms * grid_x.unsqueeze(1)).sum(dim=-1)
-                y = (y_hms * grid_y.unsqueeze(1)).sum(dim=-1)
+                x = (x_hms * x_bins.unsqueeze(1)).sum(dim=-1)
+                y = (y_hms * y_bins.unsqueeze(1)).sum(dim=-1)
 
             else:
 
@@ -584,7 +585,7 @@ class RTMOHead(YOLOXPoseHead):
         self.use_kpt_reg = use_kpt_reg
         if dcc_cfg is not None:
             dcc_cfg['num_keypoints'] = num_keypoints
-            self.pose_decoder = DCC(**dcc_cfg)
+            self.dcc = DCC(**dcc_cfg)
 
         # build losses
         if loss_mle is not None:
@@ -676,11 +677,11 @@ class RTMOHead(YOLOXPoseHead):
                 bbox_cs = torch.cat(bbox_xyxy2cs(bbox_preds, 1.25), dim=1)
                 # 'cc' refers to 'cordinate classification'
                 kpt_cc_preds, pred_hms, sigmas = \
-                    self.pose_decoder.forward_train(pose_vecs,
-                                                    bbox_cs,
-                                                    pos_priors[..., :2],
-                                                    pos_priors[..., -1])
-                target_hms = self.pose_decoder.generate_target_heatmap(
+                    self.dcc.forward_train(pose_vecs,
+                                           bbox_cs,
+                                           pos_priors[..., :2],
+                                           pos_priors[..., -1])
+                target_hms = self.dcc.generate_target_heatmap(
                     kpt_targets,
                     bbox_cs,
                     sigmas,
@@ -779,7 +780,7 @@ class RTMOHead(YOLOXPoseHead):
                     in shape (K*2, h, w)
         """
 
-        cls_scores, bbox_preds, kpt_vis, pose_vecs = self.forward(feats)
+        cls_scores, bbox_preds, _, kpt_vis, pose_vecs = self.forward(feats)
 
         cfg = copy.deepcopy(test_cfg)
 
@@ -846,7 +847,7 @@ class RTMOHead(YOLOXPoseHead):
                 bbox_cs = torch.cat(bbox_xyxy2cs(bboxes, 1.25), dim=1)
                 grids = grids[keep_idxs_nms]
                 ipr_decode = cfg.get('ipr_decode', False)
-                keypoints = self.pose_decoder.forward_test(
+                keypoints = self.dcc.forward_test(
                     pose_vecs, bbox_cs, grids, stride, ipr_decode=ipr_decode)
 
             else:

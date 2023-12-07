@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import Scale, build_conv_layer, build_norm_layer
+from mmcv.cnn import build_conv_layer, build_norm_layer
 from mmcv.cnn.bricks import DropPath
 from mmcv.cnn.bricks.transformer import FFN, MultiheadAttention
 from mmengine.model import BaseModule, ModuleList
@@ -17,7 +17,7 @@ from mmpose.utils.typing import ConfigType, OptConfigType
 
 try:
     from fairscale.nn.checkpoint import checkpoint_wrapper
-except Exception:
+except ImportError:
     checkpoint_wrapper = None
 
 
@@ -626,8 +626,6 @@ class GAUEncoder(BaseModule):
             Defaults to 'SiLU'.
         bias (bool, optional): Whether to use bias in linear layers.
             Defaults to False.
-        use_rel_bias (bool, optional): Whether to use relative bias.
-            Defaults to True.
         pos_enc (bool, optional): Whether to use rotary position
             embedding. Defaults to False.
         spatial_dim (int, optional): The spatial dimension of inputs
@@ -648,8 +646,7 @@ class GAUEncoder(BaseModule):
                  act_fn='SiLU',
                  bias=False,
                  pos_enc: str = 'none',
-                 spatial_dim: int = 1,
-                 scale_type: str = 'ChannelWiseScale'):
+                 spatial_dim: int = 1):
 
         super(GAUEncoder, self).__init__()
         self.s = s
@@ -679,10 +676,7 @@ class GAUEncoder(BaseModule):
 
         if in_token_dims == out_token_dims:
             self.shortcut = True
-            if scale_type == 'ChannelWiseScale':
-                self.res_scale = ChannelWiseScale(in_token_dims)
-            else:
-                self.res_scale = Scale()
+            self.res_scale = ChannelWiseScale(in_token_dims)
         else:
             self.shortcut = False
 
