@@ -496,3 +496,16 @@ test_evaluator = val_evaluator
 ```
 
 如需进一步了解如何将 AIC 关键点转换为 COCO 关键点，请查阅 [该指南](https://mmpose.readthedocs.io/zh_CN/dev-1.x/user_guides/mixed_datasets.html#aic-coco)。
+
+### 使用自定义检测器评估 Top-down 模型
+
+要评估 Top-down 模型，您可以使用人工标注的或预先检测到的边界框。 `bbox_file` 提供了由特定检测器生成的这些框。例如，`COCO_val2017_detections_AP_H_56_person.json` 包含了使用具有 56.4 人类 AP 的检测器捕获的 COCO val2017 数据集的边界框。要使用 MMDetection 支持的自定义检测器创建您自己的 `bbox_file`，请运行以下命令：
+
+```sh
+python tools/misc/generate_bbox_file.py \
+    ${DET_CONFIG} ${DET_WEIGHT} ${OUTPUT_FILE_NAME} \
+    [--pose-config ${POSE_CONFIG}] \
+    [--score-thr ${SCORE_THRESHOLD}] [--nms-thr ${NMS_THRESHOLD}]
+```
+
+其中，`DET_CONFIG` 和 `DET_WEIGHT` 用于创建目标检测器。 `POSE_CONFIG` 指定需要边界框检测的测试数据集。`SCORE_THRESHOLD` 和 `NMS_THRESHOLD` 用于边界框过滤。
