@@ -68,7 +68,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=5632)
+auto_scale_lr = dict(base_batch_size=2560)
 
 # codec settings
 codec = dict(
