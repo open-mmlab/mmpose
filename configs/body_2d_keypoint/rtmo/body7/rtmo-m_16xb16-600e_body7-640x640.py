@@ -102,8 +102,128 @@ train_pipeline_stage2 = [
     dict(type='PackPoseInputs'),
 ]
 
+# data settings
 data_mode = 'bottomup'
 data_root = 'data/'
+
+# mapping
+aic_coco = [
+    (0, 6),
+    (1, 8),
+    (2, 10),
+    (3, 5),
+    (4, 7),
+    (5, 9),
+    (6, 12),
+    (7, 14),
+    (8, 16),
+    (9, 11),
+    (10, 13),
+    (11, 15),
+]
+
+crowdpose_coco = [
+    (0, 5),
+    (1, 6),
+    (2, 7),
+    (3, 8),
+    (4, 9),
+    (5, 10),
+    (6, 11),
+    (7, 12),
+    (8, 13),
+    (9, 14),
+    (10, 15),
+    (11, 16),
+]
+
+mpii_coco = [
+    (0, 16),
+    (1, 14),
+    (2, 12),
+    (3, 11),
+    (4, 13),
+    (5, 15),
+    (10, 10),
+    (11, 8),
+    (12, 6),
+    (13, 5),
+    (14, 7),
+    (15, 9),
+]
+
+jhmdb_coco = [
+    (3, 6),
+    (4, 5),
+    (5, 12),
+    (6, 11),
+    (7, 8),
+    (8, 7),
+    (9, 14),
+    (10, 13),
+    (11, 10),
+    (12, 9),
+    (13, 16),
+    (14, 15),
+]
+
+halpe_coco = [
+    (0, 0),
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    (11, 11),
+    (12, 12),
+    (13, 13),
+    (14, 14),
+    (15, 15),
+    (16, 16),
+]
+
+ochuman_coco = [
+    (0, 0),
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    (11, 11),
+    (12, 12),
+    (13, 13),
+    (14, 14),
+    (15, 15),
+    (16, 16),
+]
+
+posetrack_coco = [
+    (0, 0),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    (11, 11),
+    (12, 12),
+    (13, 13),
+    (14, 14),
+    (15, 15),
+    (16, 16),
+]
 
 # train datasets
 dataset_coco = dict(
@@ -112,8 +232,98 @@ dataset_coco = dict(
     data_mode=data_mode,
     ann_file='coco/annotations/person_keypoints_train2017.json',
     data_prefix=dict(img='coco/train2017/'),
-    pipeline=train_pipeline_stage1,
+    pipeline=[
+        dict(
+            type='KeypointConverter',
+            num_keypoints=17,
+            mapping=[(i, i) for i in range(17)])
+    ],
 )
+
+dataset_aic = dict(
+    type='AicDataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='aic/annotations/aic_train.json',
+    data_prefix=dict(img='pose/ai_challenge/ai_challenger_keypoint'
+                     '_train_20170902/keypoint_train_images_20170902/'),
+    pipeline=[
+        dict(type='KeypointConverter', num_keypoints=17, mapping=aic_coco)
+    ],
+)
+
+dataset_crowdpose = dict(
+    type='CrowdPoseDataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='crowdpose/annotations/mmpose_crowdpose_trainval.json',
+    data_prefix=dict(img='pose/CrowdPose/images/'),
+    pipeline=[
+        dict(
+            type='KeypointConverter', num_keypoints=17, mapping=crowdpose_coco)
+    ],
+)
+
+dataset_mpii = dict(
+    type='MpiiDataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='mpii/annotations/mpii_train.json',
+    data_prefix=dict(img='pose/MPI/images/'),
+    pipeline=[
+        dict(type='KeypointConverter', num_keypoints=17, mapping=mpii_coco)
+    ],
+)
+
+dataset_jhmdb = dict(
+    type='JhmdbDataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='jhmdb/annotations/Sub1_train.json',
+    data_prefix=dict(img='pose/JHMDB/'),
+    pipeline=[
+        dict(type='KeypointConverter', num_keypoints=17, mapping=jhmdb_coco)
+    ],
+)
+
+dataset_halpe = dict(
+    type='HalpeDataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='halpe/annotations/halpe_train_v1.json',
+    data_prefix=dict(img='pose/Halpe/hico_20160224_det/images/train2015'),
+    pipeline=[
+        dict(type='KeypointConverter', num_keypoints=17, mapping=halpe_coco)
+    ],
+)
+
+dataset_posetrack = dict(
+    type='PoseTrack18Dataset',
+    data_root=data_root,
+    data_mode=data_mode,
+    ann_file='posetrack18/annotations/posetrack18_train.json',
+    data_prefix=dict(img='pose/PoseChallenge2018/'),
+    pipeline=[
+        dict(
+            type='KeypointConverter', num_keypoints=17, mapping=posetrack_coco)
+    ],
+)
+
+train_dataset = dict(
+    type='CombinedDataset',
+    metainfo=dict(from_file=metafile),
+    datasets=[
+        dataset_coco,
+        dataset_aic,
+        dataset_crowdpose,
+        dataset_mpii,
+        dataset_jhmdb,
+        dataset_halpe,
+        dataset_posetrack,
+    ],
+    sample_ratio_factor=[1, 0.3, 0.5, 0.3, 0.3, 0.4, 0.3],
+    test_mode=False,
+    pipeline=train_pipeline_stage1)
 
 train_dataloader = dict(
     batch_size=16,
@@ -121,8 +331,9 @@ train_dataloader = dict(
     persistent_workers=True,
     pin_memory=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
-    dataset=dataset_coco)
+    dataset=train_dataset)
 
+# val datasets
 val_pipeline = [
     dict(type='LoadImage'),
     dict(
@@ -165,6 +376,7 @@ custom_hooks = [
     dict(
         type='YOLOXPoseModeSwitchHook',
         num_last_epochs=20,
+        new_train_dataset=dataset_coco,
         new_train_pipeline=train_pipeline_stage2,
         priority=48),
     dict(
@@ -190,8 +402,8 @@ custom_hooks = [
 ]
 
 # model
-widen_factor = 1.0
-deepen_factor = 1.0
+widen_factor = 0.75
+deepen_factor = 0.67
 
 model = dict(
     type='BottomupPoseEstimator',
@@ -224,14 +436,13 @@ model = dict(
         act_cfg=dict(type='Swish'),
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmdetection/v2.0/'
-            'yolox/yolox_l_8x8_300e_coco/yolox_l_8x8_300e_coco'
-            '_20211126_140236-d3bd2b23.pth',
+            checkpoint='https://download.openmmlab.com/mmpose/v1/'
+            'pretrained_models/yolox_m_8x8_300e_coco_20230829.pth',
             prefix='backbone.',
         )),
     neck=dict(
         type='HybridEncoder',
-        in_channels=[256, 512, 1024],
+        in_channels=[192, 384, 768],
         deepen_factor=deepen_factor,
         widen_factor=widen_factor,
         hidden_dim=256,
@@ -247,7 +458,7 @@ model = dict(
             type='ChannelMapper',
             in_channels=[256, 256],
             kernel_size=1,
-            out_channels=512,
+            out_channels=384,
             act_cfg=None,
             norm_cfg=dict(type='BN'),
             num_outs=2)),
@@ -260,7 +471,7 @@ model = dict(
             in_channels=256,
             cls_feat_channels=256,
             channels_per_group=36,
-            pose_vec_channels=512,
+            pose_vec_channels=384,
             widen_factor=widen_factor,
             stacked_convs=2,
             norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
@@ -274,7 +485,7 @@ model = dict(
             centralize_points=True,
             strides=[16, 32]),
         dcc_cfg=dict(
-            in_channels=512,
+            in_channels=384,
             feat_channels=128,
             num_bins=(192, 256),
             spe_channels=128,

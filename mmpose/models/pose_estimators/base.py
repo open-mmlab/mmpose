@@ -81,7 +81,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
             if callable(getattr(layer, 'switch_to_deploy', None)):
                 print_log(f'module {name} has been switched to deploy mode',
                           'current')
-                layer.switch_to_deploy()
+                layer.switch_to_deploy(self.test_cfg)
 
     @property
     def with_neck(self) -> bool:

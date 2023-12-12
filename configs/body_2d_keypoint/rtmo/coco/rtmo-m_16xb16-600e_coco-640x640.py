@@ -48,138 +48,9 @@ param_scheduler = [
     dict(type='ConstantLR', by_epoch=True, factor=1, begin=580, end=600),
 ]
 
-# model
-widen_factor = 0.75
-deepen_factor = 0.67
-metafile = 'configs/_base_/datasets/coco.py'
-
-model = dict(
-    type='BottomupPoseEstimator',
-    init_cfg=dict(
-        type='Kaiming',
-        layer='Conv2d',
-        a=2.23606797749979,
-        distribution='uniform',
-        mode='fan_in',
-        nonlinearity='leaky_relu'),
-    data_preprocessor=dict(
-        type='PoseDataPreprocessor',
-        pad_size_divisor=32,
-        mean=[0, 0, 0],
-        std=[1, 1, 1],
-        batch_augments=[
-            dict(
-                type='BatchSyncRandomResize',
-                random_size_range=(480, 800),
-                size_divisor=32,
-                interval=1),
-        ]),
-    backbone=dict(
-        type='CSPDarknet',
-        deepen_factor=deepen_factor,
-        widen_factor=widen_factor,
-        out_indices=(2, 3, 4),
-        spp_kernal_sizes=(5, 9, 13),
-        norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
-        act_cfg=dict(type='Swish'),
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose/v1/'
-            'pretrained_models/yolox_m_8x8_300e_coco_20230829.pth',
-            prefix='backbone.',
-        )),
-    neck=dict(
-        type='HybridEncoder',
-        in_channels=[192, 384, 768],
-        deepen_factor=deepen_factor,
-        widen_factor=widen_factor,
-        hidden_dim=256,
-        output_indices=[1, 2],
-        encoder_cfg=dict(
-            self_attn_cfg=dict(embed_dims=256, num_heads=8, dropout=0.0),
-            ffn_cfg=dict(
-                embed_dims=256,
-                feedforward_channels=1024,
-                ffn_drop=0.0,
-                act_cfg=dict(type='GELU'))),
-        projector=dict(
-            type='ChannelMapper',
-            in_channels=[256, 256],
-            kernel_size=1,
-            out_channels=384,
-            act_cfg=None,
-            norm_cfg=dict(type='BN'),
-            num_outs=2)),
-    head=dict(
-        type='RTMOHead',
-        num_keypoints=17,
-        featmap_strides=(16, 32),
-        head_module_cfg=dict(
-            num_classes=1,
-            in_channels=256,
-            cls_feat_channels=256,
-            channels_per_group=36,
-            pose_vec_channels=384,
-            widen_factor=widen_factor,
-            stacked_convs=2,
-            norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
-            act_cfg=dict(type='Swish')),
-        assigner=dict(
-            type='SimOTAAssigner',
-            dynamic_k_indicator='oks',
-            oks_calculator=dict(type='PoseOKS')),
-        prior_generator=dict(
-            type='MlvlPointGenerator',
-            centralize_points=True,
-            strides=[16, 32]),
-        dcc_cfg=dict(
-            in_channels=384,
-            feat_channels=128,
-            num_bins=(192, 256),
-            spe_cfg=dict(out_channels=128, temperature=300),
-            gau_cfg=dict(
-                s=128,
-                expansion_factor=2,
-                dropout_rate=0.0,
-                drop_path=0.0,
-                act_fn='SiLU',
-                pos_enc='add')),
-        overlaps_power=0.5,
-        loss_cls=dict(
-            type='VariFocalLoss',
-            reduction='sum',
-            use_target_weight=True,
-            loss_weight=1.0),
-        loss_bbox=dict(
-            type='IoULoss',
-            mode='square',
-            eps=1e-16,
-            reduction='sum',
-            loss_weight=5.0),
-        loss_oks=dict(
-            type='OKSLoss',
-            reduction='none',
-            metainfo=metafile,
-            loss_weight=30.0),
-        loss_vis=dict(
-            type='BCELoss',
-            use_target_weight=True,
-            reduction='mean',
-            loss_weight=1.0),
-        loss_mle=dict(
-            type='MLECCLoss',
-            use_target_weight=True,
-            loss_weight=1e-2,
-        ),
-        loss_bbox_aux=dict(type='L1Loss', reduction='sum', loss_weight=1.0),
-    ),
-    test_cfg=dict(
-        score_thr=0.1,
-        nms_thr=0.65,
-    ))
-
 # data
 input_size = (640, 640)
+metafile = 'configs/_base_/datasets/coco.py'
 codec = dict(type='YOLOXPoseAnnotationProcessor', input_size=input_size)
 
 train_pipeline_stage1 = [
@@ -299,11 +170,8 @@ custom_hooks = [
     dict(
         type='RTMOModeSwitchHook',
         epoch_attributes={
-            0: [{
-                'use_kpt_reg': True
-            }],
             280: [{
-                'use_kpt_reg': False,
+                'proxy_target_cc': True,
                 'overlaps_power': 1.0,
                 'loss_cls.loss_weight': 2.0,
                 'loss_mle.loss_weight': 5.0,
@@ -320,3 +188,133 @@ custom_hooks = [
         strict_load=False,
         priority=49),
 ]
+
+# model
+widen_factor = 0.75
+deepen_factor = 0.67
+
+model = dict(
+    type='BottomupPoseEstimator',
+    init_cfg=dict(
+        type='Kaiming',
+        layer='Conv2d',
+        a=2.23606797749979,
+        distribution='uniform',
+        mode='fan_in',
+        nonlinearity='leaky_relu'),
+    data_preprocessor=dict(
+        type='PoseDataPreprocessor',
+        pad_size_divisor=32,
+        mean=[0, 0, 0],
+        std=[1, 1, 1],
+        batch_augments=[
+            dict(
+                type='BatchSyncRandomResize',
+                random_size_range=(480, 800),
+                size_divisor=32,
+                interval=1),
+        ]),
+    backbone=dict(
+        type='CSPDarknet',
+        deepen_factor=deepen_factor,
+        widen_factor=widen_factor,
+        out_indices=(2, 3, 4),
+        spp_kernal_sizes=(5, 9, 13),
+        norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
+        act_cfg=dict(type='Swish'),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='https://download.openmmlab.com/mmpose/v1/'
+            'pretrained_models/yolox_m_8x8_300e_coco_20230829.pth',
+            prefix='backbone.',
+        )),
+    neck=dict(
+        type='HybridEncoder',
+        in_channels=[192, 384, 768],
+        deepen_factor=deepen_factor,
+        widen_factor=widen_factor,
+        hidden_dim=256,
+        output_indices=[1, 2],
+        encoder_cfg=dict(
+            self_attn_cfg=dict(embed_dims=256, num_heads=8, dropout=0.0),
+            ffn_cfg=dict(
+                embed_dims=256,
+                feedforward_channels=1024,
+                ffn_drop=0.0,
+                act_cfg=dict(type='GELU'))),
+        projector=dict(
+            type='ChannelMapper',
+            in_channels=[256, 256],
+            kernel_size=1,
+            out_channels=384,
+            act_cfg=None,
+            norm_cfg=dict(type='BN'),
+            num_outs=2)),
+    head=dict(
+        type='RTMOHead',
+        num_keypoints=17,
+        featmap_strides=(16, 32),
+        head_module_cfg=dict(
+            num_classes=1,
+            in_channels=256,
+            cls_feat_channels=256,
+            channels_per_group=36,
+            pose_vec_channels=384,
+            widen_factor=widen_factor,
+            stacked_convs=2,
+            norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
+            act_cfg=dict(type='Swish')),
+        assigner=dict(
+            type='SimOTAAssigner',
+            dynamic_k_indicator='oks',
+            oks_calculator=dict(type='PoseOKS')),
+        prior_generator=dict(
+            type='MlvlPointGenerator',
+            centralize_points=True,
+            strides=[16, 32]),
+        dcc_cfg=dict(
+            in_channels=384,
+            feat_channels=128,
+            num_bins=(192, 256),
+            spe_channels=128,
+            gau_cfg=dict(
+                s=128,
+                expansion_factor=2,
+                dropout_rate=0.0,
+                drop_path=0.0,
+                act_fn='SiLU',
+                pos_enc='add')),
+        overlaps_power=0.5,
+        loss_cls=dict(
+            type='VariFocalLoss',
+            reduction='sum',
+            use_target_weight=True,
+            loss_weight=1.0),
+        loss_bbox=dict(
+            type='IoULoss',
+            mode='square',
+            eps=1e-16,
+            reduction='sum',
+            loss_weight=5.0),
+        loss_oks=dict(
+            type='OKSLoss',
+            reduction='none',
+            metainfo=metafile,
+            loss_weight=30.0),
+        loss_vis=dict(
+            type='BCELoss',
+            use_target_weight=True,
+            reduction='mean',
+            loss_weight=1.0),
+        loss_mle=dict(
+            type='MLECCLoss',
+            use_target_weight=True,
+            loss_weight=1e-2,
+        ),
+        loss_bbox_aux=dict(type='L1Loss', reduction='sum', loss_weight=1.0),
+    ),
+    test_cfg=dict(
+        input_size=input_size,
+        score_thr=0.1,
+        nms_thr=0.65,
+    ))

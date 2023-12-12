@@ -236,8 +236,11 @@ class HybridEncoder(BaseModule):
                 src_flatten = proj_feats[enc_ind].flatten(2).permute(
                     0, 2, 1).contiguous()
 
-                pos_enc = self.sincos_pos_enc(size=(h, w))
-                pos_enc = pos_enc.transpose(-1, -2).reshape(1, h * w, -1)
+                if torch.onnx.is_in_onnx_export():
+                    pos_enc = getattr(self, f'pos_enc_{i}')
+                else:
+                    pos_enc = self.sincos_pos_enc(size=(h, w))
+                    pos_enc = pos_enc.transpose(-1, -2).reshape(1, h * w, -1)
                 memory = self.encoder[i](
                     src_flatten, query_pos=pos_enc, key_padding_mask=None)
 
@@ -276,3 +279,20 @@ class HybridEncoder(BaseModule):
             outs = self.projector(outs)
 
         return tuple(outs)
+
+    def switch_to_deploy(self, test_cfg):
+        """Switch to deploy mode."""
+
+        if getattr(self, 'deploy', False):
+            return
+
+        if self.num_encoder_layers > 0:
+            for i, enc_ind in enumerate(self.use_encoder_idx):
+                h, w = test_cfg['input_size']
+                h = int(h / 2**(3 + enc_ind))
+                w = int(w / 2**(3 + enc_ind))
+                pos_enc = self.sincos_pos_enc(size=(h, w))
+                pos_enc = pos_enc.transpose(-1, -2).reshape(1, h * w, -1)
+                self.register_buffer(f'pos_enc_{i}', pos_enc)
+
+        self.deploy = True

@@ -1,12 +1,12 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=600, val_interval=20, dynamic_intervals=[(580, 1)])
+train_cfg = dict(max_epochs=700, val_interval=50, dynamic_intervals=[(670, 1)])
 
 auto_scale_lr = dict(base_batch_size=256)
 
 default_hooks = dict(
-    checkpoint=dict(type='CheckpointHook', interval=40, max_keep_ckpts=3))
+    checkpoint=dict(type='CheckpointHook', interval=50, max_keep_ckpts=3))
 
 optim_wrapper = dict(
     type='OptimWrapper',
@@ -31,26 +31,26 @@ param_scheduler = [
         type='CosineAnnealingLR',
         eta_min=0.0002,
         begin=5,
-        T_max=280,
-        end=280,
+        T_max=350,
+        end=349,
         by_epoch=True,
         convert_to_iter_based=True),
     # this scheduler is used to increase the lr from 2e-4 to 5e-4
-    dict(type='ConstantLR', by_epoch=True, factor=2.5, begin=280, end=281),
+    dict(type='ConstantLR', by_epoch=True, factor=2.5, begin=349, end=350),
     dict(
         type='CosineAnnealingLR',
         eta_min=0.0002,
-        begin=281,
-        T_max=300,
-        end=580,
+        begin=350,
+        T_max=320,
+        end=670,
         by_epoch=True,
         convert_to_iter_based=True),
-    dict(type='ConstantLR', by_epoch=True, factor=1, begin=580, end=600),
+    dict(type='ConstantLR', by_epoch=True, factor=1, begin=670, end=700),
 ]
 
 # data
 input_size = (640, 640)
-metafile = 'configs/_base_/datasets/coco.py'
+metafile = 'configs/_base_/datasets/crowdpose.py'
 codec = dict(type='YOLOXPoseAnnotationProcessor', input_size=input_size)
 
 train_pipeline_stage1 = [
@@ -63,9 +63,9 @@ train_pipeline_stage1 = [
     dict(
         type='BottomupRandomAffine',
         input_size=(640, 640),
-        shift_factor=0.1,
-        rotate_factor=10,
-        scale_factor=(0.75, 1.0),
+        shift_factor=0.2,
+        rotate_factor=30,
+        scale_factor=(0.5, 1.5),
         pad_val=114,
         distribution='uniform',
         transform_mode='perspective',
@@ -75,7 +75,7 @@ train_pipeline_stage1 = [
     dict(
         type='YOLOXMixUp',
         img_scale=(640, 640),
-        ratio_range=(0.8, 1.6),
+        ratio_range=(0.6, 1.6),
         pad_val=114.0,
         pre_transform=[dict(type='LoadImage', backend_args=None)]),
     dict(type='YOLOXHSVRandomAug'),
@@ -89,6 +89,9 @@ train_pipeline_stage2 = [
     dict(
         type='BottomupRandomAffine',
         input_size=(640, 640),
+        shift_prob=0,
+        rotate_prob=0,
+        scale_prob=0,
         scale_type='long',
         pad_val=(114, 114, 114),
         bbox_keep_corner=False,
@@ -106,12 +109,12 @@ data_mode = 'bottomup'
 data_root = 'data/'
 
 # train datasets
-dataset_coco = dict(
-    type='CocoDataset',
+dataset_crowdpose = dict(
+    type='CrowdPoseDataset',
     data_root=data_root,
     data_mode=data_mode,
-    ann_file='coco/annotations/person_keypoints_train2017.json',
-    data_prefix=dict(img='coco/train2017/'),
+    ann_file='crowdpose/annotations/mmpose_crowdpose_trainval.json',
+    data_prefix=dict(img='pose/CrowdPose/images/'),
     pipeline=train_pipeline_stage1,
 )
 
@@ -121,7 +124,7 @@ train_dataloader = dict(
     persistent_workers=True,
     pin_memory=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
-    dataset=dataset_coco)
+    dataset=dataset_crowdpose)
 
 val_pipeline = [
     dict(type='LoadImage'),
@@ -141,11 +144,11 @@ val_dataloader = dict(
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
-        type='CocoDataset',
+        type='CrowdPoseDataset',
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='coco/annotations/person_keypoints_val2017.json',
-        data_prefix=dict(img='coco/val2017/'),
+        ann_file='crowdpose/annotations/mmpose_crowdpose_test.json',
+        data_prefix=dict(img='pose/CrowdPose/images/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -154,9 +157,11 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'coco/annotations/person_keypoints_val2017.json',
     score_mode='bbox',
     nms_mode='none',
+    iou_type='keypoints_crowd',
+    prefix='crowdpose',
+    use_area=False,
 )
 test_evaluator = val_evaluator
 
@@ -164,13 +169,13 @@ test_evaluator = val_evaluator
 custom_hooks = [
     dict(
         type='YOLOXPoseModeSwitchHook',
-        num_last_epochs=20,
+        num_last_epochs=30,
         new_train_pipeline=train_pipeline_stage2,
         priority=48),
     dict(
         type='RTMOModeSwitchHook',
         epoch_attributes={
-            280: [{
+            350: [{
                 'proxy_target_cc': True,
                 'overlaps_power': 1.0,
                 'loss_cls.loss_weight': 2.0,
@@ -253,7 +258,7 @@ model = dict(
             num_outs=2)),
     head=dict(
         type='RTMOHead',
-        num_keypoints=17,
+        num_keypoints=14,
         featmap_strides=(16, 32),
         head_module_cfg=dict(
             num_classes=1,
@@ -310,7 +315,7 @@ model = dict(
         loss_mle=dict(
             type='MLECCLoss',
             use_target_weight=True,
-            loss_weight=1e-2,
+            loss_weight=1e-3,
         ),
         loss_bbox_aux=dict(type='L1Loss', reduction='sum', loss_weight=1.0),
     ),

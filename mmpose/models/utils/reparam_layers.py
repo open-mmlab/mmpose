@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import types
+from typing import Dict, Optional
 
 import numpy as np
 import torch
@@ -179,7 +180,7 @@ class RepVGGBlock(BaseModule):
         return (kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1) + kernelid,
                 bias3x3 + bias1x1 + biasid)
 
-    def switch_to_deploy(self):
+    def switch_to_deploy(self, test_cfg: Optional[Dict] = None):
         """Switches the block to deployment mode.
 
         In deployment mode, the block uses a single convolution operation
