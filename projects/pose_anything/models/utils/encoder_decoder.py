@@ -567,7 +567,7 @@ def adj_from_skeleton(num_pts, skeleton, mask, device='cuda'):
         edges = torch.tensor(skeleton[b])
         adj = torch.zeros(num_pts, num_pts, device=device)
         adj[edges[:, 0], edges[:, 1]] = 1
-        adj_mx = torch.concatenate((adj_mx, adj.unsqueeze(0)), dim=0)
+        adj_mx = torch.cat((adj_mx, adj.unsqueeze(0)), dim=0)
     trans_adj_mx = torch.transpose(adj_mx, 1, 2)
     cond = (trans_adj_mx > adj_mx).float()
     adj = adj_mx + trans_adj_mx * cond - adj_mx * cond
