@@ -2,18 +2,17 @@
 
 <!-- [ALGORITHM] -->
 
-# TODO: update the following link after submiting RTMO paper to ArXiv
-
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/2204.06806">YOLO-Pose (CVPRW'2022)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/2312.07526">RTMO</a></summary>
 
 ```bibtex
-@inproceedings{maji2022yolo,
-  title={Yolo-pose: Enhancing yolo for multi person pose estimation using object keypoint similarity loss},
-  author={Maji, Debapriya and Nagori, Soyeb and Mathew, Manu and Poddar, Deepak},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={2637--2646},
-  year={2022}
+@misc{lu2023rtmo,
+      title={{RTMO}: Towards High-Performance One-Stage Real-Time Multi-Person Pose Estimation},
+      author={Peng Lu and Tao Jiang and Yining Li and Xiangtai Li and Kai Chen and Wenming Yang},
+      year={2023},
+      eprint={2312.07526},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
 }
 ```
 
