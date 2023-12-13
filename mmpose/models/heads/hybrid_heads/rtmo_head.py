@@ -581,8 +581,12 @@ class DCC(BaseModule):
             uv = self.act_fn(uv)
 
             u, v, base = torch.split(uv, [self.e, self.e, self.s], dim=-1)
-            q = base * gamma_q + beta_q
-            k = base * gamma_k + beta_k
+            if not torch.onnx.is_in_onnx_export():
+                q = base * gamma_q.to(base) + beta_q.to(base)
+                k = base * gamma_k.to(base) + beta_k.to(base)
+            else:
+                q = base * gamma_q + beta_q
+                k = base * gamma_k + beta_k
             qk = torch.matmul(q, k.transpose(-1, -2))
 
             kernel = torch.square(torch.nn.functional.relu(qk / self.sqrt_s))
@@ -619,12 +623,18 @@ class DCC(BaseModule):
             center, scale = bbox_cs.split(2, dim=-1)
             center = center - grids
 
-            x_bins = x_bins_ * scale[..., 0:1] + center[..., 0:1]
-            y_bins = y_bins_ * scale[..., 1:2] + center[..., 1:2]
+            if not torch.onnx.is_in_onnx_export():
+                x_bins = x_bins_.to(scale) * scale[..., 0:1] + center[..., 0:1]
+                y_bins = y_bins_.to(scale) * scale[..., 1:2] + center[..., 1:2]
+                freq_x = x_bins.unsqueeze(-1) / dim_t.to(scale)
+                freq_y = y_bins.unsqueeze(-1) / dim_t.to(scale)
+            else:
+                x_bins = x_bins_ * scale[..., 0:1] + center[..., 0:1]
+                y_bins = y_bins_ * scale[..., 1:2] + center[..., 1:2]
+                freq_x = x_bins.unsqueeze(-1) / dim_t
+                freq_y = y_bins.unsqueeze(-1) / dim_t
 
-            freq_x = x_bins.unsqueeze(-1) / dim_t
             spe_x = torch.cat((freq_x.cos(), freq_x.sin()), dim=-1)
-            freq_y = y_bins.unsqueeze(-1) / dim_t
             spe_y = torch.cat((freq_y.cos(), freq_y.sin()), dim=-1)
 
             x_bins_enc = self.x_fc(spe_x).transpose(-1, -2).contiguous()
@@ -639,7 +649,11 @@ class DCC(BaseModule):
             x = (x_hms * x_bins.unsqueeze(-2)).sum(dim=-1) + grids[..., 0:1]
             y = (y_hms * y_bins.unsqueeze(-2)).sum(dim=-1) + grids[..., 1:2]
 
-            return torch.stack((x, y), dim=-1)
+            keypoints = torch.stack((x, y), dim=-1)
+
+            if not torch.onnx.is_in_onnx_export():
+                keypoints = keypoints.squeeze(0)
+            return keypoints
 
         self.forward_test = types.MethodType(_forward_test, self)
 

@@ -90,6 +90,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
             scope=scope,
             show_progress=show_progress)
         self.model = revert_sync_batchnorm(self.model)
+        self.model.switch_to_deploy()
 
         # assign dataset metainfo to self.visualizer
         self.visualizer.set_dataset_meta(self.model.dataset_meta)
