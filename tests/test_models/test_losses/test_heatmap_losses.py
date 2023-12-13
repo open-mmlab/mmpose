@@ -5,7 +5,7 @@ import torch
 
 from mmpose.models.losses.heatmap_loss import (AdaptiveWingLoss,
                                                FocalHeatmapLoss,
-                                               KeypointMSELoss)
+                                               KeypointMSELoss, MLECCLoss)
 
 
 class TestAdaptiveWingLoss(TestCase):
@@ -117,3 +117,39 @@ class TestKeypointMSELoss(TestCase):
                 loss(fake_pred, fake_label, fake_weight, fake_mask),
                 torch.tensor(0.),
                 atol=1e-4))
+
+
+class TestMLECCLoss(TestCase):
+
+    def setUp(self):
+        self.outputs = (torch.rand(10, 2, 5), torch.rand(10, 2, 5))
+        self.targets = (torch.rand(10, 2, 5), torch.rand(10, 2, 5))
+
+    def test_mean_reduction_log_mode(self):
+        loss_func = MLECCLoss(reduction='mean', mode='log')
+        loss = loss_func(self.outputs, self.targets)
+        self.assertIsInstance(loss, torch.Tensor)
+
+    def test_sum_reduction_linear_mode(self):
+        loss_func = MLECCLoss(reduction='sum', mode='linear')
+        loss = loss_func(self.outputs, self.targets)
+        self.assertIsInstance(loss, torch.Tensor)
+
+    def test_none_reduction_square_mode(self):
+        loss_func = MLECCLoss(reduction='none', mode='square')
+        loss = loss_func(self.outputs, self.targets)
+        self.assertIsInstance(loss, torch.Tensor)
+
+    def test_target_weight(self):
+        target_weight = torch.rand(10)  # Random weights
+        loss_func = MLECCLoss(use_target_weight=True)
+        loss = loss_func(self.outputs, self.targets, target_weight)
+        self.assertIsInstance(loss, torch.Tensor)
+
+    def test_invalid_reduction(self):
+        with self.assertRaises(AssertionError):
+            MLECCLoss(reduction='invalid_reduction')
+
+    def test_invalid_mode(self):
+        with self.assertRaises(AssertionError):
+            MLECCLoss(mode='invalid_mode')

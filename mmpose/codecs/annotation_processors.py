@@ -39,6 +39,14 @@ class YOLOXPoseAnnotationProcessor(BaseAnnotationProcessor):
         keypoints_visible='keypoints_visible',
         area='areas',
     )
+    instance_mapping_table = dict(
+        bbox='bboxes',
+        bbox_score='bbox_scores',
+        keypoints='keypoints',
+        keypoints_visible='keypoints_visible',
+        # remove 'bbox_scales' in default instance_mapping_table to avoid
+        # length mismatch during training with multiple datasets
+    )
 
     def __init__(self,
                  expand_bbox: bool = False,
