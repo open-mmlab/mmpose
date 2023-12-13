@@ -18,6 +18,20 @@
 <!-- [DATASET] -->
 
 <details>
+<summary align="right"><a href="https://arxiv.org/abs/1711.06475">AI Challenger (ArXiv'2017)</a></summary>
+
+```bibtex
+@article{wu2017ai,
+  title={Ai challenger: A large-scale dataset for going deeper in image understanding},
+  author={Wu, Jiahong and Zheng, He and Zhao, Bo and Li, Yixin and Yan, Baoming and Liang, Rui and Wang, Wenjia and Zhou, Shipei and Lin, Guosen and Fu, Yanwei and others},
+  journal={arXiv preprint arXiv:1711.06475},
+  year={2017}
+}
+```
+
+</details>
+
+<details>
 <summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
 
 ```bibtex
@@ -28,6 +42,80 @@
   pages={740--755},
   year={2014},
   organization={Springer}
+}
+```
+
+</details>
+
+<details>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html">CrowdPose (CVPR'2019)</a></summary>
+
+```bibtex
+@article{li2018crowdpose,
+  title={CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark},
+  author={Li, Jiefeng and Wang, Can and Zhu, Hao and Mao, Yihuan and Fang, Hao-Shu and Lu, Cewu},
+  journal={arXiv preprint arXiv:1812.00324},
+  year={2018}
+}
+```
+
+</details>
+
+<details>
+<summary align="right"><a href="https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html">JHMDB (ICCV'2013)</a></summary>
+
+```bibtex
+@inproceedings{Jhuang:ICCV:2013,
+  title = {Towards understanding action recognition},
+  author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},
+  booktitle = {International Conf. on Computer Vision (ICCV)},
+  month = Dec,
+  pages = {3192-3199},
+  year = {2013}
+}
+```
+
+</details>
+
+<details>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
+
+```bibtex
+@inproceedings{andriluka14cvpr,
+  author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt},
+  title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year = {2014},
+  month = {June}
+}
+```
+
+</details>
+
+<details>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html">PoseTrack18 (CVPR'2018)</a></summary>
+
+```bibtex
+@inproceedings{andriluka2018posetrack,
+  title={Posetrack: A benchmark for human pose estimation and tracking},
+  author={Andriluka, Mykhaylo and Iqbal, Umar and Insafutdinov, Eldar and Pishchulin, Leonid and Milan, Anton and Gall, Juergen and Schiele, Bernt},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={5167--5176},
+  year={2018}
+}
+```
+
+</details>
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2004.00945">Halpe (CVPR'2020)</a></summary>
+
+```bibtex
+@inproceedings{li2020pastanet,
+  title={PaStaNet: Toward Human Activity Knowledge Engine},
+  author={Li, Yong-Lu and Xu, Liang and Liu, Xinpeng and Huang, Xijie and Xu, Yue and Wang, Shiyi and Fang, Hao-Shu and Ma, Ze and Chen, Mingyang and Lu, Cewu},
+  booktitle={CVPR},
+  year={2020}
 }
 ```
 

@@ -47,6 +47,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-m_16xb16-600e_body7-640x640-39e78cc4_20231211.pth
 - Config: configs/body_2d_keypoint/rtmo/body7/rtmo-l_16xb16-600e_body7-640x640.py
   In Collection: RTMO
+  Alias: rtmo
   Metadata:
     Architecture: *id001
     Training Data: *id002
