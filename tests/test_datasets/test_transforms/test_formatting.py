@@ -105,4 +105,5 @@ class TestPackPoseInputs(TestCase):
     def test_repr(self):
         transform = PackPoseInputs(meta_keys=self.meta_keys)
         self.assertEqual(
-            repr(transform), f'PackPoseInputs(meta_keys={self.meta_keys})')
+            repr(transform), f'PackPoseInputs(meta_keys={self.meta_keys}, '
+            f'pack_transformed={transform.pack_transformed})')

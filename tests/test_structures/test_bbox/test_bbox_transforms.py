@@ -4,7 +4,8 @@ from unittest import TestCase
 import numpy as np
 
 from mmpose.structures.bbox import (bbox_clip_border, bbox_corner2xyxy,
-                                    bbox_xyxy2corner, get_pers_warp_matrix)
+                                    bbox_xyxy2corner, get_pers_warp_matrix,
+                                    get_warp_matrix)
 
 
 class TestBBoxClipBorder(TestCase):
@@ -124,3 +125,61 @@ class TestGetPersWarpMatrix(TestCase):
         # Use np.allclose to compare floating-point arrays within a tolerance
         self.assertTrue(
             np.allclose(warp_matrix, expected_matrix, rtol=1e-3, atol=1e-3))
+
+
+class TestGetWarpMatrix(TestCase):
+
+    def test_basic_transformation(self):
+        # Test with basic parameters
+        center = np.array([100, 100])
+        scale = np.array([50, 50])
+        rot = 0
+        output_size = (200, 200)
+        warp_matrix = get_warp_matrix(center, scale, rot, output_size)
+        expected_matrix = np.array([[4, 0, -300], [0, 4, -300]])
+        np.testing.assert_array_almost_equal(warp_matrix, expected_matrix)
+
+    def test_rotation(self):
+        # Test with rotation
+        center = np.array([100, 100])
+        scale = np.array([50, 50])
+        rot = 45  # 45 degree rotation
+        output_size = (200, 200)
+        warp_matrix = get_warp_matrix(center, scale, rot, output_size)
+        expected_matrix = np.array([[2.828427, 2.828427, -465.685303],
+                                    [-2.828427, 2.828427, 100.]])
+        np.testing.assert_array_almost_equal(warp_matrix, expected_matrix)
+
+    def test_shift(self):
+        # Test with shift
+        center = np.array([100, 100])
+        scale = np.array([50, 50])
+        rot = 0
+        output_size = (200, 200)
+        shift = (0.1, 0.1)  # 10% shift
+        warp_matrix = get_warp_matrix(
+            center, scale, rot, output_size, shift=shift)
+        expected_matrix = np.array([[4, 0, -320], [0, 4, -320]])
+        np.testing.assert_array_almost_equal(warp_matrix, expected_matrix)
+
+    def test_inverse(self):
+        # Test inverse transformation
+        center = np.array([100, 100])
+        scale = np.array([50, 50])
+        rot = 0
+        output_size = (200, 200)
+        warp_matrix = get_warp_matrix(
+            center, scale, rot, output_size, inv=True)
+        expected_matrix = np.array([[0.25, 0, 75], [0, 0.25, 75]])
+        np.testing.assert_array_almost_equal(warp_matrix, expected_matrix)
+
+    def test_aspect_ratio(self):
+        # Test with fix_aspect_ratio set to False
+        center = np.array([100, 100])
+        scale = np.array([50, 20])
+        rot = 0
+        output_size = (200, 200)
+        warp_matrix = get_warp_matrix(
+            center, scale, rot, output_size, fix_aspect_ratio=False)
+        expected_matrix = np.array([[4, 0, -300], [0, 10, -900]])
+        np.testing.assert_array_almost_equal(warp_matrix, expected_matrix)
