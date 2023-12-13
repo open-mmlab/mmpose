@@ -10,7 +10,7 @@ RTMO is a one-stage pose estimation model that achieves comparable performance w
 📌 TRY RTMO NOW
 
 ```bash
-python demo/inferencer_demo.py $IMAGE --pose2d rtmo --out-dir vis_results
+python demo/inferencer_demo.py $IMAGE --pose2d rtmo --vis-out-dir vis_results
 ```
 
 ## Introduction
