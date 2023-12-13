@@ -2,8 +2,8 @@ Collections:
 - Name: RTMO
   Paper:
     Title: 'RTMO: Towards High-Performance One-Stage Real-Time Multi-Person Pose Estimation'
-    URL: https://arxiv.org/abs/2204.06806  # TODO: update the url
-  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/yolopose.md  # TODO: update the paper
+    URL: https://arxiv.org/abs/2312.07526
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/rtmo.md
 Models:
 - Config: configs/body_2d_keypoint/rtmo/crowdpose/rtmo-s_8xb32-700e_crowdpose-640x640.py
   In Collection: RTMO
