@@ -210,8 +210,7 @@ def main():
         [cfg.model.encoder_config.img_size, cfg.model.encoder_config.img_size])
     data_cfg['joint_weights'] = None
     data_cfg['use_different_joint_weights'] = False
-    kp_src_3d = torch.cat((kp_src, torch.zeros(kp_src.shape[0], 1)),
-                                  dim=-1)
+    kp_src_3d = torch.cat((kp_src, torch.zeros(kp_src.shape[0], 1)), dim=-1)
     kp_src_3d_weight = torch.cat(
         (torch.ones_like(kp_src), torch.zeros(kp_src.shape[0], 1)), dim=-1)
     target_s, target_weight_s = genHeatMap._msra_generate_target(

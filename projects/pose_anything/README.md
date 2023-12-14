@@ -5,7 +5,7 @@
 By [Or Hirschorn](https://scholar.google.co.il/citations?user=GgFuT_QAAAAJ&hl=iw&oi=ao)
 and [Shai Avidan](https://scholar.google.co.il/citations?hl=iw&user=hpItE1QAAAAJ)
 
-![Teaser Figure](Pose_Anything_Teaser.png)
+![Teaser Figure](https://github.com/open-mmlab/mmpose/assets/26127467/96480360-1a80-41f6-88d3-d6c747506a7e)
 
 ## Introduction
 
