@@ -175,13 +175,13 @@ custom_hooks = [
     dict(
         type='RTMOModeSwitchHook',
         epoch_attributes={
-            350: [{
+            350: {
                 'proxy_target_cc': True,
                 'overlaps_power': 1.0,
                 'loss_cls.loss_weight': 2.0,
                 'loss_mle.loss_weight': 5.0,
                 'loss_oks.loss_weight': 10.0
-            }]
+            },
         },
         priority=48),
     dict(type='SyncNormHook', priority=48),

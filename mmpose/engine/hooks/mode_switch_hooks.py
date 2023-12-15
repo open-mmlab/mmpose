@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-from typing import Dict, List, Sequence
+from typing import Dict, Sequence
 
 from mmengine.hooks import Hook
 from mmengine.model import is_model_wrapper
@@ -76,10 +76,9 @@ class RTMOModeSwitchHook(Hook):
     of the training process.
 
     Args:
-        epoch_attributes (Dict[str, List[Dict]]): A dictionary where keys are
-            epoch numbers and values are lists of attribute modification
-            dictionaries. Each dictionary in the list specifies the attribute
-            to modify and its new value.
+        epoch_attributes (Dict[str, Dict]): A dictionary where keys are epoch
+        numbers and values are attribute modification dictionaries. Each
+        dictionary specifies the attribute to modify and its new value.
 
     Example:
         epoch_attributes = {
@@ -88,7 +87,7 @@ class RTMOModeSwitchHook(Hook):
         }
     """
 
-    def __init__(self, epoch_attributes: Dict[int, List[Dict]]):
+    def __init__(self, epoch_attributes: Dict[int, Dict]):
         self.epoch_attributes = epoch_attributes
 
     def before_train_epoch(self, runner: Runner):
