@@ -79,7 +79,13 @@ See [here](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.ht
 
 [MMDeploy](https://github.com/open-mmlab/mmdeploy) provides tools for easy deployment of RTMO models. [\[Install Now\]](https://mmdeploy.readthedocs.io/en/latest/get_started.html#installation)
 
-**Notice**: PyTorch **1.12+** is required to export the ONNX model of RTMO!
+**⭕ Notice**:
+
+- PyTorch **1.12+** is required to export the ONNX model of RTMO!
+
+- Currently, you need to install mmdeploy from the `main` branch source code to deploy RTMO:
+
+  `pip install git+https://github.com/open-mmlab/mmdeploy.git@main`
 
 ### ONNX Model Export
 
