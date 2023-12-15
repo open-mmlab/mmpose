@@ -40,6 +40,12 @@ We also provide some documentation listed below to help you get started:
   <img src="https://github.com/open-mmlab/mmpose/assets/13503330/5b637d76-41dd-4376-9a7f-854cd120799d" width=800 height=200 />
   </div><br/>
 
+- **[♾️PoseAnything](./pose_anything/)**: A Graph-Based Approach for Category-Agnostic Pose Estimation
+
+  <div align=center>
+  <img src="https://github.com/open-mmlab/mmpose/assets/26127467/47acbd42-e812-4994-b287-b2a2b5ccbd80" width="800"/>
+  </div><br/>
+
 - **[:art:MMPose4AIGC](./mmpose4aigc)**: Guide AI image generation with MMPose
 
   <div align=center>
