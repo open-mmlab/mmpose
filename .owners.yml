@@ -7,10 +7,10 @@ assign:
   scedule:
     '*/1 * * * *'
   assignees:
-    - Tau-J
-    - LareinaM
     - Ben-Louis
-    - LareinaM
+    - xiexinch
     - Ben-Louis
-    - Tau-J
-    - Tau-J
+    - xiexinch
+    - Ben-Louis
+    - Ben-Louis
+    - Ben-Louis
