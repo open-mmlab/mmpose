@@ -5,13 +5,13 @@ Collections:
     URL: https://arxiv.org/abs/2312.07526
   README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/rtmo.md
 Models:
-- Config: configs/body_2d_keypoint/rtmo/crowdpose/rtmo-s_8xb32-700e_crowdpose-640x640.py
+- Config: configs/body_2d_keypoint/rtmo/coco/rtmo-s_8xb32-600e_coco-640x640.py
   In Collection: RTMO
   Metadata:
     Architecture: &id001
     - RTMO
     Training Data: CrowdPose
-  Name: rtmo-s_8xb32-700e_crowdpose-640x640
+  Name: rtmo-s_8xb32-600e_coco-640x640
   Results:
   - Dataset: CrowdPose
     Metrics:
