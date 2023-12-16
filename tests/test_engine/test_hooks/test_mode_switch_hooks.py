@@ -81,10 +81,10 @@ class TestRTMOModeSwitchHook(TestCase):
 
         hook = RTMOModeSwitchHook(epoch_attributes={
             0: {
-                'head.attr1': True
+                'attr1': True
             },
             10: {
-                'head.loss.attr2': 0.5
+                'loss.attr2': 0.5
             }
         })
 
