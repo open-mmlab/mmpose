@@ -103,6 +103,6 @@ class RTMOModeSwitchHook(Hook):
 
         if epoch in self.epoch_attributes:
             for key, value in self.epoch_attributes[epoch].items():
-                rsetattr(model, key, value)
+                rsetattr(model.head, key, value)
                 runner.logger.info(
-                    f'Change model.{key} to {rgetattr(model, key)}')
+                    f'Change model.head.{key} to {rgetattr(model.head, key)}')

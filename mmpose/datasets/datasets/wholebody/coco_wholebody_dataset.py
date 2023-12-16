@@ -105,6 +105,12 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
         keypoints = _keypoints[..., :2]
         keypoints_visible = np.minimum(1, _keypoints[..., 2] > 0)
 
+        if 'area' in ann:
+            area = np.array(ann['area'], dtype=np.float32)
+        else:
+            area = np.clip((x2 - x1) * (y2 - y1) * 0.53, a_min=1.0, a_max=None)
+            area = np.array(area, dtype=np.float32)
+
         num_keypoints = ann['num_keypoints']
 
         data_info = {
@@ -117,6 +123,7 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
             'keypoints_visible': keypoints_visible,
             'iscrowd': ann['iscrowd'],
             'segmentation': ann['segmentation'],
+            'area': area,
             'id': ann['id'],
             'category_id': ann['category_id'],
             # store the raw annotation of the instance
