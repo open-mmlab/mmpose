@@ -208,7 +208,7 @@ class KLDiscretLoss(nn.Module):
 
             if self.mask is not None:
                 t_loss = t_loss.reshape(N, K)
-                t_loss[:, self.mask] = t_loss[:, self.mask] * self.mask
+                t_loss[:, self.mask] = t_loss[:, self.mask] * self.mask_weight
 
             loss = loss + t_loss.sum()
 
