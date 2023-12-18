@@ -44,6 +44,8 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Dec. 2023:
+  - Update RTMW models. The RTMW-l model achieves 70.1 mAP on COCO-Wholebody val set.
 - Sep. 2023:
   - Add RTMW models trained on combined datasets. The alpha version of RTMW-x model achieves 70.2 mAP on COCO-Wholebody val set. You can try it [Here](https://openxlab.org.cn/apps/detail/mmpose/RTMPose). The technical report will be released soon.
   - Add YOLOX and RTMDet models trained on HumanArt dataset.
@@ -292,9 +294,9 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 </details>
 
 <details open>
-<summary><b>Cocktail13</b></summary>
+<summary><b>Cocktail14</b></summary>
 
-- `Cocktail13` denotes model trained on 13 public datasets:
+- `Cocktail14` denotes model trained on 14 public datasets:
   - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
   - [CrowdPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#crowdpose)
   - [MPII](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#mpii)
@@ -308,11 +310,15 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
   - [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
   - [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
   - [LaPa](https://github.com/JDAI-CV/lapa-dataset)
+  - [InterHand](https://mks0601.github.io/InterHand2.6M/)
 
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
-| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail13-256x192.py) |  256x192   |   67.2   |   75.4   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-256x192-fbef0d61_20230925.pth) |
-| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail13-384x288.py) |  384x288   |   70.2   |   77.9   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-384x288-0949e3a9_20230925.pth) |
+| [RTMW-m](./rtmpose/wholebody_2d_keypoint/rtmw-m_8xb1024-270e_cocktail14-256x192.py) |  256x192   |   58.2   |   67.3   |        4.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-l-m_simcc-cocktail14_270e-256x192-20231122.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmw/onnx_sdk/rtmw-dw-m-s_simcc-cocktail14_270e-256x192_20231122.zip) |
+| [RTMW-l](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail14-256x192.py) |  256x192   |   66.0   |   74.6   |        7.9        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-256x192-20231122.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmw/onnx_sdk/rtmw-dw-x-l_simcc-cocktail14_270e-256x192_20231122.zip) |
+| [RTMW-x](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail14-256x192.py) |  256x192   |   67.2   |   75.2   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-256x192-13a2546d_20231208.pth) |
+| [RTMW-l](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail14-384x288.py) |  384x288   |   70.1   |   78.0   |       17.7        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmw/onnx_sdk/rtmw-dw-x-l_simcc-cocktail14_270e-384x288_20231122.zip) |
+| [RTMW-x](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail14-384x288.py) |  384x288   |   70.2   |   78.1   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth) |
 
 </details>
 
