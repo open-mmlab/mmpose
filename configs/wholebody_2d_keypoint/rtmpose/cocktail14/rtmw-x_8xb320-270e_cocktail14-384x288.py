@@ -1,35 +1,4 @@
-# Copyright (c) OpenMMLab. All rights reserved.
-from mmengine.config import read_base
-
-with read_base():
-    from mmpose.configs._base_.default_runtime import *  # noqa
-
-from albumentations.augmentations import Blur, CoarseDropout, MedianBlur
-from mmdet.engine.hooks import PipelineSwitchHook
-from mmengine.dataset import DefaultSampler
-from mmengine.hooks import EMAHook
-from mmengine.model import PretrainedInit
-from mmengine.optim import CosineAnnealingLR, LinearLR, OptimWrapper
-from torch.nn import SiLU, SyncBatchNorm
-from torch.optim import AdamW
-
-from mmpose.codecs import SimCCLabel
-from mmpose.datasets import (AicDataset, CocoWholeBodyDataset, COFWDataset,
-                             CombinedDataset, CrowdPoseDataset,
-                             Face300WDataset, GenerateTarget,
-                             GetBBoxCenterScale, HalpeDataset,
-                             HumanArt21Dataset, InterHand2DDoubleDataset,
-                             JhmdbDataset, KeypointConverter, LapaDataset,
-                             LoadImage, MpiiDataset, PackPoseInputs,
-                             PoseTrack18Dataset, RandomFlip, RandomHalfBody,
-                             TopdownAffine, UBody2dDataset, WFLWDataset)
-from mmpose.datasets.transforms.common_transforms import (
-    Albumentation, PhotometricDistortion, RandomBBoxTransform)
-from mmpose.engine.hooks import ExpMomentumEMA
-from mmpose.evaluation import CocoWholeBodyMetric
-from mmpose.models import (CSPNeXt, CSPNeXtPAFPN, KLDiscretLoss,
-                           PoseDataPreprocessor, RTMWHead,
-                           TopdownPoseEstimator)
+_base_ = ['../../../_base_/default_runtime.py']
 
 # common setting
 num_keypoints = 133
@@ -42,13 +11,13 @@ base_lr = 5e-4
 train_batch_size = 320
 val_batch_size = 32
 
-train_cfg.update(max_epochs=max_epochs, val_interval=10)  # noqa
+train_cfg = dict(max_epochs=max_epochs, val_interval=10)
 randomness = dict(seed=21)
 
 # optimizer
 optim_wrapper = dict(
-    type=OptimWrapper,
-    optimizer=dict(type=AdamW, lr=base_lr, weight_decay=0.05),
+    type='OptimWrapper',
+    optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.1),
     clip_grad=dict(max_norm=35, norm_type=2),
     paramwise_cfg=dict(
         norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
@@ -56,9 +25,14 @@ optim_wrapper = dict(
 # learning rate
 param_scheduler = [
     dict(
-        type=LinearLR, start_factor=1.0e-5, by_epoch=False, begin=0, end=1000),
+        type='LinearLR',
+        start_factor=1.0e-5,
+        by_epoch=False,
+        begin=0,
+        end=1000),
     dict(
-        type=CosineAnnealingLR,
+        # use cosine lr from 150 to 300 epoch
+        type='CosineAnnealingLR',
         eta_min=base_lr * 0.05,
         begin=max_epochs // 2,
         end=max_epochs,
@@ -68,42 +42,43 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=5632)
+auto_scale_lr = dict(base_batch_size=2560)
 
 # codec settings
 codec = dict(
-    type=SimCCLabel,
+    type='SimCCLabel',
     input_size=input_size,
     sigma=(6., 6.93),
     simcc_split_ratio=2.0,
     normalize=False,
-    use_dark=False)
+    use_dark=False,
+    decode_visibility=True)
 
 # model settings
 model = dict(
-    type=TopdownPoseEstimator,
+    type='TopdownPoseEstimator',
     data_preprocessor=dict(
-        type=PoseDataPreprocessor,
+        type='PoseDataPreprocessor',
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type=CSPNeXt,
+        type='CSPNeXt',
         arch='P5',
         expand_ratio=0.5,
         deepen_factor=1.33,
         widen_factor=1.25,
         channel_attention=True,
         norm_cfg=dict(type='BN'),
-        act_cfg=dict(type=SiLU),
+        act_cfg=dict(type='SiLU'),
         init_cfg=dict(
-            type=PretrainedInit,
+            type='Pretrained',
             prefix='backbone.',
             checkpoint='https://download.openmmlab.com/mmpose/v1/'
             'wholebody_2d_keypoint/rtmpose/ubody/rtmpose-x_simcc-ucoco_pt-aic-coco_270e-384x288-f5b50679_20230822.pth'  # noqa
         )),
     neck=dict(
-        type=CSPNeXtPAFPN,
+        type='CSPNeXtPAFPN',
         in_channels=[320, 640, 1280],
         out_channels=None,
         out_indices=(
@@ -112,10 +87,10 @@ model = dict(
         ),
         num_csp_blocks=2,
         expand_ratio=0.5,
-        norm_cfg=dict(type=SyncBatchNorm),
-        act_cfg=dict(type=SiLU, inplace=True)),
+        norm_cfg=dict(type='SyncBN'),
+        act_cfg=dict(type='SiLU', inplace=True)),
     head=dict(
-        type=RTMWHead,
+        type='RTMWHead',
         in_channels=1280,
         out_channels=num_keypoints,
         input_size=input_size,
@@ -128,19 +103,23 @@ model = dict(
             expansion_factor=2,
             dropout_rate=0.,
             drop_path=0.,
-            act_fn=SiLU,
+            act_fn='SiLU',
             use_rel_bias=False,
             pos_enc=False),
         loss=dict(
-            type=KLDiscretLoss,
+            type='KLDiscretLoss',
             use_target_weight=True,
-            beta=10.,
-            label_softmax=True),
+            beta=1.,
+            label_softmax=True,
+            label_beta=10.,
+            mask=list(range(23, 91)),
+            mask_weight=0.5,
+        ),
         decoder=codec),
     test_cfg=dict(flip_test=True))
 
 # base dataset settings
-dataset_type = CocoWholeBodyDataset
+dataset_type = 'CocoWholeBodyDataset'
 data_mode = 'topdown'
 data_root = 'data/'
 
@@ -148,58 +127,63 @@ backend_args = dict(backend='local')
 
 # pipelines
 train_pipeline = [
-    dict(type=LoadImage, backend_args=backend_args),
-    dict(type=GetBBoxCenterScale),
-    dict(type=RandomFlip, direction='horizontal'),
-    dict(type=RandomHalfBody),
-    dict(type=RandomBBoxTransform, scale_factor=[0.5, 1.5], rotate_factor=90),
-    dict(type=TopdownAffine, input_size=codec['input_size']),
-    dict(type=PhotometricDistortion),
+    dict(type='LoadImage', backend_args=backend_args),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomHalfBody'),
     dict(
-        type=Albumentation,
+        type='RandomBBoxTransform', scale_factor=[0.5, 1.5], rotate_factor=90),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='PhotometricDistortion'),
+    dict(
+        type='Albumentation',
         transforms=[
-            dict(type=Blur, p=0.1),
-            dict(type=MedianBlur, p=0.1),
+            dict(type='Blur', p=0.1),
+            dict(type='MedianBlur', p=0.1),
             dict(
-                type=CoarseDropout,
+                type='CoarseDropout',
                 max_holes=1,
                 max_height=0.4,
                 max_width=0.4,
                 min_holes=1,
                 min_height=0.2,
                 min_width=0.2,
-                p=1.0),
+                p=0.5),
         ]),
     dict(
-        type=GenerateTarget, encoder=codec, use_dataset_keypoint_weights=True),
-    dict(type=PackPoseInputs)
+        type='GenerateTarget',
+        encoder=codec,
+        use_dataset_keypoint_weights=True),
+    dict(type='PackPoseInputs')
 ]
 val_pipeline = [
-    dict(type=LoadImage, backend_args=backend_args),
-    dict(type=GetBBoxCenterScale),
-    dict(type=TopdownAffine, input_size=codec['input_size']),
-    dict(type=PackPoseInputs)
+    dict(type='LoadImage', backend_args=backend_args),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='PackPoseInputs')
 ]
 train_pipeline_stage2 = [
-    dict(type=LoadImage, backend_args=backend_args),
-    dict(type=GetBBoxCenterScale),
-    dict(type=RandomFlip, direction='horizontal'),
-    dict(type=RandomHalfBody),
+    dict(type='LoadImage', backend_args=backend_args),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomHalfBody'),
     dict(
-        type=RandomBBoxTransform,
+        type='RandomBBoxTransform',
         shift_factor=0.,
         scale_factor=[0.5, 1.5],
         rotate_factor=90),
-    dict(type=TopdownAffine, input_size=codec['input_size']),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(
-        type=Albumentation,
+        type='Albumentation',
         transforms=[
-            dict(type=Blur, p=0.1),
-            dict(type=MedianBlur, p=0.1),
+            dict(type='Blur', p=0.1),
+            dict(type='MedianBlur', p=0.1),
         ]),
     dict(
-        type=GenerateTarget, encoder=codec, use_dataset_keypoint_weights=True),
-    dict(type=PackPoseInputs)
+        type='GenerateTarget',
+        encoder=codec,
+        use_dataset_keypoint_weights=True),
+    dict(type='PackPoseInputs')
 ]
 
 # mapping
@@ -217,8 +201,6 @@ mpii_coco133 = [
     (3, 11),
     (4, 13),
     (5, 15),
-    (8, 18),
-    (9, 17),
     (10, 10),
     (11, 8),
     (12, 6),
@@ -228,8 +210,6 @@ mpii_coco133 = [
 ]
 
 jhmdb_coco133 = [
-    (0, 18),
-    (2, 17),
     (3, 6),
     (4, 5),
     (5, 12),
@@ -252,7 +232,6 @@ halpe_coco133 = [(i, i)
 
 posetrack_coco133 = [
     (0, 0),
-    (2, 17),
     (3, 3),
     (4, 4),
     (5, 5),
@@ -283,7 +262,7 @@ dataset_coco = dict(
 )
 
 dataset_aic = dict(
-    type=AicDataset,
+    type='AicDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='aic/annotations/aic_train.json',
@@ -291,84 +270,84 @@ dataset_aic = dict(
                      '_train_20170902/keypoint_train_images_20170902/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=aic_coco133)
     ],
 )
 
 dataset_crowdpose = dict(
-    type=CrowdPoseDataset,
+    type='CrowdPoseDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='crowdpose/annotations/mmpose_crowdpose_trainval.json',
     data_prefix=dict(img='pose/CrowdPose/images/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=crowdpose_coco133)
     ],
 )
 
 dataset_mpii = dict(
-    type=MpiiDataset,
+    type='MpiiDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='mpii/annotations/mpii_train.json',
     data_prefix=dict(img='pose/MPI/images/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=mpii_coco133)
     ],
 )
 
 dataset_jhmdb = dict(
-    type=JhmdbDataset,
+    type='JhmdbDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='jhmdb/annotations/Sub1_train.json',
     data_prefix=dict(img='pose/JHMDB/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=jhmdb_coco133)
     ],
 )
 
 dataset_halpe = dict(
-    type=HalpeDataset,
+    type='HalpeDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='halpe/annotations/halpe_train_v1.json',
     data_prefix=dict(img='pose/Halpe/hico_20160224_det/images/train2015'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=halpe_coco133)
     ],
 )
 
 dataset_posetrack = dict(
-    type=PoseTrack18Dataset,
+    type='PoseTrack18Dataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='posetrack18/annotations/posetrack18_train.json',
     data_prefix=dict(img='pose/PoseChallenge2018/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=posetrack_coco133)
     ],
 )
 
 dataset_humanart = dict(
-    type=HumanArt21Dataset,
+    type='HumanArt21Dataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='HumanArt/annotations/training_humanart.json',
@@ -376,7 +355,7 @@ dataset_humanart = dict(
     data_prefix=dict(img='pose/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=humanart_coco133)
     ])
@@ -390,7 +369,7 @@ ubody_scenes = [
 ubody_datasets = []
 for scene in ubody_scenes:
     each = dict(
-        type=UBody2dDataset,
+        type='UBody2dDataset',
         data_root=data_root,
         data_mode=data_mode,
         ann_file=f'Ubody/annotations/{scene}/train_annotations.json',
@@ -400,7 +379,7 @@ for scene in ubody_scenes:
     ubody_datasets.append(each)
 
 dataset_ubody = dict(
-    type=CombinedDataset,
+    type='CombinedDataset',
     metainfo=dict(from_file='configs/_base_/datasets/ubody2d.py'),
     datasets=ubody_datasets,
     pipeline=[],
@@ -408,10 +387,10 @@ dataset_ubody = dict(
 )
 
 face_pipeline = [
-    dict(type=LoadImage, backend_args=backend_args),
-    dict(type=GetBBoxCenterScale, padding=1.25),
+    dict(type='LoadImage', backend_args=backend_args),
+    dict(type='GetBBoxCenterScale', padding=1.25),
     dict(
-        type=RandomBBoxTransform,
+        type='RandomBBoxTransform',
         shift_factor=0.,
         scale_factor=[1.5, 2.0],
         rotate_factor=0),
@@ -428,14 +407,14 @@ wflw_coco133 = [(i * 2, 23 + i)
                                            (75, 70)] + [(76 + i, 71 + i)
                                                         for i in range(20)]
 dataset_wflw = dict(
-    type=WFLWDataset,
+    type='WFLWDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='wflw/annotations/face_landmarks_wflw_train.json',
     data_prefix=dict(img='pose/WFLW/images/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=wflw_coco133), *face_pipeline
     ],
@@ -443,14 +422,14 @@ dataset_wflw = dict(
 
 mapping_300w_coco133 = [(i, 23 + i) for i in range(68)]
 dataset_300w = dict(
-    type=Face300WDataset,
+    type='Face300WDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='300w/annotations/face_landmarks_300w_train.json',
     data_prefix=dict(img='pose/300w/images/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=mapping_300w_coco133), *face_pipeline
     ],
@@ -461,14 +440,14 @@ cofw_coco133 = [(0, 40), (2, 44), (4, 42), (1, 49), (3, 45), (6, 47), (8, 59),
                 (21, 56), (22, 71), (23, 77), (24, 74), (25, 85), (26, 89),
                 (27, 80), (28, 31)]
 dataset_cofw = dict(
-    type=COFWDataset,
+    type='COFWDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='cofw/annotations/cofw_train.json',
     data_prefix=dict(img='pose/COFW/images/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=cofw_coco133), *face_pipeline
     ],
@@ -485,21 +464,21 @@ lapa_coco133 = [(i * 2, 23 + i) for i in range(17)] + [
                                             (82, 70)] + [(84 + i, 71 + i)
                                                          for i in range(20)]
 dataset_lapa = dict(
-    type=LapaDataset,
+    type='LapaDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='LaPa/annotations/lapa_trainval.json',
     data_prefix=dict(img='pose/LaPa/'),
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=lapa_coco133), *face_pipeline
     ],
 )
 
 dataset_wb = dict(
-    type=CombinedDataset,
+    type='CombinedDataset',
     metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
     datasets=[dataset_coco, dataset_halpe, dataset_ubody],
     pipeline=[],
@@ -507,7 +486,7 @@ dataset_wb = dict(
 )
 
 dataset_body = dict(
-    type=CombinedDataset,
+    type='CombinedDataset',
     metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
     datasets=[
         dataset_aic,
@@ -522,7 +501,7 @@ dataset_body = dict(
 )
 
 dataset_face = dict(
-    type=CombinedDataset,
+    type='CombinedDataset',
     metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
     datasets=[
         dataset_wflw,
@@ -535,10 +514,10 @@ dataset_face = dict(
 )
 
 hand_pipeline = [
-    dict(type=LoadImage, backend_args=backend_args),
-    dict(type=GetBBoxCenterScale),
+    dict(type='LoadImage', backend_args=backend_args),
+    dict(type='GetBBoxCenterScale'),
     dict(
-        type=RandomBBoxTransform,
+        type='RandomBBoxTransform',
         shift_factor=0.,
         scale_factor=[1.5, 2.0],
         rotate_factor=0),
@@ -552,7 +531,7 @@ interhand_right = [(i - 21, j + 21) for i, j in interhand_left]
 interhand_coco133 = interhand_right + interhand_left
 
 dataset_interhand2d = dict(
-    type=InterHand2DDoubleDataset,
+    type='InterHand2DDoubleDataset',
     data_root=data_root,
     data_mode=data_mode,
     ann_file='interhand26m/annotations/all/InterHand2.6M_train_data.json',
@@ -564,7 +543,7 @@ dataset_interhand2d = dict(
     sample_interval=10,
     pipeline=[
         dict(
-            type=KeypointConverter,
+            type='KeypointConverter',
             num_keypoints=num_keypoints,
             mapping=interhand_coco133,
         ), *hand_pipeline
@@ -572,7 +551,7 @@ dataset_interhand2d = dict(
 )
 
 dataset_hand = dict(
-    type=CombinedDataset,
+    type='CombinedDataset',
     metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
     datasets=[dataset_interhand2d],
     pipeline=[],
@@ -587,9 +566,9 @@ train_dataloader = dict(
     num_workers=4,
     pin_memory=False,
     persistent_workers=True,
-    sampler=dict(type=DefaultSampler, shuffle=True),
+    sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
-        type=CombinedDataset,
+        type='CombinedDataset',
         metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
         datasets=train_datasets,
         pipeline=train_pipeline,
@@ -601,9 +580,9 @@ val_dataloader = dict(
     num_workers=4,
     persistent_workers=True,
     drop_last=False,
-    sampler=dict(type=DefaultSampler, shuffle=False, round_up=False),
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
-        type=CocoWholeBodyDataset,
+        type='CocoWholeBodyDataset',
         ann_file='data/coco/annotations/coco_wholebody_val_v1.0.json',
         data_prefix=dict(img='data/detection/coco/val2017/'),
         pipeline=val_pipeline,
@@ -614,25 +593,25 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # hooks
-default_hooks.update(  # noqa
+default_hooks = dict(
     checkpoint=dict(
         save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
 
 custom_hooks = [
     dict(
-        type=EMAHook,
-        ema_type=ExpMomentumEMA,
+        type='EMAHook',
+        ema_type='ExpMomentumEMA',
         momentum=0.0002,
         update_buffers=True,
         priority=49),
     dict(
-        type=PipelineSwitchHook,
+        type='mmdet.PipelineSwitchHook',
         switch_epoch=max_epochs - stage2_num_epochs,
         switch_pipeline=train_pipeline_stage2)
 ]
 
 # evaluators
 val_evaluator = dict(
-    type=CocoWholeBodyMetric,
+    type='CocoWholeBodyMetric',
     ann_file='data/coco/annotations/coco_wholebody_val_v1.0.json')
 test_evaluator = val_evaluator

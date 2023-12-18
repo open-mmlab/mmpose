@@ -100,6 +100,23 @@ class TestSimCCLabel(TestCase):
                              f'Failed case: "{name}"')
             self.assertEqual(scores.shape, (1, 17), f'Failed case: "{name}"')
 
+        # test decode_visibility
+        cfg = cfg.copy()
+        cfg['decode_visibility'] = True
+        codec = KEYPOINT_CODECS.build(cfg)
+
+        simcc_x = np.random.rand(1, 17, int(
+            192 * codec.simcc_split_ratio)) * 10
+        simcc_y = np.random.rand(1, 17, int(
+            256 * codec.simcc_split_ratio)) * 10
+        keypoints, scores = codec.decode(simcc_x, simcc_y)
+
+        self.assertEqual(len(scores), 2)
+        self.assertEqual(scores[0].shape, (1, 17), f'Failed case: "{name}"')
+        self.assertEqual(scores[1].shape, (1, 17), f'Failed case: "{name}"')
+        self.assertGreaterEqual(scores[1].min(), 0.0)
+        self.assertLessEqual(scores[1].max(), 1.0)
+
     def test_cicular_verification(self):
         keypoints = self.data['keypoints']
         keypoints_visible = self.data['keypoints_visible']

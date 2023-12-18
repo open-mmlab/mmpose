@@ -145,17 +145,31 @@ class KLDiscretLoss(nn.Module):
 
     <https://github.com/leeyegy/SimCC>`_.
     Args:
-        beta (float): Temperature factor of Softmax.
+        beta (float): Temperature factor of Softmax. Default: 1.0.
         label_softmax (bool): Whether to use Softmax on labels.
+            Default: False.
+        label_beta (float): Temperature factor of Softmax on labels.
+            Default: 1.0.
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
+        mask (list[int]): Index of masked keypoints.
+        mask_weight (float): Weight of masked keypoints. Default: 1.0.
     """
 
-    def __init__(self, beta=1.0, label_softmax=False, use_target_weight=True):
+    def __init__(self,
+                 beta=1.0,
+                 label_softmax=False,
+                 label_beta=10.0,
+                 use_target_weight=True,
+                 mask=None,
+                 mask_weight=1.0):
         super(KLDiscretLoss, self).__init__()
         self.beta = beta
         self.label_softmax = label_softmax
+        self.label_beta = label_beta
         self.use_target_weight = use_target_weight
+        self.mask = mask
+        self.mask_weight = mask_weight
 
         self.log_softmax = nn.LogSoftmax(dim=1)
         self.kl_loss = nn.KLDivLoss(reduction='none')
@@ -164,7 +178,7 @@ class KLDiscretLoss(nn.Module):
         """Criterion function."""
         log_pt = self.log_softmax(dec_outs * self.beta)
         if self.label_softmax:
-            labels = F.softmax(labels * self.beta, dim=1)
+            labels = F.softmax(labels * self.label_beta, dim=1)
         loss = torch.mean(self.kl_loss(log_pt, labels), dim=1)
         return loss
 
@@ -178,7 +192,7 @@ class KLDiscretLoss(nn.Module):
             target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
                 Weights across different labels.
         """
-        num_joints = pred_simcc[0].size(1)
+        N, K, _ = pred_simcc[0].shape
         loss = 0
 
         if self.use_target_weight:
@@ -190,9 +204,15 @@ class KLDiscretLoss(nn.Module):
             pred = pred.reshape(-1, pred.size(-1))
             target = target.reshape(-1, target.size(-1))
 
-            loss += self.criterion(pred, target).mul(weight).sum()
+            t_loss = self.criterion(pred, target).mul(weight)
 
-        return loss / num_joints
+            if self.mask is not None:
+                t_loss = t_loss.reshape(N, K)
+                t_loss[:, self.mask] = t_loss[:, self.mask] * self.mask_weight
+
+            loss = loss + t_loss.sum()
+
+        return loss / K
 
 
 @MODELS.register_module()
