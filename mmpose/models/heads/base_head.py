@@ -64,20 +64,33 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         if self.decoder.support_batch_decoding:
             batch_keypoints, batch_scores = _pack_and_call(
                 batch_outputs, self.decoder.batch_decode)
+            if isinstance(batch_scores, tuple) and len(batch_scores) == 2:
+                batch_scores, batch_visibility = batch_scores
+            else:
+                batch_visibility = [None] * len(batch_keypoints)
 
         else:
             batch_output_np = to_numpy(batch_outputs, unzip=True)
             batch_keypoints = []
             batch_scores = []
+            batch_visibility = []
             for outputs in batch_output_np:
                 keypoints, scores = _pack_and_call(outputs,
                                                    self.decoder.decode)
                 batch_keypoints.append(keypoints)
-                batch_scores.append(scores)
+                if isinstance(scores, tuple) and len(scores) == 2:
+                    batch_scores.append(scores[0])
+                    batch_visibility.append(scores[1])
+                else:
+                    batch_scores.append(scores)
+                    batch_visibility.append(None)
 
-        preds = [
-            InstanceData(keypoints=keypoints, keypoint_scores=scores)
-            for keypoints, scores in zip(batch_keypoints, batch_scores)
-        ]
+        preds = []
+        for keypoints, scores, visibility in zip(batch_keypoints, batch_scores,
+                                                 batch_visibility):
+            pred = InstanceData(keypoints=keypoints, keypoint_scores=scores)
+            if visibility is not None:
+                pred.keypoints_visible = visibility
+            preds.append(pred)
 
         return preds
