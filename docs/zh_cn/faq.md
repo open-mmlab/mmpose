@@ -19,6 +19,7 @@ Detailed compatible MMPose and MMCV versions are shown as below. Please choose t
 
 | MMPose version |      MMCV/MMEngine version      |
 | :------------: | :-----------------------------: |
+|     1.2.0      |  mmcv>=2.0.1, mmengine>=0.8.0   |
 |     1.1.0      |  mmcv>=2.0.1, mmengine>=0.8.0   |
 |     1.0.0      |  mmcv>=2.0.0, mmengine>=0.7.0   |
 |    1.0.0rc1    | mmcv>=2.0.0rc4, mmengine>=0.6.0 |
@@ -146,3 +147,7 @@ Detailed compatible MMPose and MMCV versions are shown as below. Please choose t
 
   1. set `flip_test=False` in `init_cfg` in the config file.
   2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/zh_CN/3.x/model_zoo.html).
+
+- **What is the definition of each keypoint index?**
+
+  Check the [meta information file](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets) for the dataset used to train the model you are using. They key `keypoint_info` includes the definition of each keypoint.
