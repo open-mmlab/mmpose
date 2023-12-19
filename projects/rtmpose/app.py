@@ -82,7 +82,7 @@ def predict(input,
                 return_vis=True,
                 draw_heatmap=draw_heatmap,
                 skeleton_style=skeleton_style))
-        img = result['visualization'][0]
+        img = result['visualization'][0][..., ::-1]
         return img
 
     elif input_type == 'video':
