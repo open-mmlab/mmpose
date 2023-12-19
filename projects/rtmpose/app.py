@@ -115,12 +115,8 @@ with gr.Blocks() as demo:
         input_img = gr.Image(type='numpy')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown([
-            'rtmpose | body', 'rtmo | body', 'rtmpose | face',
-            'dwpose | wholebody', 'rtmw | wholebody'
-        ],
-                                 label='Model | Keypoint Type',
-                                 info='Body / Face / Wholebody')
+        model_type = gr.Dropdown(models, 
+                                 label='Model | Keypoint Type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
@@ -138,12 +134,8 @@ with gr.Blocks() as demo:
         input_img = gr.Image(source='webcam', type='numpy')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown([
-            'rtmpose | body', 'rtmo | body', 'rtmpose | face',
-            'dwpose | wholebody', 'rtmw | wholebody'
-        ],
-                                 label='Model | Keypoint Type',
-                                 info='Body / Face / Wholebody')
+        model_type = gr.Dropdown(models, 
+                                 label='Model | Keypoint Type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
@@ -161,12 +153,8 @@ with gr.Blocks() as demo:
         input_video = gr.Video(type='mp4')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown([
-            'rtmpose | body', 'rtmo | body', 'rtmpose | face',
-            'dwpose | wholebody', 'rtmw | wholebody'
-        ],
-                                 label='Model | Keypoint type',
-                                 info='Body / Face / Wholebody')
+        model_type = gr.Dropdown(models, 
+                                 label='Model | Keypoint type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
@@ -184,12 +172,8 @@ with gr.Blocks() as demo:
         input_video = gr.Video(source='webcam', format='mp4')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown([
-            'rtmpose | body', 'rtmo | body', 'rtmpose | face',
-            'dwpose | wholebody', 'rtmw | wholebody'
-        ],
-                                 label='Model | Keypoint Type',
-                                 info='Body / Face / Wholebody')
+        model_type = gr.Dropdown(models, 
+                                 label='Model | Keypoint Type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
