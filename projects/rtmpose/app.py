@@ -119,7 +119,7 @@ with gr.Blocks() as demo:
             'rtmpose | body', 'rtmo | body', 'rtmpose | face',
             'dwpose | wholebody', 'rtmw | wholebody'
         ],
-                                 label='Model Type',
+                                 label='Model | Keypoint Type',
                                  info='Body / Face / Wholebody')
 
         gr.Markdown('## News')
@@ -142,7 +142,7 @@ with gr.Blocks() as demo:
             'rtmpose | body', 'rtmo | body', 'rtmpose | face',
             'dwpose | wholebody', 'rtmw | wholebody'
         ],
-                                 label='Model Type',
+                                 label='Model | Keypoint Type',
                                  info='Body / Face / Wholebody')
 
         gr.Markdown('## News')
@@ -188,7 +188,7 @@ with gr.Blocks() as demo:
             'rtmpose | body', 'rtmo | body', 'rtmpose | face',
             'dwpose | wholebody', 'rtmw | wholebody'
         ],
-                                 label='Model Type',
+                                 label='Model | Keypoint Type',
                                  info='Body / Face / Wholebody')
 
         gr.Markdown('## News')
