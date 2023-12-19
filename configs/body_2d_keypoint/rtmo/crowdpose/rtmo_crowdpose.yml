@@ -51,3 +51,20 @@ Models:
       AP (L): 0.653
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-700e_crowdpose-640x640-1008211f_20231211.pth
+- Config: configs/body_2d_keypoint/rtmo/crowdpose/rtmo-l_16xb16-700e_body7-crowdpose-640x640.py
+  In Collection: RTMO
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: rtmo-l_16xb16-700e_body7-crowdpose-640x640
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.838
+      AP@0.5: 0.947
+      AP@0.75: 0.893
+      AP (E): 0.888
+      AP (M): 0.847
+      AP (L): 0.772
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-700e_body7-crowdpose-640x640-5bafdc11_20231219.pth
