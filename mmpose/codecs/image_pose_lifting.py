@@ -272,7 +272,7 @@ class ImagePoseLifting(BaseKeypointCodec):
 
         if target_root is not None and target_root.size > 0:
             keypoints = keypoints + target_root
-            if self.remove_root:
+            if self.remove_root and len(self.root_index) == 1:
                 keypoints = np.insert(
                     keypoints, self.root_index, target_root, axis=1)
         scores = np.ones(keypoints.shape[:-1], dtype=np.float32)
