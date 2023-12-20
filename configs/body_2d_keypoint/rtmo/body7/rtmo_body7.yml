@@ -1,5 +1,5 @@
 Models:
-- Config: configs/body_2d_keypoint/rtmo/body7/rtmo-s_8xb32-600e_body7-640x640.py
+- Config: configs/body_2d_keypoint/rtmo/body7/rtmo-t_8xb32-600e_body7-416x416.py
   In Collection: RTMO
   Metadata:
     Architecture: &id001
@@ -12,6 +12,22 @@ Models:
     - sub-JHMDB
     - Halpe
     - PoseTrack18
+  Name: rtmo-t_8xb32-600e_body7-416x416
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.574
+      AP@0.5: 0.803
+      AP@0.75: 0.613
+      AR: 0.611
+      AR@0.5: 0.836
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-t_8xb32-600e_body7-416x416-f48f75cb_20231219.pth
+- Config: configs/body_2d_keypoint/rtmo/body7/rtmo-s_8xb32-600e_body7-640x640.py
+  In Collection: RTMO
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
   Name: rtmo-s_8xb32-600e_body7-640x640
   Results:
   - Dataset: COCO
