@@ -409,7 +409,14 @@ class ScaleNorm(nn.Module):
             torch.Tensor: The tensor after applying scale norm.
         """
 
-        norm = torch.norm(x, dim=-1, keepdim=True) * self.scale
+        if torch.onnx.is_in_onnx_export() and \
+                digit_version(TORCH_VERSION) >= digit_version('1.12'):
+
+            norm = torch.linalg.norm(x, dim=-1, keepdim=True)
+
+        else:
+            norm = torch.norm(x, dim=-1, keepdim=True)
+        norm = norm * self.scale
         return x / norm.clamp(min=self.eps) * self.g
 
 
