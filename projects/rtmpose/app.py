@@ -3,18 +3,30 @@
 import os
 from functools import partial
 
-import gradio as gr
-
 # prepare environment
 project_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 mmpose_path = project_path.split('/projects', 1)[0]
 
 os.system('python -m pip install Openmim')
+os.system('python -m pip install openxlab')
+os.system('python -m pip install gradio==3.38.0')
+
 os.system('python -m mim install "mmcv>=2.0.0"')
 os.system('python -m mim install "mmengine>=0.9.0"')
 os.system('python -m mim install "mmdet>=3.0.0"')
 os.system(f'python -m mim install -e {mmpose_path}')
+
+import gradio as gr  # noqa
+from openxlab.model import download  # noqa
+
 from mmpose.apis import MMPoseInferencer  # noqa
+
+# download checkpoints
+download(model_repo='mmpose/RTMPose', model_name='dwpose-l')
+download(model_repo='mmpose/RTMPose', model_name='RTMW-x')
+download(model_repo='mmpose/RTMPose', model_name='RTMO-l')
+download(model_repo='mmpose/RTMPose', model_name='RTMPose-l-body8')
+download(model_repo='mmpose/RTMPose', model_name='RTMPose-m-face6')
 
 models = [
     'rtmpose | body', 'rtmo | body', 'rtmpose | face', 'dwpose | wholebody',
