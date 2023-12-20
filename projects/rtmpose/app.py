@@ -127,8 +127,7 @@ with gr.Blocks() as demo:
         input_img = gr.Image(type='numpy')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown(models, 
-                                 label='Model | Keypoint Type')
+        model_type = gr.Dropdown(models, label='Model | Keypoint Type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
@@ -146,8 +145,7 @@ with gr.Blocks() as demo:
         input_img = gr.Image(source='webcam', type='numpy')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown(models, 
-                                 label='Model | Keypoint Type')
+        model_type = gr.Dropdown(models, label='Model | Keypoint Type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
@@ -165,8 +163,7 @@ with gr.Blocks() as demo:
         input_video = gr.Video(type='mp4')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown(models, 
-                                 label='Model | Keypoint type')
+        model_type = gr.Dropdown(models, label='Model | Keypoint type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
@@ -184,8 +181,7 @@ with gr.Blocks() as demo:
         input_video = gr.Video(source='webcam', format='mp4')
         button = gr.Button('Inference', variant='primary')
         hm = gr.Checkbox(label='draw-heatmap', info='Whether to draw heatmap')
-        model_type = gr.Dropdown(models, 
-                                 label='Model | Keypoint Type')
+        model_type = gr.Dropdown(models, label='Model | Keypoint Type')
 
         gr.Markdown('## News')
         for news in news_list[::-1]:
