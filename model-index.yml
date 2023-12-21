@@ -145,3 +145,4 @@ Import:
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/vipnas_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/vipnas_dark_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/ubody2d/hrnet_coco-wholebody.yml
+- configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw_cocktail14.yml
