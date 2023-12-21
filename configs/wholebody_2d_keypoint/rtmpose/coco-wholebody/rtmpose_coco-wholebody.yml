@@ -4,7 +4,7 @@ Models:
   Alias: wholebody
   Metadata:
     Architecture: &id001
-    - HRNet
+    - RTMPose
     Training Data: COCO-WholeBody
   Name: rtmpose-m_8xb64-270e_coco-wholebody-256x192
   Results:
