@@ -1,0 +1,56 @@
+Collections:
+- Name: RTMO
+  Paper:
+    Title: 'RTMO: Towards High-Performance One-Stage Real-Time Multi-Person Pose Estimation'
+    URL: https://arxiv.org/abs/2312.07526
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/rtmo.md
+Models:
+- Config: configs/body_2d_keypoint/rtmo/coco/rtmo-s_8xb32-600e_coco-640x640.py
+  In Collection: RTMO
+  Metadata:
+    Architecture: &id001
+    - RTMO
+    Training Data: CrowdPose
+  Name: rtmo-s_8xb32-600e_coco-640x640
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.673
+      AP@0.5: 0.878
+      AP@0.75: 0.737
+      AR: 0.715
+      AR@0.5: 0.908
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-s_8xb32-600e_coco-640x640-8db55a59_20231211.pth
+- Config: configs/body_2d_keypoint/rtmo/coco/rtmo-m_16xb16-600e_coco-640x640.py
+  In Collection: RTMO
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: rtmo-m_16xb16-600e_coco-640x640
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.709
+      AP@0.5: 0.890
+      AP@0.75: 0.778
+      AR: 0.747
+      AR@0.5: 0.920
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-m_16xb16-600e_coco-640x640-6f4e0306_20231211.pth
+- Config: configs/body_2d_keypoint/rtmo/coco/rtmo-l_16xb16-600e_coco-640x640.py
+  In Collection: RTMO
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: rtmo-l_16xb16-600e_coco-640x640
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.724
+      AP@0.5: 0.899
+      AP@0.75: 0.788
+      AR: 0.762
+      AR@0.5: 0.927
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-600e_coco-640x640-516a421f_20231211.pth

@@ -4,7 +4,7 @@ Models:
   Alias: wholebody
   Metadata:
     Architecture: &id001
-    - HRNet
+    - RTMPose
     Training Data: COCO-WholeBody
   Name: rtmpose-m_8xb64-270e_coco-wholebody-256x192
   Results:
@@ -48,7 +48,7 @@ Models:
   Metadata:
     Architecture: *id001
     Training Data: COCO-WholeBody
-  Name: rtmpose-l_8xb32-270e_coco-wholebody-384x288.py
+  Name: rtmpose-l_8xb32-270e_coco-wholebody-384x288
   Results:
   - Dataset: COCO-WholeBody
     Metrics:

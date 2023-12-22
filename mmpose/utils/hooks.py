@@ -52,7 +52,37 @@ class OutputHook:
 
 # using wonder's beautiful simplification:
 # https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects
+def rsetattr(obj, attr, val):
+    """Set the value of a nested attribute of an object.
+
+    This function splits the attribute path and sets the value of the
+    nested attribute. If the attribute path is nested (e.g., 'x.y.z'), it
+    traverses through each attribute until it reaches the last one and sets
+    its value.
+
+    Args:
+        obj (object): The object whose attribute needs to be set.
+        attr (str): The attribute path in dot notation (e.g., 'x.y.z').
+        val (any): The value to set at the specified attribute path.
+    """
+    pre, _, post = attr.rpartition('.')
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+
 def rgetattr(obj, attr, *args):
+    """Recursively get a nested attribute of an object.
+
+    This function splits the attribute path and retrieves the value of the
+    nested attribute. If the attribute path is nested (e.g., 'x.y.z'), it
+    traverses through each attribute. If an attribute in the path does not
+    exist, it returns the value specified as the third argument.
+
+    Args:
+        obj (object): The object whose attribute needs to be retrieved.
+        attr (str): The attribute path in dot notation (e.g., 'x.y.z').
+        *args (any): Optional default value to return if the attribute
+            does not exist.
+    """
 
     def _getattr(obj, attr):
         return getattr(obj, attr, *args)

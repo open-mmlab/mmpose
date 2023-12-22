@@ -22,6 +22,9 @@ Import:
 - configs/body_2d_keypoint/rtmpose/crowdpose/rtmpose_crowdpose.yml
 - configs/body_2d_keypoint/rtmpose/humanart/rtmpose_humanart.yml
 - configs/body_2d_keypoint/rtmpose/mpii/rtmpose_mpii.yml
+- configs/body_2d_keypoint/rtmo/coco/rtmo_coco.yml
+- configs/body_2d_keypoint/rtmo/body7/rtmo_body7.yml
+- configs/body_2d_keypoint/rtmo/crowdpose/rtmo_crowdpose.yml
 - configs/body_2d_keypoint/simcc/coco/mobilenetv2_coco.yml
 - configs/body_2d_keypoint/simcc/coco/resnet_coco.yml
 - configs/body_2d_keypoint/simcc/coco/vipnas_coco.yml
@@ -142,3 +145,4 @@ Import:
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/vipnas_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/vipnas_dark_coco-wholebody.yml
 - configs/wholebody_2d_keypoint/topdown_heatmap/ubody2d/hrnet_coco-wholebody.yml
+- configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw_cocktail14.yml

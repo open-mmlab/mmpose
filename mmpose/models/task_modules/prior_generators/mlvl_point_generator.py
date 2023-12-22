@@ -21,13 +21,17 @@ class MlvlPointGenerator:
             in multiple feature levels in order (w, h).
         offset (float): The offset of points, the value is normalized with
             corresponding stride. Defaults to 0.5.
+        centralize_points (bool): Whether to centralize the points to
+            the center of anchors. Defaults to False.
     """
 
     def __init__(self,
                  strides: Union[List[int], List[Tuple[int, int]]],
-                 offset: float = 0.5) -> None:
+                 offset: float = 0.5,
+                 centralize_points: bool = False) -> None:
         self.strides = [_pair(stride) for stride in strides]
-        self.offset = offset
+        self.centralize_points = centralize_points
+        self.offset = offset if not centralize_points else 0.0
 
     @property
     def num_levels(self) -> int:
@@ -137,6 +141,10 @@ class MlvlPointGenerator:
         # keep featmap_size as Tensor instead of int, so that we
         # can convert to ONNX correctly
         shift_y = shift_y.to(dtype)
+
+        if self.centralize_points:
+            shift_x = shift_x + float(stride_w - 1) / 2.0
+            shift_y = shift_y + float(stride_h - 1) / 2.0
 
         shift_xx, shift_yy = self._meshgrid(shift_x, shift_y)
         if not with_stride:

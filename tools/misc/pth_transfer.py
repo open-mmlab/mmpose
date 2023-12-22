@@ -14,6 +14,8 @@ def change_model(args):
                 all_name.append((name[8:], v))
             elif name.startswith('distill_losses.loss_mgd.down'):
                 all_name.append(('head.' + name[24:], v))
+            elif name.startswith('teacher.neck'):
+                all_name.append((name[8:], v))
             elif name.startswith('student.head'):
                 all_name.append((name[8:], v))
             else:

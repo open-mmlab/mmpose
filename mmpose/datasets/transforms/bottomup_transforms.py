@@ -59,14 +59,15 @@ class BottomupGetHeatmapMask(BaseTransform):
         # mask.py>`__
         rles = []
         for seg in segs:
-            rle = cocomask.frPyObjects(seg, img_shape[0], img_shape[1])
-            if isinstance(rle, list):
-                # For non-crowded objects (e.g. human with no visible
-                # keypoints), the results is a list of rles
-                rles.extend(rle)
-            else:
-                # For crowded objects, the result is a single rle
-                rles.append(rle)
+            if isinstance(seg, (tuple, list)):
+                rle = cocomask.frPyObjects(seg, img_shape[0], img_shape[1])
+                if isinstance(rle, list):
+                    # For non-crowded objects (e.g. human with no visible
+                    # keypoints), the results is a list of rles
+                    rles.extend(rle)
+                else:
+                    # For crowded objects, the result is a single rle
+                    rles.append(rle)
 
         if rles:
             mask = cocomask.decode(cocomask.merge(rles))

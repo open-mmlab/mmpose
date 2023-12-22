@@ -47,6 +47,12 @@ class SimCCLabel(BaseKeypointCodec):
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
         label_smooth_weight (float): Label Smoothing weight. Defaults to 0.0
         normalize (bool): Whether to normalize the heatmaps. Defaults to True.
+        use_dark (bool): Whether to use the DARK post processing. Defaults to
+            False.
+        decode_visibility (bool): Whether to decode the visibility. Defaults
+            to False.
+        decode_beta (float): The beta value for decoding visibility. Defaults
+            to 150.0.
 
     .. _`SimCC: a Simple Coordinate Classification Perspective for Human Pose
     Estimation`: https://arxiv.org/abs/2107.03332
@@ -58,14 +64,18 @@ class SimCCLabel(BaseKeypointCodec):
         keypoint_weights='keypoint_weights',
     )
 
-    def __init__(self,
-                 input_size: Tuple[int, int],
-                 smoothing_type: str = 'gaussian',
-                 sigma: Union[float, int, Tuple[float]] = 6.0,
-                 simcc_split_ratio: float = 2.0,
-                 label_smooth_weight: float = 0.0,
-                 normalize: bool = True,
-                 use_dark: bool = False) -> None:
+    def __init__(
+        self,
+        input_size: Tuple[int, int],
+        smoothing_type: str = 'gaussian',
+        sigma: Union[float, int, Tuple[float]] = 6.0,
+        simcc_split_ratio: float = 2.0,
+        label_smooth_weight: float = 0.0,
+        normalize: bool = True,
+        use_dark: bool = False,
+        decode_visibility: bool = False,
+        decode_beta: float = 150.0,
+    ) -> None:
         super().__init__()
 
         self.input_size = input_size
@@ -74,6 +84,8 @@ class SimCCLabel(BaseKeypointCodec):
         self.label_smooth_weight = label_smooth_weight
         self.normalize = normalize
         self.use_dark = use_dark
+        self.decode_visibility = decode_visibility
+        self.decode_beta = decode_beta
 
         if isinstance(sigma, (float, int)):
             self.sigma = np.array([sigma, sigma])
@@ -178,7 +190,14 @@ class SimCCLabel(BaseKeypointCodec):
 
         keypoints /= self.simcc_split_ratio
 
-        return keypoints, scores
+        if self.decode_visibility:
+            _, visibility = get_simcc_maximum(
+                simcc_x * self.decode_beta * self.sigma[0],
+                simcc_y * self.decode_beta * self.sigma[1],
+                apply_softmax=True)
+            return keypoints, (scores, visibility)
+        else:
+            return keypoints, scores
 
     def _map_coordinates(
         self,

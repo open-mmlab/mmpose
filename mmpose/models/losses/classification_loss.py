@@ -145,17 +145,31 @@ class KLDiscretLoss(nn.Module):
 
     <https://github.com/leeyegy/SimCC>`_.
     Args:
-        beta (float): Temperature factor of Softmax.
+        beta (float): Temperature factor of Softmax. Default: 1.0.
         label_softmax (bool): Whether to use Softmax on labels.
+            Default: False.
+        label_beta (float): Temperature factor of Softmax on labels.
+            Default: 1.0.
         use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
+        mask (list[int]): Index of masked keypoints.
+        mask_weight (float): Weight of masked keypoints. Default: 1.0.
     """
 
-    def __init__(self, beta=1.0, label_softmax=False, use_target_weight=True):
+    def __init__(self,
+                 beta=1.0,
+                 label_softmax=False,
+                 label_beta=10.0,
+                 use_target_weight=True,
+                 mask=None,
+                 mask_weight=1.0):
         super(KLDiscretLoss, self).__init__()
         self.beta = beta
         self.label_softmax = label_softmax
+        self.label_beta = label_beta
         self.use_target_weight = use_target_weight
+        self.mask = mask
+        self.mask_weight = mask_weight
 
         self.log_softmax = nn.LogSoftmax(dim=1)
         self.kl_loss = nn.KLDivLoss(reduction='none')
@@ -164,7 +178,7 @@ class KLDiscretLoss(nn.Module):
         """Criterion function."""
         log_pt = self.log_softmax(dec_outs * self.beta)
         if self.label_softmax:
-            labels = F.softmax(labels * self.beta, dim=1)
+            labels = F.softmax(labels * self.label_beta, dim=1)
         loss = torch.mean(self.kl_loss(log_pt, labels), dim=1)
         return loss
 
@@ -178,7 +192,7 @@ class KLDiscretLoss(nn.Module):
             target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
                 Weights across different labels.
         """
-        num_joints = pred_simcc[0].size(1)
+        N, K, _ = pred_simcc[0].shape
         loss = 0
 
         if self.use_target_weight:
@@ -190,9 +204,15 @@ class KLDiscretLoss(nn.Module):
             pred = pred.reshape(-1, pred.size(-1))
             target = target.reshape(-1, target.size(-1))
 
-            loss += self.criterion(pred, target).mul(weight).sum()
+            t_loss = self.criterion(pred, target).mul(weight)
 
-        return loss / num_joints
+            if self.mask is not None:
+                t_loss = t_loss.reshape(N, K)
+                t_loss[:, self.mask] = t_loss[:, self.mask] * self.mask_weight
+
+            loss = loss + t_loss.sum()
+
+        return loss / K
 
 
 @MODELS.register_module()
@@ -233,4 +253,81 @@ class InfoNCELoss(nn.Module):
         logits = features_norm.mm(features_norm.t()) / self.temp
         targets = torch.arange(n, dtype=torch.long, device=features.device)
         loss = F.cross_entropy(logits, targets, reduction='sum')
+        return loss * self.loss_weight
+
+
+@MODELS.register_module()
+class VariFocalLoss(nn.Module):
+    """Varifocal loss.
+
+    Args:
+        use_target_weight (bool): Option to use weighted loss.
+            Different joint types may have different target weights.
+        reduction (str): Options are "none", "mean" and "sum".
+        loss_weight (float): Weight of the loss. Default: 1.0.
+        alpha (float): A balancing factor for the negative part of
+            Varifocal Loss. Defaults to 0.75.
+        gamma (float): Gamma parameter for the modulating factor.
+            Defaults to 2.0.
+    """
+
+    def __init__(self,
+                 use_target_weight=False,
+                 loss_weight=1.,
+                 reduction='mean',
+                 alpha=0.75,
+                 gamma=2.0):
+        super().__init__()
+
+        assert reduction in ('mean', 'sum', 'none'), f'the argument ' \
+            f'`reduction` should be either \'mean\', \'sum\' or \'none\', ' \
+            f'but got {reduction}'
+
+        self.reduction = reduction
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
+        self.alpha = alpha
+        self.gamma = gamma
+
+    def criterion(self, output, target):
+        label = (target > 1e-4).to(target)
+        weight = self.alpha * output.sigmoid().pow(
+            self.gamma) * (1 - label) + target
+        output = output.clip(min=-10, max=10)
+        vfl = (
+            F.binary_cross_entropy_with_logits(
+                output, target, reduction='none') * weight)
+        return vfl
+
+    def forward(self, output, target, target_weight=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_labels: K
+
+        Args:
+            output (torch.Tensor[N, K]): Output classification.
+            target (torch.Tensor[N, K]): Target classification.
+            target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
+                Weights across different labels.
+        """
+
+        if self.use_target_weight:
+            assert target_weight is not None
+            loss = self.criterion(output, target)
+            if target_weight.dim() == 1:
+                target_weight = target_weight.unsqueeze(1)
+            loss = (loss * target_weight)
+        else:
+            loss = self.criterion(output, target)
+
+        loss[torch.isinf(loss)] = 0.0
+        loss[torch.isnan(loss)] = 0.0
+
+        if self.reduction == 'sum':
+            loss = loss.sum()
+        elif self.reduction == 'mean':
+            loss = loss.mean()
+
         return loss * self.loss_weight
