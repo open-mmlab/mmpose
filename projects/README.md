@@ -75,3 +75,9 @@ We also provide some documentation listed below to help you get started:
   </div><br/>
 
 - **What's next? Join the rank of <span style="color:blue"> *MMPose contributors* </span> by creating a new  project**!
+
+- **[:bulb:PETR](./petr)**: End-to-End Multi-Person Pose Estimation with Transformers
+
+  <div align=center>
+  <img src="https://github.com/open-mmlab/mmpose/assets/26127467/ec7eb99d-8b8b-4c0d-9714-0ccd33a4f054" width="800" style="width: 800px; height: 200px; object-fit: cover"/>
+  </div><br/>
