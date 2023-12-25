@@ -4,10 +4,10 @@ from typing import Dict
 
 from mmpose.apis.inferencers import MMPoseInferencer, get_model_aliases
 
-FILTERING_ARGS = dict(bbox_thr=0.3, nms_thr=0.3)
-MODEL_SPECIFIC_ARGS = dict(
-    yoloxpose=dict(bbox_thr=0.01, nms_thr=0.65),
-    rtmo=dict(bbox_thr=0.1, nms_thr=0.65),
+FILTERING_ARGS = dict(bbox_thr=0.3, nms_thr=0.3, pose_based_nms=False)
+POSE2D_SPECIFIC_ARGS = dict(
+    yoloxpose=dict(bbox_thr=0.01, nms_thr=0.65, pose_based_nms=True),
+    rtmo=dict(bbox_thr=0.1, nms_thr=0.65, pose_based_nms=True),
 )
 
 
@@ -82,9 +82,9 @@ def parse_args():
     # and bottom-up models. We assign the default arguments according to the
     # selected pose2d model
     args, _ = parser.parse_known_args()
-    for model in MODEL_SPECIFIC_ARGS:
+    for model in POSE2D_SPECIFIC_ARGS:
         if model in args.pose2d:
-            FILTERING_ARGS.update(MODEL_SPECIFIC_ARGS[model])
+            FILTERING_ARGS.update(POSE2D_SPECIFIC_ARGS[model])
             break
 
     # call args
@@ -111,6 +111,11 @@ def parse_args():
         type=float,
         default=FILTERING_ARGS['nms_thr'],
         help='IoU threshold for bounding box NMS')
+    parser.add_argument(
+        '--pose-based-nms',
+        type=lambda arg: arg.lower() in ('true', 'yes', 't', 'y', '1'),
+        default=FILTERING_ARGS['pose_based_nms'],
+        help='Whether to use pose-based NMS')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(

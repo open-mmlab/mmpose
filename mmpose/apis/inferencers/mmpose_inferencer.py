@@ -60,7 +60,9 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
         'disable_norm_pose_2d'
     }
-    forward_kwargs: set = {'disable_rebase_keypoint'}
+    forward_kwargs: set = {
+        'merge_results', 'disable_rebase_keypoint', 'pose_based_nms'
+    }
     visualize_kwargs: set = {
         'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
         'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap',
