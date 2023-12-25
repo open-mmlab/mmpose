@@ -113,14 +113,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             Any: Data processed by the ``pipeline`` and ``collate_fn``.
             List[str or np.ndarray]: List of original inputs in the batch
         """
-
-        for i, input in enumerate(inputs):
-            data_batch = {}
-            data_infos = self.inferencer.preprocess_single(
-                input, index=i, **kwargs)
-            data_batch = self.inferencer.collate_fn(data_infos)
-            # only supports inference with batch size 1
-            yield data_batch, [input]
+        for data in self.inferencer.preprocess(inputs, batch_size, **kwargs):
+            yield data
 
     @torch.no_grad()
     def forward(self, inputs: InputType, **forward_kwargs) -> PredType:

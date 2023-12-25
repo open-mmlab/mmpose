@@ -4,6 +4,12 @@ from typing import Dict
 
 from mmpose.apis.inferencers import MMPoseInferencer, get_model_aliases
 
+FILTERING_ARGS = dict(bbox_thr=0.3, nms_thr=0.3)
+MODEL_SPECIFIC_ARGS = dict(
+    yoloxpose=dict(bbox_thr=0.01, nms_thr=0.65),
+    rtmo=dict(bbox_thr=0.1, nms_thr=0.65),
+)
+
 
 def parse_args():
     parser = ArgumentParser()
@@ -12,6 +18,8 @@ def parse_args():
         type=str,
         nargs='?',
         help='Input image/video path or folder path.')
+
+    # init args
     parser.add_argument(
         '--pose2d',
         type=str,
@@ -69,6 +77,17 @@ def parse_args():
         '--show-progress',
         action='store_true',
         help='Display the progress bar during inference.')
+
+    # The default arguments for prediction filtering differ for top-down
+    # and bottom-up models. We assign the default arguments according to the
+    # selected pose2d model
+    args, _ = parser.parse_known_args()
+    for model in MODEL_SPECIFIC_ARGS:
+        if model in args.pose2d:
+            FILTERING_ARGS.update(MODEL_SPECIFIC_ARGS[model])
+            break
+
+    # call args
     parser.add_argument(
         '--show',
         action='store_true',
@@ -85,12 +104,12 @@ def parse_args():
     parser.add_argument(
         '--bbox-thr',
         type=float,
-        default=0.3,
+        default=FILTERING_ARGS['bbox_thr'],
         help='Bounding box score threshold')
     parser.add_argument(
         '--nms-thr',
         type=float,
-        default=0.3,
+        default=FILTERING_ARGS['nms_thr'],
         help='IoU threshold for bounding box NMS')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
