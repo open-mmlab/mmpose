@@ -1016,50 +1016,50 @@ if __name__ == '__main__':
 #### C++ API
 
 ```C++
-#include "mmdeploy/detector.hpp"
+#include "mmdeploy/pose_detector.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#include "utils/argparse.h" // See: https://github.com/open-mmlab/mmdeploy/blob/main/demo/csrc/cpp/utils/argparse.h
 
-#include "opencv2/imgcodecs/imgcodecs.hpp"
-#include "utils/argparse.h"
-#include "utils/visualize.h"
-
-DEFINE_ARG_string(model, "Model path");
-DEFINE_ARG_string(image, "Input image path");
-DEFINE_string(device, "cpu", R"(Device name, e.g. "cpu", "cuda")");
-DEFINE_string(output, "detector_output.jpg", "Output image path");
-
-DEFINE_double(det_thr, .5, "Detection score threshold");
+DEFINE_ARG_string(model_path, "Model path");
+DEFINE_ARG_string(image_path, "Input image path");
+DEFINE_string(device_name, "cpu", R"(Device name, e.g. "cpu", "cuda")");
+DEFINE_int32(bbox_x, -1, R"(x position of the bounding box)");
+DEFINE_int32(bbox_y, -1, R"(y position of the bounding box)");
+DEFINE_int32(bbox_w, -1, R"(width of the bounding box)");
+DEFINE_int32(bbox_h, -1, R"(height of the bounding box)");
 
 int main(int argc, char* argv[]) {
   if (!utils::ParseArguments(argc, argv)) {
     return -1;
   }
 
-  cv::Mat img = cv::imread(ARGS_image);
-  if (img.empty()) {
-    fprintf(stderr, "failed to load image: %s\n", ARGS_image.c_str());
-    return -1;
+  cv::Mat img = cv::imread(ARGS_image_path);
+
+  mmdeploy::PoseDetector detector(mmdeploy::Model{ARGS_model_path}, mmdeploy::Device{FLAGS_device_name, 0});
+
+  mmdeploy::PoseDetector::Result result{0, 0, nullptr};
+
+  if (FLAGS_bbox_x == -1 || FLAGS_bbox_y == -1 || FLAGS_bbox_w == -1 || FLAGS_bbox_h == -1) {
+    result = detector.Apply(img);
+  } else {
+    // convert (x, y, w, h) -> (left, top, right, bottom)
+    mmdeploy::cxx::Rect rect;
+    rect.left = FLAGS_bbox_x;
+    rect.top = FLAGS_bbox_y;
+    rect.right = FLAGS_bbox_x + FLAGS_bbox_w;
+    rect.bottom = FLAGS_bbox_y + FLAGS_bbox_h;
+    result = detector.Apply(img, {rect});
   }
 
-  // construct a detector instance
-  mmdeploy::Detector detector(mmdeploy::Model{ARGS_model}, mmdeploy::Device{FLAGS_device});
-
-  // apply the detector, the result is an array-like class holding references to
-  // `mmdeploy_detection_t`, will be released automatically on destruction
-  mmdeploy::Detector::Result dets = detector.Apply(img);
-
-  // visualize
-  utils::Visualize v;
-  auto sess = v.get_session(img);
-  int count = 0;
-  for (const mmdeploy_detection_t& det : dets) {
-    if (det.score > FLAGS_det_thr) {  // filter bboxes
-      sess.add_det(det.bbox, det.label_id, det.score, det.mask, count++);
-    }
+  // Draw circles at detected keypoints
+  for (size_t i = 0; i < result[0].length; ++i) {
+    cv::Point keypoint(result[0].point[i].x, result[0].point[i].y);
+    cv::circle(img, keypoint, 1, cv::Scalar(0, 255, 0), 2);  // Draw filled circle
   }
 
-  if (!FLAGS_output.empty()) {
-    cv::imwrite(FLAGS_output, sess.get());
-  }
+  // Save the output image
+  cv::imwrite("output_pose.png", img);
 
   return 0;
 }
