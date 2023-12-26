@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
 from copy import deepcopy
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -24,7 +24,8 @@ class VideoPoseLifting(BaseKeypointCodec):
         num_keypoints (int): The number of keypoints in the dataset.
         zero_center: Whether to zero-center the target around root. Default:
             ``True``.
-        root_index (int): Root keypoint index in the pose. Default: 0.
+        root_index (Union[int, List]): Root keypoint index in the pose.
+            Default: 0.
         remove_root (bool): If true, remove the root keypoint from the pose.
             Default: ``False``.
         save_index (bool): If true, store the root position separated from the
@@ -54,7 +55,7 @@ class VideoPoseLifting(BaseKeypointCodec):
     def __init__(self,
                  num_keypoints: int,
                  zero_center: bool = True,
-                 root_index: int = 0,
+                 root_index: Union[int, List] = 0,
                  remove_root: bool = False,
                  save_index: bool = False,
                  reshape_keypoints: bool = True,
@@ -64,6 +65,8 @@ class VideoPoseLifting(BaseKeypointCodec):
 
         self.num_keypoints = num_keypoints
         self.zero_center = zero_center
+        if isinstance(root_index, int):
+            root_index = [root_index]
         self.root_index = root_index
         self.remove_root = remove_root
         self.save_index = save_index
@@ -143,19 +146,19 @@ class VideoPoseLifting(BaseKeypointCodec):
         # Zero-center the target pose around a given root keypoint
         if self.zero_center:
             assert (lifting_target.ndim >= 2 and
-                    lifting_target.shape[-2] > self.root_index), \
+                    lifting_target.shape[-2] > max(self.root_index)), \
                 f'Got invalid joint shape {lifting_target.shape}'
 
-            root = lifting_target[..., self.root_index, :]
-            lifting_target_label -= lifting_target_label[
-                ..., self.root_index:self.root_index + 1, :]
+            root = np.mean(lifting_target[..., self.root_index, :], axis=-2)
+            lifting_target_label -= root[..., np.newaxis, :]
             encoded['target_root'] = root
 
-            if self.remove_root:
+            if self.remove_root and len(self.root_index) == 1:
+                root_index = self.root_index[0]
                 lifting_target_label = np.delete(
-                    lifting_target_label, self.root_index, axis=-2)
+                    lifting_target_label, root_index, axis=-2)
                 lifting_target_visible = np.delete(
-                    lifting_target_visible, self.root_index, axis=-2)
+                    lifting_target_visible, root_index, axis=-2)
                 assert lifting_target_weight.ndim in {
                     2, 3
                 }, (f'Got invalid lifting target weights shape '
@@ -163,16 +166,14 @@ class VideoPoseLifting(BaseKeypointCodec):
 
                 axis_to_remove = -2 if lifting_target_weight.ndim == 3 else -1
                 lifting_target_weight = np.delete(
-                    lifting_target_weight,
-                    self.root_index,
-                    axis=axis_to_remove)
+                    lifting_target_weight, root_index, axis=axis_to_remove)
                 # Add a flag to avoid latter transforms that rely on the root
                 # joint or the original joint index
                 encoded['target_root_removed'] = True
 
                 # Save the root index for restoring the global pose
                 if self.save_index:
-                    encoded['target_root_index'] = self.root_index
+                    encoded['target_root_index'] = root_index
 
         # Normalize the 2D keypoint coordinate with image width and height
         _camera_param = deepcopy(camera_param)
@@ -237,7 +238,7 @@ class VideoPoseLifting(BaseKeypointCodec):
 
         if target_root is not None and target_root.size > 0:
             keypoints = keypoints + target_root
-            if self.remove_root:
+            if self.remove_root and len(self.root_index) == 1:
                 keypoints = np.insert(
                     keypoints, self.root_index, target_root, axis=1)
         scores = np.ones(keypoints.shape[:-1], dtype=np.float32)
