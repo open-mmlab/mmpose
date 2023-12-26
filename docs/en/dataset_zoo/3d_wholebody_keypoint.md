@@ -31,7 +31,9 @@ MMPose supported datasets:
   <img src="https://user-images.githubusercontent.com/100993824/227770977-c8f00355-c43a-467e-8444-d307789cf4b2.png" height="300px">
 </div>
 
-For [H3WB](https://github.com/wholebody3d/wholebody3d), please follow the [document](3d_body_keypoint.md#human36m) to download [Human3.6M](http://vision.imar.ro/human3.6m/description.php) dataset, then download the H3WB annotations from the official [webpage](https://github.com/wholebody3d/wholebody3d). The data should have the following structure:
+For [H3WB](https://github.com/wholebody3d/wholebody3d), please follow the [document](3d_body_keypoint.md#human36m) to download [Human3.6M](http://vision.imar.ro/human3.6m/description.php) dataset, then download the H3WB annotations from the official [webpage](https://github.com/wholebody3d/wholebody3d). NOTES: please follow their [updates](https://github.com/wholebody3d/wholebody3d?tab=readme-ov-file#updates) to download the annotations.
+
+The data should have the following structure:
 
 ```text
 mmpose
@@ -44,6 +46,7 @@ mmpose
     ├── h36m
         ├── annotation_body3d
         |   ├── cameras.pkl
+        |   ├── h3wb_train.npz
         |   ├── fps50
         |   |   ├── h36m_test.npz
         |   |   ├── h36m_train.npz
@@ -71,15 +74,4 @@ mmpose
             ├── S8
             ├── S9
             `── S11
-        `── json
-            ├── 2Dto3D_test_2d.json
-            ├── 2Dto3D_train.json
-            ├── 2Dto3D_train_part1.json
-            ├── 2Dto3D_train_part2.json
-            ├── 2Dto3D_train_part3.json
-            ├── 2Dto3D_train_part4.json
-            ├── 2Dto3D_train_part5.json
-            ├── I2Dto3D_test_2d.json
-            ├── RGBto3D_test_img.json
-            └── RGBto3D_train.json
 ```
