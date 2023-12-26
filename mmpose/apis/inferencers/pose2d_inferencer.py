@@ -244,7 +244,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         if pose_based_nms:
             for ds in data_samples:
                 kpts = ds.pred_instances.keypoints
-                scores = ds.pred_instances.scores
+                scores = ds.pred_instances.bbox_scores
                 num_keypoints = kpts.shape[-2]
 
                 kept_indices = nearby_joints_nms(
