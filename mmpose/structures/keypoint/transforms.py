@@ -111,7 +111,7 @@ def flip_keypoints_custom_center(keypoints: np.ndarray,
         center_index = [center_index] if isinstance(center_index, int) else \
             center_index
         assert keypoints.shape[-2] > max(center_index)
-        x_c = keypoints[..., center_index, 0].mean(axis=-1)[..., np.newaxis]
+        x_c = keypoints[..., center_index, 0].mean(axis=-1)
 
     keypoints_flipped = keypoints.copy()
     keypoints_visible_flipped = keypoints_visible.copy()
