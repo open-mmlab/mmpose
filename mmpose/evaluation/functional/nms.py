@@ -258,7 +258,7 @@ def soft_oks_nms(kpts_db: List[dict],
 
 def nearby_joints_nms(
     kpts_db: List[dict],
-    dist_thr: float,
+    dist_thr: float = 0.05,
     num_nearby_joints_thr: Optional[int] = None,
     score_per_joint: bool = False,
     max_dets: int = 30,
@@ -271,9 +271,10 @@ def nearby_joints_nms(
     Args:
         kpts_db (list[dict]): keypoints and scores.
         dist_thr (float): threshold for judging whether two joints are close.
+            Defaults to 0.05.
         num_nearby_joints_thr (int): threshold for judging whether two
             instances are close.
-        max_dets (int): max number of detections to keep.
+        max_dets (int): max number of detections to keep. Defaults to 30.
         score_per_joint (bool): the input scores (in kpts_db) are per joint
             scores.
 

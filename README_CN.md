@@ -119,6 +119,8 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - 通过独立项目的形式，利用 MMPose 的强大功能，同时不被代码框架所束缚
   - 最新添加的项目包括：
     - [RTMPose](/projects/rtmpose/)
+    - [RTMO](/projects/rtmo/)
+    - [PoseAnything](/projects/pose_anything/)
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
     - [Simple Keypoints](/projects/skps/)

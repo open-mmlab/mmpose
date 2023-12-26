@@ -60,7 +60,9 @@ class MMPoseInferencer(BaseMMPoseInferencer):
         'bbox_thr', 'nms_thr', 'bboxes', 'use_oks_tracking', 'tracking_thr',
         'disable_norm_pose_2d'
     }
-    forward_kwargs: set = {'disable_rebase_keypoint'}
+    forward_kwargs: set = {
+        'merge_results', 'disable_rebase_keypoint', 'pose_based_nms'
+    }
     visualize_kwargs: set = {
         'return_vis', 'show', 'wait_time', 'draw_bbox', 'radius', 'thickness',
         'kpt_thr', 'vis_out_dir', 'skeleton_style', 'draw_heatmap',
@@ -113,14 +115,8 @@ class MMPoseInferencer(BaseMMPoseInferencer):
             Any: Data processed by the ``pipeline`` and ``collate_fn``.
             List[str or np.ndarray]: List of original inputs in the batch
         """
-
-        for i, input in enumerate(inputs):
-            data_batch = {}
-            data_infos = self.inferencer.preprocess_single(
-                input, index=i, **kwargs)
-            data_batch = self.inferencer.collate_fn(data_infos)
-            # only supports inference with batch size 1
-            yield data_batch, [input]
+        for data in self.inferencer.preprocess(inputs, batch_size, **kwargs):
+            yield data
 
     @torch.no_grad()
     def forward(self, inputs: InputType, **forward_kwargs) -> PredType:

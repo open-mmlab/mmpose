@@ -49,7 +49,7 @@ Refer to [our paper](https://arxiv.org/abs/2312.07526) for more details.
 | [RTMO-s](/configs/body_2d_keypoint/rtmo/crowdpose/rtmo-s_8xb32-700e_crowdpose-640x640.py) | CrowdPose | 0.673 |      0.882      |      0.729      | 0.737  | 0.682  | 0.591  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-s_8xb32-700e_crowdpose-640x640-79f81c0d_20231211.pth) |
 | [RTMO-m](/configs/body_2d_keypoint/rtmo/crowdpose/rtmo-m_16xb16-700e_crowdpose-640x640.py) | CrowdPose | 0.711 |      0.897      |      0.771      | 0.774  | 0.719  | 0.634  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rrtmo-m_16xb16-700e_crowdpose-640x640-0eaf670d_20231211.pth) |
 | [RTMO-l](/configs/body_2d_keypoint/rtmo/crowdpose/rtmo-l_16xb16-700e_crowdpose-640x640.py) | CrowdPose | 0.732 |      0.907      |      0.793      | 0.792  | 0.741  | 0.653  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-700e_crowdpose-640x640-1008211f_20231211.pth) |
-| [RTMO-l](/configs/body_2d_keypoint/rtmo/crowdpose/rtmo-l_16xb16-700e_crowdpose-640x640.py) |   body7   | 0.838 |      0.947      |      0.893      | 0.888  | 0.847  | 0.772  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-700e_body7-crowdpose-640x640-5bafdc11_20231219.pth) |
+| [RTMO-l](/configs/body_2d_keypoint/rtmo/crowdpose/rtmo-l_16xb16-700e_body7-crowdpose-640x640.py) |   body7   | 0.838 |      0.947      |      0.893      | 0.888  | 0.847  | 0.772  | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-700e_body7-crowdpose-640x640-5bafdc11_20231219.pth) |
 
 ## 🖥️ Train and Evaluation
 
@@ -72,7 +72,7 @@ sh tools/dist_train.sh $CONFIG $NUM_GPUS --work-dir $WORK_DIR --amp
 Under the root directory of mmpose, run the following command to evaluate models:
 
 ```sh
-sh tools/dist_test.sh $CONFIG $PATH_TO_CHECKPOINT
+sh tools/dist_test.sh $CONFIG $PATH_TO_CHECKPOINT $NUM_GPUS
 ```
 
 See [here](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.html) for more training and evaluation details.
@@ -85,9 +85,7 @@ See [here](https://mmpose.readthedocs.io/en/latest/user_guides/train_and_test.ht
 
 - PyTorch **1.12+** is required to export the ONNX model of RTMO!
 
-- Currently, you need to install mmdeploy from the `main` branch source code to deploy RTMO:
-
-  `pip install git+https://github.com/open-mmlab/mmdeploy.git@main`
+- MMDeploy v1.3.1+ is required to deploy RTMO.
 
 ### ONNX Model Export
 

@@ -314,22 +314,45 @@ class BaseMMPoseInferencer(BaseInferencer):
                    inputs: InputsType,
                    batch_size: int = 1,
                    bboxes: Optional[List] = None,
+                   bbox_thr: float = 0.3,
+                   nms_thr: float = 0.3,
                    **kwargs):
         """Process the inputs into a model-feedable format.
 
         Args:
             inputs (InputsType): Inputs given by user.
             batch_size (int): batch size. Defaults to 1.
+            bbox_thr (float): threshold for bounding box detection.
+                Defaults to 0.3.
+            nms_thr (float): IoU threshold for bounding box NMS.
+                Defaults to 0.3.
 
         Yields:
             Any: Data processed by the ``pipeline`` and ``collate_fn``.
             List[str or np.ndarray]: List of original inputs in the batch
         """
 
+        # One-stage pose estimators perform prediction filtering within the
+        # head's `predict` method. Here, we set the arguments for filtering
+        if self.cfg.model.type == 'BottomupPoseEstimator':
+            # 1. init with default arguments
+            test_cfg = self.model.test_cfg.copy()
+            # 2. update the score_thr and nms_thr in the test_cfg of the head
+            if 'score_thr' in test_cfg:
+                test_cfg['score_thr'] = bbox_thr
+            if 'nms_thr' in test_cfg:
+                test_cfg['nms_thr'] = nms_thr
+            self.model.head.test_cfg = test_cfg
+
         for i, input in enumerate(inputs):
             bbox = bboxes[i] if bboxes else []
             data_infos = self.preprocess_single(
-                input, index=i, bboxes=bbox, **kwargs)
+                input,
+                index=i,
+                bboxes=bbox,
+                bbox_thr=bbox_thr,
+                nms_thr=nms_thr,
+                **kwargs)
             # only supports inference with batch size 1
             yield self.collate_fn(data_infos), [input]
 

@@ -32,6 +32,8 @@ If you find this useful, please cite this work as follows:
 
 ## Getting Started
 
+📣 Pose Anything is available on OpenXLab now. [\[Try it online\]](https://openxlab.org.cn/apps/detail/orhir/Pose-Anything)
+
 ### Install Dependencies
 
 We recommend using a virtual environment for running our code.
