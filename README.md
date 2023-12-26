@@ -120,8 +120,9 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - More flexible code structure and style, fewer restrictions, and a shorter code review process.
   - Utilize the powerful capabilities of MMPose in the form of independent projects without being constrained by the code framework.
   - Newly added projects include:
-    - [Pose Anything](/projects/pose_anything/)
     - [RTMPose](/projects/rtmpose/)
+    - [RTMO](/projects/rtmo/)
+    - [PoseAnything](/projects/pose_anything/)
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
     - [Simple Keypoints](/projects/skps/)
