@@ -1,4 +1,3 @@
-chumpy
 json_tricks
 matplotlib
 munkres
