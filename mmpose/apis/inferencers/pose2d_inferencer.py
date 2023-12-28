@@ -243,6 +243,9 @@ class Pose2DInferencer(BaseMMPoseInferencer):
 
         if pose_based_nms:
             for ds in data_samples:
+                if len(ds.pred_instances) == 0:
+                    continue
+
                 kpts = ds.pred_instances.keypoints
                 scores = ds.pred_instances.bbox_scores
                 num_keypoints = kpts.shape[-2]
