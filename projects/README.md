@@ -40,7 +40,7 @@ We also provide some documentation listed below to help you get started:
   <img src="https://github.com/open-mmlab/mmpose/assets/13503330/5b637d76-41dd-4376-9a7f-854cd120799d" width=800 height=200 />
   </div><br/>
 
-- **[🎳RTMO](./rtmpose)**: Towards High-Performance One-Stage Real-Time Multi-Person Pose Estimation <sup>
+- **[🎳RTMO](./rtmo)**: Towards High-Performance One-Stage Real-Time Multi-Person Pose Estimation <sup>
   <a href="https://openxlab.org.cn/apps/detail/mmpose/RTMPose">
   <i>TRY IT NOW</i>
   </a>
