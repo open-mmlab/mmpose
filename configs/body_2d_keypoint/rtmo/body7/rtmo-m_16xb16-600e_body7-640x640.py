@@ -479,7 +479,7 @@ model = dict(
         assigner=dict(
             type='SimOTAAssigner',
             dynamic_k_indicator='oks',
-            oks_calculator=dict(type='PoseOKS')),
+            oks_calculator=dict(type='PoseOKS', metainfo=metafile)),
         prior_generator=dict(
             type='MlvlPointGenerator',
             centralize_points=True,
