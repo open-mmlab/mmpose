@@ -1,5 +1,9 @@
 # Changelog
 
+## **v1.3.0 (04/01/2024)**
+
+Release note: https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0
+
 ## **v1.2.0 (12/10/2023)**
 
 Release note: https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0
