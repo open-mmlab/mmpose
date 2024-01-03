@@ -336,13 +336,13 @@ class BaseMMPoseInferencer(BaseInferencer):
         # head's `predict` method. Here, we set the arguments for filtering
         if self.cfg.model.type == 'BottomupPoseEstimator':
             # 1. init with default arguments
-            test_cfg = self.model.test_cfg.copy()
+            test_cfg = self.model.head.test_cfg.copy()
             # 2. update the score_thr and nms_thr in the test_cfg of the head
             if 'score_thr' in test_cfg:
                 test_cfg['score_thr'] = bbox_thr
             if 'nms_thr' in test_cfg:
                 test_cfg['nms_thr'] = nms_thr
-            self.model.head.test_cfg = test_cfg
+            self.model.test_cfg = test_cfg
 
         for i, input in enumerate(inputs):
             bbox = bboxes[i] if bboxes else []

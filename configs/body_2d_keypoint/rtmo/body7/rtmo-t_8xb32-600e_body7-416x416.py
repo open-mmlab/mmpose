@@ -475,7 +475,7 @@ model = dict(
         assigner=dict(
             type='SimOTAAssigner',
             dynamic_k_indicator='oks',
-            oks_calculator=dict(type='PoseOKS'),
+            oks_calculator=dict(type='PoseOKS', metainfo=metafile),
             use_keypoints_for_center=True),
         prior_generator=dict(
             type='MlvlPointGenerator',
