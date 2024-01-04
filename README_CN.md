@@ -100,15 +100,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
   ![rtmo](https://github.com/open-mmlab/mmpose/assets/26127467/54d5555a-23e5-4308-89d1-f0c82a6734c2)
 
-- 发布了不同尺寸的 RTMW 模型，满足不同的使用场景
-
-  | Arch                                                        | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR | Hand AP | Hand AR | Whole AP | Whole AR |                            ckpt                             |
-  | :---------------------------------------------------------- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :------: | :---------------------------------------------------------: |
-  | [rtmw-m](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-m_8xb1024-270e_cocktail14-256x192.py) |  256x192   |  0.676  |  0.747  |  0.671  |  0.794  |  0.783  |  0.854  |  0.491  |  0.604  |  0.582   |  0.673   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-l-m_simcc-cocktail14_270e-256x192-20231122.pth) |
-  | [rtmw-l](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb1024-270e_cocktail14-256x192.py) |  256x192   |  0.743  |  0.807  |  0.763  |  0.868  |  0.834  |  0.889  |  0.598  |  0.701  |  0.660   |  0.746   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-256x192-20231122.pth) |
-  | [rtmw-x](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb704-270e_cocktail14-256x192.py) |  256x192   |  0.746  |  0.808  |  0.770  |  0.869  |  0.844  |  0.896  |  0.610  |  0.710  |  0.672   |  0.752   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-256x192-13a2546d_20231208.pth) |
-  | [rtmw-l](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb320-270e_cocktail14-384x288.py) |  384x288   |  0.761  |  0.824  |  0.793  |  0.885  |  0.884  |  0.921  |  0.663  |  0.752  |  0.701   |  0.780   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth) |
-  | [rtmw-x](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb320-270e_cocktail14-384x288.py) |  384x288   |  0.763  |  0.826  |  0.796  |  0.888  |  0.884  |  0.923  |  0.664  |  0.755  |  0.702   |  0.781   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth) |
+- 发布了不同尺寸的 [RTMW](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw_cocktail14.md) 模型，满足不同的使用场景。模型尺寸覆盖从 RTMW-m 到 RTMW-x 的模型，输入图像尺寸包含 256x192 和 384x288
 
 - 支持了 [PoseAnything](/projects/pose_anything) 的推理。[在线试玩](https://openxlab.org.cn/apps/detail/orhir/Pose-Anything)
 
@@ -135,15 +127,14 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 <br/>
 
-- 2023-10-12：MMPose [v1.2.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) 正式发布了，主要更新包括:
+- 2024-01-04：MMPose [v1.3.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0) 正式发布了，主要更新包括:
 
-  - 支持新数据集：UBody、300W-LP。
-  - 支持新算法：MotionBERT、DWPose、EDPose、Uniformer
-  - 迁移 Associate Embedding、InterNet、YOLOX-Pose 算法。
-  - 迁移 DeepFashion2 数据集。
-  - 支持 Badcase 可视化分析、多数据集评测、关键点可见性预测功能。
+  - 支持新数据集：ExLPose、H3WB
+  - 发布 RTMPose 系列新模型：RTMO、RTMW
+  - 支持新算法 PoseAnything
+  - 推理器 Inferencer 支持可选的进度条、提升与单阶段模型的适配性
 
-  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) 以了解更多 MMPose v1.2.0 带来的更新!
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0) 以了解更多 MMPose v1.3.0 带来的更新!
 
 ## 0.x / 1.x 迁移
 
