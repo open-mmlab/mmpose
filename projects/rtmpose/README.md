@@ -44,6 +44,8 @@ ______________________________________________________________________
 
 ## 🥳 🚀 What's New [🔝](#-table-of-contents)
 
+- Dec. 2023:
+  - Update RTMW models. The RTMW-l model achieves 70.1 mAP on COCO-Wholebody val set.
 - Sep. 2023:
   - Add RTMW models trained on combined datasets. The alpha version of RTMW-x model achieves 70.2 mAP on COCO-Wholebody val set. You can try it [Here](https://openxlab.org.cn/apps/detail/mmpose/RTMPose). The technical report will be released soon.
   - Add YOLOX and RTMDet models trained on HumanArt dataset.
@@ -292,9 +294,9 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
 </details>
 
 <details open>
-<summary><b>Cocktail13</b></summary>
+<summary><b>Cocktail14</b></summary>
 
-- `Cocktail13` denotes model trained on 13 public datasets:
+- `Cocktail14` denotes model trained on 14 public datasets:
   - [AI Challenger](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#aic)
   - [CrowdPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#crowdpose)
   - [MPII](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#mpii)
@@ -308,11 +310,15 @@ For more details, please refer to [GroupFisher Pruning for RTMPose](./rtmpose/pr
   - [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
   - [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
   - [LaPa](https://github.com/JDAI-CV/lapa-dataset)
+  - [InterHand](https://mks0601.github.io/InterHand2.6M/)
 
 | Config                          | Input Size | Whole AP | Whole AR | FLOPS<sup><br>(G) | ORT-Latency<sup><br>(ms)<sup><br>(i7-11700) | TRT-FP16-Latency<sup><br>(ms)<sup><br>(GTX 1660Ti) |             Download              |
 | :------------------------------ | :--------: | :------: | :------: | :---------------: | :-----------------------------------------: | :------------------------------------------------: | :-------------------------------: |
-| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail13-256x192.py) |  256x192   |   67.2   |   75.4   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-256x192-fbef0d61_20230925.pth) |
-| [RTMW-x<sup><br>(alpha version)](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail13-384x288.py) |  384x288   |   70.2   |   77.9   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail13_pt-ucoco_270e-384x288-0949e3a9_20230925.pth) |
+| [RTMW-m](./rtmpose/wholebody_2d_keypoint/rtmw-m_8xb1024-270e_cocktail14-256x192.py) |  256x192   |   58.2   |   67.3   |        4.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-l-m_simcc-cocktail14_270e-256x192-20231122.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmw/onnx_sdk/rtmw-dw-m-s_simcc-cocktail14_270e-256x192_20231122.zip) |
+| [RTMW-l](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail14-256x192.py) |  256x192   |   66.0   |   74.6   |        7.9        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-256x192-20231122.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmw/onnx_sdk/rtmw-dw-x-l_simcc-cocktail14_270e-256x192_20231122.zip) |
+| [RTMW-x](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb704-270e_cocktail14-256x192.py) |  256x192   |   67.2   |   75.2   |       13.1        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-256x192-13a2546d_20231208.pth) |
+| [RTMW-l](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail14-384x288.py) |  384x288   |   70.1   |   78.0   |       17.7        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth)<br>[onnx](https://download.openmmlab.com/mmpose/v1/projects/rtmw/onnx_sdk/rtmw-dw-x-l_simcc-cocktail14_270e-384x288_20231122.zip) |
+| [RTMW-x](./rtmpose/wholebody_2d_keypoint/rtmw-x_8xb320-270e_cocktail14-384x288.py) |  384x288   |   70.2   |   78.1   |       29.3        |                      -                      |                         -                          | [pth](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth) |
 
 </details>
 
@@ -1017,50 +1023,50 @@ if __name__ == '__main__':
 Here is a basic example of SDK C++ API:
 
 ```C++
-#include "mmdeploy/detector.hpp"
+#include "mmdeploy/pose_detector.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#include "utils/argparse.h" // See: https://github.com/open-mmlab/mmdeploy/blob/main/demo/csrc/cpp/utils/argparse.h
 
-#include "opencv2/imgcodecs/imgcodecs.hpp"
-#include "utils/argparse.h"
-#include "utils/visualize.h"
-
-DEFINE_ARG_string(model, "Model path");
-DEFINE_ARG_string(image, "Input image path");
-DEFINE_string(device, "cpu", R"(Device name, e.g. "cpu", "cuda")");
-DEFINE_string(output, "detector_output.jpg", "Output image path");
-
-DEFINE_double(det_thr, .5, "Detection score threshold");
+DEFINE_ARG_string(model_path, "Model path");
+DEFINE_ARG_string(image_path, "Input image path");
+DEFINE_string(device_name, "cpu", R"(Device name, e.g. "cpu", "cuda")");
+DEFINE_int32(bbox_x, -1, R"(x position of the bounding box)");
+DEFINE_int32(bbox_y, -1, R"(y position of the bounding box)");
+DEFINE_int32(bbox_w, -1, R"(width of the bounding box)");
+DEFINE_int32(bbox_h, -1, R"(height of the bounding box)");
 
 int main(int argc, char* argv[]) {
   if (!utils::ParseArguments(argc, argv)) {
     return -1;
   }
 
-  cv::Mat img = cv::imread(ARGS_image);
-  if (img.empty()) {
-    fprintf(stderr, "failed to load image: %s\n", ARGS_image.c_str());
-    return -1;
+  cv::Mat img = cv::imread(ARGS_image_path);
+
+  mmdeploy::PoseDetector detector(mmdeploy::Model{ARGS_model_path}, mmdeploy::Device{FLAGS_device_name, 0});
+
+  mmdeploy::PoseDetector::Result result{0, 0, nullptr};
+
+  if (FLAGS_bbox_x == -1 || FLAGS_bbox_y == -1 || FLAGS_bbox_w == -1 || FLAGS_bbox_h == -1) {
+    result = detector.Apply(img);
+  } else {
+    // convert (x, y, w, h) -> (left, top, right, bottom)
+    mmdeploy::cxx::Rect rect;
+    rect.left = FLAGS_bbox_x;
+    rect.top = FLAGS_bbox_y;
+    rect.right = FLAGS_bbox_x + FLAGS_bbox_w;
+    rect.bottom = FLAGS_bbox_y + FLAGS_bbox_h;
+    result = detector.Apply(img, {rect});
   }
 
-  // construct a detector instance
-  mmdeploy::Detector detector(mmdeploy::Model{ARGS_model}, mmdeploy::Device{FLAGS_device});
-
-  // apply the detector, the result is an array-like class holding references to
-  // `mmdeploy_detection_t`, will be released automatically on destruction
-  mmdeploy::Detector::Result dets = detector.Apply(img);
-
-  // visualize
-  utils::Visualize v;
-  auto sess = v.get_session(img);
-  int count = 0;
-  for (const mmdeploy_detection_t& det : dets) {
-    if (det.score > FLAGS_det_thr) {  // filter bboxes
-      sess.add_det(det.bbox, det.label_id, det.score, det.mask, count++);
-    }
+  // Draw circles at detected keypoints
+  for (size_t i = 0; i < result[0].length; ++i) {
+    cv::Point keypoint(result[0].point[i].x, result[0].point[i].y);
+    cv::circle(img, keypoint, 1, cv::Scalar(0, 255, 0), 2);  // Draw filled circle
   }
 
-  if (!FLAGS_output.empty()) {
-    cv::imwrite(FLAGS_output, sess.get());
-  }
+  // Save the output image
+  cv::imwrite("output_pose.png", img);
 
   return 0;
 }

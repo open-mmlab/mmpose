@@ -251,5 +251,6 @@ class PackPoseInputs(BaseTransform):
             str: Formatted string.
         """
         repr_str = self.__class__.__name__
-        repr_str += f'(meta_keys={self.meta_keys})'
+        repr_str += f'(meta_keys={self.meta_keys}, '
+        repr_str += f'pack_transformed={self.pack_transformed})'
         return repr_str

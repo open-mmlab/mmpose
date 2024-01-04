@@ -39,7 +39,7 @@ class PoseDataSample(BaseDataElement):
         ...                              gt_fields=gt_fields,
         ...                              metainfo=pose_meta)
         >>> assert 'img_shape' in data_sample
-        >>> len(data_sample.gt_intances)
+        >>> len(data_sample.gt_instances)
         1
     """
 

@@ -81,6 +81,7 @@ You can change the documentation language at the lower-left corner of the page.
    dataset_zoo/2d_animal_keypoint.md
    dataset_zoo/3d_body_keypoint.md
    dataset_zoo/3d_hand_keypoint.md
+   dataset_zoo/3d_wholebody_keypoint.md
 
 .. toctree::
    :maxdepth: 1

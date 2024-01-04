@@ -181,7 +181,8 @@ class MpiiDataset(BaseCocoStyleDataset):
             bbox = bbox_cs2xyxy(center, scale)
 
             # load keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
-            keypoints = np.array(ann['joints']).reshape(1, -1, 2)
+            keypoints = np.array(
+                ann['joints'], dtype=np.float32).reshape(1, -1, 2)
             keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
 
             x1, y1, x2, y2 = np.split(bbox, axis=1, indices_or_sections=4)

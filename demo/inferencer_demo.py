@@ -4,6 +4,12 @@ from typing import Dict
 
 from mmpose.apis.inferencers import MMPoseInferencer, get_model_aliases
 
+filter_args = dict(bbox_thr=0.3, nms_thr=0.3, pose_based_nms=False)
+POSE2D_SPECIFIC_ARGS = dict(
+    yoloxpose=dict(bbox_thr=0.01, nms_thr=0.65, pose_based_nms=True),
+    rtmo=dict(bbox_thr=0.1, nms_thr=0.65, pose_based_nms=True),
+)
+
 
 def parse_args():
     parser = ArgumentParser()
@@ -12,6 +18,8 @@ def parse_args():
         type=str,
         nargs='?',
         help='Input image/video path or folder path.')
+
+    # init args
     parser.add_argument(
         '--pose2d',
         type=str,
@@ -66,6 +74,21 @@ def parse_args():
         help='Device used for inference. '
         'If not specified, the available device will be automatically used.')
     parser.add_argument(
+        '--show-progress',
+        action='store_true',
+        help='Display the progress bar during inference.')
+
+    # The default arguments for prediction filtering differ for top-down
+    # and bottom-up models. We assign the default arguments according to the
+    # selected pose2d model
+    args, _ = parser.parse_known_args()
+    for model in POSE2D_SPECIFIC_ARGS:
+        if model in args.pose2d:
+            filter_args.update(POSE2D_SPECIFIC_ARGS[model])
+            break
+
+    # call args
+    parser.add_argument(
         '--show',
         action='store_true',
         help='Display the image/video in a popup window.')
@@ -81,13 +104,18 @@ def parse_args():
     parser.add_argument(
         '--bbox-thr',
         type=float,
-        default=0.3,
+        default=filter_args['bbox_thr'],
         help='Bounding box score threshold')
     parser.add_argument(
         '--nms-thr',
         type=float,
-        default=0.3,
+        default=filter_args['nms_thr'],
         help='IoU threshold for bounding box NMS')
+    parser.add_argument(
+        '--pose-based-nms',
+        type=lambda arg: arg.lower() in ('true', 'yes', 't', 'y', '1'),
+        default=filter_args['pose_based_nms'],
+        help='Whether to use pose-based NMS')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
@@ -157,15 +185,16 @@ def parse_args():
 
     init_kws = [
         'pose2d', 'pose2d_weights', 'scope', 'device', 'det_model',
-        'det_weights', 'det_cat_ids', 'pose3d', 'pose3d_weights'
+        'det_weights', 'det_cat_ids', 'pose3d', 'pose3d_weights',
+        'show_progress'
     ]
     init_args = {}
     for init_kw in init_kws:
         init_args[init_kw] = call_args.pop(init_kw)
 
-    diaplay_alias = call_args.pop('show_alias')
+    display_alias = call_args.pop('show_alias')
 
-    return init_args, call_args, diaplay_alias
+    return init_args, call_args, display_alias
 
 
 def display_model_aliases(model_aliases: Dict[str, str]) -> None:
@@ -179,8 +208,8 @@ def display_model_aliases(model_aliases: Dict[str, str]) -> None:
 
 
 def main():
-    init_args, call_args, diaplay_alias = parse_args()
-    if diaplay_alias:
+    init_args, call_args, display_alias = parse_args()
+    if display_alias:
         model_alises = get_model_aliases(init_args['scope'])
         display_model_aliases(model_alises)
     else:

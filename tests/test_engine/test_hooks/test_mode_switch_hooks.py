@@ -7,7 +7,7 @@ from mmengine.config import Config
 from mmengine.runner import Runner
 from torch.utils.data import Dataset
 
-from mmpose.engine.hooks import YOLOXPoseModeSwitchHook
+from mmpose.engine.hooks import RTMOModeSwitchHook, YOLOXPoseModeSwitchHook
 from mmpose.utils import register_all_modules
 
 
@@ -65,3 +65,36 @@ class TestYOLOXPoseModeSwitchHook(TestCase):
         self.assertTrue(runner.model.bbox_head.use_aux_loss)
         self.assertEqual(runner.train_loop.dataloader.dataset.pipeline,
                          pipeline2)
+
+
+class TestRTMOModeSwitchHook(TestCase):
+
+    def test(self):
+
+        runner = Mock()
+        runner.model = Mock()
+        runner.model.head = Mock()
+        runner.model.head.loss = Mock()
+
+        runner.model.head.attr1 = False
+        runner.model.head.loss.attr2 = 1.0
+
+        hook = RTMOModeSwitchHook(epoch_attributes={
+            0: {
+                'attr1': True
+            },
+            10: {
+                'loss.attr2': 0.5
+            }
+        })
+
+        # test after change mode
+        runner.epoch = 0
+        hook.before_train_epoch(runner)
+        self.assertTrue(runner.model.head.attr1)
+        self.assertEqual(runner.model.head.loss.attr2, 1.0)
+
+        runner.epoch = 10
+        hook.before_train_epoch(runner)
+        self.assertTrue(runner.model.head.attr1)
+        self.assertEqual(runner.model.head.loss.attr2, 0.5)

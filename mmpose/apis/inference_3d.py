@@ -23,13 +23,13 @@ def convert_keypoint_definition(keypoints, pose_det_dataset,
         ndarray[K, 2 or 3]: the transformed 2D keypoints.
     """
     assert pose_lift_dataset in [
-        'h36m'], '`pose_lift_dataset` should be ' \
+        'h36m', 'h3wb'], '`pose_lift_dataset` should be ' \
         f'`h36m`, but got {pose_lift_dataset}.'
 
     keypoints_new = np.zeros((keypoints.shape[0], 17, keypoints.shape[2]),
                              dtype=keypoints.dtype)
-    if pose_lift_dataset == 'h36m':
-        if pose_det_dataset in ['h36m']:
+    if pose_lift_dataset in ['h36m', 'h3wb']:
+        if pose_det_dataset in ['h36m', 'coco_wholebody']:
             keypoints_new = keypoints
         elif pose_det_dataset in ['coco', 'posetrack18']:
             # pelvis (root) is in the middle of l_hip and r_hip
@@ -265,8 +265,26 @@ def inference_pose_lifter_model(model,
             bbox_center = dataset_info['stats_info']['bbox_center']
             bbox_scale = dataset_info['stats_info']['bbox_scale']
         else:
-            bbox_center = None
-            bbox_scale = None
+            if norm_pose_2d:
+                # compute the average bbox center and scale from the
+                # datasamples in pose_results_2d
+                bbox_center = np.zeros((1, 2), dtype=np.float32)
+                bbox_scale = 0
+                num_bbox = 0
+                for pose_res in pose_results_2d:
+                    for data_sample in pose_res:
+                        for bbox in data_sample.pred_instances.bboxes:
+                            bbox_center += np.array([[(bbox[0] + bbox[2]) / 2,
+                                                      (bbox[1] + bbox[3]) / 2]
+                                                     ])
+                            bbox_scale += max(bbox[2] - bbox[0],
+                                              bbox[3] - bbox[1])
+                            num_bbox += 1
+                bbox_center /= num_bbox
+                bbox_scale /= num_bbox
+            else:
+                bbox_center = None
+                bbox_scale = None
 
     pose_results_2d_copy = []
     for i, pose_res in enumerate(pose_results_2d):

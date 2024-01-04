@@ -178,11 +178,13 @@ def visualize(img: np.ndarray,
 
     # draw keypoints and skeleton
     for kpts, score in zip(keypoints, scores):
+        keypoints_num = len(score)
         for kpt, color in zip(kpts, point_color):
             cv2.circle(img, tuple(kpt.astype(np.int32)), 1, palette[color], 1,
                        cv2.LINE_AA)
         for (u, v), color in zip(skeleton, link_color):
-            if score[u] > thr and score[v] > thr:
+            if u < keypoints_num and v < keypoints_num \
+                        and score[u] > thr and score[v] > thr:
                 cv2.line(img, tuple(kpts[u].astype(np.int32)),
                          tuple(kpts[v].astype(np.int32)), palette[color], 2,
                          cv2.LINE_AA)

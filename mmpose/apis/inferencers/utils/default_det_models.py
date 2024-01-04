@@ -7,7 +7,13 @@ from mmengine.utils import get_installed_path
 mmpose_path = get_installed_path(MODULE2PACKAGE['mmpose'])
 
 default_det_models = dict(
-    human=dict(model='rtmdet-m', weights=None, cat_ids=(0, )),
+    human=dict(
+        model=osp.join(
+            mmpose_path, '.mim', 'demo/mmdetection_cfg/'
+            'rtmdet_m_640-8xb32_coco-person.py'),
+        weights='https://download.openmmlab.com/mmpose/v1/projects/'
+        'rtmposev1/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth',
+        cat_ids=(0, )),
     face=dict(
         model=osp.join(mmpose_path, '.mim',
                        'demo/mmdetection_cfg/yolox-s_8xb8-300e_coco-face.py'),

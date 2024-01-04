@@ -40,6 +40,22 @@ We also provide some documentation listed below to help you get started:
   <img src="https://github.com/open-mmlab/mmpose/assets/13503330/5b637d76-41dd-4376-9a7f-854cd120799d" width=800 height=200 />
   </div><br/>
 
+- **[🎳RTMO](./rtmo)**: Towards High-Performance One-Stage Real-Time Multi-Person Pose Estimation <sup>
+  <a href="https://openxlab.org.cn/apps/detail/mmpose/RTMPose">
+  <i>TRY IT NOW</i>
+  </a>
+  </sup>
+
+  <div align="center">
+  <img src="https://github.com/open-mmlab/mmpose/assets/26127467/61120930-09e5-4457-aa2c-b2f131d4f710" width=800  />
+  </div><br/>
+
+- **[♾️PoseAnything](./pose_anything/)**: A Graph-Based Approach for Category-Agnostic Pose Estimation
+
+  <div align=center>
+  <img src="https://github.com/open-mmlab/mmpose/assets/26127467/47acbd42-e812-4994-b287-b2a2b5ccbd80" width="800"/>
+  </div><br/>
+
 - **[:art:MMPose4AIGC](./mmpose4aigc)**: Guide AI image generation with MMPose
 
   <div align=center>

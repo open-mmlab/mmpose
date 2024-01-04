@@ -369,12 +369,15 @@ def get_udp_warp_matrix(
     return warp_mat
 
 
-def get_warp_matrix(center: np.ndarray,
-                    scale: np.ndarray,
-                    rot: float,
-                    output_size: Tuple[int, int],
-                    shift: Tuple[float, float] = (0., 0.),
-                    inv: bool = False) -> np.ndarray:
+def get_warp_matrix(
+    center: np.ndarray,
+    scale: np.ndarray,
+    rot: float,
+    output_size: Tuple[int, int],
+    shift: Tuple[float, float] = (0., 0.),
+    inv: bool = False,
+    fix_aspect_ratio: bool = True,
+) -> np.ndarray:
     """Calculate the affine transformation matrix that can warp the bbox area
     in the input image to the output size.
 
@@ -389,6 +392,8 @@ def get_warp_matrix(center: np.ndarray,
             Default (0., 0.).
         inv (bool): Option to inverse the affine transform direction.
             (inv=False: src->dst or inv=True: dst->src)
+        fix_aspect_ratio (bool): Whether to fix aspect ratio during transform.
+            Defaults to True.
 
     Returns:
         np.ndarray: A 2x3 transformation matrix
@@ -399,23 +404,29 @@ def get_warp_matrix(center: np.ndarray,
     assert len(shift) == 2
 
     shift = np.array(shift)
-    src_w = scale[0]
-    dst_w = output_size[0]
-    dst_h = output_size[1]
+    src_w, src_h = scale[:2]
+    dst_w, dst_h = output_size[:2]
 
     rot_rad = np.deg2rad(rot)
-    src_dir = _rotate_point(np.array([0., src_w * -0.5]), rot_rad)
-    dst_dir = np.array([0., dst_w * -0.5])
+    src_dir = _rotate_point(np.array([src_w * -0.5, 0.]), rot_rad)
+    dst_dir = np.array([dst_w * -0.5, 0.])
 
     src = np.zeros((3, 2), dtype=np.float32)
     src[0, :] = center + scale * shift
     src[1, :] = center + src_dir + scale * shift
-    src[2, :] = _get_3rd_point(src[0, :], src[1, :])
 
     dst = np.zeros((3, 2), dtype=np.float32)
     dst[0, :] = [dst_w * 0.5, dst_h * 0.5]
     dst[1, :] = np.array([dst_w * 0.5, dst_h * 0.5]) + dst_dir
-    dst[2, :] = _get_3rd_point(dst[0, :], dst[1, :])
+
+    if fix_aspect_ratio:
+        src[2, :] = _get_3rd_point(src[0, :], src[1, :])
+        dst[2, :] = _get_3rd_point(dst[0, :], dst[1, :])
+    else:
+        src_dir_2 = _rotate_point(np.array([0., src_h * -0.5]), rot_rad)
+        dst_dir_2 = np.array([0., dst_h * -0.5])
+        src[2, :] = center + src_dir_2 + scale * shift
+        dst[2, :] = np.array([dst_w * 0.5, dst_h * 0.5]) + dst_dir_2
 
     if inv:
         warp_mat = cv2.getAffineTransform(np.float32(dst), np.float32(src))

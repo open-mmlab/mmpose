@@ -92,6 +92,11 @@ class KeypointConverter(BaseTransform):
     def transform(self, results: dict) -> dict:
         """Transforms the keypoint results to match the target keypoints."""
         num_instances = results['keypoints'].shape[0]
+
+        if 'keypoints_visible' not in results:
+            results['keypoints_visible'] = np.ones(
+                (num_instances, results['keypoints'].shape[1]))
+
         if len(results['keypoints_visible'].shape) > 2:
             results['keypoints_visible'] = results['keypoints_visible'][:, :,
                                                                         0]

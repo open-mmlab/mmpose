@@ -12,7 +12,7 @@ from mmengine.model import revert_sync_batchnorm
 from mmengine.registry import init_default_scope
 from mmengine.structures import InstanceData
 
-from mmpose.evaluation.functional import nms
+from mmpose.evaluation.functional import nearby_joints_nms, nms
 from mmpose.registry import INFERENCERS
 from mmpose.structures import merge_data_samples
 from .base_mmpose_inferencer import BaseMMPoseInferencer
@@ -56,7 +56,7 @@ class Pose2DInferencer(BaseMMPoseInferencer):
     """
 
     preprocess_kwargs: set = {'bbox_thr', 'nms_thr', 'bboxes'}
-    forward_kwargs: set = {'merge_results'}
+    forward_kwargs: set = {'merge_results', 'pose_based_nms'}
     visualize_kwargs: set = {
         'return_vis',
         'show',
@@ -79,11 +79,16 @@ class Pose2DInferencer(BaseMMPoseInferencer):
                  scope: Optional[str] = 'mmpose',
                  det_model: Optional[Union[ModelType, str]] = None,
                  det_weights: Optional[str] = None,
-                 det_cat_ids: Optional[Union[int, Tuple]] = None) -> None:
+                 det_cat_ids: Optional[Union[int, Tuple]] = None,
+                 show_progress: bool = False) -> None:
 
         init_default_scope(scope)
         super().__init__(
-            model=model, weights=weights, device=device, scope=scope)
+            model=model,
+            weights=weights,
+            device=device,
+            scope=scope,
+            show_progress=show_progress)
         self.model = revert_sync_batchnorm(self.model)
 
         # assign dataset metainfo to self.visualizer
@@ -208,7 +213,8 @@ class Pose2DInferencer(BaseMMPoseInferencer):
     def forward(self,
                 inputs: Union[dict, tuple],
                 merge_results: bool = True,
-                bbox_thr: float = -1):
+                bbox_thr: float = -1,
+                pose_based_nms: bool = False):
         """Performs a forward pass through the model.
 
         Args:
@@ -228,9 +234,29 @@ class Pose2DInferencer(BaseMMPoseInferencer):
         data_samples = self.model.test_step(inputs)
         if self.cfg.data_mode == 'topdown' and merge_results:
             data_samples = [merge_data_samples(data_samples)]
+
         if bbox_thr > 0:
             for ds in data_samples:
                 if 'bbox_scores' in ds.pred_instances:
                     ds.pred_instances = ds.pred_instances[
                         ds.pred_instances.bbox_scores > bbox_thr]
+
+        if pose_based_nms:
+            for ds in data_samples:
+                if len(ds.pred_instances) == 0:
+                    continue
+
+                kpts = ds.pred_instances.keypoints
+                scores = ds.pred_instances.bbox_scores
+                num_keypoints = kpts.shape[-2]
+
+                kept_indices = nearby_joints_nms(
+                    [
+                        dict(keypoints=kpts[i], score=scores[i])
+                        for i in range(len(kpts))
+                    ],
+                    num_nearby_joints_thr=num_keypoints // 3,
+                )
+                ds.pred_instances = ds.pred_instances[kept_indices]
+
         return data_samples
