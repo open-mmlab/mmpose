@@ -102,15 +102,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
   ![rtmo](https://github.com/open-mmlab/mmpose/assets/26127467/54d5555a-23e5-4308-89d1-f0c82a6734c2)
 
-- Release RTMW models in various sizes. This provides flexibility to select the right model for different speed and accuracy requirements.
-
-  | Arch                                                        | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR | Hand AP | Hand AR | Whole AP | Whole AR |                            ckpt                             |
-  | :---------------------------------------------------------- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :------: | :---------------------------------------------------------: |
-  | [rtmw-m](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-m_8xb1024-270e_cocktail14-256x192.py) |  256x192   |  0.676  |  0.747  |  0.671  |  0.794  |  0.783  |  0.854  |  0.491  |  0.604  |  0.582   |  0.673   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-l-m_simcc-cocktail14_270e-256x192-20231122.pth) |
-  | [rtmw-l](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb1024-270e_cocktail14-256x192.py) |  256x192   |  0.743  |  0.807  |  0.763  |  0.868  |  0.834  |  0.889  |  0.598  |  0.701  |  0.660   |  0.746   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-256x192-20231122.pth) |
-  | [rtmw-x](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb704-270e_cocktail14-256x192.py) |  256x192   |  0.746  |  0.808  |  0.770  |  0.869  |  0.844  |  0.896  |  0.610  |  0.710  |  0.672   |  0.752   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-256x192-13a2546d_20231208.pth) |
-  | [rtmw-l](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb320-270e_cocktail14-384x288.py) |  384x288   |  0.761  |  0.824  |  0.793  |  0.885  |  0.884  |  0.921  |  0.663  |  0.752  |  0.701   |  0.780   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth) |
-  | [rtmw-x](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb320-270e_cocktail14-384x288.py) |  384x288   |  0.763  |  0.826  |  0.796  |  0.888  |  0.884  |  0.923  |  0.664  |  0.755  |  0.702   |  0.781   | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth) |
+- Release [RTMW](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw_cocktail14.md) models in various sizes ranging from RTMW-m to RTMW-x. The input sizes include `256x192` and `384x288`. This provides flexibility to select the right model for different speed and accuracy requirements.
 
 - Support inference of [PoseAnything](/projects/pose_anything). Web demo is available [here](https://openxlab.org.cn/apps/detail/orhir/Pose-Anything).
 
@@ -137,15 +129,14 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 <br/>
 
-- October 12, 2023: MMPose [v1.2.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) has been officially released, with major updates including:
+- January 4, 2024: MMPose [v1.3.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0) has been officially released, with major updates including:
 
-  - Support for new datasets: UBody, 300W-LP.
-  - Support for new algorithms: MotionBERT, DWPose, EDPose, Uniformer.
-  - Migration of Associate Embedding, InterNet, YOLOX-Pose algorithms.
-  - Migration of the DeepFashion2 dataset.
-  - Support for Badcase visualization analysis, multi-dataset evaluation, and keypoint visibility prediction features.
+  - Support for new datasets: ExLPose, H3WB
+  - Release of new RTMPose series models: RTMO, RTMW
+  - Support for new algorithm PoseAnything
+  - Enhanced Inferencer with optional progress bar and improved affinity for one-stage methods
 
-  Please check the complete [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) for more details on the updates brought by MMPose v1.2.0!
+  Please check the complete [release notes](https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0) for more details on the updates brought by MMPose v1.3.0!
 
 ## 0.x / 1.x Migration
 
