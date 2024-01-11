@@ -1,5 +1,9 @@
 # Changelog
 
+## **v1.3.1 (11/01/2024)**
+
+Fix the bug when downloading config and checkpoint using `mim` (see https://github.com/open-mmlab/mmpose/issues/2918).
+
 ## **v1.3.0 (04/01/2024)**
 
 Release note: https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0
