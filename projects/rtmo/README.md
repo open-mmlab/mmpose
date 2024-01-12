@@ -13,6 +13,16 @@ RTMO is a one-stage pose estimation model that achieves performance comparable t
 python demo/inferencer_demo.py $IMAGE --pose2d rtmo --vis-out-dir vis_results
 ```
 
+**rtmlib demo**
+
+[rtmlib](https://github.com/Tau-J/rtmlib/tree/main) provides simple and easy-to-use API for inference with RTMPose models.
+
+- Support OpenCV/ONNXRuntime/OpenVINO inference and does not require Pytorch or MMCV.
+- Super user-friendly API for inference and visualization.
+- Support both CPU and GPU inference.
+- Automatically download onnx models from OpenMMLab model zoo.
+- Support all series of RTMPose models (RTMPose, DWPose, RTMO, RTMW etc.)
+
 ## 📜 Introduction
 
 Real-time multi-person pose estimation presents significant challenges in balancing speed and precision. While two-stage top-down methods slow down as the number of people in the image increases, existing one-stage methods often fail to simultaneously deliver high accuracy and real-time performance. This paper introduces RTMO, a one-stage pose estimation framework that seamlessly integrates coordinate classification by representing keypoints using dual 1-D heatmaps within the YOLO architecture, achieving accuracy comparable to top-down methods while maintaining high speed. We propose a dynamic coordinate classifier and a tailored loss function for heatmap learning, specifically designed to address the incompatibilities between coordinate classification and dense prediction models. RTMO outperforms state-of-the-art one-stage pose estimators, achieving 1.1% higher AP on COCO while operating about 9 times faster with the same backbone. Our largest model, RTMO-l, attains 74.8% AP on COCO val2017 and 141 FPS on a single V100 GPU, demonstrating its efficiency and accuracy.

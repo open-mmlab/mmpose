@@ -87,6 +87,7 @@ ______________________________________________________________________
   |   s   |   72.2   |  200+   |  710+   |
   |   m   |   75.8   |   90+   |  430+   |
   |   l   |   76.5   |   50+   |  280+   |
+  | l-384 |   78.3   |    -    |  160+   |
 
 - 🛠️ **易部署**
 
@@ -451,12 +452,23 @@ RTMPose 是一个长期优化迭代的项目，致力于业务场景下的高性
 
 ## 😎 快速尝试 [🔝](#-table-of-contents)
 
-我们提供了两种途径来让用户尝试 RTMPose 模型：
+我们提供了多种途径来让用户尝试 RTMPose 模型：
 
 - [在线 RTMPose Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
 - [Examples](https://github.com/open-mmlab/mmpose/tree/dev-1.x/projects/rtmpose/examples/onnxruntime) 基于 Python 和 ONNXRuntime （无 MMCV 依赖）
+- [rtmlib 推理库](https://github.com/Tau-J/rtmlib/tree/main) （无 MMCV、Pytorch 依赖）
 - MMPose demo 脚本 （基于 Pytorch）
 - MMDeploy SDK 预编译包 （推荐，速度提升6-10倍）
+
+### rtmlib 推理库
+
+[rtmlib](https://github.com/Tau-J/rtmlib/tree/main) 提供了开箱即用的 RTMPose 全系列官方及衍生模型的推理：
+
+- 无需安装 mmcv，mmengine，mmpose 等一系列训练库，无需 pytorch 环境，有 opencv 就能推理
+- 超级友好简洁的推理和可视化接口
+- 支持 CPU 和 GPU 推理
+- 自动下载和缓存 onnx 模型
+- 支持 RTMPose 全系列官方及衍生模型：RTMPose，DWPose，RTMO，RTMW etc.
 
 ### MMPose demo 脚本
 
