@@ -91,6 +91,7 @@ ______________________________________________________________________
   |   s   |   72.2   |  200+   |  710+   |
   |   m   |   75.8   |   90+   |  430+   |
   |   l   |   76.5   |   50+   |  280+   |
+  | l-384 |   78.3   |    -    |  160+   |
 
 - 🛠️ **Easy to deploy**
 
@@ -460,12 +461,23 @@ We also provide the ImageNet classification pre-trained weights of the CSPNeXt b
 
 ## 😎 Get Started [🔝](#-table-of-contents)
 
-We provide two appoaches to try RTMPose:
+We provide following appoaches to try RTMPose:
 
 - [Online RTMPose Demo](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
 - [Examples](https://github.com/open-mmlab/mmpose/tree/dev-1.x/projects/rtmpose/examples/onnxruntime) based on Python and ONNXRuntime (without mmcv)
+- [rtmlib](https://github.com/Tau-J/rtmlib/tree/main) （without mmcv, pytorch）
 - MMPose demo scripts (based on Pytorch)
 - Pre-compiled MMDeploy SDK (Recommended, 6-10 times faster)
+
+## rtmlib
+
+[rtmlib](https://github.com/Tau-J/rtmlib/tree/main) provides simple and easy-to-use API for inference with RTMPose models.
+
+- Support OpenCV/ONNXRuntime/OpenVINO inference and does not require Pytorch or MMCV.
+- Super user-friendly API for inference and visualization.
+- Support both CPU and GPU inference.
+- Automatically download onnx models from OpenMMLab model zoo.
+- Support all series of RTMPose models (RTMPose, DWPose, RTMO, RTMW etc.)
 
 ### MMPose demo scripts
 
