@@ -90,7 +90,7 @@ def write_deepstream_config(cfg: Config, coco_file: Dict, write_dir: str, name: 
                         f"scaling-filter=1 # 0=Nearest, 1=Bilinear\n" \
                         f"\n" \
                         f"# model loading.\n" \
-                        f"onnx_file={onnx_file_path}\n" \
+                        f"onnx-file={onnx_file_path}\n" \
                         f"model-engine-file={onnx_file_path}_b8_gpu0_fp16.engine\n" \
                         f"\n" \
                         f"# model config\n" \
