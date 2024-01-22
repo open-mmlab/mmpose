@@ -107,7 +107,7 @@ def write_deepstream_config(cfg: Config, coco_file: Dict, write_dir: str, name: 
                         f"[custom]\n" \
                         f"min-kp-score=0.0\n" \
                         f"kp_names={';'.join(kp_names)}\n"
-    write_path = os.path.join(write_dir, "keypoint_config.txt")
+    write_path = os.path.join(write_dir, "keypoint-config.txt")
     write_string_as_file(write_path, ds_config_contents)
 
 
