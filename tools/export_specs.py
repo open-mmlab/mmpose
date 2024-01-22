@@ -74,6 +74,44 @@ def write_detector_yaml(cfg: Config, coco_file: Dict, write_dir: str, name: str)
     write_path = os.path.join(write_dir, "detectors.yaml")
     write_string_as_file(write_path, yaml_contents)
 
+def write_deepstream_config(cfg: Config, coco_file: Dict, write_dir: str, name: str):
+    export_name = f"{name}.onnx"
+    onnx_file_path = f"/data/ml_models/models/keypoint_trt/{cfg.project_name}/{export_name}"
+    input_shape = cfg["data_cfg"]["image_size"]
+    kp_names = coco_file["categories"][0]["keypoints"]
+
+    ds_config_contents = f"[property]\n" \
+                        f"gpu-id=0\n" \
+                        f"\n" \
+                        f"# preprocessing parameters.\n" \
+                        f"net-scale-factor=0.01742919389\n" \
+                        f"offsets=123.675;116.128;103.53\n" \
+                        f"model-color-format=0\n" \
+                        f"scaling-filter=1 # 0=Nearest, 1=Bilinear\n" \
+                        f"\n" \
+                        f"# model loading.\n" \
+                        f"onnx_file={onnx_file_path}\n" \
+                        f"model-engine-file={onnx_file_path}_b8_gpu0_fp16.engine\n" \
+                        f"\n" \
+                        f"# model config\n" \
+                        f"infer-dims=3;{input_shape[1]};{input_shape[0]}\n" \
+                        f"batch-size=8\n" \
+                        f"network-mode=2 # 0=FP32, 1=INT8, 2=FP16\n" \
+                        f"network-type=100 # >3 disables post-processing\n" \
+                        f"cluster-mode=4 # 1=DBSCAN 4=No Clustering\n" \
+                        f"gie-unique-id=2\n" \
+                        f"process-mode=2 # 1=Primary, 2=Secondary\n" \
+                        f"output-tensor-meta=1\n" \
+                        f"operate-on-class-ids=<<<<PUT CLASS IDS HERE>>>>\n" \
+                        f"\n" \
+                        f"[custom]\n" \
+                        f"min-kp-score=0.0\n" \
+                        f"kp_names={';'.join(kp_names)}\n"
+    write_path = os.path.join(write_dir, "keypoint_config.txt")
+    write_string_as_file(write_path, ds_config_contents)
+
+
+
 def write_info_file(cfg: Config, write_dir: str) -> None:
     result_file = os.path.join(cfg.work_dir, "best.json")
     result_contents = read_json(result_file)
@@ -114,6 +152,7 @@ def export_for_lv(args):
     coco_file = read_json(cfg["data"]["train"]["ann_file"])
     model_name = f"keypoint_detector_{cfg.project_name}_{time.strftime('%y%m%d')}"
     write_detector_yaml(cfg=cfg, coco_file=coco_file, write_dir=export_folder, name=model_name)
+    write_deepstream_config(cfg=cfg, coco_file=coco_file, write_dir=export_folder, name=model_name)
     write_info_file(cfg=cfg, write_dir=export_folder)
     copy_training_specs(cfg=cfg, write_dir=export_folder)
     print(f"Training info exported successfully to: {export_folder}")
