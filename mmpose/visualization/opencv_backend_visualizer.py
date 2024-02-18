@@ -240,9 +240,13 @@ class OpencvBackendVisualizer(Visualizer):
             x = int(positions[0])
             if horizontal_alignments == 'right':
                 x = max(0, x - text_size[0])
+            elif horizontal_alignments == 'center':
+                x = max(0, x - text_size[0] // 2)
             y = int(positions[1])
             if vertical_alignments == 'top':
                 y = min(self.height, y + text_size[1])
+            elif vertical_alignments == 'center':
+                y = min(self.height, y + text_size[1] // 2)
 
             if bboxes is not None:
                 bbox_color = bboxes[0]['facecolor']
