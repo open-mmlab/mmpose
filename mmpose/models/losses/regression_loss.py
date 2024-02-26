@@ -99,12 +99,17 @@ class SmoothL1Loss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
+        reduction (str): Specifies the reduction to apply to the output.
+            Options are "none", "mean" and "sum".
         loss_weight (float): Weight of the loss. Default: 1.0.
     """
 
-    def __init__(self, use_target_weight=False, loss_weight=1.):
+    def __init__(self,
+                 use_target_weight=False,
+                 reduction: str = 'mean',
+                 loss_weight=1.):
         super().__init__()
-        self.criterion = F.smooth_l1_loss
+        self.criterion = partial(F.smooth_l1_loss, reduction=reduction)
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
