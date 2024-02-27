@@ -152,6 +152,8 @@ mmpose
             ...
 ```
 
+We also supply a script which can convert the raw WFLW dataset to COCO style. The data processed by the script is not completely consistent with the data downloaded from the URL, but it does not affect training and testing.
+
 ## AFLW Dataset
 
 <!-- [DATASET] -->
