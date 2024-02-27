@@ -29,7 +29,7 @@ def convert_wflw_to_coco(ann_file, out_file):
     data_infos = [x.strip().split() for x in data_infos]
     for data in data_infos:
         file_name = data[-1]
-        img_path = osp.join('data/wflw_raw/WFLW_images', file_name)
+        img_path = osp.join('data/wflw/WFLW_images', file_name)
         img = cv2.imread(img_path)
 
         keypoints = []
@@ -100,9 +100,9 @@ def convert_wflw_to_coco(ann_file, out_file):
 
 
 if __name__ == '__main__':
-    if not osp.exists('data/wflw_raw/annotations'):
-        os.makedirs('data/wflw_raw/annotations')
-    root_folder = 'data/wflw_raw'
+    if not osp.exists('data/wflw/annotations'):
+        os.makedirs('data/wflw/annotations')
+    root_folder = 'data/wflw'
     ann_folder = f'{root_folder}/WFLW_annotations'
     for root, dirs, files in os.walk(ann_folder):
         for file in files:
