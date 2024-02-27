@@ -103,15 +103,16 @@ if __name__ == '__main__':
     if not osp.exists('data/wflw_raw/annotations'):
         os.makedirs('data/wflw_raw/annotations')
     root_folder = 'data/wflw_raw'
-    train_file = 'list_98pt_rect_attr_train.txt'
-    test_file = 'list_98pt_rect_attr_test.txt'
-    ann_train_file = os.path.join(root_folder, 'WFLW_annotations',
-                                  'list_98pt_rect_attr_train_test', train_file)
-    ann_test_file = os.path.join(root_folder, 'WFLW_annotations',
-                                 'list_98pt_rect_attr_train_test', test_file)
-    out_train_file = os.path.join(root_folder, 'annotations',
-                                  'face_landmarks_wflw_train.json')
-    out_test_file = os.path.join(root_folder, 'annotations',
-                                 'face_landmarks_wflw_test.json')
-    convert_wflw_to_coco(ann_train_file, out_train_file)
-    convert_wflw_to_coco(ann_test_file, out_test_file)
+    ann_folder = f'{root_folder}/WFLW_annotations'
+    for root, dirs, files in os.walk(ann_folder):
+        for file in files:
+            if not file.endswith('txt'):
+                continue
+            print(f'Processing {file}')
+            sub_class = file.split('_')[-1].replace('.txt', '')
+            if sub_class != 'train' and sub_class != 'test':
+                out_file = f'face_landmarks_wflw_test_{sub_class}.json'
+            else:
+                out_file = f'face_landmarks_wflw_{sub_class}.json'
+            convert_wflw_to_coco(f'{root}/{file}',
+                                 f'{root_folder}/annotations/{out_file}')
