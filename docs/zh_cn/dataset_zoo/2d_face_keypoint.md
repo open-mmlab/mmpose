@@ -152,6 +152,8 @@ mmpose
             ...
 ```
 
+We also supply a script which can convert the raw WFLW annotations to COCO style. The script's output is not completely consistent with the annotations downloaded from the URL, but it does not affect training and testing.
+
 ## AFLW Dataset
 
 <!-- [DATASET] -->
