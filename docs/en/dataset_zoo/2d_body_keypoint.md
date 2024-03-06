@@ -474,17 +474,22 @@ mmpose
 `── data
     │── ExLPose
         │-- annotations
-        |	|-- ExLPose
-        │   |-- ExLPose_train_LL.json
-        │   |-- ExLPose_test_LL-A.json
-        │   |-- ExLPose_test_LL-E.json
-        │   |-- ExLPose_test_LL-H.json
-        │   |-- ExLPose_test_LL-N.json
+        |   |-- ExLPose
+        │       |-- ExLPose_test_LL-A.json
+        │       |-- ExLPose_test_LL-E.json
+        │       |-- ExLPose_test_LL-H.json
+        │       |-- ExLPose_test_LL-N.json
+        │       |-- ExLPose_test_WL.json
+        │       |-- ExLPose_train_LL.json
+        │       |-- ExLPose_train_WL.json
+        |-- bright
+        |   |-- imgs_0119_3_vid000002_exp100_bright_000052__gain_0.00_exposure_1000.png
+        |   |-- imgs_0119_3_vid000002_exp200_bright_000052__gain_6.02_exposure_500.png
+        |   |-- ...
         |-- dark
-            |--00001.png
-            |--00002.png
-            |--...
-
+            |-- imgs_0119_3_vid000002_exp100_dark_000052__gain_0.00_exposure_1000.png
+            |-- imgs_0119_3_vid000005_exp200_dark_000002__gain_1.60_exposure_500.png
+            |-- ...
 ```
 
 ## PoseTrack18
