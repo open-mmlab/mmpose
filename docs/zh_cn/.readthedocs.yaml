@@ -9,7 +9,7 @@ build:
     python: "3.8"
 
 sphinx:
-  configuration: docs/en/conf.py
+  configuration: docs/zh_cn/conf.py
 
 python:
   install:
