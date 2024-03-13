@@ -3,6 +3,7 @@ from .topdown_coco_dataset import TopDownCocoDataset
 from .topdown_coco_wholebody_dataset import TopDownCocoWholeBodyDataset
 from .topdown_crowdpose_dataset import TopDownCrowdPoseDataset
 from .topdown_jhmdb_dataset import TopDownJhmdbDataset
+from .topdown_lifted_fork_dataset_7kp import LiftedForkDataset7KP
 from .topdown_mhp_dataset import TopDownMhpDataset
 from .topdown_mpii_dataset import TopDownMpiiDataset
 from .topdown_mpii_trb_dataset import TopDownMpiiTrbDataset
@@ -17,5 +18,5 @@ __all__ = [
     'TopDownCrowdPoseDataset', 'TopDownMpiiDataset', 'TopDownMpiiTrbDataset',
     'TopDownOCHumanDataset', 'TopDownPoseTrack18Dataset',
     'TopDownJhmdbDataset', 'TopDownMhpDataset', 'TopDownForkliftDataset',
-    'TopDownForkliftDataset4KP', 'LiftedForkDataset3KP',
+    'TopDownForkliftDataset4KP', 'LiftedForkDataset3KP', 'LiftedForkDataset7KP',
 ]
