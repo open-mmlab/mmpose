@@ -96,16 +96,20 @@ MMPose 支持多种任务和相应的数据集。你可以在 [数据集仓库](
 
 - 确定数据集类名。如果你将数据集重组为 COCO 格式，你可以简单地使用 `CocoDataset` 作为 `dataset_type` 的值。否则，你将需要使用你添加的自定义数据集类的名称。
 
-- 指定元信息配置文件。MMPose 1.x 采用了与 MMPose 0.x 不同的策略来指定元信息。在 MMPose 1.x 中，用户可以按照以下方式指定元信息配置文件：
+- 指定元信息配置文件。假设你的数据集标注文件存储路径为 `aaa/annotations/xxx.json`，图片存储路径为 `aaa/train/c.jpg`，你应该按照以下方式指定元信息配置文件：
 
   ```python
   train_dataloader = dict(
       ...
       dataset=dict(
           type=dataset_type,
-          data_root='root/of/your/train/data',
-          ann_file='path/to/your/train/json',
-          data_prefix=dict(img='path/to/your/train/img'),
+          data_root='aaa',
+          # ann file is stored at {data_root}/{ann_file}
+          # e.g. aaa/annotations/xxx.json
+          ann_file='annotations/xxx.json',
+          # img is stored at {data_root}/{img}/
+          # e.g. aaa/train/c.jpg
+          data_prefix=dict(img='train'),
           # specify dataset meta information
           metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
           ...),

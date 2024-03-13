@@ -171,9 +171,13 @@ train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root of your train data',
-        ann_file='path to your json file',
-        data_prefix=dict(img='path to your train img'),
+        data_root='aaa',
+        # ann file is stored at {data_root}/{ann_file}
+        # e.g. aaa/annotations/train.json
+        ann_file='annotations/train.json',
+        # img is stored at {data_root}/{img}/
+        # e.g. aaa/train/c.jpg
+        data_prefix=dict(img='train'),
         # specify the new dataset meta information config file
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
@@ -183,9 +187,13 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root of your val data',
-        ann_file='path to your val json',
-        data_prefix=dict(img='path to your val img'),
+        data_root='aaa',
+        # ann file is stored at {data_root}/{ann_file}
+        # e.g. aaa/annotations/val.json
+        ann_file='annotations/val.json',
+        # img is stored at {data_root}/{img}/
+        # e.g. aaa/val/c.jpg
+        data_prefix=dict(img='val'),
         # specify the new dataset meta information config file
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),

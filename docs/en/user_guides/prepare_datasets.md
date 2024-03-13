@@ -96,16 +96,20 @@ The [Customize Datasets](../advanced_guides/customize_datasets.md) guide provide
 
 - Determine the dataset class name. If you reorganize your dataset into the COCO format, you can simply use `CocoDataset` as the value for `dataset_type`. Otherwise, you will need to use the name of the custom dataset class you added.
 
-- Specify the meta information config file. MMPose 1.x employs a different strategy for specifying meta information compared to MMPose 0.x. In MMPose 1.x, users can specify the meta information config file as follows:
+- Specify the meta information config file. Suppose the path of the annotation file is `aaa/annotations/xxx.json`, and the path of imgs is `aaa/train/c.jpg`, you should specify the meta information config file as follows:
 
   ```python
   train_dataloader = dict(
       ...
       dataset=dict(
           type=dataset_type,
-          data_root='root/of/your/train/data',
-          ann_file='path/to/your/train/json',
-          data_prefix=dict(img='path/to/your/train/img'),
+          data_root='aaa',
+          # ann file is stored at {data_root}/{ann_file}
+          # e.g. aaa/annotations/xxx.json
+          ann_file='annotations/xxx.json',
+          # img is stored at {data_root}/{img}/
+          # e.g. aaa/train/c.jpg
+          data_prefix=dict(img='train'),
           # specify dataset meta information
           metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
           ...),
