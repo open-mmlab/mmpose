@@ -104,13 +104,13 @@ MMPose 支持多种任务和相应的数据集。你可以在 [数据集仓库](
       dataset=dict(
           type=dataset_type,
           data_root='aaa',
-          # ann file is stored at {data_root}/{ann_file}
-          # e.g. aaa/annotations/xxx.json
+          # 标注文件路径为 {data_root}/{ann_file}
+          # 例如： aaa/annotations/xxx.json
           ann_file='annotations/xxx.json',
-          # img is stored at {data_root}/{img}/
-          # e.g. aaa/train/c.jpg
+          # 图片路径为 {data_root}/{img}/
+          # 例如： aaa/train/c.jpg
           data_prefix=dict(img='train'),
-          # specify dataset meta information
+          # 指定元信息配置文件
           metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
           ...),
   )
