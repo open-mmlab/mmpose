@@ -176,9 +176,13 @@ train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root of your train data',
-        ann_file='path to your json file',
-        data_prefix=dict(img='path to your train img'),
+        data_root='aaa',
+        # 标注文件路径为 {data_root}/{ann_file}
+        # 例如： aaa/annotations/train.json
+        ann_file='annotations/train.json',
+        # 图片路径为 {data_root}/{img_path}/
+        # 例如： aaa/train/c.jpg
+        data_prefix=dict(img='train'),
         # 指定对应的元信息配置文件
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
@@ -187,9 +191,13 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root of your val data',
-        ann_file='path to your val json',
-        data_prefix=dict(img='path to your val img'),
+        data_root='aaa',
+        # 标注文件路径为 {data_root}/{ann_file}
+        # 例如： aaa/annotations/val.json
+        ann_file='annotations/val.json',
+        # 图片路径为 {data_root}/{img_path}/
+        # 例如： aaa/val/c.jpg
+        data_prefix=dict(img='val'),
         # 指定对应的元信息配置文件
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),

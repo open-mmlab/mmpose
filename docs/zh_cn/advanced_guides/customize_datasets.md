@@ -175,16 +175,20 @@ dataset_info = dict(
 
 ```python
 ...
-# 自定义数据集类
+# 自定义数据集
 dataset_type = 'MyCustomDataset' # or 'CocoDataset'
 
 train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
+        data_root='aaa',
+        # 标注文件路径为 {data_root}/{ann_file}
+        # 例如： aaa/annotations/xxx.json
+        ann_file='annotations/xxx.json',
+        # 图片路径为 {data_root}/{img}/
+        # 例如： aaa/train/c.jpg
+        data_prefix=dict(img='train'),
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
@@ -193,9 +197,13 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
+        data_root='aaa',
+        # 标注文件路径为 {data_root}/{ann_file}
+        # 例如： aaa/annotations/yyy.json
+        ann_file='annotations/yyy.json',
+        # 图片路径为 {data_root}/{img}/
+        # 例如： aaa/val/c.jpg
+        data_prefix=dict(img='val'),
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
@@ -204,9 +212,13 @@ test_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/test/data',
-        ann_file='path/to/your/test/json',
-        data_prefix=dict(img='path/to/your/test/img'),
+        data_root='aaa',
+        # 标注文件路径为 {data_root}/{ann_file}
+        # 例如： aaa/annotations/zzz.json
+        ann_file='annotations/zzz.json',
+        # 图片路径为 {data_root}/{img}/
+        # 例如： aaa/test/c.jpg
+        data_prefix=dict(img='test'),
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
@@ -229,8 +241,12 @@ MMPose 提供了一个 [CombinedDataset](https://github.com/open-mmlab/mmpose/bl
 ```python
 dataset_1 = dict(
     type='dataset_type_1',
-    data_root='root/of/your/dataset1',
-    data_prefix=dict(img_path='path/to/your/img'),
+    data_root='aaa',
+    # 图片路径为 {data_root}/{img_path}/
+    # 例如： aaa/train/c.jpg
+    data_prefix=dict(img_path='train'),
+    # 标注文件路径为 {data_root}/{ann_file}
+    # 例如： aaa/annotations/train.json
     ann_file='annotations/train.json',
     pipeline=[
         # 使用转换器将标注信息统一为需要的格式
@@ -239,8 +255,12 @@ dataset_1 = dict(
 
 dataset_2 = dict(
     type='dataset_type_2',
-    data_root='root/of/your/dataset2',
-    data_prefix=dict(img_path='path/to/your/img'),
+    data_root='bbb',
+    # 图片路径为 {data_root}/{img_path}/
+    # 例如： bbb/train/c.jpg
+    data_prefix=dict(img_path='train'),
+    # 标注文件路径为 {data_root}/{ann_file}
+    # 例如： bbb/annotations/train.json
     ann_file='annotations/train.json',
     pipeline=[
         converter_transform_2

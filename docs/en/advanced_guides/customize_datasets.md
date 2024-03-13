@@ -171,9 +171,13 @@ train_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/train/data',
-        ann_file='path/to/your/train/json',
-        data_prefix=dict(img='path/to/your/train/img'),
+        data_root='aaa',
+        # ann file is stored at {data_root}/{ann_file}
+        # e.g. aaa/annotations/xxx.json
+        ann_file='annotations/xxx.json',
+        # img is stored at {data_root}/{img}/
+        # e.g. aaa/train/c.jpg
+        data_prefix=dict(img='train'),
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
@@ -182,9 +186,13 @@ val_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/val/data',
-        ann_file='path/to/your/val/json',
-        data_prefix=dict(img='path/to/your/val/img'),
+        data_root='aaa',
+        # ann file is stored at {data_root}/{ann_file}
+        # e.g. aaa/annotations/yyy.json
+        ann_file='annotations/yyy.json',
+        # img is stored at {data_root}/{img}/
+        # e.g. aaa/val/c.jpg
+        data_prefix=dict(img='val'),
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
@@ -193,9 +201,13 @@ test_dataloader = dict(
     batch_size=2,
     dataset=dict(
         type=dataset_type,
-        data_root='root/of/your/test/data',
-        ann_file='path/to/your/test/json',
-        data_prefix=dict(img='path/to/your/test/img'),
+        data_root='aaa',
+        # ann file is stored at {data_root}/{ann_file}
+        # e.g. aaa/annotations/zzz.json
+        ann_file='annotations/zzz.json',
+        # img is stored at {data_root}/{img}/
+        # e.g. aaa/test/c.jpg
+        data_prefix=dict(img='test'),
         metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
@@ -218,8 +230,12 @@ MMPose provides [CombinedDataset](https://github.com/open-mmlab/mmpose/blob/dev-
 ```python
 dataset_1 = dict(
     type='dataset_type_1',
-    data_root='root/of/your/dataset1',
-    data_prefix=dict(img_path='path/to/your/img'),
+    data_root='aaa',
+    # ann file is stored at {data_root}/{ann_file}
+    # e.g. aaa/annotations/train.json
+    data_prefix=dict(img_path='train'),
+    # img is stored at {data_root}/{img}/
+    # e.g. aaa/train/c.jpg
     ann_file='annotations/train.json',
     pipeline=[
         # the converter transforms convert data into a unified format
@@ -228,8 +244,12 @@ dataset_1 = dict(
 
 dataset_2 = dict(
     type='dataset_type_2',
-    data_root='root/of/your/dataset2',
-    data_prefix=dict(img_path='path/to/your/img'),
+    data_root='bbb',
+    # ann file is stored at {data_root}/{ann_file}
+    # e.g. bbb/annotations/train.json
+    data_prefix=dict(img_path='train'),
+    # img is stored at {data_root}/{img}/
+    # e.g. bbb/train/c.jpg
     ann_file='annotations/train.json',
     pipeline=[
         converter_transform_2
