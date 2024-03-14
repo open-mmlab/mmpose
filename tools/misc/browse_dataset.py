@@ -2,6 +2,7 @@
 import argparse
 import os
 import os.path as osp
+from itertools import accumulate
 
 import mmcv
 import mmengine
@@ -11,6 +12,7 @@ from mmengine import Config, DictAction
 from mmengine.registry import build_from_cfg, init_default_scope
 from mmengine.structures import InstanceData
 
+from mmpose.datasets import CombinedDataset
 from mmpose.registry import DATASETS, VISUALIZERS
 from mmpose.structures import PoseDataSample
 
@@ -24,6 +26,11 @@ def parse_args():
         type=str,
         help='If there is no display interface, you can save it.')
     parser.add_argument('--not-show', default=False, action='store_true')
+    parser.add_argument(
+        '--max-item-per-dataset',
+        default=50,
+        type=int,
+        help='Define the maximum item processed per dataset')
     parser.add_argument(
         '--phase',
         default='train',
@@ -99,13 +106,35 @@ def main():
     visualizer = VISUALIZERS.build(cfg.visualizer)
     visualizer.set_dataset_meta(dataset.metainfo)
 
-    progress_bar = mmengine.ProgressBar(len(dataset))
+    if isinstance(dataset, CombinedDataset):
+        # Get indexes to traverse each dataset element in turn.
+        max_length = min(min(dataset._lens), args.max_item_per_dataset)
 
-    idx = 0
-    item = dataset[0]
+        def generate_index_generator(dataset_starting_indexes: list,
+                                     max_item_per_dataset: int):
+            for relative_idx in range(max_item_per_dataset):
+                for dataset_starting_idx in dataset_starting_indexes:
+                    yield dataset_starting_idx + relative_idx
 
-    while idx < len(dataset):
-        idx += 1
+        # Generate starting indexes for each dataset
+        dataset_starting_indexes = list(accumulate([0] + dataset._lens[:-1]))
+
+        # Generate indexes using the generator
+        indexes = generate_index_generator(dataset_starting_indexes,
+                                           max_length)
+
+        total = len(dataset.datasets) * max_length
+    else:
+        max_length = min(dataset._len, args.max_item_per_dataset)
+        indexes = range(max_length)
+        total = max_length
+
+    progress_bar = mmengine.ProgressBar(total - 1)
+
+    idx = next(indexes)
+    item = dataset[idx]
+
+    for idx in indexes:
         next_item = None if idx >= len(dataset) else dataset[idx]
 
         if args.mode == 'original':
