@@ -126,6 +126,8 @@ def main():
                 img_bytes = fileio.get(img_path, backend_args=backend_args)
                 img = mmcv.imfrombytes(img_bytes, channel_order='bgr')
 
+                dataset_name = item['dataset_name']
+
                 # forge pseudo data_sample
                 gt_instances = InstanceData()
                 gt_instances.keypoints = item['keypoints']
@@ -139,10 +141,11 @@ def main():
             img = item['inputs'].permute(1, 2, 0).numpy()
             data_sample = item['data_samples']
             img_path = data_sample.img_path
+            dataset_name = data_sample.metainfo['dataset_name']
             item = next_item
 
         out_file = osp.join(
-            args.output_dir,
+            args.output_dir, dataset_name,
             osp.basename(img_path)) if args.output_dir is not None else None
         out_file = generate_dup_file_name(out_file)
 
