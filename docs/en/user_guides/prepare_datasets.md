@@ -127,7 +127,7 @@ MMPose offers a convenient and versatile solution for training with mixed datase
 `tools/analysis_tools/browse_dataset.py` helps the user to browse a pose dataset visually, or save the image to a designated directory.
 
 ```shell
-python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
+python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--max-item-per-dataset ${MAX_ITEM_PER_DATASET}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
 ```
 
 | ARGS                             | Description                                                                                                                                          |
@@ -138,6 +138,7 @@ python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] 
 | `--phase {train, val, test}`     | Options for dataset.                                                                                                                                 |
 | `--mode {original, transformed}` | Specify the type of visualized images. `original` means to show images without pre-processing; `transformed` means to show images are pre-processed. |
 | `--show-interval SHOW_INTERVAL`  | Time interval between visualizing two images.                                                                                                        |
+| `--max-item-per-dataset`         | Define the maximum item processed per dataset, default to 50                                                                                         |
 
 For instance, users who want to visualize images and annotations in COCO dataset use:
 
