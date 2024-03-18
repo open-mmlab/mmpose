@@ -59,6 +59,10 @@ class CombinedDataset(BaseDataset):
     def metainfo(self):
         return deepcopy(self._metainfo)
 
+    @property
+    def lens(self):
+        return deepcopy(self._lens)
+
     def __len__(self):
         return self._len
 
