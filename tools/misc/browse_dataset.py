@@ -112,14 +112,18 @@ def main():
         def generate_index_generator(dataset_starting_indexes: list,
                                      max_item_datasets: int):
             for relative_idx in range(max(max_item_datasets)):
-                for dataset_idx, dataset_starting_idx in enumerate(dataset_starting_indexes):
+                for dataset_idx, dataset_starting_idx in enumerate(
+                        dataset_starting_indexes):
                     if relative_idx >= max_item_datasets[dataset_idx]:
                         continue
                     yield dataset_starting_idx + relative_idx
 
         # Generate starting indexes for each dataset
         dataset_starting_indexes = list(accumulate([0] + dataset.lens[:-1]))
-        max_item_datasets = [min(dataset_len, args.max_item_per_dataset) for dataset_len in dataset.lens]
+        max_item_datasets = [
+            min(dataset_len, args.max_item_per_dataset)
+            for dataset_len in dataset.lens
+        ]
 
         # Generate indexes using the generator
         indexes = generate_index_generator(dataset_starting_indexes,
