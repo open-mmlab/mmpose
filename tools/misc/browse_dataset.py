@@ -125,7 +125,7 @@ def main():
         indexes = generate_index_generator(dataset_starting_indexes,
                                            max_item_datasets)
 
-        total = len(dataset.datasets) * max_length
+        total = sum(max_item_datasets)
     else:
         max_length = min(dataset._len, args.max_item_per_dataset)
         indexes = range(max_length)
