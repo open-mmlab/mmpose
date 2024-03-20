@@ -25,7 +25,7 @@ class PreprocessH36m:
             should be placed under the subdirectory 's1'.
         extracted_dir (str): Directory of the extracted files. If not given, it
             will be placed under the same parent directory as original_dir.
-        processed_der (str): Directory of the processed files. If not given, it
+        processed_dir (str): Directory of the processed files. If not given, it
             will be placed under the same parent directory as original_dir.
         sample_rate (int): Downsample FPS to `1 / sample_rate`. Default: 5.
     """
