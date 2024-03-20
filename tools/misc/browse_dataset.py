@@ -2,15 +2,16 @@
 import argparse
 import os
 import os.path as osp
+from itertools import accumulate
 
 import mmcv
 import mmengine
 import mmengine.fileio as fileio
-import numpy as np
 from mmengine import Config, DictAction
 from mmengine.registry import build_from_cfg, init_default_scope
 from mmengine.structures import InstanceData
 
+from mmpose.datasets import CombinedDataset
 from mmpose.registry import DATASETS, VISUALIZERS
 from mmpose.structures import PoseDataSample
 
@@ -24,6 +25,11 @@ def parse_args():
         type=str,
         help='If there is no display interface, you can save it.')
     parser.add_argument('--not-show', default=False, action='store_true')
+    parser.add_argument(
+        '--max-item-per-dataset',
+        default=50,
+        type=int,
+        help='Define the maximum item processed per dataset')
     parser.add_argument(
         '--phase',
         default='train',
@@ -99,50 +105,73 @@ def main():
     visualizer = VISUALIZERS.build(cfg.visualizer)
     visualizer.set_dataset_meta(dataset.metainfo)
 
-    progress_bar = mmengine.ProgressBar(len(dataset))
+    if isinstance(dataset, CombinedDataset):
 
-    idx = 0
-    item = dataset[0]
+        def generate_index_generator(dataset_starting_indexes: list,
+                                     max_item_datasets: int):
+            """Generates indexes to traverse each dataset element in turn,
+            based on starting indexes and maximum items per dataset."""
+            for relative_idx in range(max(max_item_datasets)):
+                for dataset_idx, dataset_starting_idx in enumerate(
+                        dataset_starting_indexes):
+                    if relative_idx >= max_item_datasets[dataset_idx]:
+                        continue
+                    yield dataset_starting_idx + relative_idx
 
-    while idx < len(dataset):
-        idx += 1
-        next_item = None if idx >= len(dataset) else dataset[idx]
+        # Generate starting indexes for each dataset
+        dataset_starting_indexes = list(accumulate([0] + dataset.lens[:-1]))
+        max_item_datasets = [
+            min(dataset_len, args.max_item_per_dataset)
+            for dataset_len in dataset.lens
+        ]
+
+        # Generate indexes using the generator
+        indexes = generate_index_generator(dataset_starting_indexes,
+                                           max_item_datasets)
+
+        total = sum(max_item_datasets)
+        multiple_datasets = True
+    else:
+        max_length = min(len(dataset), args.max_item_per_dataset)
+        indexes = iter(range(max_length))
+        total = max_length
+        multiple_datasets = False
+
+    progress_bar = mmengine.ProgressBar(total)
+
+    for idx in indexes:
+        item = dataset[idx]
 
         if args.mode == 'original':
-            if next_item is not None and item['img_path'] == next_item[
-                    'img_path']:
-                # merge annotations for one image
-                item['keypoints'] = np.concatenate(
-                    (item['keypoints'], next_item['keypoints']))
-                item['keypoints_visible'] = np.concatenate(
-                    (item['keypoints_visible'],
-                     next_item['keypoints_visible']))
-                item['bbox'] = np.concatenate(
-                    (item['bbox'], next_item['bbox']))
-                progress_bar.update()
-                continue
+            img_path = item['img_path']
+            img_bytes = fileio.get(img_path, backend_args=backend_args)
+            img = mmcv.imfrombytes(img_bytes, channel_order='bgr')
+            dataset_name = item.get('dataset_name', None)
+
+            # forge pseudo data_sample
+            gt_instances = InstanceData()
+            gt_instances.keypoints = item['keypoints']
+            if item['keypoints_visible'].ndim == 3:
+                gt_instances.keypoints_visible = item['keypoints_visible'][...,
+                                                                           0]
             else:
-                img_path = item['img_path']
-                img_bytes = fileio.get(img_path, backend_args=backend_args)
-                img = mmcv.imfrombytes(img_bytes, channel_order='bgr')
-
-                # forge pseudo data_sample
-                gt_instances = InstanceData()
-                gt_instances.keypoints = item['keypoints']
                 gt_instances.keypoints_visible = item['keypoints_visible']
-                gt_instances.bboxes = item['bbox']
-                data_sample = PoseDataSample()
-                data_sample.gt_instances = gt_instances
+            gt_instances.bboxes = item['bbox']
+            data_sample = PoseDataSample()
+            data_sample.gt_instances = gt_instances
 
-                item = next_item
         else:
             img = item['inputs'].permute(1, 2, 0).numpy()
             data_sample = item['data_samples']
             img_path = data_sample.img_path
-            item = next_item
+            dataset_name = data_sample.metainfo.get('dataset_name', None)
 
+        # save image with annotation
+        output_dir = osp.join(
+            args.output_dir, dataset_name
+        ) if multiple_datasets and dataset_name else args.output_dir
         out_file = osp.join(
-            args.output_dir,
+            output_dir,
             osp.basename(img_path)) if args.output_dir is not None else None
         out_file = generate_dup_file_name(out_file)
 
