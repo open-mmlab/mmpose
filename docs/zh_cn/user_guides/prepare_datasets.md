@@ -127,7 +127,7 @@ MMPose 提供了一个方便且多功能的解决方案，用于训练混合数�
 `tools/analysis_tools/browse_dataset.py` 帮助用户可视化地浏览姿态数据集，或将图像保存到指定的目录。
 
 ```shell
-python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
+python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] [--max-item-per-dataset ${MAX_ITEM_PER_DATASET}] [--not-show] [--phase ${PHASE}] [--mode ${MODE}] [--show-interval ${SHOW_INTERVAL}]
 ```
 
 | ARGS                             | Description                                                                                                |
@@ -138,6 +138,7 @@ python tools/misc/browse_dataset.py ${CONFIG} [-h] [--output-dir ${OUTPUT_DIR}] 
 | `--phase {train, val, test}`     | 数据集选项                                                                                                 |
 | `--mode {original, transformed}` | 指定可视化图片类型。 `original` 为不使用数据增强的原始图片及标注可视化; `transformed` 为经过增强后的可视化 |
 | `--show-interval SHOW_INTERVAL`  | 显示图片的时间间隔                                                                                         |
+| `--max-item-per-dataset`         | 定义每个数据集可视化的最大样本数。默认为 50                                                                |
 
 例如，用户想要可视化 COCO 数据集中的图像和标注，可以使用：
 
