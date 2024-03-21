@@ -44,6 +44,7 @@ class TestMSPNHead(TestCase):
             with_heatmap=True,
             with_reg_label=False,
             num_levels=num_levels)['data_samples']
+
         return batch_data_samples
 
     def test_init(self):
@@ -153,6 +154,10 @@ class TestMSPNHead(TestCase):
                          (unit_channels, 32, 24), (unit_channels, 64, 48)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, heatmap_size=(48, 64), num_levels=4)
+        for ds in batch_data_samples:
+            ds.gt_instance_labels = InstanceData(
+                keypoint_weights=ds.gt_instance_labels.keypoint_weights.
+                transpose(0, 1))
         losses = head.loss(feats, batch_data_samples)
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
@@ -189,6 +194,10 @@ class TestMSPNHead(TestCase):
                          (unit_channels, 32, 24), (unit_channels, 64, 48)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, heatmap_size=(48, 64), num_levels=16)
+        for ds in batch_data_samples:
+            ds.gt_instance_labels = InstanceData(
+                keypoint_weights=ds.gt_instance_labels.keypoint_weights.
+                transpose(0, 1))
         losses = head.loss(feats, batch_data_samples)
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
