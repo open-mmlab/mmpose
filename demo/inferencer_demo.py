@@ -83,7 +83,7 @@ def parse_args():
     # selected pose2d model
     args, _ = parser.parse_known_args()
     for model in POSE2D_SPECIFIC_ARGS:
-        if model in args.pose2d:
+        if args.pose2d is not None and model in args.pose2d:
             filter_args.update(POSE2D_SPECIFIC_ARGS[model])
             break
 
