@@ -199,7 +199,7 @@ class Preprocess300VW(Base300VW):
 
     def convert_annotations(self,
                             video_list=None,
-                            json_save_name='test_300vw.json'):
+                            json_save_name='anno_300vw.json'):
         """Convert 300vw original annotations to coco format."""
         video_list = self._get_video_list(video_list)
         image_id = 0

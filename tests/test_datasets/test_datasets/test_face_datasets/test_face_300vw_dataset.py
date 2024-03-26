@@ -14,7 +14,7 @@ class TestFace300VWDataset(TestCase):
     def build_face_300vw_dataset(self, **kwargs):
 
         cfg = dict(
-            ann_file='test_300vw.json',
+            ann_file='anno_300vw.json',
             bbox_file=None,
             data_mode='topdown',
             data_root='tests/data/300vw',
