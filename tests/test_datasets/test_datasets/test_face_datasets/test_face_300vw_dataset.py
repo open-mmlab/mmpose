@@ -163,8 +163,20 @@ class TestFace300VWDataset(TestCase):
 
         for i in range(len(dataset)):
             instance = dataset.prepare_data(i)
+            assert instance['keypoints'].shape == (
+                1, 68, 2), '300VW keypoints shape should be (1, 68, 2)'
             img = cv2.imread(instance['img_path'])
             visualizer.draw_points(img, instance['keypoints'][0])
             save_path = os.path.join(vis_dir,
                                      os.path.basename(instance['img_path']))
-            cv2.imwrite(save_path, img)
+            assert cv2.imwrite(save_path,
+                               img), 'facial keypoints visualization failed!'
+
+
+if __name__ == '__main__':
+    tester = TestFace300VWDataset()
+    tester.test_metainfo()
+    tester.test_topdown()
+    tester.test_bottomup()
+    tester.test_exceptions_and_warnings()
+    tester.test_annotation()
