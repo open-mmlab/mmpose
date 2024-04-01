@@ -126,6 +126,7 @@ docs/**/modelzoo.md
 !tests/data/**/*.log.json
 !tests/data/**/*.pth
 !tests/data/**/*.npy
+!tests/data/**/vis/
 
 # Pytorch
 *.pth
