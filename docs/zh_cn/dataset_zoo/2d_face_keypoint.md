@@ -6,7 +6,6 @@ If your folder structure is different, you may need to change the corresponding 
 MMPose supported datasets:
 
 - [300W](#300w-dataset) \[ [Homepage](https://ibug.doc.ic.ac.uk/resources/300-W/) \]
-- [300VW](#300vw-dataset) \[ [Homepage](https://ibug.doc.ic.ac.uk/resources/300-VW/) \]
 - [WFLW](#wflw-dataset) \[ [Homepage](https://wywu.github.io/projects/LAB/WFLW.html) \]
 - [AFLW](#aflw-dataset) \[ [Homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/) \]
 - [COFW](#cofw-dataset) \[ [Homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/) \]
@@ -93,61 +92,6 @@ mmpose
                     |── outdoor_001.png
                     |── outdoor_002.png
                      ...
-```
-
-## 300VW Dataset
-
-<!-- [DATASET] -->
-
-<details>
-<summary align="right"><a href="https://www.cv-foundation.org/openaccess/content_iccv_2015_workshops/w25/papers/Shen_The_First_Facial_ICCV_2015_paper.pdf">300VW (ICCVW'2015)</a></summary>
-
-```bibtex
-@inproceedings{shen2015first,
-  title={The first facial landmark tracking in-the-wild challenge: Benchmark and results},
-  author={Shen, Jie and Zafeiriou, Stefanos and Chrysos, Grigoris G and Kossaifi, Jean and Tzimiropoulos, Georgios and Pantic, Maja},
-  booktitle={Proceedings of the IEEE international conference on computer vision workshops},
-  pages={50--58},
-  year={2015}
-}
-```
-
-</details>
-
-300VW dataset follows the same mark-up (i.e. set of facial landmarks) used in the 300W.
-For 300VW data, please register and download images from [300VW Dataset](https://ibug.doc.ic.ac.uk/download/300VW_Dataset_2015_12_14.zip) .
-Unzip and use the "tools/dataset_converters/300vw2coco.py" to process the data.
-
-<!-- Please download the annotation files from [300w_annotations](https://download.openmmlab.com/mmpose/datasets/300w_annotations.tar). -->
-
-Put the 300VW under {MMPose}/data, and make them look like this:
-
-```text
-mmpose
-├── mmpose
-├── docs
-├── tests
-├── tools
-├── configs
-`── data
-    │── 300vw
-        |── annotations
-        |   |── train.json
-        |   |── test_1.json
-        |   |── test_2.json
-        |   `── test_3.json
-        `── images
-            |── 001
-            |   `── imgs
-            |       |── 000001.png
-            |       |── 000002.png
-            |       ...
-            |── 002
-            |   `── imgs
-            |       |── 000001.png
-            |       |── 000002.png
-            |       ...
-            |   ...
 ```
 
 ## WFLW Dataset
