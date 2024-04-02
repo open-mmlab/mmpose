@@ -1,5 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Dict, List, Optional, Tuple, Union
+
 import cv2
+import numpy as np
+
+
+class Instances:
+    keypoints: List[List[Tuple[int, int]]]
+    keypoint_scores: List[List[float]]
 
 
 class FastVisualizer:
@@ -9,7 +17,7 @@ class FastVisualizer:
 
     Args:
         metainfo (dict): pose meta information
-        radius (int, optional)): Keypoint radius for visualization.
+        radius (int, optional): Keypoint radius for visualization.
             Defaults to 6.
         line_width (int, optional): Link width for visualization.
             Defaults to 3.
@@ -18,18 +26,23 @@ class FastVisualizer:
             Defaults to 0.3.
     """
 
-    def __init__(self, metainfo, radius=6, line_width=3, kpt_thr=0.3):
+    def __init__(self,
+                 metainfo: Dict,
+                 radius: Optional[int] = 6,
+                 line_width: Optional[int] = 3,
+                 kpt_thr: Optional[float] = 0.3):
         self.radius = radius
         self.line_width = line_width
         self.kpt_thr = kpt_thr
 
-        self.keypoint_id2name = metainfo['keypoint_id2name']
-        self.keypoint_name2id = metainfo['keypoint_name2id']
-        self.keypoint_colors = metainfo['keypoint_colors']
-        self.skeleton_links = metainfo['skeleton_links']
-        self.skeleton_link_colors = metainfo['skeleton_link_colors']
+        self.keypoint_id2name = metainfo.get('keypoint_id2name', None)
+        self.keypoint_name2id = metainfo.get('keypoint_name2id', None)
+        self.keypoint_colors = metainfo.get('keypoint_colors',
+                                            [(255, 255, 255)])
+        self.skeleton_links = metainfo.get('skeleton_links', None)
+        self.skeleton_link_colors = metainfo.get('skeleton_link_colors', None)
 
-    def draw_pose(self, img, instances):
+    def draw_pose(self, img: np.ndarray, instances: Instances):
         """Draw pose estimations on the given image.
 
         This method draws keypoints and skeleton links on the input image
@@ -69,6 +82,67 @@ class FastVisualizer:
                     # skip the point that should not be drawn
                     continue
 
+                x_coord, y_coord = int(kpt[0]), int(kpt[1])
+
+                color = self.keypoint_colors[kid].tolist()
+                cv2.circle(img, (int(x_coord), int(y_coord)), self.radius,
+                           color, -1)
+                cv2.circle(img, (int(x_coord), int(y_coord)), self.radius,
+                           (255, 255, 255))
+
+    def draw_points(self, img: np.ndarray, instances: Union[Instances, Dict,
+                                                            np.ndarray]):
+        """Draw points on the given image.
+
+        This method draws keypoints on the input image
+        using the provided instances.
+
+        Args:
+            img (numpy.ndarray): The input image on which to
+                draw the keypoints.
+            instances (object|dict|np.ndarray):
+                An object containing keypoints,
+                or a dict containing 'keypoints',
+                or a np.ndarray in shape of
+                (Instance_num, Point_num, Point_dim)
+
+        Returns:
+            None: The input image will be modified in place.
+        """
+
+        if instances is None:
+            print('no instance detected')
+            return
+
+        # support different types of keypoints inputs
+        if hasattr(instances, 'keypoints'):
+            keypoints = instances.keypoints
+        elif isinstance(instances, dict) and 'keypoints' in instances:
+            keypoints = instances['keypoints']
+        elif isinstance(instances, np.ndarray):
+            shape = instances.shape
+            assert shape[-1] == 2, 'only support 2-dim point!'
+            if len(shape) == 2:
+                keypoints = instances[None]
+            elif len(shape) == 3:
+                pass
+            else:
+                raise ValueError('input keypoints should be in shape of'
+                                 '(Instance_num, Point_num, Point_dim)')
+        else:
+            raise ValueError('The keypoints should be:'
+                             'object containing keypoints,'
+                             "or a dict containing 'keypoints',"
+                             'or a np.ndarray in shape of'
+                             '(Instance_num, Point_num, Point_dim)')
+
+        if len(self.keypoint_colors) < len(keypoints[0]):
+            repeat_num = len(keypoints[0]) - len(self.keypoint_colors)
+            self.keypoint_colors += [(255, 255, 255)] * repeat_num
+        self.keypoint_colors = np.array(self.keypoint_colors)
+
+        for kpts in keypoints:
+            for kid, kpt in enumerate(kpts):
                 x_coord, y_coord = int(kpt[0]), int(kpt[1])
 
                 color = self.keypoint_colors[kid].tolist()
