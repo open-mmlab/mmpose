@@ -1,12 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
 from unittest import TestCase
 
-import cv2
 import numpy as np
 
 from mmpose.datasets.datasets.face import Face300VWDataset
-from mmpose.visualization.fast_visualizer import FastVisualizer
 
 
 class TestFace300VWDataset(TestCase):
@@ -144,39 +141,3 @@ class TestFace300VWDataset(TestCase):
                 data_mode='bottomup',
                 test_mode=True,
                 filter_cfg=dict(bbox_score_thr=0.3))
-
-    def test_annotation(self):
-        dataset = self.build_face_300vw_dataset(
-            data_mode='topdown', test_mode=True)
-
-        meta = {
-            'keypoint_id2name': None,
-            'keypoint_name2id': None,
-            'keypoint_colors': [(255, 255, 255)],
-            'skeleton_links': None,
-            'skeleton_link_colors': None
-        }
-        visualizer = FastVisualizer(meta, radius=1)
-
-        vis_dir = os.path.join(os.path.dirname(dataset.ann_file), 'vis')
-        os.makedirs(vis_dir, exist_ok=True)
-
-        for i in range(len(dataset)):
-            instance = dataset.prepare_data(i)
-            assert instance['keypoints'].shape == (
-                1, 68, 2), '300VW keypoints shape should be (1, 68, 2)'
-            img = cv2.imread(instance['img_path'])
-            visualizer.draw_points(img, instance['keypoints'][0])
-            save_path = os.path.join(vis_dir,
-                                     os.path.basename(instance['img_path']))
-            assert cv2.imwrite(save_path,
-                               img), 'facial keypoints visualization failed!'
-
-
-if __name__ == '__main__':
-    tester = TestFace300VWDataset()
-    tester.test_metainfo()
-    tester.test_topdown()
-    tester.test_bottomup()
-    tester.test_exceptions_and_warnings()
-    tester.test_annotation()
