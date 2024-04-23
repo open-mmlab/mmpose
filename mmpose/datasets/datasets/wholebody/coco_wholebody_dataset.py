@@ -125,7 +125,7 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
             'segmentation': ann['segmentation'],
             'area': area,
             'id': ann['id'],
-            'category_id': ann['category_id'],
+            'category_id': np.array(ann['category_id']),
             # store the raw annotation of the instance
             # it is useful for evaluation without providing ann_file
             'raw_ann_info': copy.deepcopy(ann),
