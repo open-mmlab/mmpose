@@ -216,8 +216,6 @@ def process_one_image(args, detector, frame: np.ndarray, frame_idx: int,
             keypoints = np.squeeze(keypoints, axis=1)
 
         keypoints = -keypoints[..., [0, 2, 1]]
-        # keypoints[..., 0] = -keypoints[..., 0]
-        # keypoints[..., 2] = -keypoints[..., 2]
 
         # rebase height (z-axis)
         if not args.disable_rebase_keypoint:
@@ -254,8 +252,7 @@ def process_one_image(args, detector, frame: np.ndarray, frame_idx: int,
             axis_azimuth=70,
             axis_elev=15,
             num_instances=args.num_instances,
-            wait_time=args.show_interval,
-            root_index=[11, 12])
+            wait_time=args.show_interval)
 
     return pose_est_results, pose_est_results_list, pred_3d_instances, next_id
 
