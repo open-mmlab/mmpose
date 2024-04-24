@@ -126,6 +126,9 @@ class TopdownAffine(BaseTransform):
             transformed_keypoints[..., :2] = cv2.transform(
                 results['keypoints'][..., :2], warp_mat)
             results['transformed_keypoints'] = transformed_keypoints
+        else:
+            results['transformed_keypoints'] = np.zeros([])
+            results['keypoints_visible'] = np.ones((1, 1, 1))
 
         results['input_size'] = (w, h)
         results['input_center'] = center
