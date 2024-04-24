@@ -126,7 +126,7 @@ inferencer = MMPoseInferencer(
 )
 ```
 
-The complere list of model alias can be found in the [Model Alias](#model-alias) section.
+The complete list of model alias can be found in the [Model Alias](#model-alias) section.
 
 **Custom Inferencer for 3D Pose Estimation Models**
 
