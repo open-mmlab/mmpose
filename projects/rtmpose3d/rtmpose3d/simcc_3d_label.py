@@ -5,9 +5,8 @@ from typing import Any, Optional, Tuple, Union
 import numpy as np
 from numpy import ndarray
 
-from mmpose.registry import KEYPOINT_CODECS
 from mmpose.codecs.base import BaseKeypointCodec
-
+from mmpose.registry import KEYPOINT_CODECS
 from .utils import get_simcc_maximum
 
 
@@ -155,8 +154,9 @@ class SimCC3DLabel(BaseKeypointCodec):
             with_z_label = True
         else:
             if keypoints.shape != np.zeros([]).shape:
-                keypoints_z = np.ones((keypoints.shape[0],
-                                             keypoints.shape[1], 1), dtype=np.float32)
+                keypoints_z = np.ones(
+                    (keypoints.shape[0], keypoints.shape[1], 1),
+                    dtype=np.float32)
                 keypoints = np.concatenate([keypoints, keypoints_z], axis=-1)
                 x, y, z, keypoint_weights = self._generate_gaussian(
                     keypoints, keypoints_visible)

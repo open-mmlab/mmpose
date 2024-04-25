@@ -3,9 +3,10 @@ from typing import Optional
 
 import numpy as np
 
-from mmpose.utils.typing import InstanceList, PixelDataList, SampleList
-from mmpose.registry import MODELS
 from mmpose.models.pose_estimators import TopdownPoseEstimator
+from mmpose.registry import MODELS
+from mmpose.utils.typing import InstanceList, PixelDataList, SampleList
+
 
 @MODELS.register_module()
 class TopdownPoseEstimator3D(TopdownPoseEstimator):

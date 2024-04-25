@@ -19,13 +19,14 @@ from mmpose.structures import (PoseDataSample, merge_data_samples,
                                split_instances)
 from mmpose.utils import adapt_mmdet_pipeline
 from mmpose.visualization import Pose3dLocalVisualizer
-from rtmpose3d import *
 
 try:
     from mmdet.apis import inference_detector, init_detector
     has_mmdet = True
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
+
+from rtmpose3d import *  # noqa: F401, F403
 
 
 def parse_args():
@@ -124,7 +125,7 @@ def parse_args():
 
 
 def process_one_image(args, detector, frame: np.ndarray, frame_idx: int,
-                      pose_estimator: TopdownPoseEstimator3D,
+                      pose_estimator,
                       pose_est_results_last: List[PoseDataSample],
                       pose_est_results_list: List[List[PoseDataSample]],
                       next_id: int, visualize_frame: np.ndarray,

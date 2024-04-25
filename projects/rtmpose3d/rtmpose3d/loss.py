@@ -1,5 +1,6 @@
-from mmpose.registry import MODELS
 from mmpose.models.losses import KLDiscretLoss
+from mmpose.registry import MODELS
+
 
 @MODELS.register_module()
 class KLDiscretLoss2(KLDiscretLoss):

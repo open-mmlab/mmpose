@@ -53,6 +53,8 @@ codec = dict(
     use_dark=False,
     root_index=(11, 12))
 
+backbone_path = 'checkpoints/rtmpose-x_simcc-ucoco_pt-aic-coco_270e-384x288-f5b50679_20230822.pth'  # noqa
+
 # model settings
 model = dict(
     type='TopdownPoseEstimator3D',
@@ -71,10 +73,7 @@ model = dict(
         norm_cfg=dict(type='BN'),
         act_cfg=dict(type='SiLU'),
         init_cfg=dict(
-            type='Pretrained',
-            prefix='backbone.',
-            checkpoint='checkpoints/rtmpose-x_simcc-ucoco_pt-aic-coco_270e-384x288-f5b50679_20230822.pth'  # noqa
-        )),
+            type='Pretrained', prefix='backbone.', checkpoint=backbone_path)),
     neck=dict(
         type='CSPNeXtPAFPN',
         in_channels=[320, 640, 1280],
@@ -112,10 +111,19 @@ model = dict(
                 label_softmax=True),
             dict(
                 type='BoneLoss',
-                joint_parents=[0, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 50, 50, 51, 52, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 91, 92, 93, 94, 91, 96, 97, 98, 91, 100, 101, 102, 91, 104, 105, 106, 91, 108, 109, 110, 8, 112, 113, 114, 113, 112, 117, 118, 117, 112, 121, 122, 123, 112, 125, 126, 127, 112, 129, 130, 131],
+                joint_parents=[
+                    0, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19, 20, 21, 22, 23, 23, 24, 25, 26, 27, 28, 29, 30,
+                    31, 32, 33, 34, 35, 36, 37, 38, 2, 2, 2, 2, 2, 3, 3, 3, 3,
+                    3, 50, 50, 51, 52, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 3, 3,
+                    3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 7, 91, 92, 93, 94, 91, 96, 97, 98, 91, 100,
+                    101, 102, 91, 104, 105, 106, 91, 108, 109, 110, 8, 112,
+                    113, 114, 113, 112, 117, 118, 117, 112, 121, 122, 123, 112,
+                    125, 126, 127, 112, 129, 130, 131
+                ],
                 use_target_weight=True,
-                loss_weight=2.0
-            )
+                loss_weight=2.0)
         ],
         decoder=codec),
     test_cfg=dict(flip_test=False, mode='2d')
@@ -130,9 +138,10 @@ backend_args = dict(backend='local')
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', backend_args=backend_args),
-    dict(type='RandomBackground',
-         bg_dir='/mnt/data/oss_beijing/mmseg/obj365v1_images',
-         bg_prob=0.5,
+    dict(
+        type='RandomBackground',
+        bg_dir='/mnt/data/oss_beijing/mmseg/obj365v1_images',
+        bg_prob=0.5,
     ),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
@@ -198,7 +207,6 @@ h3wb_dataset = dict(
     test_mode=False,
     pipeline=[])
 
-
 # dna rendering dataset
 dna_rendering_dataset = dict(
     type='DNARenderingDataset',
@@ -206,9 +214,7 @@ dna_rendering_dataset = dict(
     data_mode='topdown',
     ann_file='instances.npz',
     subset_frac=0.1,
-    pipeline=[
-        dict(type='LoadMask', backend_args=backend_args)
-    ],
+    pipeline=[dict(type='LoadMask', backend_args=backend_args)],
 )
 
 # mapping
@@ -482,10 +488,7 @@ dataset_lapa = dict(
 dataset_wb = dict(
     type='CombinedDataset',
     metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
-    datasets=[
-        dataset_coco,
-        dataset_halpe
-    ],
+    datasets=[dataset_coco, dataset_halpe],
     pipeline=[],
     test_mode=False,
 )
@@ -581,11 +584,9 @@ dataset_hand = dict(
     test_mode=False,
 )
 
-
 # ubody dataset
 scenes = [
-    'Magic_show',
-    'Entertainment', 'ConductMusic', 'Online_class', 'TalkShow',
+    'Magic_show', 'Entertainment', 'ConductMusic', 'Online_class', 'TalkShow',
     'Speech', 'Fitness', 'Interview', 'Olympic', 'TVShow', 'Singing',
     'SignLanguage', 'Movie', 'LiveVlog', 'VideoConference'
 ]
@@ -604,7 +605,6 @@ for scene in scenes:
         pipeline=[])
     ubody_datasets.append(ubody)
 
-
 train_datasets = [
     dataset_wb,
     dataset_body,
@@ -614,7 +614,6 @@ train_datasets = [
     h3wb_dataset,
     # dna_rendering_dataset
 ]
-
 
 # data loaders
 train_dataloader = dict(
@@ -694,7 +693,8 @@ val_dataloader = dict(
         ann_file='annotations/coco_wholebody_val_v1.0.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
-        bbox_file='data/coco/person_detection_results/COCO_val2017_detections_AP_H_56_person.json',
+        bbox_file='data/coco/person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
         pipeline=val_pipeline,
     ))
 test_dataloader = val_dataloader

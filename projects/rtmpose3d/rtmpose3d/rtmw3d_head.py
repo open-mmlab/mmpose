@@ -9,12 +9,12 @@ from torch import Tensor, nn
 
 from mmpose.codecs.utils import get_simcc_maximum as get_2d_simcc_maximum
 from mmpose.evaluation.functional import keypoint_mpjpe
+from mmpose.models.heads import BaseHead
 from mmpose.models.utils.rtmcc_block import RTMCCBlock, ScaleNorm
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
                                  OptSampleList)
-from mmpose.models.heads import BaseHead
 from .utils import get_simcc_maximum
 
 OptIntSeq = Optional[Sequence[int]]
@@ -244,10 +244,9 @@ class RTMW3DHead(BaseHead):
             batch_scores.append(scores)
 
         preds = []
-        for keypoints_2d, keypoints, keypoints_simcc, scores in zip(batch_keypoints2d,
-                                                   batch_keypoints,
-                                                   batch_keypoints_simcc,
-                                                   batch_scores):
+        for keypoints_2d, keypoints, keypoints_simcc, scores in zip(
+                batch_keypoints2d, batch_keypoints, batch_keypoints_simcc,
+                batch_scores):
             pred = InstanceData(
                 keypoints_2d=keypoints_2d,
                 keypoints=keypoints,
@@ -347,7 +346,7 @@ class RTMW3DHead(BaseHead):
         # calculate losses
         losses = dict()
         for i, loss_ in enumerate(self.loss_module):
-            if loss_.loss_name == 'loss_bone' or loss_.loss_name == 'loss_mpjpe':
+            if loss_.loss_name in ['loss_bone', 'loss_mpjpe']:
                 pred_coords = get_3d_coord(pred_x, pred_y, pred_z,
                                            with_z_labels)
                 gt_coords = get_3d_coord(gt_x, gt_y, gt_z, with_z_labels)

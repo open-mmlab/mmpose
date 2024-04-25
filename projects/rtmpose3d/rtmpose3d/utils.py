@@ -63,7 +63,7 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     locs = np.stack((x_locs, y_locs, z_locs), axis=-1).astype(np.float32)
     max_val_x = np.amax(simcc_x, axis=1)
     max_val_y = np.amax(simcc_y, axis=1)
-    
+
     mask = max_val_x > max_val_y
     max_val_x[mask] = max_val_y[mask]
     vals = max_val_x
