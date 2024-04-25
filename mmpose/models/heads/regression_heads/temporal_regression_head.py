@@ -1,11 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
 from torch import Tensor, nn
 
-from mmpose.evaluation.functional import keypoint_pck_accuracy
+from mmpose.evaluation.functional import keypoint_mpjpe
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -133,14 +132,13 @@ class TemporalRegressionHead(BaseHead):
         losses.update(loss_pose3d=loss)
 
         # calculate accuracy
-        _, avg_acc, _ = keypoint_pck_accuracy(
+        mpjpe_err = keypoint_mpjpe(
             pred=to_numpy(pred_outputs),
             gt=to_numpy(lifting_target_label),
-            mask=to_numpy(lifting_target_weight) > 0,
-            thr=0.05,
-            norm_factor=np.ones((pred_outputs.size(0), 3), dtype=np.float32))
+            mask=to_numpy(lifting_target_weight) > 0)
 
-        mpjpe_pose = torch.tensor(avg_acc, device=lifting_target_label.device)
+        mpjpe_pose = torch.tensor(
+            mpjpe_err, device=lifting_target_label.device)
         losses.update(mpjpe=mpjpe_pose)
 
         return losses

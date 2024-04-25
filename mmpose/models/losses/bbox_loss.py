@@ -41,7 +41,7 @@ class IoULoss(nn.Module):
         self.mode = mode
         self.eps = eps
 
-    def forward(self, output, target):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -63,6 +63,11 @@ class IoULoss(nn.Module):
             loss = -ious.log()
         else:
             raise NotImplementedError
+
+        if target_weight is not None:
+            for i in range(loss.ndim - target_weight.ndim):
+                target_weight = target_weight.unsqueeze(-1)
+            loss = loss * target_weight
 
         if self.reduction == 'sum':
             loss = loss.sum()

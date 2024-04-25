@@ -96,21 +96,18 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
+- 发布了单阶段实时多人姿态估计模型 [RTMO](/projects/rtmo)。相比 RTMPose 在多人场景下性能更优
+
+  ![rtmo](https://github.com/open-mmlab/mmpose/assets/26127467/54d5555a-23e5-4308-89d1-f0c82a6734c2)
+
+- 发布了不同尺寸的 [RTMW](/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw_cocktail14.md) 模型，满足不同的使用场景。模型尺寸覆盖从 RTMW-m 到 RTMW-x 的模型，输入图像尺寸包含 256x192 和 384x288
+
+- 支持了 [PoseAnything](/projects/pose_anything) 的推理。[在线试玩](https://openxlab.org.cn/apps/detail/orhir/Pose-Anything)
+
 - 我们支持了两个新的数据集:
 
-  - (CVPR 2023) [UBody](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo_papers/datasets.html#ubody-cvpr-2023)
-  - [300W-LP](https://github.com/open-mmlab/mmpose/tree/main/configs/face_2d_keypoint/topdown_heatmap/300wlp)
-
-- 支持四个新算法：
-
-  - (ICCV 2023) [MotionBERT](https://github.com/open-mmlab/mmpose/tree/main/configs/body_3d_keypoint/motionbert)
-  - (ICCVW 2023) [DWPose](https://github.com/open-mmlab/mmpose/tree/main/configs/wholebody_2d_keypoint/dwpose)
-  - (ICLR 2023) [EDPose](https://mmpose.readthedocs.io/zh_CN/latest/model_zoo/body_2d_keypoint.html#edpose-edpose-on-coco)
-  - (ICLR 2022) [Uniformer](https://github.com/open-mmlab/mmpose/tree/main/projects/uniformer)
-
-- 发布首个在 COCO-Wholebody 上精度超过 70 AP 的全身姿态估计模型 RTMW，具体请参考 [RTMPose](/projects/rtmpose/)。[在线试玩](https://openxlab.org.cn/apps/detail/mmpose/RTMPose)
-
-![rtmw](https://github.com/open-mmlab/mmpose/assets/13503330/635c4618-c459-45e8-84a5-eb68cf338d00)
+  - (CVPR 2023) [ExLPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#exlpose-dataset)
+  - (ICCV 2023) [H3WB](/docs/en/dataset_zoo/3d_wholebody_keypoint.md)
 
 - 欢迎使用 [*MMPose 项目*](/projects/README.md)。在这里，您可以发现 MMPose 中的最新功能和算法，并且可以通过最快的方式与社区分享自己的创意和代码实现。向 MMPose 中添加新功能从此变得简单丝滑：
 
@@ -119,6 +116,8 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - 通过独立项目的形式，利用 MMPose 的强大功能，同时不被代码框架所束缚
   - 最新添加的项目包括：
     - [RTMPose](/projects/rtmpose/)
+    - [RTMO](/projects/rtmo/)
+    - [PoseAnything](/projects/pose_anything/)
     - [YOLOX-Pose](/projects/yolox_pose/)
     - [MMPose4AIGC](/projects/mmpose4aigc/)
     - [Simple Keypoints](/projects/skps/)
@@ -128,15 +127,14 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 <br/>
 
-- 2023-10-12：MMPose [v1.2.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) 正式发布了，主要更新包括:
+- 2024-01-04：MMPose [v1.3.0](https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0) 正式发布了，主要更新包括:
 
-  - 支持新数据集：UBody、300W-LP。
-  - 支持新算法：MotionBERT、DWPose、EDPose、Uniformer
-  - 迁移 Associate Embedding、InterNet、YOLOX-Pose 算法。
-  - 迁移 DeepFashion2 数据集。
-  - 支持 Badcase 可视化分析、多数据集评测、关键点可见性预测功能。
+  - 支持新数据集：ExLPose、H3WB
+  - 发布 RTMPose 系列新模型：RTMO、RTMW
+  - 支持新算法 PoseAnything
+  - 推理器 Inferencer 支持可选的进度条、提升与单阶段模型的适配性
 
-  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.2.0) 以了解更多 MMPose v1.2.0 带来的更新!
+  请查看完整的 [版本说明](https://github.com/open-mmlab/mmpose/releases/tag/v1.3.0) 以了解更多 MMPose v1.3.0 带来的更新!
 
 ## 0.x / 1.x 迁移
 

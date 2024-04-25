@@ -101,7 +101,7 @@ def parse_args():
     parser.add_argument(
         '--bbox-thr',
         type=float,
-        default=0.9,
+        default=0.3,
         help='Bounding box score threshold')
     parser.add_argument('--kpt-thr', type=float, default=0.3)
     parser.add_argument(

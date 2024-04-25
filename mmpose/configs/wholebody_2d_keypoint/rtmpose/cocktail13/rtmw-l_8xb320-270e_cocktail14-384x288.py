@@ -48,7 +48,7 @@ randomness = dict(seed=21)
 # optimizer
 optim_wrapper = dict(
     type=OptimWrapper,
-    optimizer=dict(type=AdamW, lr=base_lr, weight_decay=0.05),
+    optimizer=dict(type=AdamW, lr=base_lr, weight_decay=0.1),
     clip_grad=dict(max_norm=35, norm_type=2),
     paramwise_cfg=dict(
         norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
@@ -68,7 +68,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=5632)
+auto_scale_lr = dict(base_batch_size=2560)
 
 # codec settings
 codec = dict(
@@ -91,20 +91,20 @@ model = dict(
         type=CSPNeXt,
         arch='P5',
         expand_ratio=0.5,
-        deepen_factor=1.33,
-        widen_factor=1.25,
+        deepen_factor=1.,
+        widen_factor=1.,
         channel_attention=True,
         norm_cfg=dict(type='BN'),
         act_cfg=dict(type=SiLU),
         init_cfg=dict(
-            type=PretrainedInit,
+            type='Pretrained',
             prefix='backbone.',
-            checkpoint='https://download.openmmlab.com/mmpose/v1/'
-            'wholebody_2d_keypoint/rtmpose/ubody/rtmpose-x_simcc-ucoco_pt-aic-coco_270e-384x288-f5b50679_20230822.pth'  # noqa
+            checkpoint='https://download.openmmlab.com/mmpose/v1/projects/'
+            'rtmposev1/rtmpose-l_simcc-ucoco_dw-ucoco_270e-256x192-4d6dfc62_20230728.pth'  # noqa
         )),
     neck=dict(
         type=CSPNeXtPAFPN,
-        in_channels=[320, 640, 1280],
+        in_channels=[256, 512, 1024],
         out_channels=None,
         out_indices=(
             1,
@@ -116,7 +116,7 @@ model = dict(
         act_cfg=dict(type=SiLU, inplace=True)),
     head=dict(
         type=RTMWHead,
-        in_channels=1280,
+        in_channels=1024,
         out_channels=num_keypoints,
         input_size=input_size,
         in_featuremap_size=tuple([s // 32 for s in input_size]),
@@ -128,14 +128,18 @@ model = dict(
             expansion_factor=2,
             dropout_rate=0.,
             drop_path=0.,
-            act_fn=SiLU,
+            act_fn='SiLU',
             use_rel_bias=False,
             pos_enc=False),
         loss=dict(
             type=KLDiscretLoss,
             use_target_weight=True,
-            beta=10.,
-            label_softmax=True),
+            beta=1.,
+            label_softmax=True,
+            label_beta=10.,
+            mask=list(range(23, 91)),
+            mask_weight=0.5,
+        ),
         decoder=codec),
     test_cfg=dict(flip_test=True))
 
@@ -168,7 +172,7 @@ train_pipeline = [
                 min_holes=1,
                 min_height=0.2,
                 min_width=0.2,
-                p=1.0),
+                p=0.5),
         ]),
     dict(
         type=GenerateTarget, encoder=codec, use_dataset_keypoint_weights=True),
@@ -217,8 +221,6 @@ mpii_coco133 = [
     (3, 11),
     (4, 13),
     (5, 15),
-    (8, 18),
-    (9, 17),
     (10, 10),
     (11, 8),
     (12, 6),
@@ -228,8 +230,6 @@ mpii_coco133 = [
 ]
 
 jhmdb_coco133 = [
-    (0, 18),
-    (2, 17),
     (3, 6),
     (4, 5),
     (5, 12),
@@ -252,7 +252,6 @@ halpe_coco133 = [(i, i)
 
 posetrack_coco133 = [
     (0, 0),
-    (2, 17),
     (3, 3),
     (4, 4),
     (5, 5),

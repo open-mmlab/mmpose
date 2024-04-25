@@ -73,6 +73,16 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
             torch.nn.SyncBatchNorm.convert_sync_batchnorm(self)
             print_log('Using SyncBatchNorm()', 'current')
 
+    def switch_to_deploy(self):
+        """Switch the sub-modules to deploy mode."""
+        for name, layer in self.named_modules():
+            if layer == self:
+                continue
+            if callable(getattr(layer, 'switch_to_deploy', None)):
+                print_log(f'module {name} has been switched to deploy mode',
+                          'current')
+                layer.switch_to_deploy(self.test_cfg)
+
     @property
     def with_neck(self) -> bool:
         """bool: whether the pose estimator has a neck."""

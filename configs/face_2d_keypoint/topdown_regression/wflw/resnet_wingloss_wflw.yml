@@ -1,6 +1,13 @@
+Collections:
+- Name: Wingloss
+  Paper:
+    Title: Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural
+      Networks
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/wingloss.md
 Models:
 - Config: configs/face_2d_keypoint/topdown_regression/wflw/td-reg_res50_wingloss_8xb64-210e_wflw-256x256.py
-  In Collection: ResNet
+  In Collection: Wingloss
   Metadata:
     Architecture:
     - DeepPose

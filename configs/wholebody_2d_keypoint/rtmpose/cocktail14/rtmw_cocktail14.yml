@@ -1,0 +1,108 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-m_8xb1024-270e_cocktail14-256x192.py
+  In Collection: RTMPose
+  Alias: wholebody
+  Metadata:
+    Architecture: &id001
+    - RTMPose
+    Training Data: COCO-WholeBody
+  Name: rtmw-m_8xb1024-270e_cocktail14-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.676
+      Body AR: 0.747
+      Face AP: 0.783
+      Face AR: 0.854
+      Foot AP: 0.671
+      Foot AR: 0.794
+      Hand AP: 0.491
+      Hand AR: 0.604
+      Whole AP: 0.582
+      Whole AR: 0.673
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-l-m_simcc-cocktail14_270e-256x192-20231122.pth
+- Config: configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb1024-270e_cocktail14-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: rtmw-l_8xb1024-270e_cocktail14-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.743
+      Body AR: 0.807
+      Face AP: 0.834
+      Face AR: 0.889
+      Foot AP: 0.763
+      Foot AR: 0.868
+      Hand AP: 0.598
+      Hand AR: 0.701
+      Whole AP: 0.660
+      Whole AR: 0.746
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-256x192-20231122.pth
+- Config: configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb704-270e_cocktail14-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: rtmw-x_8xb704-270e_cocktail14-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.746
+      Body AR: 0.808
+      Face AP: 0.844
+      Face AR: 0.896
+      Foot AP: 0.770
+      Foot AR: 0.869
+      Hand AP: 0.610
+      Hand AR: 0.710
+      Whole AP: 0.672
+      Whole AR: 0.752
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-256x192-13a2546d_20231208.pth
+- Config: configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb320-270e_cocktail14-384x288.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: rtmw-l_8xb320-270e_cocktail14-384x288
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.761
+      Body AR: 0.824
+      Face AP: 0.884
+      Face AR: 0.921
+      Foot AP: 0.793
+      Foot AR: 0.885
+      Hand AP: 0.663
+      Hand AR: 0.752
+      Whole AP: 0.701
+      Whole AR: 0.780
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth
+- Config: configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb320-270e_cocktail14-384x288.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: rtmw-x_8xb320-270e_cocktail14-384x288
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.763
+      Body AR: 0.826
+      Face AP: 0.884
+      Face AR: 0.923
+      Foot AP: 0.796
+      Foot AR: 0.888
+      Hand AP: 0.664
+      Hand AR: 0.755
+      Whole AP: 0.702
+      Whole AR: 0.781
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth
