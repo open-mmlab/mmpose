@@ -140,11 +140,6 @@ backend_args = dict(backend='local')
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', backend_args=backend_args),
-    dict(
-        type='RandomBackground',
-        bg_dir='/mnt/data/oss_beijing/mmseg/obj365v1_images',
-        bg_prob=0.5,
-    ),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
@@ -468,7 +463,7 @@ dataset_lapa = dict(
 
 dataset_wb = dict(
     type='CombinedDataset',
-    metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
+    metainfo=dict(from_file='mmpose::_base_/datasets/coco_wholebody.py'),
     datasets=[dataset_coco, dataset_halpe],
     pipeline=[],
     test_mode=False,
@@ -476,7 +471,7 @@ dataset_wb = dict(
 
 dataset_body = dict(
     type='CombinedDataset',
-    metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
+    metainfo=dict(from_file='mmpose::_base_/datasets/coco_wholebody.py'),
     datasets=[
         dataset_aic,
         dataset_crowdpose,
@@ -491,7 +486,7 @@ dataset_body = dict(
 
 dataset_face = dict(
     type='CombinedDataset',
-    metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
+    metainfo=dict(from_file='mmpose::_base_/datasets/coco_wholebody.py'),
     datasets=[
         dataset_wflw,
         dataset_300w,
@@ -559,7 +554,7 @@ dataset_interhand3d = dict(
 
 dataset_hand = dict(
     type='CombinedDataset',
-    metainfo=dict(from_file='configs/_base_/datasets/coco_wholebody.py'),
+    metainfo=dict(from_file='mmpose::_base_/datasets/coco_wholebody.py'),
     datasets=[dataset_interhand3d],
     pipeline=[],
     test_mode=False,
@@ -615,7 +610,7 @@ train_dataloader = dict(
         type='CombinedDataset',
         datasets=train_datasets,
         pipeline=train_pipeline,
-        metainfo=dict(from_file='configs/_base_/datasets/h3wb.py'),
+        metainfo=dict(from_file='mmpose::_base_/datasets/h3wb.py'),
         test_mode=False))
 
 # hooks
