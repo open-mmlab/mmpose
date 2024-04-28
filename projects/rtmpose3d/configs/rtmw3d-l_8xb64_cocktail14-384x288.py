@@ -55,7 +55,7 @@ codec = dict(
     use_dark=False,
     root_index=(11, 12))
 
-backbone_path = 'checkpoints/rtmpose-l_simcc-ucoco_dw-ucoco_270e-256x192-4d6dfc62_20230728.pth'  # noqa
+backbone_path = 'https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-ucoco_dw-ucoco_270e-256x192-4d6dfc62_20230728.pth'  # noqa
 
 # model settings
 model = dict(
