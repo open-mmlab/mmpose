@@ -283,7 +283,7 @@ def main():
     det_dataset_link_color = pose_estimator.dataset_meta.get(
         'skeleton_link_colors', None)
 
-    pose_estimator.cfg.model.test_cfg.mode = 'simcc'
+    pose_estimator.cfg.model.test_cfg.mode = 'vis'
     pose_estimator.cfg.visualizer.radius = args.radius
     pose_estimator.cfg.visualizer.line_width = args.thickness
     pose_estimator.cfg.visualizer.det_kpt_color = det_kpt_color

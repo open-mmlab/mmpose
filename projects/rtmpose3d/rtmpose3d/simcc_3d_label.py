@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from itertools import product
-from typing import Any, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 from numpy import ndarray
 
 from mmpose.codecs.base import BaseKeypointCodec
+from mmpose.codecs.utils.refinement import refine_simcc_dark
 from mmpose.registry import KEYPOINT_CODECS
 from .utils import get_simcc_maximum
 
@@ -27,32 +28,23 @@ class SimCC3DLabel(BaseKeypointCodec):
     Encoded:
 
         - keypoint_x_labels (np.ndarray): The generated SimCC label for x-axis.
-            The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
-            and (N, K) if `smoothing_type=='standard'``, where
-            :math:`Wx=w*simcc_split_ratio`
         - keypoint_y_labels (np.ndarray): The generated SimCC label for y-axis.
-            The label shape is (N, K, Wy) if ``smoothing_type=='gaussian'``
-            and (N, K) if `smoothing_type=='standard'``, where
-            :math:`Wy=h*simcc_split_ratio`
+        - keypoint_z_labels (np.ndarray): The generated SimCC label for z-axis.
         - keypoint_weights (np.ndarray): The target weights in shape (N, K)
 
     Args:
         input_size (tuple): Input image size in [w, h]
-        smoothing_type (str): The SimCC label smoothing strategy. Options are
-            ``'gaussian'`` and ``'standard'``. Defaults to ``'gaussian'``
         sigma (float | int | tuple): The sigma value in the Gaussian SimCC
             label. Defaults to 6.0
         simcc_split_ratio (float): The ratio of the label size to the input
             size. For example, if the input width is ``w``, the x label size
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
-        label_smooth_weight (float): Label Smoothing weight. Defaults to 0.0
         normalize (bool): Whether to normalize the heatmaps. Defaults to True.
         use_dark (bool): Whether to use the DARK post processing. Defaults to
             False.
-        decode_visibility (bool): Whether to decode the visibility. Defaults
-            to False.
-        decode_beta (float): The beta value for decoding visibility. Defaults
-            to 150.0.
+        root_index (int | tuple): The index of the root keypoint. Defaults to
+            0.
+        z_range (float): The range of the z-axis. Defaults to None.
 
     .. _`SimCC: a Simple Coordinate Classification Perspective for Human Pose
     Estimation`: https://arxiv.org/abs/2107.03332
@@ -79,51 +71,30 @@ class SimCC3DLabel(BaseKeypointCodec):
 
     def __init__(self,
                  input_size: Tuple[int, int, int],
-                 smoothing_type: str = 'gaussian',
                  sigma: Union[float, int, Tuple[float]] = 6.0,
                  simcc_split_ratio: float = 2.0,
-                 label_smooth_weight: float = 0.0,
                  normalize: bool = True,
                  use_dark: bool = False,
-                 decode_visibility: bool = False,
-                 decode_beta: float = 150.0,
                  root_index: Union[int, Tuple[int]] = 0,
-                 z_range: Optional[int] = None,
-                 sigmoid_z: bool = False) -> None:
+                 z_range: Optional[int] = None) -> None:
         super().__init__()
 
         self.input_size = input_size
-        self.smoothing_type = smoothing_type
         self.simcc_split_ratio = simcc_split_ratio
-        self.label_smooth_weight = label_smooth_weight
         self.normalize = normalize
         self.use_dark = use_dark
-        self.decode_visibility = decode_visibility
-        self.decode_beta = decode_beta
 
         if isinstance(sigma, (float, int)):
             self.sigma = np.array([sigma, sigma, sigma])
         else:
             self.sigma = np.array(sigma)
 
-        if self.smoothing_type not in {'gaussian', 'standard'}:
-            raise ValueError(
-                f'{self.__class__.__name__} got invalid `smoothing_type` value'
-                f'{self.smoothing_type}. Should be one of '
-                '{"gaussian", "standard"}')
-
-        if self.smoothing_type == 'gaussian' and self.label_smooth_weight > 0:
-            raise ValueError('Attribute `label_smooth_weight` is only '
-                             'used for `standard` mode.')
-
-        if self.label_smooth_weight < 0.0 or self.label_smooth_weight > 1.0:
-            raise ValueError('`label_smooth_weight` should be in range [0, 1]')
-
         self.root_index = list(root_index) if isinstance(
             root_index, tuple) else [root_index]
-        self.z_range = z_range if z_range is not None else 2.1744869
-        self.sigmoid_z = sigmoid_z
+
+        # Mean value of the root z-axis of datasets
         self.root_z = [5.14388]
+        self.z_range = z_range if z_range is not None else 2.1744869
 
     def encode(self,
                keypoints: np.ndarray,
@@ -139,12 +110,8 @@ class SimCC3DLabel(BaseKeypointCodec):
             lifting_target = keypoints_3d.copy()
             root_z = keypoints_3d[..., self.root_index, 2].mean(1)
             keypoints_3d[..., 2] -= root_z
-            if self.sigmoid_z:
-                keypoints_z = (1 / (1 + np.exp(-(3 * keypoints_3d[..., 2])))
-                               ) * self.input_size[2]
-            else:
-                keypoints_z = (keypoints_3d[..., 2] / self.z_range + 1) * (
-                    self.input_size[2] / 2)
+            keypoints_z = (keypoints_3d[..., 2] / self.z_range + 1) * (
+                self.input_size[2] / 2)
 
             keypoints_3d = np.concatenate([keypoints, keypoints_z[..., None]],
                                           axis=-1)
@@ -161,6 +128,7 @@ class SimCC3DLabel(BaseKeypointCodec):
                 x, y, z, keypoint_weights = self._generate_gaussian(
                     keypoints, keypoints_visible)
             else:
+                # placeholder for empty keypoints
                 x, y, z = np.zeros((3, 1), dtype=np.float32)
                 keypoint_weights = np.ones((1, ))
             weight_z = np.zeros_like(keypoint_weights)
@@ -199,20 +167,27 @@ class SimCC3DLabel(BaseKeypointCodec):
             keypoints = keypoints[None, :]
             scores = scores[None, :]
 
+        if self.use_dark:
+            x_blur = int((self.sigma[0] * 20 - 7) // 3)
+            y_blur = int((self.sigma[1] * 20 - 7) // 3)
+            z_blur = int((self.sigma[2] * 20 - 7) // 3)
+            x_blur -= int((x_blur % 2) == 0)
+            y_blur -= int((y_blur % 2) == 0)
+            z_blur -= int((z_blur % 2) == 0)
+            keypoints[:, :, 0] = refine_simcc_dark(keypoints[:, :, 0], x,
+                                                   x_blur)
+            keypoints[:, :, 1] = refine_simcc_dark(keypoints[:, :, 1], y,
+                                                   y_blur)
+            keypoints[:, :, 2] = refine_simcc_dark(keypoints[:, :, 2], z,
+                                                   z_blur)
+
         keypoints /= self.simcc_split_ratio
         keypoints_simcc = keypoints.copy()
-        keypoints_2d = keypoints[..., :2]
         keypoints_z = keypoints[..., 2:3]
-        if self.sigmoid_z:
-            keypoints_z /= self.input_size[2]
-            keypoints_z[keypoints_z <= 0] = 1e-8
-            scores[(keypoints_z <= 0).squeeze(-1)] = 0
-            keypoints[..., 2:3] = np.log(keypoints_z / (1 - keypoints_z)) / 3
-        else:
-            keypoints[...,
-                      2:3] = (keypoints_z /
-                              (self.input_size[-1] / 2) - 1) * self.z_range
-        return keypoints_2d, keypoints, keypoints_simcc, scores
+
+        keypoints[..., 2:3] = (keypoints_z /
+                               (self.input_size[-1] / 2) - 1) * self.z_range
+        return keypoints, keypoints_simcc, scores
 
     def _map_coordinates(
         self,
@@ -285,51 +260,3 @@ class SimCC3DLabel(BaseKeypointCodec):
             target_z /= norm_value[2]
 
         return target_x, target_y, target_z, keypoint_weights
-
-    def _generate_standard(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> tuple[ndarray, ndarray, ndarray, Any]:
-        """Encoding keypoints into SimCC labels with Standard Label Smoothing
-        strategy.
-
-        Labels will be one-hot vectors if self.label_smooth_weight==0.0
-        """
-
-        N, K, _ = keypoints.shape
-        w, h, d = self.input_size
-        w = np.around(w * self.simcc_split_ratio).astype(int)
-        h = np.around(h * self.simcc_split_ratio).astype(int)
-        d = np.around(d * self.simcc_split_ratio).astype(int)
-
-        keypoints_split, keypoint_weights = self._map_coordinates(
-            keypoints, keypoints_visible)
-
-        x = np.zeros((N, K, w), dtype=np.float32)
-        y = np.zeros((N, K, h), dtype=np.float32)
-        z = np.zeros((N, K, d), dtype=np.float32)
-
-        for n, k in product(range(N), range(K)):
-            # skip unlabled keypoints
-            if keypoints_visible[n, k] < 0.5:
-                continue
-
-            # get center coordinates
-            mu_x, mu_y, mu_z = keypoints_split[n, k].astype(np.int64)
-
-            # detect abnormal coords and assign the weight 0
-            if mu_x >= w or mu_y >= h or mu_x < 0 or mu_y < 0:
-                keypoint_weights[n, k] = 0
-                continue
-
-            if self.label_smooth_weight > 0:
-                x[n, k] = self.label_smooth_weight / (w - 1)
-                y[n, k] = self.label_smooth_weight / (h - 1)
-                z[n, k] = self.label_smooth_weight / (d - 1)
-
-            x[n, k, mu_x] = 1.0 - self.label_smooth_weight
-            y[n, k, mu_y] = 1.0 - self.label_smooth_weight
-            z[n, k, mu_z] = 1.0 - self.label_smooth_weight
-
-        return x, y, z, keypoint_weights

@@ -3,7 +3,7 @@ from mmpose.registry import MODELS
 
 
 @MODELS.register_module()
-class KLDiscretLoss2(KLDiscretLoss):
+class KLDiscretLossWithWeight(KLDiscretLoss):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

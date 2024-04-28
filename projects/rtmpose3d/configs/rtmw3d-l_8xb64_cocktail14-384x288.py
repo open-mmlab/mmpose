@@ -1,4 +1,6 @@
-_base_ = ['./default_runtime.py']
+_base_ = ['mmpose::_base_/default_runtime.py']
+
+custom_imports = dict(imports=['rtmpose3d'], allow_failed_imports=False)
 
 vis_backends = [
     dict(type='LocalVisBackend'),
@@ -105,7 +107,7 @@ model = dict(
             pos_enc=False),
         loss=[
             dict(
-                type='KLDiscretLoss2',
+                type='KLDiscretLossWithWeight',
                 use_target_weight=True,
                 beta=10.,
                 label_softmax=True),
@@ -194,27 +196,6 @@ train_pipeline_stage2 = [
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-
-# h3wb dataset
-h3wb_dataset = dict(
-    type='H36MWholeBodyDataset',
-    ann_file='annotation_body3d/h3wb_train_bbox.npz',
-    seq_len=1,
-    causal=True,
-    data_root='data/h36m/',
-    data_prefix=dict(img='images/'),
-    test_mode=False,
-    pipeline=[])
-
-# dna rendering dataset
-dna_rendering_dataset = dict(
-    type='DNARenderingDataset',
-    data_root='data/dna_rendering_part1',
-    data_mode='topdown',
-    ann_file='instances.npz',
-    subset_frac=0.1,
-    pipeline=[dict(type='LoadMask', backend_args=backend_args)],
-)
 
 # mapping
 
@@ -604,14 +585,23 @@ for scene in scenes:
         pipeline=[])
     ubody_datasets.append(ubody)
 
+# h3wb dataset
+h3wb_dataset = dict(
+    type='H36MWholeBodyDataset',
+    ann_file='annotation_body3d/h3wb_train_bbox.npz',
+    seq_len=1,
+    causal=True,
+    data_root='data/h36m/',
+    data_prefix=dict(img='images/'),
+    test_mode=False,
+    pipeline=[])
+
 train_datasets = [
     dataset_wb,
     dataset_body,
     dataset_face,
-    # dataset_hand,
     *ubody_datasets,
     h3wb_dataset,
-    # dna_rendering_dataset
 ]
 
 # data loaders
@@ -626,20 +616,7 @@ train_dataloader = dict(
         pipeline=train_pipeline,
         metainfo=dict(from_file='configs/_base_/datasets/h3wb.py'),
         test_mode=False))
-
 # hooks
-default_hooks = dict(
-    checkpoint=dict(
-        type='CheckpointHook',
-        save_best='MPJPE',
-        rule='less',
-        max_keep_ckpts=1))
-
-# hooks
-# default_hooks = dict(
-#     checkpoint=dict(
-#         save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))
-
 custom_hooks = [
     dict(
         type='EMAHook',
@@ -653,32 +630,14 @@ custom_hooks = [
         switch_pipeline=train_pipeline_stage2)
 ]
 
+default_hooks = dict(
+    checkpoint=dict(
+        type='CheckpointHook',
+        save_best='MPJPE',
+        rule='less',
+        max_keep_ckpts=1))
+
 # eval h3wb
-# val_dataloader = dict(
-#     batch_size=64,
-#     num_workers=10,
-#     persistent_workers=True,
-#     drop_last=False,
-#     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
-#     dataset=dict(
-#         type='H36MWholeBodyDataset',
-#         ann_file='annotation_body3d/h3wb_train_bbox.npz',
-#         seq_len=1,
-#         causal=True,
-#         data_root='data/h36m/',
-#         data_prefix=dict(img='images/'),
-#         test_mode=True,
-#         pipeline=val_pipeline))
-# test_dataloader = val_dataloader
-
-# # evaluators
-# val_evaluator = [
-#     dict(type='SimpleMPJPE', mode='mpjpe'),
-#     dict(type='SimpleMPJPE', mode='p-mpjpe')
-# ]
-# test_evaluator = val_evaluator
-
-# eval coco
 val_dataloader = dict(
     batch_size=64,
     num_workers=10,
@@ -686,20 +645,50 @@ val_dataloader = dict(
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
-        type='CocoWholeBodyDataset',
-        data_root='data/coco/',
-        data_mode='topdown',
-        ann_file='annotations/coco_wholebody_val_v1.0.json',
-        data_prefix=dict(img='val2017/'),
+        type='H36MWholeBodyDataset',
+        ann_file='annotation_body3d/h3wb_train_bbox.npz',
+        seq_len=1,
+        causal=True,
+        data_root='data/h36m/',
+        data_prefix=dict(img='images/'),
         test_mode=True,
-        bbox_file='data/coco/person_detection_results/'
-        'COCO_val2017_detections_AP_H_56_person.json',
-        pipeline=val_pipeline,
-    ))
+        pipeline=val_pipeline))
 test_dataloader = val_dataloader
 
 # evaluators
-val_evaluator = dict(
-    type='CocoWholeBodyMetric',
-    ann_file='data/coco/' + 'annotations/coco_wholebody_val_v1.0.json')
+val_evaluator = [
+    dict(type='SimpleMPJPE', mode='mpjpe'),
+    dict(type='SimpleMPJPE', mode='p-mpjpe')
+]
 test_evaluator = val_evaluator
+
+# eval coco
+# val_dataloader = dict(
+#     batch_size=64,
+#     num_workers=10,
+#     persistent_workers=True,
+#     drop_last=False,
+#     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+#     dataset=dict(
+#         type='CocoWholeBodyDataset',
+#         data_root='data/coco/',
+#         data_mode='topdown',
+#         ann_file='annotations/coco_wholebody_val_v1.0.json',
+#         data_prefix=dict(img='val2017/'),
+#         test_mode=True,
+#         bbox_file='data/coco/person_detection_results/'
+#         'COCO_val2017_detections_AP_H_56_person.json',
+#         pipeline=val_pipeline,
+#     ))
+# test_dataloader = val_dataloader
+
+# # evaluators
+# val_evaluator = dict(
+#     type='CocoWholeBodyMetric',
+#     ann_file='data/coco/' + 'annotations/coco_wholebody_val_v1.0.json')
+# test_evaluator = val_evaluator
+
+# hooks
+# default_hooks = dict(
+#     checkpoint=dict(
+#         save_best='coco-wholebody/AP', rule='greater', max_keep_ckpts=1))

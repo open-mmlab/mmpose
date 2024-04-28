@@ -13,6 +13,8 @@ class TopdownPoseEstimator3D(TopdownPoseEstimator):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # a default camera parameter for 3D pose estimation
         self.camera_param = {
             'c': [512.54150496, 515.45148698],
             'f': [1145.04940459, 1143.78109572],
@@ -40,7 +42,7 @@ class TopdownPoseEstimator3D(TopdownPoseEstimator):
         output_keypoint_indices = self.test_cfg.get('output_keypoint_indices',
                                                     None)
         mode = self.test_cfg.get('mode', '3d')
-        assert mode in ['2d', '3d', 'vis', 'simcc']
+        assert mode in ['2d', '3d', 'vis']
         for pred_instances, pred_fields, data_sample in zip_longest(
                 batch_pred_instances, batch_pred_fields, batch_data_samples):
 
@@ -51,11 +53,14 @@ class TopdownPoseEstimator3D(TopdownPoseEstimator):
             input_scale = data_sample.metainfo['input_scale']
             input_size = data_sample.metainfo['input_size']
             keypoints_3d = pred_instances.keypoints
-            keypoints_2d = pred_instances.keypoints_2d
             keypoints_simcc = pred_instances.keypoints_simcc
+
+            # convert keypoints from input space to image space
+            keypoints_2d = keypoints_3d[..., :2].copy()
             keypoints_2d = keypoints_2d / input_size * input_scale \
                 + input_center - 0.5 * input_scale
 
+            # convert keypoints from image space to camera space
             if gt_instances.get('camera_params', None) is not None:
                 camera_params = gt_instances.camera_params[0]
                 f = np.array(camera_params['f'])
@@ -63,7 +68,6 @@ class TopdownPoseEstimator3D(TopdownPoseEstimator):
             else:
                 f = np.array([1145.04940459, 1143.78109572])
                 c = np.array(data_sample.ori_shape)
-
             kpts_pixel = np.concatenate([
                 keypoints_2d,
                 (keypoints_3d[..., 2] + gt_instances.root_z)[..., None]
@@ -72,16 +76,17 @@ class TopdownPoseEstimator3D(TopdownPoseEstimator):
             kpts_cam = kpts_pixel.copy()
             kpts_cam[..., :2] = (kpts_pixel[..., :2] - c) / f * kpts_pixel[...,
                                                                            2:]
+
             if mode == '3d':
+                # Evaluation with 3D keypoint coordinates
                 pred_instances.keypoints = kpts_cam
                 pred_instances.transformed_keypoints = keypoints_2d
             elif mode == 'vis':
-                pred_instances.keypoints = keypoints_3d
-                pred_instances.transformed_keypoints = keypoints_2d
-            elif mode == 'simcc':
+                # Visualization with SimCC keypoints
                 pred_instances.keypoints = keypoints_simcc
                 pred_instances.transformed_keypoints = keypoints_2d
             else:
+                # Evaluation with 2D keypoint coordinates
                 pred_instances.keypoints = keypoints_2d
                 pred_instances.transformed_keypoints = keypoints_2d
 

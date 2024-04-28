@@ -232,23 +232,20 @@ class RTMW3DHead(BaseHead):
 
         batch_output_np = to_numpy(batch_outputs, unzip=True)
         batch_keypoints = []
-        batch_keypoints2d = []
         batch_keypoints_simcc = []
         batch_scores = []
         for outputs in batch_output_np:
-            keypoints_2d, keypoints, keypoints_simcc, scores = _pack_and_call(
+            keypoints, keypoints_simcc, scores = _pack_and_call(
                 outputs, self.decoder.decode)
-            batch_keypoints2d.append(keypoints_2d)
             batch_keypoints.append(keypoints)
             batch_keypoints_simcc.append(keypoints_simcc)
             batch_scores.append(scores)
 
         preds = []
-        for keypoints_2d, keypoints, keypoints_simcc, scores in zip(
-                batch_keypoints2d, batch_keypoints, batch_keypoints_simcc,
-                batch_scores):
+        for keypoints, keypoints_simcc, scores in zip(batch_keypoints,
+                                                      batch_keypoints_simcc,
+                                                      batch_scores):
             pred = InstanceData(
-                keypoints_2d=keypoints_2d,
                 keypoints=keypoints,
                 keypoints_simcc=keypoints_simcc,
                 keypoint_scores=scores)
