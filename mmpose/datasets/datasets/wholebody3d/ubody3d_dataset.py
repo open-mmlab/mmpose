@@ -84,7 +84,7 @@ class UBody3dDataset(BaseMocapDataset):
 
         super().__init__(multiple_target=multiple_target, **kwargs)
 
-    METAINFO: dict = dict(from_file='configs/_base_/datasets/ubody3d.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/h3wb.py')
 
     def _load_ann_file(self, ann_file: str) -> dict:
         """Load annotation file."""
@@ -167,7 +167,7 @@ class UBody3dDataset(BaseMocapDataset):
 
     def _load_annotations(self):
         """Load data from annotations in COCO format."""
-        num_keypoints = self.metainfo['num_keypoints']
+        num_keypoints = 133
         self._metainfo['CLASSES'] = self.ann_data.loadCats(
             self.ann_data.getCatIds())
 
@@ -184,23 +184,37 @@ class UBody3dDataset(BaseMocapDataset):
                 f'got {len(_ann_ids)} ')
 
             anns = self.ann_data.loadAnns(_ann_ids)
+            num_anns = len(anns)
             img_ids = []
-            kpts = np.zeros((len(anns), num_keypoints, 2), dtype=np.float32)
-            kpts_3d = np.zeros((len(anns), num_keypoints, 3), dtype=np.float32)
-            keypoints_visible = np.zeros((len(anns), num_keypoints, 1),
+            kpts = np.zeros((num_anns, num_keypoints, 2), dtype=np.float32)
+            kpts_3d = np.zeros((num_anns, num_keypoints, 3), dtype=np.float32)
+            keypoints_visible = np.zeros((num_anns, num_keypoints),
                                          dtype=np.float32)
+            scales = np.zeros((num_anns, 2), dtype=np.float32)
+            centers = np.zeros((num_anns, 2), dtype=np.float32)
+            bboxes = np.zeros((num_anns, 4), dtype=np.float32)
+            bbox_scores = np.zeros((num_anns, ), dtype=np.float32)
+            bbox_scales = np.zeros((num_anns, 2), dtype=np.float32)
+
             for j, ann in enumerate(anns):
                 img_ids.append(ann['image_id'])
                 kpts[j] = np.array(ann['keypoints'], dtype=np.float32)
                 kpts_3d[j] = np.array(ann['keypoints_3d'], dtype=np.float32)
                 keypoints_visible[j] = np.array(
                     ann['keypoints_valid'], dtype=np.float32)
-            imgs = self.ann_data.loadImgs(img_ids)
-            keypoints_visible = keypoints_visible.squeeze(-1)
+                if 'scale' in ann:
+                    scales[j] = np.array(ann['scale'])
+                if 'center' in ann:
+                    centers[j] = np.array(ann['center'])
+                bboxes[j] = np.array(ann['bbox'], dtype=np.float32)
+                bbox_scores[j] = np.array([1], dtype=np.float32)
+                bbox_scales[j] = np.array([1, 1], dtype=np.float32)
 
-            scales = np.zeros(len(imgs), dtype=np.float32)
-            centers = np.zeros((len(imgs), 2), dtype=np.float32)
-            img_paths = np.array([img['file_name'] for img in imgs])
+            imgs = self.ann_data.loadImgs(img_ids)
+
+            img_paths = np.array([
+                f'{self.data_root}/images/' + img['file_name'] for img in imgs
+            ])
             factors = np.zeros((kpts_3d.shape[0], ), dtype=np.float32)
 
             target_idx = [-1] if self.causal else [int(self.seq_len // 2)]
@@ -211,6 +225,8 @@ class UBody3dDataset(BaseMocapDataset):
             if 'w' not in cam_param or 'h' not in cam_param:
                 cam_param['w'] = 1000
                 cam_param['h'] = 1000
+
+            cam_param = {'f': cam_param['focal'], 'c': cam_param['princpt']}
 
             instance_info = {
                 'num_keypoints': num_keypoints,
@@ -223,25 +239,35 @@ class UBody3dDataset(BaseMocapDataset):
                 'category_id': 1,
                 'iscrowd': 0,
                 'img_paths': list(img_paths),
+                'img_path': img_paths[-1],
                 'img_ids': [img['id'] for img in imgs],
                 'lifting_target': kpts_3d[target_idx],
                 'lifting_target_visible': keypoints_visible[target_idx],
-                'target_img_paths': img_paths[target_idx],
-                'camera_param': cam_param,
+                'target_img_paths': list(img_paths[target_idx]),
+                'camera_param': [cam_param],
                 'factor': factors,
                 'target_idx': target_idx,
+                'bbox': bboxes,
+                'bbox_scales': bbox_scales,
+                'bbox_scores': bbox_scores
             }
 
             instance_list.append(instance_info)
 
-        for img_id in self.ann_data.getImgIds():
-            img = self.ann_data.loadImgs(img_id)[0]
-            img.update({
-                'img_id':
-                img_id,
-                'img_path':
-                osp.join(self.data_prefix['img'], img['file_name']),
-            })
-            image_list.append(img)
-
+        if self.data_mode == 'bottomup':
+            for img_id in self.ann_data.getImgIds():
+                img = self.ann_data.loadImgs(img_id)[0]
+                img.update({
+                    'img_id':
+                    img_id,
+                    'img_path':
+                    osp.join(self.data_prefix['img'], img['file_name']),
+                })
+                image_list.append(img)
+        del self.ann_data
         return instance_list, image_list
+
+    def load_data_list(self) -> List[dict]:
+        data_list = super().load_data_list()
+        self.ann_data = None
+        return data_list
