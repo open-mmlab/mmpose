@@ -1,0 +1,22 @@
+Bootstrap: docker
+From: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel
+
+%environment
+    TZ=UTC
+    DEBIAN_FRONTEND=noninteractive
+
+%post
+    export TZ=UTC
+    export DEBIAN_FRONTEND=noninteractive
+    
+    apt-get update
+    apt-get install -y --no-install-recommends wget git libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev
+    apt-get install -y nvidia-driver-530 nvidia-dkms-530
+    rm -rf /var/lib/apt/lists/*
+    pip install --upgrade pip
+    pip install --force-reinstall torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+    pip install -U openmim
+    mim install mmengine
+    mim install "mmcv>=2.0.1"
+
+    echo "You can start to use MMPose!!"
