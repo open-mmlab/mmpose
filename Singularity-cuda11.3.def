@@ -1,5 +1,6 @@
-Bootstrap: docker
-From: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel
+Bootstrap: debootstrap
+OSVersion: bionic
+MirrorURL: http://archive.ubuntu.com/ubuntu/
 
 %environment
     TZ=UTC
@@ -8,13 +9,26 @@ From: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel
 %post
     export TZ=UTC
     export DEBIAN_FRONTEND=noninteractive
-    
     apt-get update
-    apt-get install -y --no-install-recommends wget git libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev
-    apt-get install -y nvidia-driver-530 nvidia-dkms-530
+    apt-get install -y wget gnupg
     rm -rf /var/lib/apt/lists/*
-    pip install --upgrade pip
-    pip install --force-reinstall torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+    rm -rf /opt/conda
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b && rm -f Miniconda3-latest-Linux-x86_64.sh
+    /root/miniconda3/bin/conda init bash
+    echo "export PATH=/root/miniconda3/bin:\$PATH" >> /root/.bashrc
+    export PATH=/root/miniconda3/bin:$PATH
+    /root/miniconda3/bin/conda install -y python=3.10 pip
+    python --version
+    pip --version
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+    mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+    wget https://developer.download.nvidia.com/compute/cuda/11.3.0/local_installers/cuda-repo-ubuntu1804-11-3-local_11.3.0-465.19.01-1_amd64.deb
+    dpkg -i cuda-repo-ubuntu1804-11-3-local_11.3.0-465.19.01-1_amd64.deb
+    apt-key add /var/cuda-repo-ubuntu1804-11-3-local/7fa2af80.pub
+    apt-get update
+    apt-get -y install cuda
+    pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
     pip install -U openmim
     mim install mmengine
     mim install "mmcv>=2.0.1"
