@@ -5,6 +5,9 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
 %environment
     TZ=UTC
     DEBIAN_FRONTEND=noninteractive
+    export PATH=/opt/miniconda3/bin:$PATH
+    export BASH_ENV=/opt/etc/bashrc
+    source /opt/etc/bashrc
 
 %post
     export TZ=UTC
@@ -12,13 +15,17 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
     apt-get update
     apt-get install -y wget gnupg
     rm -rf /var/lib/apt/lists/*
-    rm -rf /opt/conda
+    mkdir -p /opt/etc
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b && rm -f Miniconda3-latest-Linux-x86_64.sh
-    /root/miniconda3/bin/conda init bash
-    echo "export PATH=/root/miniconda3/bin:\$PATH" >> /root/.bashrc
-    export PATH=/root/miniconda3/bin:$PATH
-    /root/miniconda3/bin/conda install -y python=3.10 pip
+    bash Miniconda3-latest-Linux-x86_64.sh -p /opt/miniconda3 -b && rm -f Miniconda3-latest-Linux-x86_64.sh
+    export PATH=/opt/miniconda3/bin:$PATH
+    conda create -y -n py310 python=3.10
+    echo -e "#! /bin/bash\n\n# script to activate the conda environment" > ~/.bashrc
+    conda init bash
+    echo -e "\nconda activate py310" >> ~/.bashrc
+    cp ~/.bashrc /opt/etc/bashrc
+    . /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate py310
     python --version
     pip --version
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
