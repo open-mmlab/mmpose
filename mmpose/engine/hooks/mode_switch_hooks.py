@@ -3,7 +3,6 @@ import copy
 from typing import Dict, Sequence
 
 import torch.nn as nn
-
 from mmengine.hooks import Hook
 from mmengine.model import is_model_wrapper
 from mmengine.runner import Runner
@@ -63,7 +62,8 @@ class YOLOXPoseModeSwitchHook(Hook):
         if is_model_wrapper(model):
             model = model.module
 
-        if self.switched is False and (epoch + 1 >= runner.max_epochs - self.num_last_epochs):
+        if self.switched is False and (
+                epoch + 1 >= runner.max_epochs - self.num_last_epochs):
             self._modify_dataloader(runner)
             runner.logger.info('Added additional reg loss now!')
             model.head.use_aux_loss = True
@@ -95,13 +95,14 @@ class RTMOModeSwitchHook(Hook):
         self.epoch_attributes = epoch_attributes
         self.handled_resume = False
 
-    def handle_resume(self, runner: Runner, model: nn.Module, resumed_epoch: int):
-        """Iter over all the previous batch size when training is resumed to apply each epoch attributes modification in order.        
-        """
+    def handle_resume(self, runner: Runner, model: nn.Module,
+                      resumed_epoch: int):
+        """Iter over all the previous batch size when training is resumed to
+        apply each epoch attributes modification in order."""
         for epoch in self.epoch_attributes.keys():
             if epoch >= resumed_epoch:
                 break
-            
+
             for key, value in self.epoch_attributes[epoch].items():
                 rsetattr(model.head, key, value)
                 runner.logger.info(
