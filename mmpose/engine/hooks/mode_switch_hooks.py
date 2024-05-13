@@ -40,6 +40,7 @@ class YOLOXPoseModeSwitchHook(Hook):
         self.num_last_epochs = num_last_epochs
         self.new_train_dataset = new_train_dataset
         self.new_train_pipeline = new_train_pipeline
+        self.switched = False
 
     def _modify_dataloader(self, runner: Runner):
         """Modify dataloader with new dataset and pipeline configurations."""
@@ -62,10 +63,11 @@ class YOLOXPoseModeSwitchHook(Hook):
         if is_model_wrapper(model):
             model = model.module
 
-        if epoch + 1 == runner.max_epochs - self.num_last_epochs:
+        if self.switched is False and (epoch + 1 >= runner.max_epochs - self.num_last_epochs):
             self._modify_dataloader(runner)
             runner.logger.info('Added additional reg loss now!')
             model.head.use_aux_loss = True
+            self.switched = True
 
 
 @HOOKS.register_module()
