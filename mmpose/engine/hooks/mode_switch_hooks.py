@@ -2,6 +2,8 @@
 import copy
 from typing import Dict, Sequence
 
+import torch.nn as nn
+
 from mmengine.hooks import Hook
 from mmengine.model import is_model_wrapper
 from mmengine.runner import Runner
@@ -89,6 +91,20 @@ class RTMOModeSwitchHook(Hook):
 
     def __init__(self, epoch_attributes: Dict[int, Dict]):
         self.epoch_attributes = epoch_attributes
+        self.handled_resume = False
+
+    def handle_resume(self, runner: Runner, model: nn.Module, resumed_epoch: int):
+        """Iter over all the previous batch size when training is resumed to apply each epoch attributes modification in order.        
+        """
+        for epoch in self.epoch_attributes.keys():
+            if epoch >= resumed_epoch:
+                break
+            
+            for key, value in self.epoch_attributes[epoch].items():
+                rsetattr(model.head, key, value)
+                runner.logger.info(
+                    f'Change model.head.{key} to {rgetattr(model.head, key)}')
+        self.handled_resume = True
 
     def before_train_epoch(self, runner: Runner):
         """Method called before each training epoch.
