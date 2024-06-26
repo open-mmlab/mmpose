@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os.path as osp
 from typing import List, Tuple
 
 import numpy as np
@@ -179,9 +180,10 @@ class H36MWholeBodyDataset(Human36mDataset):
                         ]],
                                         dtype=np.float32)
 
-                        img_path = f'{self.data_root}original/{subject}/Images/{act}.{cam}/frame_{frames[frame_ids[-1]]}.jpg'  # noqa
                         img_paths = [
-                            f'{self.data_root}original/{subject}/Images/{act}.{cam}/frame_{frames[i]}.jpg'  # noqa
+                            osp.join(self.data_root, 'original', subject,
+                                     'Images', f'{act}.{cam}',
+                                     f'frame_{frames[i]}.jpg')  # noqa
                             for i in frame_ids
                         ]
 
@@ -216,7 +218,7 @@ class H36MWholeBodyDataset(Human36mDataset):
                             'img_paths':
                             img_paths,
                             'img_path':
-                            img_path,
+                            img_paths[-1],
                             'img_ids':
                             frame_ids,
                             'lifting_target':
