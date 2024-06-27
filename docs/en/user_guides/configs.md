@@ -112,7 +112,7 @@ It is best practice to layer your configs in five sections:
 You can find all the provided configs under `$MMPOSE/configs`. A config can inherit contents from another config.To keep a config file simple and easy to read, we store some necessary but unremarkable configurations to `$MMPOSE/configs/_base_`.You can inspect the complete configurations by：
 
 ```Bash
-python tools/analysis/print_config.py /PATH/TO/CONFIG
+python tools/analysis_tools/print_config.py /PATH/TO/CONFIG
 ```
 
 ### General
