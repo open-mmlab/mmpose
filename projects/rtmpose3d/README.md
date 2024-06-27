@@ -9,7 +9,7 @@ RTMPose3D is a toolkit for real-time 3D pose estimation. It is based on the RTMP
 | Model                                                      | AP on COCO-Wholebody | MPJPE on H3WB |                                                   Download                                                    |
 | :--------------------------------------------------------- | :------------------: | :-----------: | :-----------------------------------------------------------------------------------------------------------: |
 | [RTMW3D-L](./configs/rtmw3d-l_8xb64_cocktail14-384x288.py) |        0.678         |     0.052     | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-s_8xb32-600e_coco-640x640-8db55a59_20231211.pth) |
-| [RTMW3D-X](./configs/rtmw3d-x_8xb32_cocktail14-384x288.py) |        0.680        |     0.052     | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-s_8xb32-600e_coco-640x640-8db55a59_20231211.pth) |
+| [RTMW3D-X](./configs/rtmw3d-x_8xb32_cocktail14-384x288.py) |        0.680         |     0.052     | [ckpt](https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-s_8xb32-600e_coco-640x640-8db55a59_20231211.pth) |
 
 ## Usage
 
