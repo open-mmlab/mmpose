@@ -174,8 +174,6 @@ class H36MWholeBodyDataset(Human36mDataset):
                         if self.multiple_target > 0:
                             target_idx = list(range(self.multiple_target))
 
-                        print(self.bboxes.keys())
-
                         bbox = self.bboxes[(subject, act, cam,
                                             frames[frame_ids[-1]])]
                         bbox = np.array([[
