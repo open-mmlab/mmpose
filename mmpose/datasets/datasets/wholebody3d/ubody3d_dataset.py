@@ -84,7 +84,7 @@ class UBody3dDataset(BaseMocapDataset):
 
         super().__init__(multiple_target=multiple_target, **kwargs)
 
-    METAINFO: dict = dict(from_file='configs/_base_/datasets/h3wb.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/ubody3d.py')
 
     def _load_ann_file(self, ann_file: str) -> dict:
         """Load annotation file."""

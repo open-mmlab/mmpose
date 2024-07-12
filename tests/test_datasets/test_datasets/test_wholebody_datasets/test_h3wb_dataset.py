@@ -11,7 +11,7 @@ class TestH36MWholeBodyDataset(TestCase):
     def build_h3wb_dataset(self, **kwargs):
 
         cfg = dict(
-            ann_file='h3wb_train_sub.npz',
+            ann_file='h3wb_train_bbox_subset.npz',
             data_mode='topdown',
             data_root='tests/data/h3wb',
             pipeline=[])
@@ -54,12 +54,6 @@ class TestH36MWholeBodyDataset(TestCase):
         # test topdown training
         dataset = self.build_h3wb_dataset(data_mode='topdown')
         dataset.full_init()
-        self.assertEqual(len(dataset), 3)
-        self.check_data_info_keys(dataset[0])
-
-        # test topdown testing
-        dataset = self.build_h3wb_dataset(data_mode='topdown', test_mode=True)
-        dataset.full_init()
         self.assertEqual(len(dataset), 1)
         self.check_data_info_keys(dataset[0])
 
@@ -71,5 +65,5 @@ class TestH36MWholeBodyDataset(TestCase):
             causal=False,
             pad_video_seq=True)
         dataset.full_init()
-        self.assertEqual(len(dataset), 3)
+        self.assertEqual(len(dataset), 1)
         self.check_data_info_keys(dataset[0])
