@@ -119,6 +119,8 @@ class H36MWholeBodyDataset(Human36mDataset):
 
         instance_id = 0
         for subject in self.subjects:
+            if subject not in self.ann_data:
+                continue
             actions = self.ann_data[subject].keys()
             for act in actions:
                 for cam in self.camera_order_id:
@@ -171,6 +173,8 @@ class H36MWholeBodyDataset(Human36mDataset):
                         ]
                         if self.multiple_target > 0:
                             target_idx = list(range(self.multiple_target))
+
+                        print(self.bboxes.keys())
 
                         bbox = self.bboxes[(subject, act, cam,
                                             frames[frame_ids[-1]])]
