@@ -221,5 +221,6 @@ class MpiiDataset(BaseCocoStyleDataset):
 
             instance_list.append(instance_info)
             ann_id = ann_id + 1
-
+        del self.anns
+        self.coco = None
         return instance_list, image_list

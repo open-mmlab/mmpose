@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os.path as osp
 from typing import List, Tuple
 
 import numpy as np
@@ -106,6 +107,7 @@ class H36MWholeBodyDataset(Human36mDataset):
 
         self.ann_data = data['train_data'].item()
         self.camera_data = data['metadata'].item()
+        self.bboxes = data['bbox'].item()
 
     def get_sequence_indices(self) -> List[List[int]]:
         return []
@@ -132,18 +134,25 @@ class H36MWholeBodyDataset(Human36mDataset):
                         'K': camera_param['K'][0, :2, ...],
                         'R': camera_param['R'][0],
                         'T': camera_param['T'].reshape(3, 1),
-                        'Distortion': camera_param['Distortion'][0]
+                        'Distortion': camera_param['Distortion'][0],
                     }
+                    camera_param['f'] = (camera_param['K'][0, 0] * 1000,
+                                         camera_param['K'][1, 1] * 1000)
+                    camera_param['c'] = (camera_param['K'][0, 2] * 1000,
+                                         camera_param['K'][1, 2] * 1000)
 
                     seq_step = 1
                     _len = (self.seq_len - 1) * seq_step + 1
                     _indices = list(
                         range(len(self.ann_data[subject][act]['frame_id'])))
+
                     seq_indices = [
                         _indices[i:(i + _len):seq_step]
                         for i in list(range(0,
                                             len(_indices) - _len + 1))
                     ]
+
+                    frames = self.ann_data[subject][act]['frame_id']
 
                     for idx, frame_ids in enumerate(seq_indices):
                         expected_num_frames = self.seq_len
@@ -163,6 +172,21 @@ class H36MWholeBodyDataset(Human36mDataset):
                         if self.multiple_target > 0:
                             target_idx = list(range(self.multiple_target))
 
+                        bbox = self.bboxes[(subject, act, cam,
+                                            frames[frame_ids[-1]])]
+                        bbox = np.array([[
+                            bbox['x_min'], bbox['y_min'], bbox['x_max'],
+                            bbox['y_max']
+                        ]],
+                                        dtype=np.float32)
+
+                        img_paths = [
+                            osp.join(self.data_root, 'original', subject,
+                                     'Images', f'{act}.{cam}',
+                                     f'frame_{frames[i]}.jpg')  # noqa
+                            for i in frame_ids
+                        ]
+
                         instance_info = {
                             'num_keypoints':
                             num_keypoints,
@@ -174,6 +198,10 @@ class H36MWholeBodyDataset(Human36mDataset):
                             np.ones_like(_kpts_2d[..., 0], dtype=np.float32),
                             'keypoints_3d_visible':
                             np.ones_like(_kpts_2d[..., 0], dtype=np.float32),
+                            'bbox':
+                            bbox,
+                            'bbox_score':
+                            np.ones((len(frame_ids), )),
                             'scale':
                             np.zeros((1, 1), dtype=np.float32),
                             'center':
@@ -186,12 +214,11 @@ class H36MWholeBodyDataset(Human36mDataset):
                             1,
                             'iscrowd':
                             0,
-                            'camera_param':
-                            camera_param,
-                            'img_paths': [
-                                f'{subject}/{act}/{cam}/{i:06d}.jpg'
-                                for i in frame_ids
-                            ],
+                            'camera_param': [camera_param],
+                            'img_paths':
+                            img_paths,
+                            'img_path':
+                            img_paths[-1],
                             'img_ids':
                             frame_ids,
                             'lifting_target':
@@ -209,5 +236,5 @@ class H36MWholeBodyDataset(Human36mDataset):
                                 image_list.append(img_info)
 
                         instance_id += 1
-
+        del self.ann_data
         return instance_list, image_list

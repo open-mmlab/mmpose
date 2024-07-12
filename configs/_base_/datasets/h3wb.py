@@ -168,433 +168,433 @@ dataset_info = dict(
         dict(
             name='face-0',
             id=23,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-16'),
         24:
         dict(
             name='face-1',
             id=24,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-15'),
         25:
         dict(
             name='face-2',
             id=25,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-14'),
         26:
         dict(
             name='face-3',
             id=26,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-13'),
         27:
         dict(
             name='face-4',
             id=27,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-12'),
         28:
         dict(
             name='face-5',
             id=28,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-11'),
         29:
         dict(
             name='face-6',
             id=29,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-10'),
         30:
         dict(
             name='face-7',
             id=30,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-9'),
         31:
-        dict(name='face-8', id=31, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-8', id=31, color=[247, 34, 5], type='upper', swap=''),
         32:
         dict(
             name='face-9',
             id=32,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-7'),
         33:
         dict(
             name='face-10',
             id=33,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-6'),
         34:
         dict(
             name='face-11',
             id=34,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-5'),
         35:
         dict(
             name='face-12',
             id=35,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-4'),
         36:
         dict(
             name='face-13',
             id=36,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-3'),
         37:
         dict(
             name='face-14',
             id=37,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-2'),
         38:
         dict(
             name='face-15',
             id=38,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-1'),
         39:
         dict(
             name='face-16',
             id=39,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-0'),
         40:
         dict(
             name='face-17',
             id=40,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-26'),
         41:
         dict(
             name='face-18',
             id=41,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-25'),
         42:
         dict(
             name='face-19',
             id=42,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-24'),
         43:
         dict(
             name='face-20',
             id=43,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-23'),
         44:
         dict(
             name='face-21',
             id=44,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-22'),
         45:
         dict(
             name='face-22',
             id=45,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-21'),
         46:
         dict(
             name='face-23',
             id=46,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-20'),
         47:
         dict(
             name='face-24',
             id=47,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-19'),
         48:
         dict(
             name='face-25',
             id=48,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-18'),
         49:
         dict(
             name='face-26',
             id=49,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-17'),
         50:
-        dict(name='face-27', id=50, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-27', id=50, color=[247, 34, 5], type='upper', swap=''),
         51:
-        dict(name='face-28', id=51, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-28', id=51, color=[247, 34, 5], type='upper', swap=''),
         52:
-        dict(name='face-29', id=52, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-29', id=52, color=[247, 34, 5], type='upper', swap=''),
         53:
-        dict(name='face-30', id=53, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-30', id=53, color=[247, 34, 5], type='upper', swap=''),
         54:
         dict(
             name='face-31',
             id=54,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-35'),
         55:
         dict(
             name='face-32',
             id=55,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-34'),
         56:
-        dict(name='face-33', id=56, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-33', id=56, color=[247, 34, 5], type='upper', swap=''),
         57:
         dict(
             name='face-34',
             id=57,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-32'),
         58:
         dict(
             name='face-35',
             id=58,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-31'),
         59:
         dict(
             name='face-36',
             id=59,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-45'),
         60:
         dict(
             name='face-37',
             id=60,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-44'),
         61:
         dict(
             name='face-38',
             id=61,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-43'),
         62:
         dict(
             name='face-39',
             id=62,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-42'),
         63:
         dict(
             name='face-40',
             id=63,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-47'),
         64:
         dict(
             name='face-41',
             id=64,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-46'),
         65:
         dict(
             name='face-42',
             id=65,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-39'),
         66:
         dict(
             name='face-43',
             id=66,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-38'),
         67:
         dict(
             name='face-44',
             id=67,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-37'),
         68:
         dict(
             name='face-45',
             id=68,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-36'),
         69:
         dict(
             name='face-46',
             id=69,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-41'),
         70:
         dict(
             name='face-47',
             id=70,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-40'),
         71:
         dict(
             name='face-48',
             id=71,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-54'),
         72:
         dict(
             name='face-49',
             id=72,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-53'),
         73:
         dict(
             name='face-50',
             id=73,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-52'),
         74:
-        dict(name='face-51', id=74, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-51', id=74, color=[247, 34, 5], type='upper', swap=''),
         75:
         dict(
             name='face-52',
             id=75,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-50'),
         76:
         dict(
             name='face-53',
             id=76,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-49'),
         77:
         dict(
             name='face-54',
             id=77,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-48'),
         78:
         dict(
             name='face-55',
             id=78,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-59'),
         79:
         dict(
             name='face-56',
             id=79,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-58'),
         80:
-        dict(name='face-57', id=80, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-57', id=80, color=[247, 34, 5], type='upper', swap=''),
         81:
         dict(
             name='face-58',
             id=81,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-56'),
         82:
         dict(
             name='face-59',
             id=82,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-55'),
         83:
         dict(
             name='face-60',
             id=83,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-64'),
         84:
         dict(
             name='face-61',
             id=84,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-63'),
         85:
-        dict(name='face-62', id=85, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-62', id=85, color=[247, 34, 5], type='upper', swap=''),
         86:
         dict(
             name='face-63',
             id=86,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-61'),
         87:
         dict(
             name='face-64',
             id=87,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-60'),
         88:
         dict(
             name='face-65',
             id=88,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-67'),
         89:
-        dict(name='face-66', id=89, color=[255, 255, 255], type='', swap=''),
+        dict(name='face-66', id=89, color=[247, 34, 5], type='upper', swap=''),
         90:
         dict(
             name='face-67',
             id=90,
-            color=[255, 255, 255],
-            type='',
+            color=[247, 34, 5],
+            type='upper',
             swap='face-65'),
         91:
         dict(
             name='left_hand_root',
             id=91,
-            color=[255, 255, 255],
+            color=[247, 34, 5],
             type='',
             swap='right_hand_root'),
         92:
@@ -741,7 +741,7 @@ dataset_info = dict(
         dict(
             name='right_hand_root',
             id=112,
-            color=[255, 255, 255],
+            color=[247, 34, 5],
             type='',
             swap='left_hand_root'),
         113:

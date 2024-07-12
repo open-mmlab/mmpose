@@ -973,7 +973,7 @@ class GenerateTarget(BaseTransform):
             # For single encoding, the encoded items will be directly added
             # into results.
             auxiliary_encode_kwargs = {
-                key: results[key]
+                key: results.get(key, None)
                 for key in self.encoder.auxiliary_encode_keys
             }
             encoded = self.encoder.encode(
