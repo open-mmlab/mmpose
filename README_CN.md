@@ -96,6 +96,8 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
+- 发布了 [RTMW3D](/projects/rtmpose3d/), 一个 3D 全身姿态估计的实时模型。
+
 - 发布了单阶段实时多人姿态估计模型 [RTMO](/projects/rtmo)。相比 RTMPose 在多人场景下性能更优
 
   ![rtmo](https://github.com/open-mmlab/mmpose/assets/26127467/54d5555a-23e5-4308-89d1-f0c82a6734c2)
@@ -104,10 +106,9 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 支持了 [PoseAnything](/projects/pose_anything) 的推理。[在线试玩](https://openxlab.org.cn/apps/detail/orhir/Pose-Anything)
 
-- 我们支持了两个新的数据集:
+- 我们支持了新的数据集:
 
-  - (CVPR 2023) [ExLPose](https://mmpose.readthedocs.io/en/latest/dataset_zoo/2d_body_keypoint.html#exlpose-dataset)
-  - (ICCV 2023) [H3WB](/docs/en/dataset_zoo/3d_wholebody_keypoint.md)
+  - (ICCV 2015) [300VW](/docs/en/dataset_zoo/2d_face_keypoint.md)
 
 - 欢迎使用 [*MMPose 项目*](/projects/README.md)。在这里，您可以发现 MMPose 中的最新功能和算法，并且可以通过最快的方式与社区分享自己的创意和代码实现。向 MMPose 中添加新功能从此变得简单丝滑：
 

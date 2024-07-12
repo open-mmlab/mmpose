@@ -1,5 +1,42 @@
 # Changelog
 
+## **v1.3.2 (12/07/2024)**
+
+**New Features**
+
+- Add center alignments for draw_texts in OpencvBackendVisualizer ([#2958](https://github.com/open-mmlab/mmpose/pull/2958))
+- Add wflw2coco script ([#2961](https://github.com/open-mmlab/mmpose/pull/2961))
+- Support 300VW Dataset ([#3005](https://github.com/open-mmlab/mmpose/pull/3005))
+- Add RTMW3D for 3D wholebody pose estimation task ([#3037](https://github.com/open-mmlab/mmpose/pull/3037))
+
+**Improvements**
+
+- In browse dataset : CombinedDataset element are now browse in turn, and image saved into their dataset name folder ([#2985](https://github.com/open-mmlab/mmpose/pull/2985))
+
+**Bug Fixes**
+
+- Fix loss computation in MSPNHead ([#2993](https://github.com/open-mmlab/mmpose/pull/2993))
+- Fix bug in inferencer ([#2966](https://github.com/open-mmlab/mmpose/pull/2966))
+- Make category_id in CocoWholeBodyDataset as numpy.array ([#2963](https://github.com/open-mmlab/mmpose/pull/2963))
+
+**Documentation**
+
+- Add rtmlib examples ([#2923](https://github.com/open-mmlab/mmpose/pull/2923))
+- Fix readthedocs configuration ([#2979](https://github.com/open-mmlab/mmpose/pull/2979))
+- Add more detailed comments ([#2982](https://github.com/open-mmlab/mmpose/pull/2982))
+- Improve documentation folder structure of ExLPose ([#2977](https://github.com/open-mmlab/mmpose/pull/2977))
+
+**New Contributors**
+
+- @AntDum made their first contribution in https://github.com/open-mmlab/mmpose/pull/2958
+- @Yanyirong made their first contribution in https://github.com/open-mmlab/mmpose/pull/2961
+- @drazicmartin made their first contribution in https://github.com/open-mmlab/mmpose/pull/2977
+- @KeqiangSun made their first contribution in https://github.com/open-mmlab/mmpose/pull/3005
+- @jitrc made their first contribution in https://github.com/open-mmlab/mmpose/pull/3004
+- @zgjja made their first contribution in https://github.com/open-mmlab/mmpose/pull/2963
+- @jibranbinsaleem made their first contribution in https://github.com/open-mmlab/mmpose/pull/3027
+- @cpunion made their first contribution in https://github.com/open-mmlab/mmpose/pull/3026
+
 ## **v1.3.1 (11/01/2024)**
 
 Fix the bug when downloading config and checkpoint using `mim` (see [Issue #2918](https://github.com/open-mmlab/mmpose/issues/2918)).
