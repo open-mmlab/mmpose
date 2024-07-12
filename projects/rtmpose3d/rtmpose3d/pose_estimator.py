@@ -67,7 +67,7 @@ class TopdownPoseEstimator3D(TopdownPoseEstimator):
                 c = np.array(camera_params['c'])
             else:
                 f = np.array([1145.04940459, 1143.78109572])
-                c = np.array(data_sample.ori_shape)
+                c = np.array(data_sample.ori_shape) / 2
             kpts_pixel = np.concatenate([
                 keypoints_2d,
                 (keypoints_3d[..., 2] + gt_instances.root_z)[..., None]

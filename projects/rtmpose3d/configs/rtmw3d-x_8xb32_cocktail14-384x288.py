@@ -128,9 +128,8 @@ model = dict(
                 loss_weight=2.0)
         ],
         decoder=codec),
-    test_cfg=dict(flip_test=False, mode='2d')
-    # test_cfg=dict(flip_test=False)
-)
+    # test_cfg=dict(flip_test=False, mode='2d')
+    test_cfg=dict(flip_test=False))
 
 # base dataset settings
 data_mode = 'topdown'

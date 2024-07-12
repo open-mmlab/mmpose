@@ -18,6 +18,8 @@ class SimCC3DLabel(BaseKeypointCodec):
     Human Pose Estimation`_ by Li et al (2022) for more details.
     Old name: SimDR
 
+    We generate the SimCC label for 3D keypoint estimation.
+
     Note:
 
         - instance number: N
@@ -93,6 +95,7 @@ class SimCC3DLabel(BaseKeypointCodec):
             root_index, tuple) else [root_index]
 
         # Mean value of the root z-axis of datasets
+        # These values are statistics from the training set
         self.root_z = [5.14388]
         self.z_range = z_range if z_range is not None else 2.1744869
 
