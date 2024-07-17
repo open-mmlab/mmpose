@@ -1,5 +1,8 @@
 # RTMPose3D: Real-Time 3D Pose Estimation toolkit based on RTMPose
 
+> ***Technical Report***:
+> [RTMW: Real-Time Multi-Person 2D and 3D Whole-body Pose Estimation](https://arxiv.org/abs/2407.08634)
+
 ## Abstract
 
 RTMPose3D is a toolkit for real-time 3D pose estimation. It is based on the RTMPose model, which is a 2D pose estimation model that is capable of predicting 2D keypoints and body part associations in real-time. RTMPose3D extends RTMPose by adding a 3D pose estimation branch that can predict 3D keypoints from images directly.
