@@ -1279,3 +1279,14 @@ If you find RTMPose useful in your research, please consider cite:
     year={2020}
 }
 ```
+
+if you used the whole-body model RTMW, please also cite:
+
+```bibtex
+@article{jiang2024rtmw,
+  title={RTMW: Real-Time Multi-Person 2D and 3D Whole-body Pose Estimation},
+  author={Jiang, Tao and Xie, Xinchen and Li, Yining},
+  journal={arXiv preprint arXiv:2407.08634},
+  year={2024}
+}
+```
