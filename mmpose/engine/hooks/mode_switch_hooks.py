@@ -2,6 +2,7 @@
 import copy
 from typing import Dict, Sequence
 
+import torch.nn as nn
 from mmengine.hooks import Hook
 from mmengine.model import is_model_wrapper
 from mmengine.runner import Runner
@@ -38,6 +39,7 @@ class YOLOXPoseModeSwitchHook(Hook):
         self.num_last_epochs = num_last_epochs
         self.new_train_dataset = new_train_dataset
         self.new_train_pipeline = new_train_pipeline
+        self.switched = False
 
     def _modify_dataloader(self, runner: Runner):
         """Modify dataloader with new dataset and pipeline configurations."""
@@ -60,10 +62,12 @@ class YOLOXPoseModeSwitchHook(Hook):
         if is_model_wrapper(model):
             model = model.module
 
-        if epoch + 1 == runner.max_epochs - self.num_last_epochs:
+        if self.switched is False and (
+                epoch + 1 >= runner.max_epochs - self.num_last_epochs):
             self._modify_dataloader(runner)
             runner.logger.info('Added additional reg loss now!')
             model.head.use_aux_loss = True
+            self.switched = True
 
 
 @HOOKS.register_module()
@@ -89,6 +93,21 @@ class RTMOModeSwitchHook(Hook):
 
     def __init__(self, epoch_attributes: Dict[int, Dict]):
         self.epoch_attributes = epoch_attributes
+        self.handled_resume = False
+
+    def handle_resume(self, runner: Runner, model: nn.Module,
+                      resumed_epoch: int):
+        """Iter over all the previous batch size when training is resumed to
+        apply each epoch attributes modification in order."""
+        for epoch in self.epoch_attributes.keys():
+            if epoch >= resumed_epoch:
+                break
+
+            for key, value in self.epoch_attributes[epoch].items():
+                rsetattr(model.head, key, value)
+                runner.logger.info(
+                    f'Change model.head.{key} to {rgetattr(model.head, key)}')
+        self.handled_resume = True
 
     def before_train_epoch(self, runner: Runner):
         """Method called before each training epoch.
