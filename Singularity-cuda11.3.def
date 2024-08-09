@@ -1,0 +1,43 @@
+Bootstrap: debootstrap
+OSVersion: bionic
+MirrorURL: http://archive.ubuntu.com/ubuntu/
+
+%environment
+    TZ=UTC
+    DEBIAN_FRONTEND=noninteractive
+    export PATH=/opt/miniconda3/bin:$PATH
+    export BASH_ENV=/opt/etc/bashrc
+    source /opt/etc/bashrc
+
+%post
+    export TZ=UTC
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y wget gnupg
+    rm -rf /var/lib/apt/lists/*
+    mkdir -p /opt/etc
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -p /opt/miniconda3 -b && rm -f Miniconda3-latest-Linux-x86_64.sh
+    export PATH=/opt/miniconda3/bin:$PATH
+    conda create -y -n py310 python=3.10
+    echo -e "#! /bin/bash\n\n# script to activate the conda environment" > ~/.bashrc
+    conda init bash
+    echo -e "\nconda activate py310" >> ~/.bashrc
+    cp ~/.bashrc /opt/etc/bashrc
+    . /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate py310
+    python --version
+    pip --version
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+    mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+    wget https://developer.download.nvidia.com/compute/cuda/11.3.0/local_installers/cuda-repo-ubuntu1804-11-3-local_11.3.0-465.19.01-1_amd64.deb
+    dpkg -i cuda-repo-ubuntu1804-11-3-local_11.3.0-465.19.01-1_amd64.deb
+    apt-key add /var/cuda-repo-ubuntu1804-11-3-local/7fa2af80.pub
+    apt-get update
+    apt-get -y install cuda
+    pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+    pip install -U openmim
+    mim install mmengine
+    mim install "mmcv>=2.0.1"
+
+    echo "You can start to use MMPose!!"
