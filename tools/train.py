@@ -16,6 +16,8 @@ from mmpose.datasets import build_dataset
 from mmpose.models import build_posenet
 from mmpose.utils import collect_env, get_root_logger
 
+import shutil
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a pose model')
@@ -109,6 +111,11 @@ def main():
 
     # create work_dir
     mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
+
+    # Copy the config file to the work_dir
+    config_dst = osp.join(cfg.work_dir, osp.basename(args.config))
+    shutil.copy(args.config, config_dst)
+
     # init the logger before other steps
     timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
     log_file = osp.join(cfg.work_dir, f'{timestamp}.log')
