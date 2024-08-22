@@ -177,6 +177,32 @@ class TopDownGetRandomScaleRotation:
 
 
 @PIPELINES.register_module()
+class TopDownEnlargeBbox:
+    """Enlarge the bounding box by a fixed percentage.
+
+    Required key: 'scale'. Modifies key: 'scale'.
+
+    Args:
+        enlarge_factor (float): The factor by which to enlarge the bounding box.
+                                For example, 0.25 will increase the bbox size by 25%.
+    """
+
+    def __init__(self, enlarge_factor=0.25):
+        self.enlarge_factor = enlarge_factor
+
+    def __call__(self, results):
+        """Enlarge the bounding box by a fixed percentage."""
+        s = results['scale']
+
+        # Apply the enlargement factor
+        s = s * (1 + self.enlarge_factor)
+
+        results['scale'] = s
+
+        return results
+
+
+@PIPELINES.register_module()
 class TopDownAffine:
     """Affine transform the image to make input.
 
