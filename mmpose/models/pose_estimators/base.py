@@ -158,6 +158,9 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
             if self.metainfo is not None:
                 for data_sample in data_samples:
                     data_sample.set_metainfo(self.metainfo)
+            param = next(self.backbone.parameters())
+            if param.is_cuda and param.dtype == torch.float16:
+                inputs = inputs.half()
             return self.predict(inputs, data_samples)
         elif mode == 'tensor':
             return self._forward(inputs)
