@@ -20,12 +20,21 @@ def parse_args():
         type=str,
         default=['meta', 'state_dict'],
         help='keys to save in published checkpoint (default: meta state_dict)')
+    parser.add_argument(
+        '--float16',
+        action='store_true',
+        default=False,
+        help='Whether save model as float16')
     args = parser.parse_args()
     return args
 
 
-def process_checkpoint(in_file, out_file, save_keys=['meta', 'state_dict']):
+def process_checkpoint(in_file,
+                       out_file,
+                       save_keys=['meta', 'state_dict'],
+                       float16=False):
     checkpoint = torch.load(in_file, map_location='cpu')
+    checkpoint['meta']['float16'] = float16
 
     # only keep `meta` and `state_dict` for smaller file size
     ckpt_keys = list(checkpoint.keys())
@@ -40,6 +49,17 @@ def process_checkpoint(in_file, out_file, save_keys=['meta', 'state_dict']):
 
     # if it is necessary to remove some sensitive data in checkpoint['meta'],
     # add the code here.
+
+    if float16:
+        print(save_keys)
+        if 'meta' not in save_keys:
+            raise ValueError(
+                'Key `meta` must be in save_keys to save model as float16. '
+                'Change float16 to False or add `meta` in save_keys.')
+        print_log('Saving model as float16.', logger='current')
+        for key in checkpoint['state_dict'].keys():
+            checkpoint['state_dict'][key] = checkpoint['state_dict'][key].half(
+            )
 
     if digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
         torch.save(checkpoint, out_file, _use_new_zipfile_serialization=False)
@@ -58,7 +78,8 @@ def process_checkpoint(in_file, out_file, save_keys=['meta', 'state_dict']):
 
 def main():
     args = parse_args()
-    process_checkpoint(args.in_file, args.out_file, args.save_keys)
+    process_checkpoint(args.in_file, args.out_file, args.save_keys,
+                       args.float16)
 
 
 if __name__ == '__main__':
