@@ -2,7 +2,7 @@ coverage
 flake8
 interrogate
 isort==4.3.21
-numpy==1.26.4
+numpy==1.21.6
 parameterized
 pytest
 pytest-runner
