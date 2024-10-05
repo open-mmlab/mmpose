@@ -25,9 +25,9 @@ class SimpleMPJPE(BaseMetric):
             ground truth. Supported options are:
 
                 - ``'mpjpe'``: no alignment will be applied
-                - ``'p-mpjpe'``: align in the least-square sense in scale
-                - ``'n-mpjpe'``: align in the least-square sense in
-                    scale, rotation, and translation.
+                - ``'p-mpjpe'``: align in the least-square sense in scale,
+                    rotation, and translation.
+                - ``'n-mpjpe'``: align in the least-square sense in scale.
 
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
