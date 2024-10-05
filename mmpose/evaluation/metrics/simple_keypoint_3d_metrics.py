@@ -18,7 +18,7 @@ class SimpleMPJPE(BaseMetric):
     Note:
         - length of dataset: N
         - num_keypoints: K
-        - number of keypoint dimensions: D (typically D = 2)
+        - number of keypoint dimensions: D (typically D = 3)
 
     Args:
         mode (str): Method to align the prediction with the
