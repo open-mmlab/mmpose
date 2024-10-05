@@ -36,8 +36,6 @@ class SimpleMPJPE(BaseMetric):
             names to disambiguate homonymous metrics of different evaluators.
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
-        skip_list (list, optional): The list of subject and action combinations
-            to be skipped. Default: [].
     """
 
     ALIGNMENT = {'mpjpe': 'none', 'p-mpjpe': 'procrustes', 'n-mpjpe': 'scale'}
@@ -45,8 +43,7 @@ class SimpleMPJPE(BaseMetric):
     def __init__(self,
                  mode: str = 'mpjpe',
                  collect_device: str = 'cpu',
-                 prefix: Optional[str] = None,
-                 skip_list: List[str] = []) -> None:
+                 prefix: Optional[str] = None) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
         allowed_modes = self.ALIGNMENT.keys()
         if mode not in allowed_modes:
@@ -54,7 +51,6 @@ class SimpleMPJPE(BaseMetric):
                            f"'n-mpjpe', but got '{mode}'.")
 
         self.mode = mode
-        self.skip_list = skip_list
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
