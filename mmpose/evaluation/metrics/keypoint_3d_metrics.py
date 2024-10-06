@@ -79,7 +79,7 @@ class MPJPE(BaseMetric):
             gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [T, K, D]
             gt_coords = gt['lifting_target']
-            # ground truth keypoints_visible, [T, K, 1]
+            # ground truth keypoints_visible, [T, K]
             mask = gt['lifting_target_visible'].astype(bool).reshape(
                 gt_coords.shape[0], -1)
             # instance action
