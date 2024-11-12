@@ -12,6 +12,10 @@ from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
+from mmpose.core.evaluation.top_down_eval import (
+    keypoint_pck_accuracy, keypoint_auc, keypoint_epe, keypoint_nme
+)
+
 n = 7
 @DATASETS.register_module()
 class LiftedForkDataset7KP(TopDownBaseDataset):
@@ -323,7 +327,7 @@ class LiftedForkDataset7KP(TopDownBaseDataset):
             dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['mAP']
+        allowed_metrics = ['mAP', 'PCK', 'AUC', 'EPE', 'NME']
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
@@ -331,6 +335,7 @@ class LiftedForkDataset7KP(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = defaultdict(list)
+        kpts2 = []
 
         for output in outputs:
             preds = output['preds']
@@ -350,6 +355,21 @@ class LiftedForkDataset7KP(TopDownBaseDataset):
                     'image_id': image_id,
                     'bbox_id': bbox_ids[i]
                 })
+                kpts2.append({
+                    'keypoints': preds[i].tolist(),
+                    'center': boxes[i][0:2].tolist(),
+                    'scale': boxes[i][2:4].tolist(),
+                    'area': float(boxes[i][4]),
+                    'score': float(boxes[i][5]),
+                    'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
+                })
+        
+        kpts2 = self._base_sort_and_unique_bboxes(kpts2)
+        res_file2 = os.path.join(res_folder, 'result_keyptoints2.json')
+        self._base_write_keypoint_results(kpts2, res_file2)
+        additional_info = self._report_metric(res_file2, metrics)
+
         kpts = self._sort_and_unique_bboxes(kpts)
 
         # rescoring and oks nms
@@ -382,10 +402,113 @@ class LiftedForkDataset7KP(TopDownBaseDataset):
 
         self._write_coco_keypoint_results(valid_kpts, res_file)
 
-        info_str = self._do_python_keypoint_eval(res_file)
+        info_str_general = self._do_python_keypoint_eval(res_file)
+        info_str_per_keypoint = self._do_python_keypoint_eval_per_keypoint(res_file)
+
+        info_str = info_str_general + info_str_per_keypoint
+        info_str.extend(additional_info)
         name_value = OrderedDict(info_str)
 
         return name_value
+    
+    def _report_metric(self, res_file, metrics, pck_thr=0.05, auc_nor=30):
+        """Keypoint evaluation.
+
+        Args:
+            res_file (str): Json file stored prediction results.
+            metrics (str | list[str]): Metric to be performed.
+                Options: 'PCK', 'AUC', 'EPE', 'mAP', 'NME'.
+            pck_thr (float): PCK threshold, default as 0.05.
+            auc_nor (float): AUC normalization factor, default as 30 pixel.
+
+        Returns:
+            list: Evaluation results for evaluation metric.
+        """
+        info_str = []
+
+        with open(res_file, 'r') as fin:
+            preds = json.load(fin)
+        assert len(preds) == len(self.db), f"--- no match. preds {len(preds)} db {len(self.db)}"
+
+        outputs = []
+        gts = []
+        masks = []
+        threshold_bbox = []
+
+        for pred, item in zip(preds, self.db):
+            outputs.append(np.array(pred['keypoints'])[:, :-1])
+            gts.append(np.array(item['joints_3d'])[:, :-1])
+            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
+            if 'PCK' in metrics:
+                bbox = np.array(item['bbox'])
+                bbox_thr = np.max(bbox[2:])
+                threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
+
+        outputs = np.array(outputs)
+        gts = np.array(gts)
+        masks = np.array(masks)
+        threshold_bbox = np.array(threshold_bbox)
+
+        if 'PCK' in metrics:
+            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr, threshold_bbox)
+            info_str.append(('PCK', pck))
+
+        if 'AUC' in metrics:
+            info_str.append(('AUC', keypoint_auc(outputs, gts, masks, auc_nor)))
+
+        if 'EPE' in metrics:
+            info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
+
+            keypoint_names = [
+                'rear_left', 'rear_right', 'front_left', 'front_right',
+                'L_Fork', 'R_Fork', 'C_Fork'
+            ]
+
+            try:
+                for kp_idx in range(outputs.shape[1]):
+                    kp_name = keypoint_names[kp_idx]
+                    kp_epe = np.mean(np.sqrt(np.sum((outputs[:, kp_idx, :] - gts[:, kp_idx, :])**2, axis=1)))
+                    info_str.append((f'EPE_{kp_name}', kp_epe))
+            except Exception:
+                print("outputs.shape", outputs.shape)
+
+        if 'NME' in metrics:  # WARN! not sure
+            normalize_factor = self._get_normalize_factor(gts)
+            info_str.append(('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
+
+        return info_str
+
+    def _base_write_keypoint_results(self, keypoints, res_file):
+        """Write results into a json file."""
+
+        with open(res_file, 'w') as f:
+            json.dump(keypoints, f, sort_keys=True, indent=4)
+
+    def _base_sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        kpts = sorted(kpts, key=lambda x: x[key])
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i][key] == kpts[i - 1][key]:
+                # del kpts[i]
+                pass
+
+        return kpts
+
+    def _get_normalize_factor(self, gts):
+        """Get inter-ocular distance as the normalize factor, measured as the
+        Euclidean distance between the outer corners of the eyes.
+
+        Args:
+            gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+
+        Return:
+            np.ndarray[N, 2]: normalized factor
+        """
+
+        interocular = np.linalg.norm(
+            gts[:, 0, :] - gts[:, 2, :], axis=1, keepdims=True)
+        return np.tile(interocular, [1, 2])
 
     def _write_coco_keypoint_results(self, keypoints, res_file):
         """Write results into a json file."""
@@ -459,3 +582,28 @@ class LiftedForkDataset7KP(TopDownBaseDataset):
                     del kpts[img_id][i]
 
         return kpts
+
+    def _do_python_keypoint_eval_per_keypoint(self, res_file):
+        """Keypoint evaluation using COCOAPI for each keypoint."""
+        keypoint_names = [
+            'rear_left', 'rear_right', 'front_left', 'front_right',
+            'L_Fork', 'R_Fork', 'C_Fork'
+        ]
+        info_str = []
+
+        for kp_idx, kp_name in enumerate(keypoint_names):
+            coco_det = self.coco.loadRes(res_file)
+            coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas)
+            coco_eval.params.kpt_oks_sigmas = np.zeros_like(self.sigmas)
+            coco_eval.params.kpt_oks_sigmas[kp_idx] = self.sigmas[kp_idx]
+            coco_eval.params.useSegm = None
+            coco_eval.evaluate()
+            coco_eval.accumulate()
+            coco_eval.summarize()
+
+            stats_names = [
+                f'{kp_name}_AP', f'{kp_name}_AR'
+            ]
+            info_str.extend(list(zip(stats_names, coco_eval.stats)))
+
+        return info_str

@@ -3,8 +3,8 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=400)
-evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
+checkpoint_config = dict(interval=50)
+evaluation = dict(interval=10, metric=['PCK', 'AUC', 'EPE', 'mAP', 'NME'], key_indicator='AP')
 n = 7
 optimizer = dict(
     type='Adam',
@@ -17,7 +17,7 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[360, 380])
+    step=[300, 350])
 total_epochs = 400
 log_config = dict(
     interval=25,
@@ -72,21 +72,38 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='TopDownEnlargeBbox', enlarge_factor=0.1),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
-    # dict(
-    #     type='TopDownHalfBodyTransform',
-    #     num_joints_half_body=8,
-    #     prob_half_body=0.3),
-    dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=180, scale_factor=0.5, rot_prob=0.9),
+    dict(type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.1),
     dict(type='TopDownAffine'),
+    dict(
+        type='Albumentation',
+        transforms=[
+            dict(type='RandomBrightnessContrast', brightness_limit=[-0.2, 0.2], contrast_limit=[-0.2, 0.2], p=0.4),
 
+            dict(
+                type='OneOf',
+                transforms=[
+                    dict(type='MotionBlur', blur_limit=3, p=0.3),
+                    dict(type='MedianBlur', blur_limit=3, p=0.2),
+                    dict(type='Blur', blur_limit=3, p=0.2),
+                ], p=0.3),
+
+            dict(
+                type='OneOf',
+                transforms=[
+                    dict(type='GaussNoise', var_limit=(10.0, 50.0), p=0.3),
+                    dict(type='MultiplicativeNoise', multiplier=(0.9, 1.1), p=0.3),
+                ], p=0.4),
+            
+            dict(type='HueSaturationValue', hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=10, p=0.4),
+        ]),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=3),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -98,6 +115,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='TopDownEnlargeBbox', enlarge_factor=0.1),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -117,7 +135,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/demodesk_lifted_fork_7p'
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=16,
     workers_per_gpu=2,
     train=dict(
         type='LiftedForkDataset7KP',
