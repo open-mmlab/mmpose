@@ -34,3 +34,4 @@ RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
 RUN mim install "mmdet>=3.1.0"
 RUN pip install future tensorboard albumentations
+RUN pip install setuptools==59.5.0
