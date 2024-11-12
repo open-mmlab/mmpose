@@ -132,3 +132,6 @@ docs/**/modelzoo.md
 *.pth
 
 *.DS_Store
+
+data/*
+work_dirs/*

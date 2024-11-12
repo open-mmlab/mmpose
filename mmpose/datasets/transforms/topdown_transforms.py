@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 from mmcv.transforms import BaseTransform
 from mmengine import is_seq_of
+import os.path as osp
 
 from mmpose.registry import TRANSFORMS
 from mmpose.structures.bbox import get_udp_warp_matrix, get_warp_matrix
@@ -51,6 +52,7 @@ class TopdownAffine(BaseTransform):
 
         self.input_size = input_size
         self.use_udp = use_udp
+        self.idx = 0
 
     @staticmethod
     def _fix_aspect_ratio(bbox_scale: np.ndarray, aspect_ratio: float):
@@ -134,6 +136,23 @@ class TopdownAffine(BaseTransform):
         results['input_center'] = center
         results['input_scale'] = scale
 
+        # output_dir = 'augmented_images'
+        # img_filename = f'aug_{self.idx}.jpg'
+        # self.idx += 1
+
+        # img = results['img']
+        # keypoints = results['transformed_keypoints']
+
+        # for obj in keypoints:
+        #     for kp in obj:
+        #         print(kp)
+        #         x, y = kp
+        #         v = 1
+        #         if v > 0:  # Visibility flag
+        #             cv2.circle(img, (int(x), int(y)), 3, (0, 255, 0), -1)
+
+        # cv2.imwrite(osp.join(output_dir, img_filename), img)
+        # print(f'========== {self.idx}')
         return results
 
     def __repr__(self) -> str:

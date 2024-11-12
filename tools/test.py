@@ -71,6 +71,11 @@ def merge_args(cfg, args):
     cfg.launcher = args.launcher
     cfg.load_from = args.checkpoint
 
+    args.show, args.badcase, args.show_dir, args.dump = False, False, None, None
+    cfg.show, cfg.badcase, cfg.show_dir, cfg.dump = False, False, None, None
+    cfg.default_hooks.badcase.enable = False
+    cfg.default_hooks.visualization.enable = False
+
     # -------------------- work directory --------------------
     # work_dir is determined in this priority: CLI > segment in file > filename
     if args.work_dir is not None:
@@ -83,6 +88,7 @@ def merge_args(cfg, args):
 
     # -------------------- visualization --------------------
     if (args.show and not args.badcase) or (args.show_dir is not None):
+        print(f"---------------------- visualization {args.show} {args.show_dir}")
         assert 'visualization' in cfg.default_hooks, \
             'PoseVisualizationHook is not set in the ' \
             '`default_hooks` field of config. Please set ' \
@@ -98,6 +104,7 @@ def merge_args(cfg, args):
 
     # -------------------- badcase analyze --------------------
     if args.badcase:
+        print(f"---------------------- badcase {args.badcase}")
         assert 'badcase' in cfg.default_hooks, \
             'BadcaseAnalyzeHook is not set in the ' \
             '`default_hooks` field of config. Please set ' \
@@ -123,6 +130,7 @@ def merge_args(cfg, args):
 
     # -------------------- Dump predictions --------------------
     if args.dump is not None:
+        print(f"---------------------- dump {args.dump}")
         assert args.dump.endswith(('.pkl', '.pickle')), \
             'The dump file must be a pkl file.'
         dump_metric = dict(type='DumpResults', out_file_path=args.dump)
@@ -134,6 +142,13 @@ def merge_args(cfg, args):
     # -------------------- Other arguments --------------------
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+
+    args.show, args.badcase, args.show_dir, args.dump = False, False, None, None
+    cfg.show, cfg.badcase, cfg.show_dir, cfg.dump = False, False, None, None
+    cfg.default_hooks.badcase.enable = False
+    cfg.default_hooks.visualization.enable = False
+    cfg.vis_backends = None
+    del cfg.visualizer.vis_backends[1]
 
     return cfg
 

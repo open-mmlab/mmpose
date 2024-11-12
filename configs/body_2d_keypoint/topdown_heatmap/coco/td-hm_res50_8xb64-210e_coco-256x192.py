@@ -1,7 +1,7 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=210, val_interval=10)
+train_cfg = dict(max_epochs=300, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
@@ -17,17 +17,33 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=210,
-        milestones=[170, 200],
+        end=300,
+        milestones=[200, 250],
         gamma=0.1,
         by_epoch=True)
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=64)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(
+    checkpoint=dict(save_best='coco/AP', rule='greater'),
+)
+
+custom_hooks = [
+    # dict(type='PCKAccuracyTrainHook', interval=10, thr=0.05),
+    dict(
+        type='EarlyStoppingHook',
+        monitor='5pr_/PCK',
+        rule='greater',
+        min_delta=0.001,
+        patience=20,
+        stopping_threshold=None,
+        strict=False,
+        check_finite=True
+    ),
+]
 
 # codec settings
 codec = dict(
@@ -43,13 +59,13 @@ model = dict(
         bgr_to_rgb=True),
     backbone=dict(
         type='ResNet',
-        depth=50,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
+        depth=18,
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet18'),
     ),
     head=dict(
         type='HeatmapHead',
-        in_channels=2048,
-        out_channels=17,
+        in_channels=512,
+        out_channels=7,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
@@ -61,16 +77,39 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+# data_root = 'data/2144_split_exported_data_project_id_422/'
+# data_root = 'data/2769_split_exported_data_project_id_422/'
+data_root = "data/joined/"
 
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(
+        type='Albumentation',
+        transforms=[
+            dict(type='RandomBrightnessContrast', brightness_limit=[-0.4, 0.4], contrast_limit=[-0.4, 0.4], p=0.6),
+
+            dict(
+                type='OneOf',
+                transforms=[
+                    dict(type='MotionBlur', blur_limit=5, p=0.3),
+                    dict(type='MedianBlur', blur_limit=5, p=0.3),
+                    dict(type='Blur', blur_limit=5, p=0.3),
+                ], p=0.4),
+
+            dict(
+                type='OneOf',
+                transforms=[
+                    dict(type='GaussNoise', var_limit=(10.0, 50.0), p=0.4),
+                    dict(type='MultiplicativeNoise', multiplier=(0.9, 1.1), p=0.4),
+                ], p=0.4),
+            
+            dict(type='HueSaturationValue', hue_shift_limit=20, sat_shift_limit=20, val_shift_limit=20, p=0.5),
+        ]),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
@@ -84,20 +123,20 @@ val_pipeline = [
 # data loaders
 train_dataloader = dict(
     batch_size=64,
-    num_workers=2,
+    num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_train2017.json',
+        ann_file='annotations/forklift_keypoints_train2017.json',
         data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
     batch_size=32,
-    num_workers=2,
+    num_workers=4,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
@@ -105,9 +144,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_val2017.json',
-        bbox_file='data/coco/person_detection_results/'
-        'COCO_val2017_detections_AP_H_56_person.json',
+        ann_file='annotations/forklift_keypoints_train2017.json',
+        bbox_file='',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=val_pipeline,
@@ -115,7 +153,25 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # evaluators
-val_evaluator = dict(
-    type='CocoMetric',
-    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
+val_evaluator = [
+    dict(
+        type='CocoMetric',
+        ann_file=data_root + 'annotations/forklift_keypoints_train2017.json'
+    ),
+    dict(
+        type='EPE',
+    ),
+    dict(
+        type='PCKAccuracy',
+        prefix="5pr_",
+    ),
+    dict(
+        type='PCKAccuracy',
+        thr=0.1,
+        prefix="10pr_",
+    ),
+    dict(
+        type='AUC',
+    ),
+]
 test_evaluator = val_evaluator
