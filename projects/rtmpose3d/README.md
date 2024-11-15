@@ -23,7 +23,7 @@ Please refer to our [technical report](https://arxiv.org/pdf/2407.08634) for mor
 ```bash
 cd /path/to/mmpose/projects/rtmpose3d
 export PYTHONPATH=$(pwd):$PYTHONPATH
-python body3d_img2pose_demo.py configs/rtmdet_m_640-8xb32_coco-person.py https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth configs\rtmw3d-l_8xb64_cocktail14-384x288.py rtmw3d-l_cock14-0d4ad840_20240422.pth --input /path/to/image --output-root /path/to/output
+python body3d_img2pose_demo.py demo/rtmdet_m_640-8xb32_coco-person.py https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth configs\rtmw3d-l_8xb64_cocktail14-384x288.py rtmw3d-l_cock14-0d4ad840_20240422.pth --input /path/to/image --output-root /path/to/output
 ```
 
 ## 📜 Citation [🔝](#-table-of-contents)
