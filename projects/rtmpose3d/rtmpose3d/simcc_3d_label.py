@@ -210,7 +210,7 @@ class SimCC3DLabel(BaseKeypointCodec):
         self,
         keypoints: np.ndarray,
         keypoints_visible: Optional[np.ndarray] = None
-    ) -> tuple[ndarray, ndarray, ndarray, ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """Encoding keypoints into SimCC labels with Gaussian Label Smoothing
         strategy."""
 

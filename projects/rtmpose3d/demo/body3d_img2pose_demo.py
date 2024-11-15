@@ -84,7 +84,7 @@ def parse_args():
         default=False,
         help='Whether to save predicted results')
     parser.add_argument(
-        '--device', default='cuda:0', help='Device used for inference')
+        '--device', default='cpu', help='Device used for inference')
     parser.add_argument(
         '--det-cat-id',
         type=int,
@@ -360,6 +360,7 @@ def main():
         frame_idx = 0
 
         while video.isOpened():
+            start_time = time.time()
             success, frame = video.read()
             frame_idx += 1
 
@@ -399,6 +400,9 @@ def main():
                                                    (frame_vis.shape[1],
                                                     frame_vis.shape[0]))
                 video_writer.write(mmcv.rgb2bgr(frame_vis))
+
+            print(f'delta time: {time.time() - start_time}')
+            start_time = time.time()
 
             if args.show:
                 # press ESC to exit
