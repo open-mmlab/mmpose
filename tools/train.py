@@ -69,6 +69,14 @@ def parse_args():
     # will pass the `--local-rank` parameter to `tools/train.py` instead
     # of `--local_rank`.
     parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
+
+    # Add the max-epochs argument
+    parser.add_argument(
+        '--max-epochs',
+        type=int,
+        default=200,
+        help='Train for how many epochs.')
+
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -133,6 +141,10 @@ def merge_args(cfg, args):
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+
+    # Set max_epochs from CLI argument
+    if args.max_epochs is not None:
+        cfg.train_cfg['max_epochs'] = args.max_epochs
 
     return cfg
 
