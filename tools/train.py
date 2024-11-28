@@ -20,6 +20,11 @@ def parse_args():
         'specify, try to auto resume from the latest checkpoint '
         'in the work directory.')
     parser.add_argument(
+        '--data-root',
+        type=str,
+        help='Root directory for dataset. This will override data_root in the config file.'
+    )
+    parser.add_argument(
         '--amp',
         action='store_true',
         default=False,
@@ -69,14 +74,6 @@ def parse_args():
     # will pass the `--local-rank` parameter to `tools/train.py` instead
     # of `--local_rank`.
     parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
-
-    # Add the max-epochs argument
-    parser.add_argument(
-        '--max-epochs',
-        type=int,
-        default=200,
-        help='Train for how many epochs.')
-
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -101,6 +98,17 @@ def merge_args(cfg, args):
         # use config filename as default work_dir if cfg.work_dir is None
         cfg.work_dir = osp.join('./work_dirs',
                                 osp.splitext(osp.basename(args.config))[0])
+
+    # Update data_root
+    if args.data_root is not None:
+        cfg.train_dataloader.dataset.data_root = args.data_root
+        cfg.val_dataloader.dataset.data_root = args.data_root
+        cfg.test_dataloader.dataset.data_root = args.data_root
+
+        # Update evaluator paths if necessary
+        for evaluator in cfg.val_evaluator:
+            if 'ann_file' in evaluator:
+                evaluator['ann_file'] = osp.join(args.data_root, 'annotations/forklift_keypoints_val2017.json')
 
     # enable automatic-mixed-precision training
     if args.amp is True:
@@ -141,10 +149,6 @@ def merge_args(cfg, args):
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
-
-    # Set max_epochs from CLI argument
-    if args.max_epochs is not None:
-        cfg.train_cfg['max_epochs'] = args.max_epochs
 
     return cfg
 

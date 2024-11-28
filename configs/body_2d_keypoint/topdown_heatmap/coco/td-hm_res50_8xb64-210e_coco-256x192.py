@@ -77,8 +77,6 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-# data_root = 'data/2144_split_exported_data_project_id_422/'
-# data_root = 'data/2769_split_exported_data_project_id_422/'
 data_root = "data/joined/"
 
 # pipelines
@@ -144,7 +142,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
+        ann_file='annotations/forklift_keypoints_val2017.json',
         bbox_file='',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
@@ -156,7 +154,7 @@ test_dataloader = val_dataloader
 val_evaluator = [
     dict(
         type='CocoMetric',
-        ann_file=data_root + 'annotations/forklift_keypoints_train2017.json'
+        ann_file=data_root + 'annotations/forklift_keypoints_val2017.json'
     ),
     dict(
         type='EPE',
