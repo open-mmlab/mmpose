@@ -84,7 +84,7 @@ data_mode = 'topdown'
 #data_root = 'data/kp_id322_6_12_24/'
 # data_root = 'data/bruggen_9_12_kp/'
 # data_root = 'data/16_12/'
-data_root = 'data/17_pallet_kp/'
+data_root = 'data/wurth_kp_18_12_24/'
 
 # pipelines
 train_pipeline = [

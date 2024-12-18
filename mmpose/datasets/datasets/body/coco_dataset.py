@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Callable, List, Sequence
 from mmpose.registry import DATASETS
 from ..base import BaseCocoStyleDataset
 
@@ -67,6 +68,16 @@ class CocoDataset(BaseCocoStyleDataset):
         max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
             None img. The maximum extra number of cycles to get a valid
             image. Default: 1000.
-    """
+    """    
 
-    METAINFO: dict = dict(from_file='configs/_base_/datasets/coco.py')
+
+    def __init__(self, num_keypoints, *args, **kwargs):
+        if isinstance(num_keypoints, int):
+            dataset_info_config = f'configs/_base_/datasets/coco_{num_keypoints}kp.py'
+        else:
+            dataset_info_config = 'configs/_base_/datasets/coco.py'
+            print(f"Please specify num_keypoints in CocoDataset, used dataset config: {dataset_info_config}")
+
+        super().__init__(metainfo= dict(from_file=dataset_info_config),*args, **kwargs)
+
+
