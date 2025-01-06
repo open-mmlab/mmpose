@@ -7,10 +7,12 @@ num_keypoints =4 # CHECK IT PLZ
 train_cfg = dict(max_epochs=300, val_interval=10)
 
 # optimizer
-optim_wrapper = dict(optimizer=dict(
-    type='Adam',
-    lr=5e-4,
-))
+optim_wrapper = dict(
+    optimizer=dict(
+        type='Adam',
+        lr=5e-4,
+    )
+)
 # learning policy
 param_scheduler = [
     dict(
