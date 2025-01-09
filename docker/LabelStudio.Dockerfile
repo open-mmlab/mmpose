@@ -1,15 +1,15 @@
-ARG PYTORCH="1.8.1"
-ARG CUDA="10.2"
-ARG CUDNN="7"
+# It is important that cuda supports the video card architectures that are important to us:
+# NVIDIA GeForce RTX 3060 / RTX 3060 Ti - sm_86
+# NVIDIA GeForce RTX 2080 Ti            - sm_75
+# NVIDIA A100-SXM4-40GB                 - sm_80
 
-# TODO: Prepare logic for buildings aws image using this versions
-ARG AWS_PYTORCH="1.9.0"
-ARG AWS_CUDA="11.1"
-ARG AWS_CUDNN="8"
+ARG PYTORCH="1.9.0"
+ARG CUDA="11.1"
+ARG CUDNN="8"
 
 FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn${CUDNN}-devel
 
-ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0+PTX"
+ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0+PTX 8.6"
 ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 ENV CMAKE_PREFIX_PATH="$(dirname $(which conda))/../"
 
@@ -17,7 +17,8 @@ ENV CMAKE_PREFIX_PATH="$(dirname $(which conda))/../"
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
 
-RUN apt-get update && apt-get install -y git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libgl1-mesa-glx\
+RUN apt-get update && apt-get install -y \
+    git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libgl1-mesa-glx \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

@@ -18,7 +18,7 @@ def make_mmpose_config(
         timer=dict(type='IterTimerHook'),
         logger=dict(type='LoggerHook', interval=50),
         param_scheduler=dict(type='ParamSchedulerHook'),
-        checkpoint=dict(type='CheckpointHook', interval=10, max_keep_ckpts=1),
+        checkpoint=dict(type='CheckpointHook', interval=10, max_keep_ckpts=1, save_best='coco/AP', rule='greater'),
         sampler_seed=dict(type='DistSamplerSeedHook'),
         visualization=dict(type='PoseVisualizationHook', enable=True),
         badcase=dict(
@@ -88,11 +88,6 @@ def make_mmpose_config(
 
     # automatically scaling LR based on the actual training batch size
     cfg.auto_scale_lr = dict(base_batch_size=64)
-
-    # hooks
-    cfg.default_hooks = dict(
-        checkpoint=dict(type='CheckpointHook', save_best='coco/AP', rule='greater'),
-    )
 
     # codec settings
     cfg.codec = dict(
