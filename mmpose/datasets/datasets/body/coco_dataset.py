@@ -1,36 +1,45 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
+import random
 from typing import Callable, List, Sequence
 from mmpose.registry import DATASETS
 from ..base import BaseCocoStyleDataset
 
 
+def generate_simple_dataset_info(labels: list) -> dict:
+    dataset_info = dict(
+        dataset_name='coco',
+        paper_info=dict(
+            author='',
+            title=f'Auto: {len(labels)} keypoints',
+            container='',
+            year='',
+            homepage='',
+        ),
+        keypoint_info={},
+        skeleton_info={},
+        joint_weights=[1.0] * len(labels),
+        sigmas=[0.05] * len(labels)
+    )
+
+    # Generate keypoint_info
+    last_label = labels[-1]
+    for idx, label in enumerate(labels):
+        dataset_info['keypoint_info'][idx] = dict(
+            name=label,
+            id=idx,
+            color=[random.randint(0, 255) for _ in range(3)],  # Random RGB color
+            type='upper',
+            swap=last_label
+        )
+        last_label = label
+
+    return dataset_info
+
+
 @DATASETS.register_module()
 class CocoDataset(BaseCocoStyleDataset):
-    """COCO dataset for pose estimation.
-
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
-    More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
-
-    COCO keypoints::
-
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+    """COCO dataset for keypoints estimation.
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -68,16 +77,22 @@ class CocoDataset(BaseCocoStyleDataset):
         max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
             None img. The maximum extra number of cycles to get a valid
             image. Default: 1000.
-    """    
+    """
 
+    def __init__(self, labels, *args, **kwargs):
+        self.default_config = 'configs/_base_/datasets/coco.py'
+        super().__init__(metainfo=self.get_dataset_info(labels), *args, **kwargs)
 
-    def __init__(self, num_keypoints, *args, **kwargs):
-        if isinstance(num_keypoints, int):
-            dataset_info_config = f'configs/_base_/datasets/coco_{num_keypoints}kp.py'
-        else:
-            dataset_info_config = 'configs/_base_/datasets/coco.py'
-            print(f"Please specify num_keypoints in CocoDataset, used dataset config: {dataset_info_config}")
+    def get_dataset_info(self, labels: list) -> dict:
+        print(f"Building dataset for labels: {labels}")
+        if not isinstance(labels, list):
+            print(f"Please specify labels in CocoDataset, used dataset config: {self.default_config}")
+            return dict(from_file=self.default_config)
 
-        super().__init__(metainfo= dict(from_file=dataset_info_config),*args, **kwargs)
+        dataset_info_path = f'configs/_base_/datasets/coco_{len(labels)}kp.py'
+        if os.path.exists(dataset_info_path):
+            print(f"Found custom dataset config: {self.default_config}")
+            return dict(from_file=dataset_info_path)
 
-
+        print(f"Dataset config not found, trying to generate automatically...")
+        return generate_simple_dataset_info(labels)

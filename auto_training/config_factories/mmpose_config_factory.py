@@ -4,7 +4,7 @@ from mmengine.config import Config
 
 def make_mmpose_config(
         data_root: str,
-        num_keypoints: int = 7,
+        classes: list,
         res: tuple = (192, 256),
 ):
 
@@ -109,7 +109,7 @@ def make_mmpose_config(
         head=dict(
             type='HeatmapHead',
             in_channels=512,
-            out_channels=num_keypoints,
+            out_channels=len(classes),
             loss=dict(type='KeypointMSELoss', use_target_weight=True),
             decoder=cfg.codec),
         test_cfg=dict(
@@ -170,7 +170,7 @@ def make_mmpose_config(
         sampler=dict(type='DefaultSampler', shuffle=True),
         dataset=dict(
             type=cfg.dataset_type,
-            num_keypoints=num_keypoints,
+            labels=classes,
             data_root=data_root,
             data_mode=cfg.data_mode,
             ann_file='annotations/forklift_keypoints_train2017.json',
@@ -185,7 +185,7 @@ def make_mmpose_config(
         sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
         dataset=dict(
             type=cfg.dataset_type,
-            num_keypoints=num_keypoints,
+            labels=classes,
             data_root=data_root,
             data_mode=cfg.data_mode,
             ann_file='annotations/forklift_keypoints_val2017.json',

@@ -53,15 +53,16 @@ def parse_args():
         default=1,
         help='visualize per interval samples.')
     parser.add_argument(
-        '--num_keypoints',
-        type=int,
-        default=7,
-        help='Number of keypoints in projects.')
-    parser.add_argument(
         '--wait-time',
         type=float,
         default=1,
         help='display time of every window. (second)')
+    parser.add_argument(
+        '--classes',
+        nargs='+',
+        required=True,
+        help='list of classes for the training'
+    )
     parser.add_argument(
         '--cfg-options',
         nargs='+',
@@ -151,7 +152,10 @@ def main():
     args = parse_args()
 
     # load config
-    cfg = make_mmpose_config(args.data_root, args.num_keypoints)
+    cfg = make_mmpose_config(
+        data_root=args.data_root,
+        classes=args.classes
+    )
 
     # merge CLI arguments to config
     cfg = merge_args(cfg, args)

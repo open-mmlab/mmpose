@@ -65,7 +65,6 @@ def main():
         img_path = os.path.join(args.img_dir, img_info['file_name'])
 
         if not os.path.exists(img_path):
-            print(f"Image not found: {img_path}")
             progress_bar.update()
             continue
 
