@@ -159,10 +159,10 @@ def main():
     cfg.dump(osp.join(cfg.work_dir, osp.basename(args.config)))
 
     # build the runner from config
-    mykytyn_runner = Runner.from_cfg(cfg)
+    runner = Runner.from_cfg(cfg)
 
     # start training
-    mykytyn_runner.train()
+    runner.train()
 
 
 if __name__ == '__main__':
