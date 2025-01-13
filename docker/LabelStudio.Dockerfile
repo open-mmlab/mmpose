@@ -33,8 +33,13 @@ RUN mim install mmengine "mmcv>=2.0.0"
 # Install MMPose
 RUN conda clean --all
 RUN git clone https://github.com/logivations/mmpose.git /mmpose
+
+# Checkout to branch (TODO: Remove after merge)
 WORKDIR /mmpose
 RUN git checkout v1.3.2-branch_v2
+RUN git pull
+
+# Install requirements
 ENV FORCE_CUDA="1"
 RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
