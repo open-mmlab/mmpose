@@ -79,6 +79,7 @@ def main():
         ann_ids = coco.getAnnIds(imgIds=[img_id])
         annotations = coco.loadAnns(ann_ids)
         person_bboxes = np.array([ann['bbox'] for ann in annotations])
+        person_bboxes = np.unique(person_bboxes, axis=0)
 
         pose_results = inference_topdown(
             model,
