@@ -93,7 +93,7 @@ def main():
             if pred_instances is not None:
                 keypoints = pred_instances.keypoints
                 scores = pred_instances.keypoint_scores
-                bbox = person_bboxes[0]  # Taking first bbox, adjust for multiple detections
+                bbox = pred_instances.bboxes[0]
 
                 # Save the bbox along with the keypoints data
                 keypoints_results.append({
