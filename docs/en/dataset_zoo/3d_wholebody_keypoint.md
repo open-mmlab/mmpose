@@ -1,4 +1,4 @@
-# 3D Body Keypoint Datasets
+# 3D Wholebody Keypoint Datasets
 
 It is recommended to symlink the dataset root to `$MMPOSE/data`.
 If your folder structure is different, you may need to change the corresponding paths in config files.
