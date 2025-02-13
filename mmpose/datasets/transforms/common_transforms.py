@@ -261,6 +261,47 @@ class RandomFlip(BaseTransform):
 
 
 @TRANSFORMS.register_module()
+class RandomBottomHalf(BaseTransform):
+    def __init__(self, threshold: float = 0.4) -> None:
+        self.threshold = threshold
+
+    def __init__(self, threshold: float = 0.4, p: float = 0.5) -> None:
+        self.threshold = threshold
+        self.prob = p
+
+    def transform(self, results: dict) -> dict:
+        """The transform function. """
+        img = results['img'].copy()
+        keypoints = results['transformed_keypoints'][0]
+
+        # Line
+        y = int(img.shape[0] - self.threshold * img.shape[0])
+
+        under_line = np.array([kp for kp in keypoints if kp[1] > y])
+
+        if len(under_line) == results['num_keypoints']:
+            height, width, _ = img.shape
+            bottom_height = int(height * 0.4)
+
+            if np.random.rand() < self.prob:
+                cv2.rectangle(img, (0, height - bottom_height), (width, height), (0, 0, 0), -1)
+
+        results['img'] = img
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(prob={self.prob}, '
+        repr_str += f'threshold={self.threshold})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
 class RandomHalfBody(BaseTransform):
     """Data augmentation with half-body transform that keeps only the upper or
     lower body at random.
@@ -1064,7 +1105,7 @@ class GenerateTarget(BaseTransform):
                     w = w * results['dataset_keypoint_weights']
             else:
                 encoded['keypoint_weights'] = encoded[
-                    'keypoint_weights'] * results['dataset_keypoint_weights']
+                                                  'keypoint_weights'] * results['dataset_keypoint_weights']
 
         results.update(encoded)
 
