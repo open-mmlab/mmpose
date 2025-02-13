@@ -73,19 +73,30 @@ dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = '/data/now/brug_mts_pallet/'
 labels = ["top_left", "top_right", "bottom_left", "bottom_right"]
+
+
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),
-    # dict(type='RandomHalfBody'),
-    # TODO: plot
-    dict(type='RandomBBoxTransform'),
+    dict(
+        type='RandomBBoxTransform',
+        rotate_factor=10.0,
+        rotate_prob=0.6
+    ),
     dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type="RandomBottomHalf", threshold=0.4, p=0.5),
     dict(
         type='Albumentation',
         transforms=[
-            dict(type='RandomBrightnessContrast', brightness_limit=[-0.2, 0.2], contrast_limit=[-0.2, 0.2], p=0.4),
+            dict(
+                type='ColorJitter',
+                brightness=[0.8, 1.2],
+                contrast=[0.8, 1.2],
+                saturation=[0.8, 1.2],
+                hue=[-0.5, 0.5],
+                p=0.4
+            ),
 
             dict(
                 type='OneOf',
@@ -101,12 +112,13 @@ train_pipeline = [
                     dict(type='GaussNoise', var_limit=(10.0, 50.0), p=0.3),
                     dict(type='MultiplicativeNoise', multiplier=(0.9, 1.1), p=0.3),
                 ], p=0.4),
-            
+
             dict(type='HueSaturationValue', hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=10, p=0.3),
         ]),
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
+
 val_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
