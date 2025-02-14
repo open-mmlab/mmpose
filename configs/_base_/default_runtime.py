@@ -32,13 +32,21 @@ env_cfg = dict(
 # visualizer
 vis_backends = [
     dict(type='LocalVisBackend'),
-    dict(type='TensorboardVisBackend'),
+    dict(type='TensorboardVisBackend')
     # dict(type='WandbVisBackend'),
 ]
 visualizer = dict(
     type='PoseLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # logger
+log_config = dict(
+    interval=25,
+    hooks=[
+        dict(type='TextLoggerHook'),
+        dict(type='TensorboardLoggerHook')
+    ]
+)
+
 log_processor = dict(
     type='LogProcessor', window_size=50, by_epoch=True, num_digits=6)
 log_level = 'INFO'

@@ -95,7 +95,7 @@ class TorchVisionWrapper(BaseTransform):
         self.transforms_dict = transforms
         self.transforms = T.Compose([self.torchvision_builder(transform) for transform in self.transforms_dict])
         self.idx = 0
-        self.save = True
+        self.save = save
     
     def torchvision_builder(self, cfg: dict):
         """
