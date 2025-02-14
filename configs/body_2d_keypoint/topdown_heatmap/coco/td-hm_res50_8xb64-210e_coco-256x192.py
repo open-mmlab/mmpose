@@ -1,8 +1,7 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['../_base_/default_runtime.py']
 
 
 num_keypoints =4 # CHECK IT PLZ
-
 
 
 # runtime
@@ -35,13 +34,9 @@ default_hooks = dict(
     checkpoint=dict(save_best='coco/AP', rule='greater'),
 )
 
-# custom_hooks = [
-    # dict(type='PCKAccuracyTrainHook', interval=10, thr=0.05),
-# ]
-
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+    type='MSRAHeatmap', input_size=(224, 224), heatmap_size=(56, 56), sigma=2)
 
 # model settings
 model = dict(
@@ -79,6 +74,7 @@ labels = ["top_left", "top_right", "bottom_left", "bottom_right"]
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
+    dict(type='RandomFlip', direction='horizontal'), # TODO ASK IS NEEDED
     dict(
         type='RandomBBoxTransform',
         rotate_factor=10.0,
@@ -137,8 +133,8 @@ train_dataloader = dict(
 	    labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='coco/train.json',
+        data_prefix=dict(img='images/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -152,9 +148,9 @@ val_dataloader = dict(
 	    labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
+        ann_file='coco/train.json',
         bbox_file='',
-        data_prefix=dict(img='val2017/'),
+        data_prefix=dict(img='images/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -164,7 +160,7 @@ test_dataloader = val_dataloader
 val_evaluator = [
     dict(
         type='CocoMetric',
-        ann_file=data_root + 'annotations/forklift_keypoints_train2017.json'
+        ann_file=data_root + 'coco/train.json'
     ),
     dict(
         type='EPE',

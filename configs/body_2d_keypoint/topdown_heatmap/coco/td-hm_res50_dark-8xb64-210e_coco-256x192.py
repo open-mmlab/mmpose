@@ -38,7 +38,7 @@ default_hooks = dict(
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(448, 448), heatmap_size=(112, 112), sigma=2)
+    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
 
 # model settings
 model = dict(
@@ -68,30 +68,21 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = '/data/new_mmpose/mmpose/data/pallet_dataset_merged/'
-
+data_root = '/data/now/brug_mts_pallet/'
+labels = ["top_left", "top_right", "bottom_left", "bottom_right"]
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
-    dict(
-        type='RandomBBoxTransform',
-        rotate_factor=10.0,
-        rotate_prob=0.6
-    ),
+    dict(type='RandomFlip', direction='horizontal'),
+    # dict(type='RandomHalfBody'),
+    # TODO: plot
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type="RandomBottomHalf", threshold=0.4, p=0.5),
     dict(
         type='Albumentation',
         transforms=[
-            dict(
-                type='ColorJitter',
-                brightness=[0.8, 1.2],
-                contrast=[0.8, 1.2],
-                saturation=[0.8, 1.2],
-                hue=[-0.5, 0.5],
-                p=0.4
-            ),
+            dict(type='RandomBrightnessContrast', brightness_limit=[-0.2, 0.2], contrast_limit=[-0.2, 0.2], p=0.4),
 
             dict(
                 type='OneOf',
@@ -113,7 +104,6 @@ train_pipeline = [
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-
 val_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
@@ -129,7 +119,7 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
-        num_keypoints=num_keypoints,
+        labels=labels,
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/forklift_keypoints_train2017.json',
@@ -144,10 +134,10 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
-        num_keypoints=num_keypoints,
+        labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_val2017.json',
+        ann_file='annotations/forklift_keypoints_train2017.json',
         bbox_file='',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
@@ -159,7 +149,7 @@ test_dataloader = val_dataloader
 val_evaluator = [
     dict(
         type='CocoMetric',
-        ann_file=data_root + 'annotations/forklift_keypoints_val2017.json'
+        ann_file=data_root + 'annotations/forklift_keypoints_train2017.json'
     ),
     dict(
         type='EPE',
