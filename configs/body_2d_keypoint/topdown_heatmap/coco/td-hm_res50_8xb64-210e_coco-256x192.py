@@ -153,7 +153,7 @@ val_dataloader = dict(
 	    num_keypoints=num_keypoints,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
+        ann_file='annotations/forklift_keypoints_val2017.json',
         bbox_file='',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
@@ -165,7 +165,7 @@ test_dataloader = val_dataloader
 val_evaluator = [
     dict(
         type='CocoMetric',
-        ann_file=data_root + 'annotations/forklift_keypoints_train2017.json'
+        ann_file=data_root + 'annotations/forklift_keypoints_val2017.json'
     ),
     dict(
         type='EPE',
