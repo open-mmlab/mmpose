@@ -64,7 +64,8 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = '/data/now/brug_mts_pallet/'
+data_root = 'data/test_dataset/'
+work_dir = data_root
 labels = ["top_left", "top_right", "bottom_left", "bottom_right"]
 
 
@@ -72,14 +73,14 @@ labels = ["top_left", "top_right", "bottom_left", "bottom_right"]
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),  # TODO: ASK DOES IT NEEDED
+     dict(type='RandomFlip', direction='horizontal'),  # TODO: ASK DOES IT NEEDED
     dict(
         type='RandomBBoxTransform',
         rotate_factor=10.0,
         rotate_prob=0.6
     ),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type="RandomBottomHalf", threshold=0.4, p=0.5),
+     dict(type="RandomBottomHalf", threshold=0.4, p=0.5),
     dict(
         type='Albumentation',
         transforms=[
@@ -110,7 +111,11 @@ train_pipeline = [
             dict(type='HueSaturationValue', hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=10, p=0.3),
         ]),
     dict(type='GenerateTarget', encoder=codec),
-    dict(type='PackPoseInputs')
+    dict(type='PackPoseInputs'),
+    dict(type='TorchVisionWrapper', transforms=[
+        dict(type='TrivialAugmentWide', num_magnitude_bins=31)
+    ]),
+
 ]
 
 val_pipeline = [

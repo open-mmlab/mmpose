@@ -5,7 +5,7 @@ from .bottomup_transforms import (BottomupGetHeatmapMask, BottomupRandomAffine,
 from .common_transforms import (Albumentation, FilterAnnotations,
                                 GenerateTarget, GetBBoxCenterScale,
                                 PhotometricDistortion, RandomBBoxTransform,
-                                RandomFlip, RandomHalfBody, YOLOXHSVRandomAug, RandomBottomHalf)
+                                RandomFlip, RandomHalfBody, YOLOXHSVRandomAug, RandomBottomHalf, TorchVisionWrapper)
 from .converting import KeypointConverter, SingleHandConverter
 from .formatting import PackPoseInputs
 from .hand_transforms import HandRandomFlip
@@ -22,5 +22,5 @@ __all__ = [
     'GenerateTarget', 'KeypointConverter', 'RandomFlipAroundRoot',
     'FilterAnnotations', 'YOLOXHSVRandomAug', 'YOLOXMixUp', 'Mosaic',
     'BottomupRandomCrop', 'BottomupRandomChoiceResize', 'HandRandomFlip',
-    'SingleHandConverter', 'RandomBottomHalf'
+    'SingleHandConverter', 'RandomBottomHalf', 'TorchVisionWrapper'
 ]
