@@ -1,6 +1,6 @@
-_base_ = ['../../../_base_/default_runtime.py']
+_base_ = ['../_base_/default_runtime.py']
 
-num_keypoints = 7  # CHECK IT PLZ
+num_keypoints =4
 
 # runtime
 train_cfg = dict(max_epochs=300, val_interval=10)
@@ -32,13 +32,9 @@ default_hooks = dict(
     checkpoint=dict(save_best='coco/AP', rule='greater'),
 )
 
-# custom_hooks = [
-# dict(type='PCKAccuracyTrainHook', interval=10, thr=0.05),
-# ]
-
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+    type='MSRAHeatmap', input_size=(224, 224), heatmap_size=(56, 56), sigma=2)
 
 # model settings
 model = dict(
@@ -68,22 +64,33 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
-labels = ["C_Fork", "L_Fork", "R_Fork", "front_left", "front_right", "rear_left", "rear_right"]
+data_root = '/data/now/brug_mts_pallet/'
+labels = ["top_left", "top_right", "bottom_left", "bottom_right"]
+
 
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),
-    # dict(type='RandomHalfBody'),
-    # TODO: plot
-    dict(type='RandomBBoxTransform'),
+    dict(type='RandomFlip', direction='horizontal'),  # TODO: ASK DOES IT NEEDED
+    dict(
+        type='RandomBBoxTransform',
+        rotate_factor=10.0,
+        rotate_prob=0.6
+    ),
     dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type="RandomBottomHalf", threshold=0.4, p=0.5),
     dict(
         type='Albumentation',
         transforms=[
-            dict(type='RandomBrightnessContrast', brightness_limit=[-0.2, 0.2], contrast_limit=[-0.2, 0.2], p=0.4),
+            dict(
+                type='ColorJitter',
+                brightness=[0.8, 1.2],
+                contrast=[0.8, 1.2],
+                saturation=[0.8, 1.2],
+                hue=[-0.5, 0.5],
+                p=0.4
+            ),
 
             dict(
                 type='OneOf',
@@ -105,6 +112,7 @@ train_pipeline = [
     dict(type='GenerateTarget', encoder=codec),
     dict(type='PackPoseInputs')
 ]
+
 val_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
@@ -120,11 +128,11 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
-        labels=labels,
+	    labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='coco/train.json',
+        data_prefix=dict(img='images/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -135,12 +143,12 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
-        labels=labels,
+	    labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
+        ann_file='coco/train.json',
         bbox_file='',
-        data_prefix=dict(img='val2017/'),
+        data_prefix=dict(img='images/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -150,7 +158,7 @@ test_dataloader = val_dataloader
 val_evaluator = [
     dict(
         type='CocoMetric',
-        ann_file=data_root + 'annotations/forklift_keypoints_train2017.json'
+        ann_file=data_root + 'coco/train.json'
     ),
     dict(
         type='EPE',
