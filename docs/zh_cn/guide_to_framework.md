@@ -113,7 +113,7 @@ MMPose 数据的组织主要包含三个方面：
 
 ### 数据集元信息
 
-元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 [$MMPOSE/configs/_base_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets) 目录下。
+元信息指具体标注之外的数据集信息。姿态估计数据集的元信息通常包括：关键点和骨骼连接的定义、对称性、关键点性质（如关键点权重、标注标准差、所属上下半身）等。这些信息在数据在数据处理、模型训练和测试中有重要作用。在 MMPose 中，数据集的元信息使用 python 格式的配置文件保存，位于 [$MMPOSE/configs/\_base\_/datasets](https://github.com/open-mmlab/mmpose/tree/main/configs/_base_/datasets) 目录下。
 
 在 MMPose 中使用自定义数据集时，你需要增加对应的元信息配置文件。以 MPII 数据集（[$MMPOSE/configs/\_base\_/datasets/mpii.py](https://github.com/open-mmlab/mmpose/blob/main/configs/_base_/datasets/mpii.py)）为例：
 
