@@ -214,6 +214,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                     result.set_field(-1, 'track_id')
             else:
                 result.set_field(track_id, 'track_id')
+
+        self._buffer['results_pose2d_last'] = results_pose2d
         self._buffer['pose2d_results'] = merge_data_samples(results_pose2d)
 
         # convert keypoints
