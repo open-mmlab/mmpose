@@ -320,6 +320,9 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         """
         pose_lift_results = self.model.test_step(inputs)
 
+        if len(pose_lift_results) == 0:
+            return []
+
         # Post-processing of pose estimation results
         pose_est_results_converted = self._buffer['pose_est_results_list'][-1]
         for idx, pose_lift_res in enumerate(pose_lift_results):
