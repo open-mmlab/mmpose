@@ -249,3 +249,4 @@ process2 = mp.Process(target=camera_process, args=(1, return_dict, shared_data, 
 
 - [MMPose官方安装文档](https://mmpose.readthedocs.io/en/latest/installation.html)
 - [MMPose全身姿态估计模型库](https://mmpose.readthedocs.io/en/latest/model_zoo/wholebody_2d_keypoint.html)
+
