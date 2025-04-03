@@ -11,42 +11,43 @@ dataset_info = dict(
     keypoint_info={
         0:
         dict(
-            name='top_left', 
+            name='front_right', 
             id=0, 
             color=[51, 153, 255], 
             type='upper', 
-            swap='top_right'),
+            swap='rear_left'
+        ),
         1:
         dict(
-            name='top_right',
+            name='rear_right',
             id=1,
             color=[51, 153, 255],
             type='upper',
-            swap='top_left'),
+            swap='front_left'),
         2:
         dict(
-            name='bottom_right',
+            name='front_left',
             id=2,
             color=[51, 153, 255],
             type='upper',
-            swap='bottom_left'),
+            swap='rear_right'),
         3:
         dict(
-            name='bottom_left',
+            name='rear_left',
             id=3,
             color=[51, 153, 255],
             type='upper',
-            swap='bottom_right')
+            swap='front_right')
     },
     skeleton_info={
         0:
-        dict(link=('top_left', 'top_right'), id=0, color=[0, 255, 0]),
+        dict(link=('front_left', 'front_right'), id=0, color=[0, 255, 0]),
         1:
-        dict(link=('bottom_left', 'bottom_right'), id=1, color=[0, 255, 0]),
+        dict(link=('rear_left', 'rear_right'), id=1, color=[0, 255, 0]),
         2:
-        dict(link=('top_left', 'bottom_left'), id=2, color=[0, 255, 0]),
+        dict(link=('front_left', 'rear_left'), id=2, color=[0, 255, 0]),
         3:
-        dict(link=('top_right', 'bottom_right'), id=3, color=[0, 255, 0])
+        dict(link=('front_right', 'rear_right'), id=3, color=[0, 255, 0])
     },
     joint_weights=[
         1., 1., 1., 1.

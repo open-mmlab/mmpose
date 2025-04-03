@@ -1,6 +1,6 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
-num_keypoints = 7  # CHECK IT PLZ
+num_keypoints = 4  # CHECK IT PLZ
 
 # runtime
 train_cfg = dict(max_epochs=300, val_interval=10)
@@ -38,7 +38,22 @@ default_hooks = dict(
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+    type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
+
+
+# base dataset settings
+dataset_type = 'CocoDataset'
+data_mode = 'topdown'
+data_root = '/data/rewe_keypoints/'
+labels = ["front_left", "front_right", "rear_left", "rear_right"]
+symmetries = [{
+    "front_left": "rear_right",
+    "front_right": "rear_left",
+    "rear_left":  "front_right",
+    "rear_right": "front_left",
+}
+]
+
 
 # model settings
 model = dict(
@@ -57,7 +72,12 @@ model = dict(
         type='HeatmapHead',
         in_channels=512,
         out_channels=num_keypoints,
-        loss=dict(type='KeypointMSELoss', use_target_weight=True),
+        loss=dict(
+            type='OutputSymmetryLoss',
+            labels=labels,
+            symmetries=symmetries,
+            base_loss= dict(type='KeypointMSELoss', use_target_weight=True),
+        ),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -65,17 +85,13 @@ model = dict(
         shift_heatmap=True,
     ))
 
-# base dataset settings
-dataset_type = 'CocoDataset'
-data_mode = 'topdown'
-data_root = 'data/coco/'
-labels = ["C_Fork", "L_Fork", "R_Fork", "front_left", "front_right", "rear_left", "rear_right"]
+
 
 # pipelines
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomFlip', direction='horizontal'),
+    #dict(type='RandomFlip', direction='horizontal'),
     # dict(type='RandomHalfBody'),
     # TODO: plot
     dict(type='RandomBBoxTransform'),
@@ -123,12 +139,12 @@ train_dataloader = dict(
         labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='coco/train.json',
+        data_prefix=dict(img='images'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=64,
     num_workers=4,
     persistent_workers=True,
     drop_last=False,
@@ -138,34 +154,69 @@ val_dataloader = dict(
         labels=labels,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/forklift_keypoints_val2017.json',
+        ann_file='coco/val.json',
         bbox_file='',
-        data_prefix=dict(img='val2017/'),
+        data_prefix=dict(img='images/'),
         test_mode=True,
         pipeline=val_pipeline,
     ))
-test_dataloader = val_dataloader
+
+test_dataloader = dict(
+    batch_size=64,
+    num_workers=4,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=dict(
+        type=dataset_type,
+        labels=labels,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file='coco/test.json',
+        bbox_file='',
+        data_prefix=dict(img='images/'),
+        test_mode=True,
+        pipeline=val_pipeline,
+    ))
 
 # evaluators
 val_evaluator = [
     dict(
         type='CocoMetric',
-        ann_file=data_root + 'annotations/forklift_keypoints_val2017.json'
-    ),
-    dict(
-        type='EPE',
+        ann_file=data_root + "coco/val.json",
     ),
     dict(
         type='PCKAccuracy',
-        prefix="5pr_",
+        prefix="val_1pr",
+        thr=0.01
+    ),
+    dict(
+        type='PCKAccuracy',
+        prefix="val_5pr",
+        thr=0.05
     ),
     dict(
         type='PCKAccuracy',
         thr=0.1,
-        prefix="10pr_",
+        prefix="val_10pr",
+    ),
+    ]
+
+test_evaluator = [
+    dict(
+        type='PCKAccuracy',
+        prefix="test_1pr",
+        thr=0.01
     ),
     dict(
-        type='AUC',
+        type='PCKAccuracy',
+        prefix="test_5pr",
+        thr=0.05
     ),
+    dict(
+        type='PCKAccuracy',
+        thr=0.1,
+        prefix="test_10pr",
+    ),
+
 ]
-test_evaluator = val_evaluator
