@@ -60,8 +60,6 @@ class KeypointMSELoss(nn.Module):
         Returns:
             Tensor: The calculated loss.
         """
-        print("keypoint MSE")
-
         _mask = self._get_mask(target, target_weights, mask)
         if _mask is None:
             loss = F.mse_loss(output, target)
@@ -137,7 +135,6 @@ class OutputSymmetryLoss(nn.Module):
     def __init__(self,
                  labels:List[str],
                  symmetries:List[Dict[str, str]],
-                 base_loss : ConfigType = dict(type='KeypointMSELoss', use_target_weight=True),
                  ):
         super().__init__()
 
@@ -183,12 +180,12 @@ class OutputSymmetryLoss(nn.Module):
             _loss = F.mse_loss(output[:, indieces, : , :], target, reduction='none')
             if _mask is not None:
                 _loss = _loss * _mask 
-            _loss = _loss.reshape((B, K, -1)).mean(dim=-1)
+            _loss = _loss.reshape((B, K, -1)).sum(dim=-1)
             losses.append(_loss)
 
         losses = torch.stack(losses, dim=-1)
         min_losses, _ = losses.min(dim=-1)
-        loss = min_losses.mean()
+        loss = min_losses.mean() / (H * W)
         return loss
 
 @MODELS.register_module()

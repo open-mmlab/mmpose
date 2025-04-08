@@ -15,7 +15,7 @@ dataset_info = dict(
             id=0, 
             color=[51, 153, 255], 
             type='upper', 
-            swap='rear_left'
+            swap='front_left'
         ),
         1:
         dict(
@@ -23,21 +23,21 @@ dataset_info = dict(
             id=1,
             color=[51, 153, 255],
             type='upper',
-            swap='front_left'),
+            swap='rear_left'),
         2:
         dict(
             name='front_left',
             id=2,
             color=[51, 153, 255],
             type='upper',
-            swap='rear_right'),
+            swap='front_right'),
         3:
         dict(
             name='rear_left',
             id=3,
             color=[51, 153, 255],
             type='upper',
-            swap='front_right')
+            swap='rear_right')
     },
     skeleton_info={
         0:

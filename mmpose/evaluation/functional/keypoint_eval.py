@@ -97,22 +97,24 @@ def keypoint_pck_accuracy(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray,
         - cnt (int): Number of valid keypoints.
     """
     if not symmetry_indices:
+        # (N, K, 2)
         distances = _calc_distances(pred, gt, mask, norm_factor)
+        # (K, N)
     else:
-        # (N, S, K)
-        # - symmetry number N
+        
         distances = np.stack([
             _calc_distances(pred[:, indices,:], gt, mask, norm_factor).transpose()
             for indices in symmetry_indices
         ], axis=1,
         )
-        N, K, S  = distances.shape
-        # (N * S)
-        mean_distances = distances.mean(axis=1).reshape(-1)
-        # (N, S)
-        mean_accuracies = np.asarray([ _distance_acc(d, thr ) for d in mean_distances]).reshape(N, S)
-        max_accuaracies = np.argmax(mean_accuracies, axis=-1)
-        distances = distances[np.arange(N), max_accuaracies, :]
+        N, S, K  = distances.shape
+        _distances = distances.copy()
+        _distances[distances == -1] = 0
+        _distances = _distances.sum(-1)
+        min_indices = np.argmin(_distances, axis=-1)
+        #with np.printoptions(suppress=True, precision=2):
+        #    print(distances[min_indices == 1])
+        distances = distances[np.arange(N), min_indices, :]
 
     acc = np.array([_distance_acc(d, thr) for d in distances])
     valid_acc = acc[acc >= 0]
@@ -211,7 +213,9 @@ def pose_pck_accuracy(output: np.ndarray,
                       target: np.ndarray,
                       mask: np.ndarray,
                       thr: float = 0.05,
-                      normalize: Optional[np.ndarray] = None) -> tuple:
+                      normalize: Optional[np.ndarray] = None,
+                      symmetry_indices: Optional[List[List[int]]] = None
+                      ) -> tuple:
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
 
@@ -251,7 +255,7 @@ def pose_pck_accuracy(output: np.ndarray,
 
     pred, _ = get_heatmap_maximum(output)
     gt, _ = get_heatmap_maximum(target)
-    return keypoint_pck_accuracy(pred, gt, mask, thr, normalize)
+    return keypoint_pck_accuracy(pred, gt, mask, thr, normalize, symmetry_indices)
 
 
 def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],

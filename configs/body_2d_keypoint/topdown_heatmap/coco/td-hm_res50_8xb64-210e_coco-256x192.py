@@ -19,7 +19,7 @@ param_scheduler = [
         type='MultiStepLR',
         begin=0,
         end=300,
-        milestones=[200, 250],
+        milestones=[100, 200],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -29,7 +29,7 @@ auto_scale_lr = dict(base_batch_size=64)
 
 # hooks
 default_hooks = dict(
-    checkpoint=dict(save_best='coco/AP', rule='greater'),
+    checkpoint=dict(save_best='val/PCK@0.05', rule='greater'),
 )
 
 # custom_hooks = [
@@ -45,7 +45,7 @@ codec = dict(
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = '/data/rewe_keypoints/'
-labels = ["front_left", "front_right", "rear_left", "rear_right"]
+labels = ["front_right", "rear_right", "front_left", "rear_left"]
 symmetries = [{
     "front_left": "rear_right",
     "front_right": "rear_left",
@@ -72,15 +72,18 @@ model = dict(
         type='HeatmapHead',
         in_channels=512,
         out_channels=num_keypoints,
+        #loss= dict(type='KeypointMSELoss', use_target_weight=True),
         loss=dict(
             type='OutputSymmetryLoss',
             labels=labels,
             symmetries=symmetries,
-            base_loss= dict(type='KeypointMSELoss', use_target_weight=True),
         ),
-        decoder=codec),
+        decoder=codec,
+        labels=labels,
+        symmetries = symmetries,
+        ),
     test_cfg=dict(
-        flip_test=True,
+        flip_test=False,
         flip_mode='heatmap',
         shift_heatmap=True,
     ))
@@ -91,7 +94,7 @@ model = dict(
 train_pipeline = [
     dict(type='LoadImage'),
     dict(type='GetBBoxCenterScale'),
-    #dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomFlip', direction='horizontal'),
     # dict(type='RandomHalfBody'),
     # TODO: plot
     dict(type='RandomBBoxTransform'),
@@ -181,42 +184,54 @@ test_dataloader = dict(
 
 # evaluators
 val_evaluator = [
+    #dict(
+    #    type='CocoMetric',
+    #    ann_file=data_root + "coco/val.json",
+    #),
     dict(
-        type='CocoMetric',
-        ann_file=data_root + "coco/val.json",
+        type='PCKAccuracy',
+        prefix="val",
+        thr=0.01,
+        labels=labels,
+        symmetries=symmetries,
     ),
     dict(
         type='PCKAccuracy',
-        prefix="val_1pr",
-        thr=0.01
-    ),
-    dict(
-        type='PCKAccuracy',
-        prefix="val_5pr",
-        thr=0.05
+        prefix="val",
+        thr=0.05,
+        labels=labels,
+        symmetries=symmetries,
     ),
     dict(
         type='PCKAccuracy',
         thr=0.1,
-        prefix="val_10pr",
+        prefix="val",
+        labels=labels,
+        symmetries=symmetries,
     ),
     ]
 
 test_evaluator = [
     dict(
         type='PCKAccuracy',
-        prefix="test_1pr",
-        thr=0.01
+        prefix="test",
+        thr=0.01,
+        labels=labels,
+        symmetries=symmetries,
     ),
     dict(
         type='PCKAccuracy',
-        prefix="test_5pr",
-        thr=0.05
+        prefix="test",
+        thr=0.05,
+        labels=labels,
+        symmetries=symmetries,
     ),
     dict(
         type='PCKAccuracy',
         thr=0.1,
-        prefix="test_10pr",
+        prefix="test",
+        labels=labels,
+        symmetries=symmetries,
     ),
 
 ]

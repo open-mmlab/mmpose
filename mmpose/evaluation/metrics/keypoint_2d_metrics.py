@@ -193,7 +193,7 @@ class PCKAccuracy(BaseMetric):
 
             _, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                               self.thr, norm_size_bbox, self.symmetry_indieces)
-            metrics['PCK'] = pck
+            metrics[f'PCK@{self.thr}'] = pck
 
         if 'head' in self.norm_item:
             norm_size_head = np.concatenate(
