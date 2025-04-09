@@ -7,9 +7,8 @@ train_cfg = dict(max_epochs=300, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
-    type='SGD',
+    type='Adam',
     lr=5e-4,
-    momentum=0.9,
 ))
 # learning policy
 param_scheduler = [
@@ -46,7 +45,8 @@ codec = dict(
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = '/data/rewe_keypoints/'
-labels = ["front_right", "rear_right", "front_left", "rear_left"]
+labels = ['front_left', 'front_right', 'rear_left', 'rear_right']
+
 symmetries = [{
     "front_left": "rear_right",
     "front_right": "rear_left",
