@@ -180,12 +180,12 @@ class OutputSymmetryLoss(nn.Module):
             _loss = F.mse_loss(output[:, indieces, : , :], target, reduction='none')
             if _mask is not None:
                 _loss = _loss * _mask 
-            _loss = _loss.reshape((B, K, -1)).sum(dim=-1)
+            _loss = _loss.reshape((B, -1)).sum(dim=-1)
             losses.append(_loss)
 
         losses = torch.stack(losses, dim=-1)
         min_losses, _ = losses.min(dim=-1)
-        loss = min_losses.mean() / (H * W)
+        loss = min_losses.mean() / (H * W * K)
         return loss
 
 @MODELS.register_module()
