@@ -2,7 +2,7 @@ dataset_info = dict(
     dataset_name='coco',
     paper_info=dict(
         author='',
-        title='Forklift: 7 keypoints',
+        title='Forklift: 9 keypoints',
         container='',
         year='2025',
         homepage='',
@@ -57,6 +57,20 @@ dataset_info = dict(
             type='upper',
             swap='rear_left'
         ),
+        7: dict(
+            name='tip_left',
+            id=7,
+            color=[0, 153, 255],
+            type='upper',
+            swap='tip_right'
+        ),
+        8: dict(
+            name='tip_right',
+            id=8,
+            color=[51, 153, 0],
+            type='upper',
+            swap='tip_left'
+        ),
     },
     skeleton_info={
         0:
@@ -75,8 +89,8 @@ dataset_info = dict(
         dict(link=('C_Fork', 'R_Fork'), id=6, color=[255, 128, 0]),
     },
     joint_weights=[
-        1., 1., 1., 1., 1., 1., 1.,
+        1., 1., 1., 1., 1., 1., 1.,1.,1.,
     ],
     sigmas=[
-        0.05, 0.05, 0.05, 0.05, 0.06, 0.06, 0.07,
+        0.07, 0.06, 0.06, 0.05, 0.05, 0.05, 0.05,0.07,0.07
     ])

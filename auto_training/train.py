@@ -8,7 +8,10 @@ from mmengine.runner import Runner
 
 from auto_training.config_factories.mmpose_config_factory import make_mmpose_config
 
-    
+import cv2
+from mmpose.datasets import build_dataset
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a pose model')
     parser.add_argument('config', help='train config file path')
@@ -19,8 +22,8 @@ def parse_args():
         type=str,
         const='auto',
         help='If specify checkpint path, resume from it, while if not '
-        'specify, try to auto resume from the latest checkpoint '
-        'in the work directory.')
+             'specify, try to auto resume from the latest checkpoint '
+             'in the work directory.')
     parser.add_argument(
         '--data-root',
         type=str,
@@ -39,7 +42,7 @@ def parse_args():
         '--auto-scale-lr',
         action='store_true',
         help='whether to auto scale the learning rate according to the '
-        'actual batch size and the original batch size.')
+             'actual batch size and the original batch size.')
     parser.add_argument(
         '--show-dir',
         help='directory where the visualization images will be saved.')
@@ -68,11 +71,11 @@ def parse_args():
         nargs='+',
         action=DictAction,
         help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file. If the value to '
-        'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
-        'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
-        'Note that the quotation marks are necessary and that no white space '
-        'is allowed.')
+             'in xxx=yyy format will be merged into config file. If the value to '
+             'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
+             'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
+             'Note that the quotation marks are necessary and that no white space '
+             'is allowed.')
     parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm', 'mpi'],
@@ -82,8 +85,9 @@ def parse_args():
     # will pass the `--local-rank` parameter to `tools/train.py` instead
     # of `--local_rank`.
     parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
-    parser.add_argument('--visualize', action='store_true', help='Visualize augmented dataset samples instead of training')
-    parser.add_argument('--num-samples', type=int, default=5, help='Number of samples to visualize')
+    parser.add_argument('--visualize', action='store_true',
+                        help='Visualize augmented dataset samples instead of training')
+    parser.add_argument('--num-samples', type=int, default=20, help='Number of samples to visualize')
 
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -150,51 +154,36 @@ def merge_args(cfg, args):
 
     return cfg
 
+
 def plot_keypoints_on_image_cv2(image, heatmap, labels=None):
-    """
-    Draws keypoints extracted from a heatmap onto an image using OpenCV.
+    import cv2
+    import numpy as np
 
-    Parameters:
-        image (np.ndarray): Input image of shape (256,256) or (256,256,3).
-        heatmap (np.ndarray): Heatmap of shape (4,64,64); each channel represents one keypoint.
-        labels (list of str): Optional list of labels corresponding to each keypoint.
-
-    Returns:
-        np.ndarray: The image with keypoints and labels drawn.
-    """
+    image = cv2.resize(image, (image.shape[1] * 3, image.shape[0] * 3), interpolation=cv2.INTER_LINEAR)
     num_keypoints, h_heat, w_heat = heatmap.shape
 
-    # Compute scaling factors from heatmap size to image size.
-    scale_x = image.shape[1] / w_heat   # e.g. 256/64 = 4
-    scale_y = image.shape[0] / h_heat     # e.g. 256/64 = 4
+    scale_x = image.shape[1] / w_heat
+    scale_y = image.shape[0] / h_heat
 
-    # If the image is grayscale, convert it to BGR for colored drawing.
     if len(image.shape) == 2 or image.shape[2] == 1:
         image_bgr = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     else:
         image_bgr = image.copy()
 
-    # Process each heatmap channel.
     for i in range(num_keypoints):
-        # Use cv2.minMaxLoc to find the location of the maximum value.
-        # Note: cv2.minMaxLoc returns (x, y) as (col, row)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(heatmap[i])
-        x_heat, y_heat = max_loc  # These coordinates are in the 64x64 space
+        _, _, _, max_loc = cv2.minMaxLoc(heatmap[i])
+        x_heat, y_heat = max_loc
 
-        # Scale coordinates to the image size.
         x_img = int(x_heat * scale_x)
         y_img = int(y_heat * scale_y)
 
-        # Draw a marker (a red cross) at the keypoint location.
         cv2.drawMarker(
             image_bgr, (x_img, y_img), color=(0, 0, 255),
             markerType=cv2.MARKER_CROSS, markerSize=20, thickness=2
         )
 
-        # Determine the label for this keypoint.
         label_text = labels[i] if labels is not None and i < len(labels) else f'KP {i}'
 
-        # Draw the label slightly offset from the keypoint.
         cv2.putText(
             image_bgr, label_text, (x_img + 5, y_img - 5),
             fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5,
@@ -207,6 +196,51 @@ def plot_keypoints_on_image_cv2(image, heatmap, labels=None):
 def visualize_samples(cfg, classes, num_samples=5, show=False, show_dir=None, wait_time=1):
     """Visualize augmented dataset samples with keypoint annotations."""
     dataset_cfg = cfg.train_dataloader['dataset']
+
+    import torch
+    # for somereason need to reimport here
+    from mmpose.datasets.transforms.loading import LoadImage
+    from mmengine.registry import TRANSFORMS
+    from mmpose.datasets.transforms.bottomup_transforms import (BottomupGetHeatmapMask, BottomupRandomAffine,
+                                                                BottomupRandomChoiceResize,
+                                                                BottomupRandomCrop, BottomupResize)
+    from mmpose.datasets.transforms.common_transforms import (Albumentation, FilterAnnotations,
+                                                              GenerateTarget, GetBBoxCenterScale,
+                                                              PhotometricDistortion, RandomBBoxTransform,
+                                                              RandomFlip, RandomHalfBody, YOLOXHSVRandomAug,
+                                                              TorchVisionWrapper)
+    from mmpose.datasets.transforms.converting import KeypointConverter, SingleHandConverter
+    from mmpose.datasets.transforms.formatting import PackPoseInputs
+    from mmpose.datasets.transforms.hand_transforms import HandRandomFlip
+    from mmpose.datasets.transforms.mix_img_transforms import Mosaic, YOLOXMixUp
+    from mmpose.datasets.transforms.pose3d_transforms import RandomFlipAroundRoot
+    from mmpose.datasets.transforms.topdown_transforms import TopdownAffine
+
+    TRANSFORMS.register_module(module=GetBBoxCenterScale)
+    TRANSFORMS.register_module(module=RandomBBoxTransform)
+    TRANSFORMS.register_module(module=RandomFlip, force=True)
+    TRANSFORMS.register_module(module=RandomHalfBody)
+    TRANSFORMS.register_module(module=TopdownAffine)
+    TRANSFORMS.register_module(module=Albumentation)
+    TRANSFORMS.register_module(module=PhotometricDistortion)
+    TRANSFORMS.register_module(module=PackPoseInputs)
+    TRANSFORMS.register_module(module=LoadImage)
+    TRANSFORMS.register_module(module=BottomupGetHeatmapMask)
+    TRANSFORMS.register_module(module=BottomupRandomAffine)
+    TRANSFORMS.register_module(module=BottomupResize)
+    TRANSFORMS.register_module(module=GenerateTarget)
+    TRANSFORMS.register_module(module=KeypointConverter)
+    TRANSFORMS.register_module(module=RandomFlipAroundRoot)
+    TRANSFORMS.register_module(module=FilterAnnotations)
+    TRANSFORMS.register_module(module=YOLOXHSVRandomAug)
+    TRANSFORMS.register_module(module=YOLOXMixUp)
+    TRANSFORMS.register_module(module=Mosaic)
+    TRANSFORMS.register_module(module=BottomupRandomCrop)
+    TRANSFORMS.register_module(module=BottomupRandomChoiceResize)
+    TRANSFORMS.register_module(module=HandRandomFlip)
+    TRANSFORMS.register_module(module=SingleHandConverter)
+    TRANSFORMS.register_module(module=TorchVisionWrapper)
+
     dataset = build_dataset(dataset_cfg)
 
     print(f"Visualizing {num_samples} samples from the dataset...")
@@ -220,24 +254,13 @@ def visualize_samples(cfg, classes, num_samples=5, show=False, show_dir=None, wa
         if isinstance(img, torch.Tensor):
             img = img.permute(1, 2, 0).numpy()
 
-        keypoints = data_samples.gt_instances[0]["keypoints"][0]
-
         vis_img = img.copy()
-
-
         # Draw the keypoints and labels on the image.
         vis_img = plot_keypoints_on_image_cv2(vis_img, data_samples.gt_fields.heatmaps.numpy(), classes)
 
-
-        if show:
-            cv2.imshow(f'Sample {i}', vis_img)
-            cv2.waitKey(int(wait_time * 1000))
-            cv2.destroyAllWindows()
-
-        if show_dir:
-            os.makedirs(show_dir, exist_ok=True)
-            save_path = osp.join(show_dir, f'sample_{i}.jpg')
-            cv2.imwrite(save_path, vis_img)
+        os.makedirs(show_dir, exist_ok=True)
+        save_path = osp.join(show_dir, f'sample_{i}.jpg')
+        cv2.imwrite(save_path, vis_img)
 
 
 def main():
@@ -251,12 +274,11 @@ def main():
 
     # merge CLI arguments to config
     cfg = merge_args(cfg, args)
-    
+
     cfg.dump(osp.join(cfg.work_dir, osp.basename(args.config)))
 
     if args.visualize:
-        visualize_samples(cfg, args.classes, num_samples=args.num_samples, show=args.show, show_dir=args.show_dir,
-                          wait_time=args.wait_time)
+        visualize_samples(cfg, args.classes, num_samples=args.num_samples, show_dir="/data/viz")
         return
 
     # build the runner from config

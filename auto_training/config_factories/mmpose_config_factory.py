@@ -1,18 +1,16 @@
 from mmengine.config import Config
 
 
-
 def make_mmpose_config(
         data_root: str,
         classes: list,
         res: tuple = (192, 256),
 ):
-
     cfg = Config()
 
     cfg.default_scope = 'mmpose'
     cfg.gpu_ids = range(1)
-    
+
     # hooks
     cfg.default_hooks = dict(
         timer=dict(type='IterTimerHook'),
@@ -127,13 +125,12 @@ def make_mmpose_config(
     cfg.train_pipeline = [
         dict(type='LoadImage'),
         dict(type='GetBBoxCenterScale'),
-        dict(type='RandomBBoxTransform'),
+        dict(direction='horizontal', type='RandomFlip', prob=0.5),
+        dict(type='RandomBBoxTransform', scale_factor=[0.7, 1.3], shift_factor=0.05, rotate_factor=80),
         dict(type='TopdownAffine', input_size=cfg.codec['input_size']),
         dict(
             type='Albumentation',
             transforms=[
-                dict(type='RandomBrightnessContrast', brightness_limit=[-0.2, 0.2], contrast_limit=[-0.2, 0.2], p=0.4),
-
                 dict(
                     type='OneOf',
                     transforms=[
@@ -149,10 +146,14 @@ def make_mmpose_config(
                         dict(type='MultiplicativeNoise', multiplier=(0.9, 1.1), p=0.3),
                     ], p=0.4),
 
-                dict(type='HueSaturationValue', hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=10, p=0.3),
+                # dict(type='HueSaturationValue', hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=10, p=0.3),
             ]),
         dict(type='GenerateTarget', encoder=cfg.codec),
-        dict(type='PackPoseInputs')
+        dict(type='PackPoseInputs'),
+        dict(type='TorchVisionWrapper', transforms=[
+            dict(type='TrivialAugmentWide', num_magnitude_bins=31)
+            # TODO CHECK SAVING will save 100 images in /mmpose/test
+        ], save=True),
     ]
     val_pipeline = [
         dict(type='LoadImage'),
@@ -164,21 +165,25 @@ def make_mmpose_config(
     # data loaders
     cfg.train_dataloader = dict(
         batch_size=64,
-        num_workers=4,
+        num_workers=12,
         persistent_workers=True,
         sampler=dict(type='DefaultSampler', shuffle=True),
+
         dataset=dict(
-            type=cfg.dataset_type,
-            labels=classes,
-            data_root=data_root,
-            data_mode=cfg.data_mode,
-            ann_file='annotations/forklift_keypoints_train2017.json',
-            data_prefix=dict(img='train2017/'),
-            pipeline=cfg.train_pipeline,
-        ))
+            type='RepeatDataset',
+            times=2,
+            dataset=dict(
+                type=cfg.dataset_type,
+                labels=classes,
+                data_root=data_root,
+                data_mode=cfg.data_mode,
+                ann_file='annotations/forklift_keypoints_train2017.json',
+                data_prefix=dict(img='train2017/'),
+                pipeline=cfg.train_pipeline,
+            )))
     cfg.val_dataloader = dict(
         batch_size=32,
-        num_workers=4,
+        num_workers=12,
         persistent_workers=True,
         drop_last=False,
         sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
