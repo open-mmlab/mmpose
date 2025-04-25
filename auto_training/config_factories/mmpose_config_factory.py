@@ -165,25 +165,21 @@ def make_mmpose_config(
     # data loaders
     cfg.train_dataloader = dict(
         batch_size=64,
-        num_workers=12,
+        num_workers=6,
         persistent_workers=True,
         sampler=dict(type='DefaultSampler', shuffle=True),
-
         dataset=dict(
-            type='RepeatDataset',
-            times=2,
-            dataset=dict(
-                type=cfg.dataset_type,
-                labels=classes,
-                data_root=data_root,
-                data_mode=cfg.data_mode,
-                ann_file='annotations/forklift_keypoints_train2017.json',
-                data_prefix=dict(img='train2017/'),
-                pipeline=cfg.train_pipeline,
-            )))
+            type=cfg.dataset_type,
+            labels=classes,
+            data_root=data_root,
+            data_mode=cfg.data_mode,
+            ann_file='annotations/forklift_keypoints_train2017.json',
+            data_prefix=dict(img='train2017/'),
+            pipeline=cfg.train_pipeline,
+        ))
     cfg.val_dataloader = dict(
         batch_size=32,
-        num_workers=12,
+        num_workers=6,
         persistent_workers=True,
         drop_last=False,
         sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
