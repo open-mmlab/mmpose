@@ -88,6 +88,9 @@ def parse_args():
     parser.add_argument('--visualize', action='store_true',
                         help='Visualize augmented dataset samples instead of training')
     parser.add_argument('--num-samples', type=int, default=20, help='Number of samples to visualize')
+    parser.add_argument(
+        '--viz-dir',
+        help='directory where the training augmentation visualization images will be saved.')
 
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -193,7 +196,7 @@ def plot_keypoints_on_image_cv2(image, heatmap, labels=None):
     return image_bgr
 
 
-def visualize_samples(cfg, classes, num_samples=5, show=False, show_dir=None, wait_time=1):
+def visualize_samples(cfg, classes, num_samples=5, dir=None):
     """Visualize augmented dataset samples with keypoint annotations."""
     dataset_cfg = cfg.train_dataloader['dataset']
 
@@ -258,8 +261,8 @@ def visualize_samples(cfg, classes, num_samples=5, show=False, show_dir=None, wa
         # Draw the keypoints and labels on the image.
         vis_img = plot_keypoints_on_image_cv2(vis_img, data_samples.gt_fields.heatmaps.numpy(), classes)
 
-        os.makedirs(show_dir, exist_ok=True)
-        save_path = osp.join(show_dir, f'sample_{i}.jpg')
+        os.makedirs(dir, exist_ok=True)
+        save_path = osp.join(dir, f'sample_{i}.jpg')
         cv2.imwrite(save_path, vis_img)
 
 
@@ -278,7 +281,7 @@ def main():
     cfg.dump(osp.join(cfg.work_dir, osp.basename(args.config)))
 
     if args.visualize:
-        visualize_samples(cfg, args.classes, num_samples=args.num_samples, show_dir="/data/viz")
+        visualize_samples(cfg, args.classes, num_samples=args.num_samples, dir=args.viz_dir)
         return
 
     # build the runner from config
