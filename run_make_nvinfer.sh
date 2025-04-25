@@ -50,11 +50,10 @@ echo "[property]
 onnx-file=keypoint_detector.onnx
 
 # model config
-infer-dims=3;256;192
+infer-dims=3;$RES
 
 [custom]
 min-kp-score=0.0
-res=$RES
 operate-on-class-names=$OPERATE_ON_CLASS_NAMES
 kp-names=$CLASSES
 " > "$MODEL_DIR/keypoints-config.txt"
