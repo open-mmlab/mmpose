@@ -3,8 +3,8 @@
 # NVIDIA GeForce RTX 2080 Ti            - sm_75
 # NVIDIA A100-SXM4-40GB                 - sm_80
 
-ARG PYTORCH="1.9.0"
-ARG CUDA="11.1"
+ARG PYTORCH="1.10.0"
+ARG CUDA="11.3"
 ARG CUDNN="8"
 
 FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn${CUDNN}-devel

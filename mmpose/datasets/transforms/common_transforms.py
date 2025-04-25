@@ -19,7 +19,14 @@ from mmpose.registry import KEYPOINT_CODECS, TRANSFORMS
 from mmpose.structures.bbox import bbox_xyxy2cs, flip_bbox
 from mmpose.structures.keypoint import flip_keypoints
 from mmpose.utils.typing import MultiConfig
+from PIL import Image
 
+try:
+    import torch
+    from torchvision import transforms as T
+except ImportError:
+    T = None
+    
 try:
     import albumentations
 except ImportError:
@@ -27,6 +34,127 @@ except ImportError:
 
 Number = Union[int, float]
 
+
+
+class CustomTrivialAugment(T.TrivialAugmentWide):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+    def _augmentation_space(self, num_bins: int) -> Dict[str, Tuple[torch.Tensor, bool]]:
+        return {
+            # op_name: (magnitudes, signed)
+            "Identity": (torch.tensor(0.0), False),
+            # "ShearX": (torch.linspace(0.0, 0.99, num_bins), True),            # Remove augmentation that 
+            # "ShearY": (torch.linspace(0.0, 0.99, num_bins), True),            # can change keypoints position
+            # "TranslateX": (torch.linspace(0.0, 32.0, num_bins), True),
+            # "TranslateY": (torch.linspace(0.0, 32.0, num_bins), True),
+            # "Rotate": (torch.linspace(0.0, 135.0, num_bins), True),               
+            "Brightness": (torch.linspace(0.0, 0.99, num_bins), True),
+            "Color": (torch.linspace(0.0, 0.99, num_bins), True),
+            "Contrast": (torch.linspace(0.0, 0.99, num_bins), True),
+            "Sharpness": (torch.linspace(0.0, 0.99, num_bins), True),
+            "Posterize": (8 - (torch.arange(num_bins) / ((num_bins - 1) / 6)).round().int(), False),
+            # "Solarize": (torch.linspace(256.0, 0.0, num_bins), False),            # didn`t work with tensors
+            "AutoContrast": (torch.tensor(0.0), False),
+            "Equalize": (torch.tensor(0.0), False),
+        }
+
+
+T.TrivialAugmentWide = CustomTrivialAugment
+
+
+def tensor_to_image(tensor: torch.Tensor) -> np.ndarray:
+    """
+    Convert a PyTorch tensor to an image array.
+    
+    Args:
+        tensor (torch.Tensor): The input tensor.
+    Returns:
+        np.ndarray: The converted image array.
+    """
+        
+    assert isinstance(tensor, torch.Tensor), "Input must be a PyTorch tensor"
+    if tensor.ndim == 4:  # If batch (B, C, H, W)
+        return np.stack([tensor_to_image(t) for t in tensor])
+    assert tensor.ndim == 3, "Expected tensor dimensions (C, H, W) or (B, C, H, W)"
+    
+    tensor = tensor.detach().cpu().permute(1, 2, 0).numpy()  # (C, H, W) -> (H, W, C)
+    
+    if tensor.dtype == np.float32 or tensor.dtype == np.float64:
+        tensor = (tensor * 255).clip(0, 255).astype(np.uint8)  # Clip and convert to uint8
+        
+    return tensor
+
+
+@TRANSFORMS.register_module()
+class TorchVisionWrapper(BaseTransform):
+    """"""
+    def __init__(self, transforms: list = [], save: bool = False) -> None:
+        super().__init__()
+        self.transforms_dict = transforms
+        self.transforms = T.Compose([self.torchvision_builder(transform) for transform in self.transforms_dict])
+        self.idx = 0
+        self.save = save
+    
+    def torchvision_builder(self, cfg: dict):
+        """
+        Build a TorchVision transformation object from a configuration dictionary.
+
+        Args:
+            cfg (dict): A configuration dictionary containing transformation parameters.
+                It must include a 'type' key. Optionally, it may contain a 'transforms'
+                key, which should be a list of configurations for nested transformations.
+
+        Raises:
+            RuntimeError: If torchvision is not installed and a string type is provided.
+            TypeError: If the 'type' key in the configuration is neither a string nor a class.
+        """
+        args = cfg.copy()
+
+        obj_type = args.pop('type')
+        if mmengine.is_str(obj_type):
+            if T is None:
+                raise RuntimeError('torchvision is not installed')
+            obj_cls = getattr(T, obj_type)
+        elif isinstance(obj_type, type):
+            obj_cls = obj_type
+        else:
+            raise TypeError(f'type must be a str, but got {type(obj_type)}')
+
+        if 'transforms' in args:
+            args['transforms'] = [
+                self.torchvision_builder(transform)
+                for transform in args['transforms']
+            ]
+
+        return obj_cls(**args)
+
+
+    def transform(self, results: Dict) -> dict:
+        """
+        Apply the TorchVision transformations to the input data.
+
+        Args:
+            results (Dict): A dictionary containing the input data.
+
+        Returns:
+            dict: The transformed input data.
+        """
+        """"""        
+        results['inputs'] = self.transforms(results['inputs'])
+        
+        if self.save and self.idx < 100: 
+            res = tensor_to_image(results['inputs'])
+            import cv2; cv2.imwrite(f"/mmpose/test/image{self.idx}.jpg", res)
+            self.idx +=1 
+            
+        return results      
+    
+    
+    
+                         
+                    
 
 @TRANSFORMS.register_module()
 class GetBBoxCenterScale(BaseTransform):
@@ -257,6 +385,47 @@ class RandomFlip(BaseTransform):
         repr_str = self.__class__.__name__
         repr_str += f'(prob={self.prob}, '
         repr_str += f'direction={self.direction})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class RandomBottomHalf(BaseTransform):
+    def __init__(self, threshold: float = 0.4) -> None:
+        self.threshold = threshold
+
+    def __init__(self, threshold: float = 0.4, p: float = 0.5) -> None:
+        self.threshold = threshold
+        self.prob = p
+
+    def transform(self, results: dict) -> dict:
+        """The transform function. """
+        img = results['img'].copy()
+        keypoints = results['transformed_keypoints'][0]
+
+        # Line
+        y = int(img.shape[0] - self.threshold * img.shape[0])
+
+        under_line = np.array([kp for kp in keypoints if kp[1] > y])
+
+        if len(under_line) == results['num_keypoints']:
+            height, width, _ = img.shape
+            bottom_height = int(height * 0.4)
+
+            if np.random.rand() < self.prob:
+                cv2.rectangle(img, (0, height - bottom_height), (width, height), (0, 0, 0), -1)
+
+        results['img'] = img
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(prob={self.prob}, '
+        repr_str += f'threshold={self.threshold})'
         return repr_str
 
 
@@ -1064,7 +1233,7 @@ class GenerateTarget(BaseTransform):
                     w = w * results['dataset_keypoint_weights']
             else:
                 encoded['keypoint_weights'] = encoded[
-                    'keypoint_weights'] * results['dataset_keypoint_weights']
+                                                  'keypoint_weights'] * results['dataset_keypoint_weights']
 
         results.update(encoded)
 
