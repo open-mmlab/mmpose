@@ -1,38 +1,59 @@
 #!/bin/bash
 
-MODEL_DIR=$1
-MODEL_DIR=${MODEL_DIR%%/}
-shift
+MODEL_DIR=""
+OPERATE_ON_CLASS_NAMES=()
+CLASSES=()
+RES=()
 
-CLASSES=( "$@" )
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --model-dir)
+            MODEL_DIR="$2"
+            shift 2
+            ;;
+        --operate-on-class-names)
+            shift
+            while [[ $# -gt 0 ]] && [[ ! "$1" =~ ^-- ]]; do
+                OPERATE_ON_CLASS_NAMES+=("$1")
+                shift
+            done
+            ;;
+        --classes)
+            shift
+            while [[ $# -gt 0 ]] && [[ ! "$1" =~ ^-- ]]; do
+                CLASSES+=("$1")
+                shift
+            done
+            ;;
+        --res)
+            shift
+            while [[ $# -gt 0 ]] && [[ ! "$1" =~ ^-- ]]; do
+                RES+=("$1")
+                shift
+            done
+            ;;
+        *)
+            echo "Unknown parameter: $1"
+            exit 1
+            ;;
+    esac
+done
+
+MODEL_DIR=${MODEL_DIR%%/}
+OPERATE_ON_CLASS_NAMES=$(IFS=';' ; echo "${OPERATE_ON_CLASS_NAMES[*]}")
 CLASSES=$(IFS=';' ; echo "${CLASSES[*]}")
+RES=$(IFS=';' ; echo "${RES[*]}")
 
 echo "[property]
-gpu-id=0
-
-# preprocessing parameters.
-net-scale-factor=0.01742919389
-offsets=123.675;116.128;103.53
-model-color-format=0
-scaling-filter=1 # 0=Nearest, 1=Bilinear
 
 # model loading.
 onnx-file=keypoint_detector.onnx
-model-engine-file=keypoint_detector.onnx_b8_gpu0_fp16.engine
 
 # model config
-infer-dims=3;256;192
-batch-size=8
-network-mode=2 # 0=FP32, 1=INT8, 2=FP16
-network-type=100 # >3 disables post-processing
-cluster-mode=4 # 1=DBSCAN 4=No Clustering
-gie-unique-id=2
-process-mode=2 # 1=Primary, 2=Secondary
-output-tensor-meta=1
-operate-on-class-ids=0
-tensor-meta-pool-size=200
+infer-dims=3;$RES
 
 [custom]
 min-kp-score=0.0
+operate-on-class-names=$OPERATE_ON_CLASS_NAMES
 kp-names=$CLASSES
 " > "$MODEL_DIR/keypoints-config.txt"
