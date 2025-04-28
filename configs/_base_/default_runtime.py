@@ -5,9 +5,9 @@ default_hooks = dict(
     timer=dict(type='IterTimerHook'),
     logger=dict(type='LoggerHook', interval=50),
     param_scheduler=dict(type='ParamSchedulerHook'),
-    checkpoint=dict(type='CheckpointHook', interval=10, max_keep_ckpts=1),
+    checkpoint=dict(type='CheckpointHook', interval=10, max_keep_ckpts=1, save_best="val/PCK@0.05"),
     sampler_seed=dict(type='DistSamplerSeedHook'),
-    visualization=dict(type='PoseVisualizationHook', enable=True),
+    visualization=dict(type='PoseVisualizationHook', enable=True, interval=1),
     badcase=dict(
         type='BadCaseAnalysisHook',
         enable=False,

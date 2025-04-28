@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional, Sequence, Tuple, Union
+from typing import Optional, Sequence, Tuple, Union, List, Dict
 
 import torch
 from mmcv.cnn import build_conv_layer, build_upsample_layer
@@ -65,12 +65,23 @@ class HeatmapHead(BaseHead):
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
-                 init_cfg: OptConfigType = None):
+                 init_cfg: OptConfigType = None,
+                 labels: Optional[List[str]]  = None,
+                 symmetries:Optional[List[Dict[str, str]]]= None ,
+                 ):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
 
         super().__init__(init_cfg)
+
+        self.symmetry_indices = None
+        if labels and symmetries:
+            label_to_index = {l: i for i, l in enumerate(labels)}
+            self.symmetry_indices = [[label_to_index[l] for l in labels]]
+            for symmetry in symmetries:
+                symmetry_indices = [label_to_index[symmetry[l]] for l in labels ]
+                self.symmetry_indices.append(symmetry_indices)
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -309,7 +320,10 @@ class HeatmapHead(BaseHead):
             _, avg_acc, _ = pose_pck_accuracy(
                 output=to_numpy(pred_fields),
                 target=to_numpy(gt_heatmaps),
-                mask=to_numpy(keypoint_weights) > 0)
+                mask=to_numpy(keypoint_weights) > 0,
+                symmetry_indices=self.symmetry_indices
+            )
+
 
             acc_pose = torch.tensor(avg_acc, device=gt_heatmaps.device)
             losses.update(acc_pose=acc_pose)

@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
-from typing import Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union, List
 
 import numpy as np
 from mmengine.evaluator import BaseMetric
@@ -71,12 +71,24 @@ class PCKAccuracy(BaseMetric):
                  thr: float = 0.05,
                  norm_item: Union[str, Sequence[str]] = 'bbox',
                  collect_device: str = 'cpu',
-                 prefix: Optional[str] = None) -> None:
+                 prefix: Optional[str] = None,
+                 labels:List[str] = None,
+                 symmetries:List[Dict[str, str]] = None,
+                 ) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
         self.thr = thr
         self.norm_item = norm_item if isinstance(norm_item,
                                                  (tuple,
                                                   list)) else [norm_item]
+        
+        self.symmetry_indieces = None
+        if labels and symmetries:
+            label_to_index = {l: i for i, l in enumerate(labels)}
+            self.symmetry_indieces = [[label_to_index[l] for l in labels]]
+            for symmetry in symmetries:
+                symmetry_indices = [label_to_index[symmetry[l]] for l in labels ]
+                self.symmetry_indieces.append(symmetry_indices)
+
         allow_normalized_items = ['bbox', 'head', 'torso']
         for item in self.norm_item:
             if item not in allow_normalized_items:
@@ -180,8 +192,8 @@ class PCKAccuracy(BaseMetric):
                         f'(normalized by ``"bbox_size"``)...')
 
             _, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
-                                              self.thr, norm_size_bbox)
-            metrics['PCK'] = pck
+                                              self.thr, norm_size_bbox, self.symmetry_indieces)
+            metrics[f'PCK@{self.thr}'] = pck
 
         if 'head' in self.norm_item:
             norm_size_head = np.concatenate(

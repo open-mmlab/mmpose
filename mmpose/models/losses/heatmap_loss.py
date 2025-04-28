@@ -1,10 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional
+from typing import Optional, Dict, List
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
+from mmpose.utils.typing import ConfigType
 
 from mmpose.registry import MODELS
 
@@ -59,7 +60,6 @@ class KeypointMSELoss(nn.Module):
         Returns:
             Tensor: The calculated loss.
         """
-
         _mask = self._get_mask(target, target_weights, mask)
         if _mask is None:
             loss = F.mse_loss(output, target)
@@ -117,6 +117,76 @@ class KeypointMSELoss(nn.Module):
 
         return mask
 
+@MODELS.register_module()
+class OutputSymmetryLoss(nn.Module):
+    """MSE loss for heatmaps.
+
+    Args:
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+            Defaults to ``False``
+        skip_empty_channel (bool): If ``True``, heatmap channels with no
+            non-zero value (which means no visible ground-truth keypoint
+            in the image) will not be used to calculate the loss. Defaults to
+            ``False``
+        loss_weight (float): Weight of the loss. Defaults to 1.0
+    """
+
+    def __init__(self,
+                 labels:List[str],
+                 symmetries:List[Dict[str, str]],
+                 ):
+        super().__init__()
+
+        label_to_index = {l: i for i, l in enumerate(labels)}
+        self.loss_indices = [[label_to_index[l] for l in labels]]
+        for symmetry in symmetries:
+            symmetry_indices = [label_to_index[symmetry[l]] for l in labels ]
+            self.loss_indices.append(symmetry_indices)
+        self.base_loss : KeypointMSELoss = MODELS.build(dict(type='KeypointMSELoss', use_target_weight=True)) 
+
+
+    def forward(self,
+                output: Tensor,
+                target: Tensor,
+                target_weights: Optional[Tensor] = None,
+                mask: Optional[Tensor] = None) -> Tensor:
+        """Forward function of loss.
+
+        Note:
+            - batch_size: B
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
+
+        Args:
+            output (Tensor): The output heatmaps with shape [B, K, H, W]
+            target (Tensor): The target heatmaps with shape [B, K, H, W]
+            target_weights (Tensor, optional): The target weights of differet
+                keypoints, with shape [B, K] (keypoint-wise) or
+                [B, K, H, W] (pixel-wise).
+            mask (Tensor, optional): The masks of valid heatmap pixels in
+                shape [B, K, H, W] or [B, 1, H, W]. If ``None``, no mask will
+                be applied. Defaults to ``None``
+
+        Returns:
+            Tensor: The calculated loss.
+        """
+        B, K, H, W = output.shape
+
+        losses = []
+        _mask = self.base_loss._get_mask(target, target_weights, mask)
+        for indieces in self.loss_indices:
+            _loss = F.mse_loss(output[:, indieces, : , :], target, reduction='none')
+            if _mask is not None:
+                _loss = _loss * _mask 
+            _loss = _loss.reshape((B, -1)).sum(dim=-1)
+            losses.append(_loss)
+
+        losses = torch.stack(losses, dim=-1)
+        min_losses, _ = losses.min(dim=-1)
+        loss = min_losses.mean() / (H * W * K)
+        return loss
 
 @MODELS.register_module()
 class CombinedTargetMSELoss(nn.Module):

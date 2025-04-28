@@ -36,7 +36,7 @@ RUN git clone https://github.com/logivations/mmpose.git /mmpose
 
 # Checkout to branch (TODO: Remove after merge)
 WORKDIR /mmpose
-RUN git checkout v1.3.2-branch_v2
+RUN git checkout pallet_detection 
 RUN git pull
 
 # Install requirements

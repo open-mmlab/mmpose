@@ -387,6 +387,16 @@ class RandomFlip(BaseTransform):
         repr_str += f'direction={self.direction})'
         return repr_str
 
+@TRANSFORMS.register_module()
+class RotationCorrection(BaseTransform):
+
+   def transform(self, result: dict) -> dict:
+
+    
+
+      pass
+
+
 
 @TRANSFORMS.register_module()
 class RandomBottomHalf(BaseTransform):

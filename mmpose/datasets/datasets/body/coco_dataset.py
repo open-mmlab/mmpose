@@ -91,7 +91,7 @@ class CocoDataset(BaseCocoStyleDataset):
 
         dataset_info_path = f'configs/_base_/datasets/coco_{len(labels)}kp.py'
         if os.path.exists(dataset_info_path):
-            print(f"Found custom dataset config: {self.default_config}")
+            print(f"Found custom dataset config: {dataset_info_path}")
             return dict(from_file=dataset_info_path)
 
         print(f"Dataset config not found, trying to generate automatically...")
