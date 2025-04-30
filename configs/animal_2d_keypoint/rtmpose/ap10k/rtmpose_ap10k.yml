@@ -1,0 +1,19 @@
+Models:
+- Config: configs/animal_2d_keypoint/rtmpose/ap10k/rtmpose-m_8xb64-210e_ap10k-256x256.py
+  In Collection: RTMPose
+  Alias: animal
+  Metadata:
+    Architecture:
+    - RTMPose
+    Training Data: AP-10K
+  Name: rtmpose-m_8xb64-210e_ap10k-256x256
+  Results:
+  - Dataset: AP-10K
+    Metrics:
+      AP: 0.722
+      AP@0.5: 0.939
+      AP@0.75: 0.788
+      AP (L): 0.728
+      AP (M): 0.569
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.pth

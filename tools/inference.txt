@@ -1,0 +1,14 @@
+python tools/inference_custom.py \
+    /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/td-hm_res50_8xb64-210e_coco-256x192.py \
+    /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/epoch_300.pth \
+    --img-dir /data/new_mmpose/mmpose/data/1704_split_exported_data_project_id_422/val2017 \
+    --out-dir /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/out \
+    --bbox-json /data/new_mmpose/mmpose/data/1704_split_exported_data_project_id_422/annotations/forklift_keypoints_val2017.json \
+    --output-file /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/results.json
+
+python tools/inference_custom.py \
+    /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/td-hm_res50_8xb64-210e_coco-256x192.py \
+    /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/epoch_300.pth \
+    --img-dir /data/new_mmpose/mmpose/data/1704_split_exported_data_project_id_422/val2017 \
+    --bbox-json /data/new_mmpose/mmpose/data/1704_split_exported_data_project_id_422/annotations/forklift_keypoints_val2017.json \
+    --output-file /data/new_mmpose/mmpose/work_dirs/ls_1704_res18/results.json

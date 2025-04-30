@@ -1,0 +1,74 @@
+Collections:
+- Name: HRNet
+  Paper:
+    Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/hrnet.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_hrnet-w32_8xb64-210e_humanart-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: &id002
+    - COCO
+    - Human-Art
+  Name: td-hm_hrnet-w32_8xb64-210e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.741
+      AP@0.5: 0.902
+      AP@0.75: 0.814
+      AR: 0.795
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.399
+      AP@0.5: 0.545
+      AP@0.75: 0.420
+      AR: 0.466
+      AR@0.5: 0.613
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.754
+      AP@0.5: 0.906
+      AP@0.75: 0.812
+      AR: 0.783
+      AR@0.5: 0.916
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_hrnet-w32_8xb64-210e_humanart-256x192-0773ef0b_20230614.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/humanart/td-hm_hrnet-w48_8xb32-210e_humanart-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: td-hm_hrnet-w48_8xb32-210e_humanart-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.751
+      AP@0.5: 0.905
+      AP@0.75: 0.822
+      AR: 0.805
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art
+    Metrics:
+      AP: 0.417
+      AP@0.5: 0.553
+      AP@0.75: 0.442
+      AR: 0.481
+      AR@0.5: 0.617
+    Task: Body 2D Keypoint
+  - Dataset: Human-Art(GT)
+    Metrics:
+      AP: 0.769
+      AP@0.5: 0.906
+      AP@0.75: 0.825
+      AR: 0.796
+      AR@0.5: 0.919
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/human_art/td-hm_hrnet-w48_8xb32-210e_humanart-256x192-05178983_20230614.pth

@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_res50_8xb32-210e_onehand10k-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: OneHand10K
+  Name: td-hm_res50_8xb32-210e_onehand10k-256x256
+  Results:
+  - Dataset: OneHand10K
+    Metrics:
+      AUC: 0.555
+      EPE: 25.16
+      PCK@0.2: 0.989
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256-739c8639_20210330.pth

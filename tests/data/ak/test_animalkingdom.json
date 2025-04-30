@@ -1,0 +1,589 @@
+{
+    "info": {
+        "description": "[CVPR 2022] Animal Kingdom",
+        "url": "https://sutdcv.github.io/Animal-Kingdom",
+        "version": "1.0 (2022-06)",
+        "year": 2022,
+        "contributor": "Singapore University of Technology and Design, Singapore. Xun Long Ng, Kian Eng Ong, Qichen Zheng, Yun Ni, Si Yong Yeo, Jun Liu.",
+        "date_created": "2022-06"
+    },
+    "licenses": [
+        {
+            "url": "",
+            "id": 1,
+            "name": ""
+        }
+    ],
+    "images": [
+        {
+            "id": 1,
+            "file_name": "AAOYRUDX/AAOYRUDX_f000027.jpg",
+            "width": 640,
+            "height": 360
+        },
+        {
+            "id": 2,
+            "file_name": "AAOYRUDX/AAOYRUDX_f000028.jpg",
+            "width": 640,
+            "height": 360
+        }
+    ],
+    "categories": [
+        {
+            "supercategory": "AK_Animal",
+            "id": 1,
+            "name": "Amphibian",
+            "keypoints": [
+                "Head_Mid_Top",
+                "Eye_Left",
+                "Eye_Right",
+                "Mouth_Front_Top",
+                "Mouth_Back_Left",
+                "Mouth_Back_Right",
+                "Mouth_Front_Bottom",
+                "Shoulder_Left",
+                "Shoulder_Right",
+                "Elbow_Left",
+                "Elbow_Right",
+                "Wrist_Left",
+                "Wrist_Right",
+                "Torso_Mid_Back",
+                "Hip_Left",
+                "Hip_Right",
+                "Knee_Left",
+                "Knee_Right",
+                "Ankle_Left ",
+                "Ankle_Right",
+                "Tail_Top_Back",
+                "Tail_Mid_Back",
+                "Tail_End_Back"
+            ],
+            "skeleton": [
+                [
+                    1,
+                    0
+                ],
+                [
+                    2,
+                    0
+                ],
+                [
+                    3,
+                    4
+                ],
+                [
+                    3,
+                    5
+                ],
+                [
+                    4,
+                    6
+                ],
+                [
+                    5,
+                    6
+                ],
+                [
+                    0,
+                    7
+                ],
+                [
+                    0,
+                    8
+                ],
+                [
+                    7,
+                    9
+                ],
+                [
+                    8,
+                    10
+                ],
+                [
+                    9,
+                    11
+                ],
+                [
+                    10,
+                    12
+                ],
+                [
+                    0,
+                    13
+                ],
+                [
+                    13,
+                    20
+                ],
+                [
+                    20,
+                    14
+                ],
+                [
+                    20,
+                    15
+                ],
+                [
+                    14,
+                    16
+                ],
+                [
+                    15,
+                    17
+                ],
+                [
+                    16,
+                    18
+                ],
+                [
+                    17,
+                    19
+                ],
+                [
+                    20,
+                    21
+                ],
+                [
+                    21,
+                    22
+                ]
+            ],
+            "flip_pairs": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    4,
+                    5
+                ],
+                [
+                    7,
+                    8
+                ],
+                [
+                    9,
+                    10
+                ],
+                [
+                    11,
+                    12
+                ],
+                [
+                    14,
+                    15
+                ],
+                [
+                    16,
+                    17
+                ],
+                [
+                    18,
+                    19
+                ]
+            ],
+            "upper_body_ids": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ],
+            "lower_body_ids": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22
+            ]
+        },
+        {
+            "supercategory": "AK_Animal",
+            "id": 2,
+            "name": "Bird",
+            "keypoints": [
+                "Head_Mid_Top",
+                "Eye_Left",
+                "Eye_Right",
+                "Mouth_Front_Top",
+                "Mouth_Back_Left",
+                "Mouth_Back_Right",
+                "Mouth_Front_Bottom",
+                "Shoulder_Left",
+                "Shoulder_Right",
+                "Elbow_Left",
+                "Elbow_Right",
+                "Wrist_Left",
+                "Wrist_Right",
+                "Torso_Mid_Back",
+                "Hip_Left",
+                "Hip_Right",
+                "Knee_Left",
+                "Knee_Right",
+                "Ankle_Left ",
+                "Ankle_Right",
+                "Tail_Top_Back",
+                "Tail_Mid_Back",
+                "Tail_End_Back"
+            ],
+            "skeleton": [
+                [
+                    1,
+                    0
+                ],
+                [
+                    2,
+                    0
+                ],
+                [
+                    3,
+                    4
+                ],
+                [
+                    3,
+                    5
+                ],
+                [
+                    4,
+                    6
+                ],
+                [
+                    5,
+                    6
+                ],
+                [
+                    0,
+                    7
+                ],
+                [
+                    0,
+                    8
+                ],
+                [
+                    7,
+                    9
+                ],
+                [
+                    8,
+                    10
+                ],
+                [
+                    9,
+                    11
+                ],
+                [
+                    10,
+                    12
+                ],
+                [
+                    0,
+                    13
+                ],
+                [
+                    13,
+                    20
+                ],
+                [
+                    20,
+                    14
+                ],
+                [
+                    20,
+                    15
+                ],
+                [
+                    14,
+                    16
+                ],
+                [
+                    15,
+                    17
+                ],
+                [
+                    16,
+                    18
+                ],
+                [
+                    17,
+                    19
+                ],
+                [
+                    20,
+                    21
+                ],
+                [
+                    21,
+                    22
+                ]
+            ],
+            "flip_pairs": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    4,
+                    5
+                ],
+                [
+                    7,
+                    8
+                ],
+                [
+                    9,
+                    10
+                ],
+                [
+                    11,
+                    12
+                ],
+                [
+                    14,
+                    15
+                ],
+                [
+                    16,
+                    17
+                ],
+                [
+                    18,
+                    19
+                ]
+            ],
+            "upper_body_ids": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ],
+            "lower_body_ids": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22
+            ]
+        }
+    ],
+    "annotations": [
+        {
+            "id": 1,
+            "image_id": 1,
+            "category_id": 4,
+            "animal_parent_class": "Mammal",
+            "animal_class": "Mammal",
+            "animal_subclass": "Elephant",
+            "animal": "Elephant",
+            "protocol": "ak_P1",
+            "train_test": "test",
+            "area": 7984.8320733706605,
+            "scale": 0.6674772036000001,
+            "center": [
+                229.7435897436,
+                202.4316109422
+            ],
+            "bbox": [
+                199.6111111111,
+                136.1838905775,
+                60.26495726500002,
+                132.4954407295
+            ],
+            "iscrowd": 0,
+            "num_keypoints": 6,
+            "keypoints": [
+                220.9914529915,
+                135.6838905775,
+                1.0,
+                238.4957264957,
+                151.0030395137,
+                1.0,
+                199.1111111111,
+                153.1914893617,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                260.3760683761,
+                154.2857142857,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                250.5299145299,
+                195.8662613982,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                251.6239316239,
+                269.179331307,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0
+            ]
+        },
+        {
+            "id": 2,
+            "image_id": 2,
+            "category_id": 4,
+            "animal_parent_class": "Mammal",
+            "animal_class": "Mammal",
+            "animal_subclass": "Elephant",
+            "animal": "Elephant",
+            "protocol": "ak_P1",
+            "train_test": "test",
+            "area": 7984.8320733706605,
+            "scale": 0.6674772036000001,
+            "center": [
+                229.7435897436,
+                202.4316109422
+            ],
+            "bbox": [
+                199.6111111111,
+                136.1838905775,
+                60.26495726500002,
+                132.4954407295
+            ],
+            "iscrowd": 0,
+            "num_keypoints": 6,
+            "keypoints": [
+                220.9914529915,
+                135.6838905775,
+                1.0,
+                238.4957264957,
+                151.0030395137,
+                1.0,
+                199.1111111111,
+                153.1914893617,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                260.3760683761,
+                154.2857142857,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                250.5299145299,
+                195.8662613982,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                251.6239316239,
+                269.179331307,
+                1.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0,
+                -1.0,
+                -1.0,
+                0.0
+            ]
+        }
+    ]
+}

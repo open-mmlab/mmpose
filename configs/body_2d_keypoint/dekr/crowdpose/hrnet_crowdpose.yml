@@ -1,0 +1,37 @@
+Models:
+- Config: configs/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w32_8xb10-300e_crowdpose-512x512.py
+  In Collection: DEKR
+  Metadata:
+    Architecture: &id001
+    - DEKR
+    - HRNet
+    Training Data: CrowdPose
+  Name: dekr_hrnet-w32_8xb10-300e_crowdpose-512x512
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.663
+      AP@0.5: 0.857
+      AP@0.75: 0.714
+      AP (E): 0.74
+      AP (M): 0.671
+      AP (L): 0.576
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w32_8xb10-300e_crowdpose-512x512_147bae97-20221228.pth
+- Config: configs/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w48_8xb5-300e_crowdpose-640x640.py
+  In Collection: DEKR
+  Metadata:
+    Architecture: *id001
+    Training Data: CrowdPose
+  Name: dekr_hrnet-w48_8xb5-300e_crowdpose-640x640
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.679
+      AP@0.5: 0.869
+      AP@0.75: 0.731
+      AP (E): 0.753
+      AP (M): 0.688
+      AP (L): 0.593
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/dekr/crowdpose/dekr_hrnet-w48_8xb5-300e_crowdpose-640x640_4ea6031e-20230128.pth

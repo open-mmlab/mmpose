@@ -1,0 +1,42 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_seresnet50_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - SEResNet
+    Training Data: MPII
+  Name: td-hm_seresnet50_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.884
+      Mean@0.1: 0.292
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_mpii_256x256-1bb21f79_20200927.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_seresnet101_8xb64-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_seresnet101_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.884
+      Mean@0.1: 0.295
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_mpii_256x256-0ba14ff5_20200927.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/td-hm_seresnet152_8xb32-210e_mpii-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: MPII
+  Name: td-hm_seresnet152_8xb32-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.884
+      Mean@0.1: 0.287
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_mpii_256x256-6ea1e774_20200927.pth

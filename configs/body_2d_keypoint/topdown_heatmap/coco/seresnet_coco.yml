@@ -1,0 +1,98 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_seresnet50_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SEResNet
+    Training Data: COCO
+  Name: td-hm_seresnet50_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.729
+      AP@0.5: 0.903
+      AP@0.75: 0.807
+      AR: 0.784
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_256x192-25058b66_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_seresnet50_8xb64-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_seresnet50_8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.748
+      AP@0.5: 0.904
+      AP@0.75: 0.819
+      AR: 0.799
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_384x288-bc0b7680_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_seresnet101_8xb64-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_seresnet101_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.734
+      AP@0.5: 0.905
+      AP@0.75: 0.814
+      AR: 0.79
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_256x192-83f29c4d_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_seresnet101_8xb32-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_seresnet101_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.754
+      AP@0.5: 0.907
+      AP@0.75: 0.823
+      AR: 0.805
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_384x288-48de1709_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_seresnet152_8xb32-210e_coco-256x192.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_seresnet152_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.73
+      AP@0.5: 0.899
+      AP@0.75: 0.81
+      AR: 0.787
+      AR@0.5: 0.939
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_coco_256x192-1c628d79_20200727.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_seresnet152_8xb48-210e_coco-384x288.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_seresnet152_8xb48-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.906
+      AP@0.75: 0.824
+      AR: 0.806
+      AR@0.5: 0.945
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_coco_384x288-58b23ee8_20200727.pth

@@ -1,0 +1,139 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-tiny_udp_8xb256-210e_coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: &id001
+    - CSPNeXt
+    - UDP
+    Training Data: COCO
+  Name: cspnext-tiny_udp_8xb256-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.665
+      AP@0.5: 0.874
+      AP@0.75: 0.723
+      AR: 0.723
+      AR@0.5: 0.917
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-coco_pt-in1k_210e-256x192-0908dd2d_20230123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-s_udp_8xb256-210e_coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: cspnext-s_udp_8xb256-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.697
+      AP@0.5: 0.886
+      AP@0.75: 0.776
+      AR: 0.753
+      AR@0.5: 0.929
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-s_udp-coco_pt-in1k_210e-256x192-92dbfc1d_20230123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-m_udp_8xb256-210e_coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: cspnext-m_udp_8xb256-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.732
+      AP@0.5: 0.896
+      AP@0.75: 0.806
+      AR: 0.785
+      AR@0.5: 0.937
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-coco_pt-in1k_210e-256x192-95f5967e_20230123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-l_udp_8xb256-210e_coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: cspnext-l_udp_8xb256-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.750
+      AP@0.5: 0.904
+      AP@0.75: 0.822
+      AR: 0.8
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-coco_pt-in1k_210e-256x192-661cdd8c_20230123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-tiny_udp_8xb256-210e_aic-coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data:
+    - COCO
+    - AIC
+  Name: cspnext-tiny_udp_8xb256-210e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.655
+      AP@0.5: 0.884
+      AP@0.75: 0.731
+      AR: 0.689
+      AR@0.5: 0.89
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-s_udp_8xb256-210e_aic-coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data:
+    - COCO
+    - AIC
+  Name: cspnext-s_udp_8xb256-210e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.7
+      AP@0.5: 0.905
+      AP@0.75: 0.783
+      AR: 0.733
+      AR@0.5: 0.918
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-s_udp-aic-coco_210e-256x192-92f5a029_20230130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-m_udp_8xb256-210e_aic-coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data:
+    - COCO
+    - AIC
+  Name: cspnext-m_udp_8xb256-210e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.748
+      AP@0.5: 0.925
+      AP@0.75: 0.818
+      AR: 0.777
+      AR@0.5: 0.933
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/cspnext-l_udp_8xb256-210e_aic-coco-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: *id001
+    Training Data:
+    - COCO
+    - AIC
+  Name: cspnext-l_udp_8xb256-210e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.772
+      AP@0.5: 0.936
+      AP@0.75: 0.839
+      AR: 0.799
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-l_udp-aic-coco_210e-256x192-273b7631_20230130.pth

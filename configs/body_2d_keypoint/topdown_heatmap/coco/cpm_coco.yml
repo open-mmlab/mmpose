@@ -1,0 +1,40 @@
+Collections:
+- Name: CPM
+  Paper:
+    Title: Convolutional pose machines
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/cpm.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_cpm_8xb64-210e_coco-256x192.py
+  In Collection: CPM
+  Metadata:
+    Architecture: &id001
+    - CPM
+    Training Data: COCO
+  Name: td-hm_cpm_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.627
+      AP@0.5: 0.862
+      AP@0.75: 0.709
+      AR: 0.689
+      AR@0.5: 0.906
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_cpm_8xb64-210e_coco-256x192-0e978875_20220920.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_cpm_8xb32-210e_coco-384x288.py
+  In Collection: CPM
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_cpm_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.652
+      AP@0.5: 0.865
+      AP@0.75: 0.730
+      AR: 0.710
+      AR@0.5: 0.907
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_cpm_8xb32-210e_coco-384x288-165487b8_20221011.pth

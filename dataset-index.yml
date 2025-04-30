@@ -1,0 +1,72 @@
+openxlab: true
+coco2017:
+  dataset: OpenDataLab/COCO_2017
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_coco2017.sh
+
+mpii:
+  dataset: OpenDataLab/MPII_Human_Pose
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_mpii.sh
+
+aic:
+  dataset: OpenDataLab/AI_Challenger
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_aic.sh
+
+crowdpose:
+  dataset: OpenDataLab/CrowdPose
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_crowdpose.sh
+
+halpe:
+  dataset: OpenDataLab/Halpe
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_halpe.sh
+
+lapa:
+  dataset: OpenDataLab/LaPa
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_lapa.sh
+
+300w:
+  dataset: OpenDataLab/300w
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_300w.sh
+
+wflw:
+  dataset: OpenDataLab/WFLW
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_wflw.sh
+
+onehand10k:
+  dataset: OpenDataLab/OneHand10K
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_onehand10k.sh
+
+freihand:
+  dataset: OpenDataLab/FreiHAND
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_freihand.sh
+
+ap10k:
+  dataset: OpenDataLab/AP-10K
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_ap10k.sh
+
+hagrid:
+  dataset: OpenDataLab/HaGRID
+  download_root: data
+  data_root: data/pose
+  script: tools/dataset_converters/scripts/preprocess_hagrid.sh

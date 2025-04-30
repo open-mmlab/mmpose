@@ -1,0 +1,18 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/exlpose/td-hm_hrnet-w32_8xb64-210e_exlpose-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture:
+    - HRNet
+    Training Data: ExLPose-LL
+  Name: td-hm_hrnet-w32_8xb64-210e_exlpose-256x192
+  Results:
+  - Dataset: ExLPose
+    Metrics:
+      AP: 0.401
+      AP@0.5: 0.64
+      AP@0.75: 0.40
+      AR: 0.452
+      AR@0.5: 0.693
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/exlpose/td-hm_hrnet-w32_8xb64-210e_exlpose-ll-256x192.pth

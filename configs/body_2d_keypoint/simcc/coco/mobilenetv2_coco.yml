@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/simcc/coco/simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192.py
+  In Collection: SimCC
+  Metadata:
+    Architecture: &id001
+    - SimCC
+    - MobilenetV2
+    Training Data: COCO
+  Name: simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.62
+      AP@0.5: 0.855
+      AP@0.75: 0.697
+      AR: 0.678
+      AR@0.5: 0.902
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_mobilenetv2_wo-deconv-8xb64-210e_coco-256x192-4b0703bb_20221010.pth

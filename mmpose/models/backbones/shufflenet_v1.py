@@ -1,19 +1,19 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import logging
 
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as cp
-from mmcv.cnn import (ConvModule, build_activation_layer, constant_init,
-                      normal_init)
+from mmcv.cnn import ConvModule, build_activation_layer
+from mmengine.model import BaseModule
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
-from .utils import channel_shuffle, load_checkpoint, make_divisible
+from .utils import channel_shuffle, make_divisible
 
 
-class ShuffleUnit(nn.Module):
+class ShuffleUnit(BaseModule):
     """ShuffleUnit block.
 
     ShuffleNet unit with pointwise group convolution (GConv) and channel
@@ -25,7 +25,7 @@ class ShuffleUnit(nn.Module):
         groups (int, optional): The number of groups to be used in grouped 1x1
             convolutions in each ShuffleUnit. Default: 3
         first_block (bool, optional): Whether it is the first ShuffleUnit of a
-            sequential ShuffleUnits. Default: False, which means not using the
+            sequential ShuffleUnits. Default: True, which means not using the
             grouped 1x1 convolution.
         combine (str, optional): The ways to combine the input and output
             branches. Default: 'add'.
@@ -38,6 +38,8 @@ class ShuffleUnit(nn.Module):
         with_cp (bool, optional): Use checkpoint or not. Using checkpoint
             will save some memory while slowing down the training speed.
             Default: False.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
 
     Returns:
         Tensor: The output tensor.
@@ -52,11 +54,12 @@ class ShuffleUnit(nn.Module):
                  conv_cfg=None,
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU'),
-                 with_cp=False):
+                 with_cp=False,
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         act_cfg = copy.deepcopy(act_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.first_block = first_block
@@ -152,7 +155,7 @@ class ShuffleUnit(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ShuffleNetV1(BaseBackbone):
     """ShuffleNetV1 backbone.
 
@@ -176,6 +179,16 @@ class ShuffleNetV1(BaseBackbone):
             and its variants only. Default: False.
         with_cp (bool): Use checkpoint or not. Using checkpoint will save some
             memory while slowing down the training speed. Default: False.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.01, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    bias=0.0001
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
     """
 
     def __init__(self,
@@ -187,11 +200,19 @@ class ShuffleNetV1(BaseBackbone):
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU'),
                  norm_eval=False,
-                 with_cp=False):
+                 with_cp=False,
+                 init_cfg=[
+                     dict(type='Normal', std=0.01, layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         bias=0.0001,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         act_cfg = copy.deepcopy(act_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.stage_blocks = [4, 8, 4]
         self.groups = groups
 
@@ -257,24 +278,15 @@ class ShuffleNetV1(BaseBackbone):
                 param.requires_grad = False
 
     def init_weights(self, pretrained=None):
-        if isinstance(pretrained, str):
-            logger = logging.getLogger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            for name, m in self.named_modules():
-                if isinstance(m, nn.Conv2d):
-                    if 'conv1' in name:
-                        normal_init(m, mean=0, std=0.01)
-                    else:
-                        normal_init(m, mean=0, std=1.0 / m.weight.shape[1])
-                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m.weight, val=1, bias=0.0001)
-                    if isinstance(m, _BatchNorm):
-                        if m.running_mean is not None:
-                            nn.init.constant_(m.running_mean, 0)
-        else:
-            raise TypeError('pretrained must be a str or None. But received '
-                            f'{type(pretrained)}')
+        super(ShuffleNetV1, self).init_weights()
+
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
+            return
+
+        for name, m in self.named_modules():
+            if isinstance(m, nn.Conv2d) and 'conv1' not in name:
+                nn.init.normal_(m.weight, mean=0, std=1.0 / m.weight.shape[1])
 
     def make_layer(self, out_channels, num_blocks, first_block=False):
         """Stack ShuffleUnit blocks to make a layer.
@@ -283,7 +295,7 @@ class ShuffleNetV1(BaseBackbone):
             out_channels (int): out_channels of the block.
             num_blocks (int): Number of blocks.
             first_block (bool, optional): Whether is the first ShuffleUnit of a
-                sequential ShuffleUnits. Default: False, which means not using
+                sequential ShuffleUnits. Default: False, which means using
                 the grouped 1x1 convolution.
         """
         layers = []
@@ -315,8 +327,6 @@ class ShuffleNetV1(BaseBackbone):
             if i in self.out_indices:
                 outs.append(x)
 
-        if len(outs) == 1:
-            return outs[0]
         return tuple(outs)
 
     def train(self, mode=True):

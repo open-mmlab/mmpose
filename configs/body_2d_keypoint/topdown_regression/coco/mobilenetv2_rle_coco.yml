@@ -1,0 +1,20 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192.py
+  In Collection: RLE
+  Metadata:
+    Architecture: &id001
+    - DeepPose
+    - RLE
+    - MobileNet
+    Training Data: COCO
+  Name: td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.593
+      AP@0.5: 0.836
+      AP@0.75: 0.66
+      AR: 0.644
+      AR@0.5: 0.877
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_regression/coco/td-reg_mobilenetv2_rle-pretrained-8xb64-210e_coco-256x192-39b73bd5_20220922.pth

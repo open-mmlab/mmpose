@@ -1,4 +1,8 @@
-recommonmark
-sphinx
+docutils==0.16.0
+markdown
+myst-parser
+-e git+https://github.com/gaotongxiao/pytorch_sphinx_theme.git#egg=pytorch_sphinx_theme
+sphinx==4.5.0
+sphinx_copybutton
 sphinx_markdown_tables
-sphinx_rtd_theme
+urllib3<2.0.0

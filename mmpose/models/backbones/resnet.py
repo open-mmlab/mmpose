@@ -1,16 +1,17 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import copy
 
 import torch.nn as nn
 import torch.utils.checkpoint as cp
-from mmcv.cnn import (ConvModule, build_conv_layer, build_norm_layer,
-                      constant_init, kaiming_init)
-from mmcv.utils.parrots_wrapper import _BatchNorm
+from mmcv.cnn import ConvModule, build_conv_layer, build_norm_layer
+from mmengine.model import BaseModule, constant_init
+from mmengine.utils.dl_utils.parrots_wrapper import _BatchNorm
 
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
-class BasicBlock(nn.Module):
+class BasicBlock(BaseModule):
     """BasicBlock for ResNet.
 
     Args:
@@ -31,6 +32,8 @@ class BasicBlock(nn.Module):
             Default: None
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -43,10 +46,11 @@ class BasicBlock(nn.Module):
                  style='pytorch',
                  with_cp=False,
                  conv_cfg=None,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.expansion = expansion
@@ -127,7 +131,7 @@ class BasicBlock(nn.Module):
         return out
 
 
-class Bottleneck(nn.Module):
+class Bottleneck(BaseModule):
     """Bottleneck block for ResNet.
 
     Args:
@@ -148,6 +152,8 @@ class Bottleneck(nn.Module):
             Default: None
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -160,10 +166,11 @@ class Bottleneck(nn.Module):
                  style='pytorch',
                  with_cp=False,
                  conv_cfg=None,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         assert style in ['pytorch', 'caffe']
 
         self.in_channels = in_channels
@@ -419,7 +426,7 @@ class ResLayer(nn.Sequential):
         super().__init__(*layers)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ResNet(BaseBackbone):
     """ResNet backbone.
 
@@ -458,11 +465,20 @@ class ResNet(BaseBackbone):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import ResNet
         >>> import torch
-        >>> self = ResNet(depth=18)
+        >>> self = ResNet(depth=18, out_indices=(0, 1, 2, 3))
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 32, 32)
         >>> level_outputs = self.forward(inputs)
@@ -501,10 +517,17 @@ class ResNet(BaseBackbone):
                  norm_cfg=dict(type='BN', requires_grad=True),
                  norm_eval=False,
                  with_cp=False,
-                 zero_init_residual=True):
+                 zero_init_residual=True,
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super(ResNet, self).__init__(init_cfg)
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
         self.depth = depth
@@ -635,27 +658,21 @@ class ResNet(BaseBackbone):
             for param in m.parameters():
                 param.requires_grad = False
 
-    def init_weights(self, pretrained=None):
-        """Initialize the weights in backbone.
+    def init_weights(self):
+        """Initialize the weights in backbone."""
+        super(ResNet, self).init_weights()
 
-        Args:
-            pretrained (str, optional): Path to pre-trained weights.
-                Defaults to None.
-        """
-        super().init_weights(pretrained)
-        if pretrained is None:
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
+            # Suppress zero_init_residual if use pretrained model.
+            return
+
+        if self.zero_init_residual:
             for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    kaiming_init(m)
-                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m, 1)
-
-            if self.zero_init_residual:
-                for m in self.modules():
-                    if isinstance(m, Bottleneck):
-                        constant_init(m.norm3, 0)
-                    elif isinstance(m, BasicBlock):
-                        constant_init(m.norm2, 0)
+                if isinstance(m, Bottleneck):
+                    constant_init(m.norm3, 0)
+                elif isinstance(m, BasicBlock):
+                    constant_init(m.norm2, 0)
 
     def forward(self, x):
         """Forward function."""
@@ -672,8 +689,6 @@ class ResNet(BaseBackbone):
             x = res_layer(x)
             if i in self.out_indices:
                 outs.append(x)
-        if len(outs) == 1:
-            return outs[0]
         return tuple(outs)
 
     def train(self, mode=True):
@@ -687,7 +702,7 @@ class ResNet(BaseBackbone):
                     m.eval()
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ResNetV1d(ResNet):
     r"""ResNetV1d variant described in `Bag of Tricks
     <https://arxiv.org/pdf/1812.01187.pdf>`__.

@@ -1,0 +1,16 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/mpii/cspnext-m_udp_8xb64-210e_mpii-256x256.py
+  In Collection: UDP
+  Metadata:
+    Architecture:
+    - UDP
+    - CSPNeXt
+    Training Data: MPII
+  Name: cspnext-m_udp_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.902
+      Mean@0.1: 0.303
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-mpii_pt-in1k_210e-256x256-68d0402f_20230208.pth

@@ -1,0 +1,19 @@
+Models:
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ap10k/cspnext-m_udp_8xb64-210e_ap10k-256x256.py
+  In Collection: UDP
+  Metadata:
+    Architecture: &id001
+    - UDP
+    - HRNet
+    Training Data: AP-10K
+  Name: cspnext-m_udp_8xb64-210e_ap10k-256x256
+  Results:
+  - Dataset: AP-10K
+    Metrics:
+      AP: 0.703
+      AP@0.5: 0.944
+      AP@0.75: 0.776
+      AP (L): 0.71
+      AP (M): 0.513
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-ap10k_pt-in1k_210e-256x256-1f2d947a_20230123.pth

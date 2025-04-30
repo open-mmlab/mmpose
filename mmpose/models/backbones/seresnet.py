@@ -1,6 +1,7 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import torch.utils.checkpoint as cp
 
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import Bottleneck, ResLayer, ResNet
 from .utils.se_layer import SELayer
 
@@ -53,7 +54,7 @@ class SEBottleneck(Bottleneck):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class SEResNet(ResNet):
     """SEResNet backbone.
 
@@ -92,20 +93,29 @@ class SEResNet(ResNet):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import SEResNet
         >>> import torch
-        >>> self = SEResNet(depth=50)
+        >>> self = SEResNet(depth=50, out_indices=(0, 1, 2, 3))
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 224, 224)
         >>> level_outputs = self.forward(inputs)
         >>> for level_out in level_outputs:
         ...     print(tuple(level_out.shape))
-        (1, 64, 56, 56)
-        (1, 128, 28, 28)
-        (1, 256, 14, 14)
-        (1, 512, 7, 7)
+        (1, 256, 56, 56)
+        (1, 512, 28, 28)
+        (1, 1024, 14, 14)
+        (1, 2048, 7, 7)
     """
 
     arch_settings = {

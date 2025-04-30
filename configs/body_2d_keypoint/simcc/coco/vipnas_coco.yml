@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192.py
+  In Collection: SimCC
+  Metadata:
+    Architecture: &id001
+    - SimCC
+    - ViPNAS
+    Training Data: COCO
+  Name: simcc_vipnas-mbv3_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.695
+      AP@0.5: 0.883
+      AP@0.75: 0.772
+      AR: 0.755
+      AR@0.5: 0.927
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_vipnas-mbv3_8xb64-210e_coco-256x192-719f3489_20220922.pth

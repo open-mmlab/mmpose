@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_udp-8xb64-210e_onehand10k-256x256.py
+  In Collection: UDP
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - UDP
+    Training Data: OneHand10K
+  Name: td-hm_hrnetv2-w18_udp-8xb64-210e_onehand10k-256x256
+  Results:
+  - Dataset: OneHand10K
+    Metrics:
+      AUC: 0.571
+      EPE: 23.88
+      PCK@0.2: 0.99
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_onehand10k_256x256_udp-0d1b515d_20210330.pth

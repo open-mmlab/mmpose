@@ -1,0 +1,41 @@
+Collections:
+- Name: SimCC
+  Paper:
+    Title: A Simple Coordinate Classification Perspective for Human Pose Estimation
+    URL: https://arxiv.org/abs/2107.03332
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/simcc.md
+Models:
+- Config: configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192.py
+  In Collection: SimCC
+  Metadata:
+    Architecture: &id001
+    - SimCC
+    - ResNet
+    Training Data: COCO
+  Name: simcc_res50_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.721
+      AP@0.5: 0.900
+      AP@0.75: 0.798
+      AR: 0.781
+      AR@0.5: 0.937
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb64-210e_coco-256x192-8e0f5b59_20220919.pth
+- Config: configs/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288.py
+  In Collection: SimCC
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: simcc_res50_8xb32-140e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.735
+      AP@0.5: 0.899
+      AP@0.75: 0.800
+      AR: 0.790
+      AR@0.5: 0.939
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/simcc/coco/simcc_res50_8xb32-140e_coco-384x288-45c3ba34_20220913.pth

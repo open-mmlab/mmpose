@@ -1,0 +1,56 @@
+Collections:
+- Name: Albumentations
+  Paper:
+    Title: 'Albumentations: fast and flexible image augmentations'
+    URL: https://www.mdpi.com/649002
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/techniques/albumentations.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_coarsedropout-8xb64-210e_coco-256x192.py
+  In Collection: Albumentations
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_coarsedropout-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.908
+      AP@0.75: 0.822
+      AR: 0.805
+      AR@0.5: 0.944
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_coarsedropout-0f16a0ce_20210320.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_gridmask-8xb64-210e_coco-256x192.py
+  In Collection: Albumentations
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_gridmask-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.752
+      AP@0.5: 0.906
+      AP@0.75: 0.825
+      AR: 0.804
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_gridmask-868180df_20210320.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_photometric-8xb64-210e_coco-256x192.py
+  In Collection: Albumentations
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_photometric-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.754
+      AP@0.5: 0.908
+      AP@0.75: 0.825
+      AR: 0.805
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_photometric-308cf591_20210320.pth

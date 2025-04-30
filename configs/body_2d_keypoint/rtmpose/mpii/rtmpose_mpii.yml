@@ -1,0 +1,15 @@
+Models:
+- Config: configs/body_2d_keypoint/rtmpose/mpii/rtmpose-m_8xb64-210e_mpii-256x256.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+    - RTMPose
+    Training Data: MPII
+  Name: rtmpose-m_8xb64-210e_mpii-256x256
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.907
+      Mean@0.1: 0.348
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-mpii_pt-aic-coco_210e-256x256-ec4dbec8_20230206.pth

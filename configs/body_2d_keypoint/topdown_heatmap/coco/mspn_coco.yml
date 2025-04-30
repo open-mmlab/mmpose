@@ -1,0 +1,72 @@
+Collections:
+- Name: MSPN
+  Paper:
+    Title: Rethinking on Multi-Stage Networks for Human Pose Estimation
+    URL: https://arxiv.org/abs/1901.00148
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/mspn.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_mspn50_8xb32-210e_coco-256x192.py
+  In Collection: MSPN
+  Metadata:
+    Architecture: &id001
+    - MSPN
+    Training Data: COCO
+  Name: td-hm_mspn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.723
+      AP@0.5: 0.895
+      AP@0.75: 0.794
+      AR: 0.788
+      AR@0.5: 0.934
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/mspn/mspn50_coco_256x192-8fbfb5d0_20201123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_2xmspn50_8xb32-210e_coco-256x192.py
+  In Collection: MSPN
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_2xmspn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.754
+      AP@0.5: 0.903
+      AP@0.75: 0.826
+      AR: 0.816
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/mspn/2xmspn50_coco_256x192-c8765a5c_20201123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_3xmspn50_8xb32-210e_coco-256x192.py
+  In Collection: MSPN
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_3xmspn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.758
+      AP@0.5: 0.904
+      AP@0.75: 0.83
+      AR: 0.821
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/mspn/3xmspn50_coco_256x192-e348f18e_20201123.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_4xmspn50_8xb32-210e_coco-256x192.py
+  In Collection: MSPN
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_4xmspn50_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.765
+      AP@0.5: 0.906
+      AP@0.75: 0.835
+      AR: 0.826
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/mspn/4xmspn50_coco_256x192-7b837afb_20201123.pth

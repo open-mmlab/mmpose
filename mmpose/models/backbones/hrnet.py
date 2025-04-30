@@ -1,17 +1,17 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import copy
 
 import torch.nn as nn
-from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
-                      normal_init)
+from mmcv.cnn import build_conv_layer, build_norm_layer
+from mmengine.model import BaseModule, constant_init
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.utils import get_root_logger
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
+from .base_backbone import BaseBackbone
 from .resnet import BasicBlock, Bottleneck, get_expansion
-from .utils import load_checkpoint
 
 
-class HRModule(nn.Module):
+class HRModule(BaseModule):
     """High-Resolution Module for HRNet.
 
     In this module, every branch has 4 BasicBlocks/Bottlenecks. Fusion/Exchange
@@ -28,11 +28,12 @@ class HRModule(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN'),
-                 upsample_cfg=dict(mode='nearest', align_corners=None)):
+                 upsample_cfg=dict(mode='nearest', align_corners=None),
+                 init_cfg=None):
 
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self._check_branches(num_branches, num_blocks, in_channels,
                              num_channels)
 
@@ -210,8 +211,8 @@ class HRModule(nn.Module):
         return x_fuse
 
 
-@BACKBONES.register_module()
-class HRNet(nn.Module):
+@MODELS.register_module()
+class HRNet(BaseBackbone):
     """HRNet backbone.
 
     `High-Resolution Representations for Labeling Pixels and Regions
@@ -229,6 +230,17 @@ class HRNet(nn.Module):
             memory while slowing down the training speed.
         zero_init_residual (bool): whether to use zero init for last norm layer
             in resblocks to let them behave as identity.
+        frozen_stages (int): Stages to be frozen (stop grad and set eval mode).
+            -1 means not freezing any parameters. Default: -1.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.001, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import HRNet
@@ -265,30 +277,36 @@ class HRNet(nn.Module):
         >>> for level_out in level_outputs:
         ...     print(tuple(level_out.shape))
         (1, 32, 8, 8)
-        (1, 64, 4, 4)
-        (1, 128, 2, 2)
-        (1, 256, 1, 1)
     """
 
     blocks_dict = {'BASIC': BasicBlock, 'BOTTLENECK': Bottleneck}
 
-    def __init__(self,
-                 extra,
-                 in_channels=3,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 norm_eval=False,
-                 with_cp=False,
-                 zero_init_residual=False):
+    def __init__(
+        self,
+        extra,
+        in_channels=3,
+        conv_cfg=None,
+        norm_cfg=dict(type='BN'),
+        norm_eval=False,
+        with_cp=False,
+        zero_init_residual=False,
+        frozen_stages=-1,
+        init_cfg=[
+            dict(type='Normal', std=0.001, layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.extra = extra
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
+        self.init_cfg = init_cfg
         self.norm_eval = norm_eval
         self.with_cp = with_cp
         self.zero_init_residual = zero_init_residual
+        self.frozen_stages = frozen_stages
 
         # stem net
         self.norm1_name, norm1 = build_norm_layer(self.norm_cfg, 64, postfix=1)
@@ -376,6 +394,8 @@ class HRNet(nn.Module):
             self.stage4_cfg,
             num_channels,
             multiscale_output=self.stage4_cfg.get('multiscale_output', False))
+
+        self._freeze_stages()
 
     @property
     def norm1(self):
@@ -502,31 +522,47 @@ class HRNet(nn.Module):
 
         return nn.Sequential(*hr_modules), in_channels
 
-    def init_weights(self, pretrained=None):
-        """Initialize the weights in backbone.
+    def _freeze_stages(self):
+        """Freeze parameters."""
+        if self.frozen_stages >= 0:
+            self.norm1.eval()
+            self.norm2.eval()
 
-        Args:
-            pretrained (str, optional): Path to pre-trained weights.
-                Defaults to None.
-        """
-        if isinstance(pretrained, str):
-            logger = get_root_logger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
+            for m in [self.conv1, self.norm1, self.conv2, self.norm2]:
+                for param in m.parameters():
+                    param.requires_grad = False
+
+        for i in range(1, self.frozen_stages + 1):
+            if i == 1:
+                m = getattr(self, 'layer1')
+            else:
+                m = getattr(self, f'stage{i}')
+
+            m.eval()
+            for param in m.parameters():
+                param.requires_grad = False
+
+            if i < 4:
+                m = getattr(self, f'transition{i}')
+                m.eval()
+                for param in m.parameters():
+                    param.requires_grad = False
+
+    def init_weights(self):
+        """Initialize the weights in backbone."""
+        super(HRNet, self).init_weights()
+
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
+            # Suppress zero_init_residual if use pretrained model.
+            return
+
+        if self.zero_init_residual:
             for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    normal_init(m, std=0.001)
-                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m, 1)
-
-            if self.zero_init_residual:
-                for m in self.modules():
-                    if isinstance(m, Bottleneck):
-                        constant_init(m.norm3, 0)
-                    elif isinstance(m, BasicBlock):
-                        constant_init(m.norm2, 0)
-        else:
-            raise TypeError('pretrained must be a str or None')
+                if isinstance(m, Bottleneck):
+                    constant_init(m.norm3, 0)
+                elif isinstance(m, BasicBlock):
+                    constant_init(m.norm2, 0)
 
     def forward(self, x):
         """Forward function."""
@@ -562,11 +598,12 @@ class HRNet(nn.Module):
                 x_list.append(y_list[i])
         y_list = self.stage4(x_list)
 
-        return y_list
+        return tuple(y_list)
 
     def train(self, mode=True):
         """Convert the model into training mode."""
         super().train(mode)
+        self._freeze_stages()
         if mode and self.norm_eval:
             for m in self.modules():
                 if isinstance(m, _BatchNorm):

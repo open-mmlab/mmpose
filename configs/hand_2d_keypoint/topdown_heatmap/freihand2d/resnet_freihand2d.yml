@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/freihand2d/td-hm_res50_8xb64-100e_freihand2d-224x224.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: FreiHand
+  Name: td-hm_res50_8xb64-100e_freihand2d-224x224
+  Results:
+  - Dataset: FreiHand
+    Metrics:
+      AUC: 0.868
+      EPE: 3.27
+      PCK@0.2: 0.999
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth

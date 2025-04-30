@@ -1,0 +1,25 @@
+Collections:
+- Name: IPR
+  Paper:
+    Title: Integral human pose regression
+    URL: https://arxiv.org/abs/1711.08229
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/algorithms/ipr.md
+Models:
+- Config: configs/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256.py
+  In Collection: IPR
+  Metadata:
+    Architecture: &id001
+    - IPR
+    - ResNet
+    Training Data: COCO
+  Name: ipr_res50_8xb64-210e_coco-256x256
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.633
+      AP@0.5: 0.86
+      AP@0.75: 0.703
+      AR: 0.73
+      AR@0.5: 0.919
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/integral_regression/coco/ipr_res50_8xb64-210e_coco-256x256-a3898a33_20220913.pth

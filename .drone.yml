@@ -1,0 +1,102 @@
+---
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+#######################         Jobs below are used to build only             #########################################
+#######################        master  branches for all containers            #########################################
+#######################                                                       #########################################
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+# This pipeline would be used after each merge request to build mmpose latest docker images
+kind: pipeline
+type: docker
+name: mmpose LS_mmpose_latest
+
+platform:
+  arch: amd64
+  os: linux
+
+trigger:
+  branch:
+    - main
+  event:
+    - push
+
+clone:
+  depth: 1
+
+steps:
+  - name: Build latest LS_mmpose docker image
+    image: plugins/docker:20.14
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      dockerfile: docker/LabelStudio.Dockerfile
+      context: docker/
+      registry: quay.io
+      repo: quay.io/logivations/ml_all
+      privileged: true
+      build_args:
+        - BUILDKIT_INLINE_CACHE=1
+      cache_from: quay.io/logivations/ml_all:LS_mmpose_latest
+      tags:
+        - LS_mmpose_latest
+        - LS_mmpose_latest_${DRONE_COMMIT_SHA}
+      username:
+        from_secret: DOCKER_QUAY_USERNAME
+      password:
+        from_secret: DOCKER_QUAY_PASSWORD
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+#######################              Jobs below are used to run               #########################################
+#######################             pull request validation only              #########################################
+#######################                                                       #########################################
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+# 2. Build  PR docker image for mmpose
+---
+kind: pipeline
+type: docker
+name: PR validation build mmpose images
+
+platform:
+  arch: amd64
+  os: linux
+
+trigger:
+  event:
+    include:
+      - pull_request
+
+clone:
+  depth: 50
+
+steps:
+  - name: Build LS_mmpose docker image for pull request
+    image: plugins/docker:20.14
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      dockerfile: docker/LabelStudio.Dockerfile
+      context: docker/
+      registry: quay.io
+      repo: quay.io/logivations/ml_all
+      privileged: true
+      build_args:
+        - BUILDKIT_INLINE_CACHE=1
+      cache_from:
+        - quay.io/logivations/ml_all:LS_mmpose_latest
+        - quay.io/logivations/ml_all:LS_mmpose_pr${DRONE_PULL_REQUEST}
+      tags:
+        - LS_mmpose_pr${DRONE_PULL_REQUEST}
+        - LS_mmpose_pr${DRONE_PULL_REQUEST}_${DRONE_COMMIT_SHA}
+      username:
+        from_secret: DOCKER_QUAY_USERNAME
+      password:
+        from_secret: DOCKER_QUAY_PASSWORD

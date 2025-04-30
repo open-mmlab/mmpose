@@ -1,0 +1,199 @@
+version: 2.1
+
+# the default pipeline parameters, which will be updated according to
+# the results of the path-filtering orb
+parameters:
+  lint_only:
+    type: boolean
+    default: true
+
+jobs:
+  lint:
+    docker:
+      - image: cimg/python:3.7.4
+    steps:
+      - checkout
+      - run:
+          name: Install pre-commit hook
+          command: |
+            pip install pre-commit
+            pre-commit install
+      - run:
+          name: Linting
+          command: pre-commit run --all-files
+      - run:
+          name: Check docstring coverage
+          command: |
+            pip install interrogate
+            interrogate -v --ignore-init-method --ignore-module --ignore-nested-functions --ignore-regex "__repr__" --fail-under 80 mmpose
+  build_cpu:
+    parameters:
+      # The python version must match available image tags in
+      # https://circleci.com/developer/images/image/cimg/python
+      python:
+        type: string
+      torch:
+        type: string
+      torchvision:
+        type: string
+    docker:
+      - image: cimg/python:<< parameters.python >>
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: Install Libraries
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg git
+      - run:
+          name: Configure Python & pip
+          command: |
+            pip install --upgrade pip
+            pip install wheel
+      - run:
+          name: Install PyTorch
+          command: |
+            python -V
+            pip install torch==<< parameters.torch >>+cpu torchvision==<< parameters.torchvision >>+cpu -f https://download.pytorch.org/whl/torch_stable.html
+      - run:
+          name: Install mmpose dependencies
+          command: |
+            pip install -U numpy
+            pip install git+https://github.com/open-mmlab/mmengine.git@main
+            pip install -U openmim
+            mim install 'mmcv >= 2.0.0'
+            pip install git+https://github.com/open-mmlab/mmdetection.git@dev-3.x
+            pip install -r requirements/tests.txt
+            pip install -r requirements/albu.txt
+            pip install -r requirements/poseval.txt
+      - run:
+          name: Build and install
+          command: |
+            pip install -e .
+      - run:
+          name: Run unittests
+          command: |
+            coverage run --branch --source mmpose -m pytest tests/
+            coverage xml
+            coverage report -m
+  build_cuda:
+    parameters:
+      torch:
+        type: string
+      cuda:
+        type: enum
+        enum: ["11.0", "11.7"]
+      cudnn:
+        type: integer
+        default: 8
+    machine:
+      image: ubuntu-2004-cuda-11.4:202110-01
+      # docker_layer_caching: true
+    resource_class: gpu.nvidia.small
+    steps:
+      - checkout
+      - run:
+          # Cloning repos in VM since Docker doesn't have access to the private key
+          name: Clone Repos
+          command: |
+            git clone -b main --depth 1 https://github.com/open-mmlab/mmengine.git /home/circleci/mmengine
+            git clone -b dev-3.x --depth 1 https://github.com/open-mmlab/mmdetection.git /home/circleci/mmdetection
+      - run:
+          name: Build Docker image
+          command: |
+            docker build .circleci/docker -t mmpose:gpu --build-arg PYTORCH=<< parameters.torch >> --build-arg CUDA=<< parameters.cuda >> --build-arg CUDNN=<< parameters.cudnn >>
+            docker run --gpus all -t -d -v /home/circleci/project:/mmpose -v /home/circleci/mmengine:/mmengine -v /home/circleci/mmdetection:/mmdetection -w /mmpose --name mmpose mmpose:gpu
+      - run:
+          name: Install mmpose dependencies
+          command: |
+            docker exec mmpose apt install git -y
+            docker exec mmpose pip install -U numpy
+            docker exec mmpose pip install -e /mmengine
+            docker exec mmpose pip install -U openmim
+            docker exec mmpose mim install 'mmcv >= 2.0.0'
+            docker exec mmpose pip install -e /mmdetection
+            docker exec mmpose pip install -r requirements/tests.txt
+            docker exec mmpose pip install -r requirements/albu.txt
+            docker exec mmpose pip install -r requirements/poseval.txt
+      - run:
+          name: Build and install
+          command: |
+            docker exec mmpose pip install -e .
+      - run:
+          name: Run unittests
+          command: |
+            docker exec mmpose pytest tests/
+
+workflows:
+  pr_stage_lint:
+    when: << pipeline.parameters.lint_only >>
+    jobs:
+      - lint:
+          name: lint
+          filters:
+            branches:
+              ignore:
+                - dev-1.x
+                - main
+  pr_stage_test:
+    when:
+      not:
+        << pipeline.parameters.lint_only >>
+    jobs:
+      - lint:
+          name: lint
+          filters:
+            branches:
+              ignore:
+                - dev-1.x
+                - main
+      - build_cpu:
+          name: minimum_version_cpu
+          torch: 1.7.1
+          torchvision: 0.8.2
+          python: 3.7.4
+          requires:
+            - lint
+      - build_cpu:
+          name: maximum_version_cpu
+          torch: 2.0.0
+          torchvision: 0.15.1
+          python: 3.9.0
+          requires:
+            - minimum_version_cpu
+      - hold:
+          type: approval
+          requires:
+            - maximum_version_cpu
+      - build_cuda:
+          name: mainstream_version_gpu
+          torch: 1.7.1
+          # Use double quotation mark to explicitly specify its type
+          # as string instead of number
+          cuda: "11.0"
+          requires:
+            - hold
+      - build_cuda:
+          name: maximum_version_gpu
+          torch: 2.0.0
+          cuda: "11.7"
+          cudnn: 8
+          requires:
+            - hold
+  merge_stage_test:
+    when:
+      not:
+        << pipeline.parameters.lint_only >>
+    jobs:
+      - build_cuda:
+          name: minimum_version_gpu
+          torch: 1.7.1
+          # Use double quotation mark to explicitly specify its type
+          # as string instead of number
+          cuda: "11.0"
+          filters:
+            branches:
+              only:
+                - dev-1.x
+                - main

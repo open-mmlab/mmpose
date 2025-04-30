@@ -1,35 +1,49 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import copy
 
 import torch
 import torch.nn as nn
-from mmcv.cnn import ConvModule, constant_init, normal_init
-from torch.nn.modules.batchnorm import _BatchNorm
+from mmcv.cnn import ConvModule
+from mmengine.model import BaseModule
 
-from mmpose.utils import get_root_logger
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
-from .utils import load_checkpoint
 
 
-class CpmBlock(nn.Module):
+class CpmBlock(BaseModule):
     """CpmBlock for Convolutional Pose Machine.
-
-    Generate module recursively and use BasicBlock as the base unit.
 
     Args:
         in_channels (int): Input channels of this block.
-        out_channels (int): Output channels of this block.
+        channels (list): Output channels of each conv module.
+        kernels (list): Kernel sizes of each conv module.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
-    def __init__(self, in_channels, out_channels, norm_cfg=None):
-        super().__init__()
-        self.model = nn.Sequential(
-            ConvModule(
-                in_channels, out_channels, 11, padding=5, norm_cfg=norm_cfg),
-            ConvModule(
-                out_channels, out_channels, 11, padding=5, norm_cfg=norm_cfg),
-            ConvModule(
-                out_channels, out_channels, 11, padding=5, norm_cfg=norm_cfg))
+    def __init__(self,
+                 in_channels,
+                 channels=(128, 128, 128),
+                 kernels=(11, 11, 11),
+                 norm_cfg=None,
+                 init_cfg=None):
+        super().__init__(init_cfg=init_cfg)
+
+        assert len(channels) == len(kernels)
+        layers = []
+        for i in range(len(channels)):
+            if i == 0:
+                input_channels = in_channels
+            else:
+                input_channels = channels[i - 1]
+            layers.append(
+                ConvModule(
+                    input_channels,
+                    channels[i],
+                    kernels[i],
+                    padding=(kernels[i] - 1) // 2,
+                    norm_cfg=norm_cfg))
+        self.model = nn.Sequential(*layers)
 
     def forward(self, x):
         """Model forward function."""
@@ -37,7 +51,7 @@ class CpmBlock(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class CPM(BaseBackbone):
     """CPM backbone.
 
@@ -52,6 +66,15 @@ class CPM(BaseBackbone):
         middle_channels (int): Feature channel of conv after the middle stage.
         num_stages (int): Number of stages.
         norm_cfg (dict): Dictionary to construct and config norm layer.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.001, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import CPM
@@ -70,16 +93,22 @@ class CPM(BaseBackbone):
         (1, 17, 46, 46)
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 feat_channels=128,
-                 middle_channels=32,
-                 num_stages=6,
-                 norm_cfg=dict(type='BN', requires_grad=True)):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        feat_channels=128,
+        middle_channels=32,
+        num_stages=6,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        init_cfg=[
+            dict(type='Normal', std=0.001, layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
 
         assert in_channels == 3
 
@@ -107,8 +136,11 @@ class CPM(BaseBackbone):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
 
         self.cpm_stages = nn.ModuleList([
-            CpmBlock(middle_channels + out_channels, feat_channels, norm_cfg)
-            for _ in range(num_stages - 1)
+            CpmBlock(
+                middle_channels + out_channels,
+                channels=[feat_channels, feat_channels, feat_channels],
+                kernels=[11, 11, 11],
+                norm_cfg=norm_cfg) for _ in range(num_stages - 1)
         ])
 
         self.middle_conv = nn.ModuleList([
@@ -129,25 +161,6 @@ class CPM(BaseBackbone):
                 ConvModule(feat_channels, out_channels, 1, act_cfg=None))
             for _ in range(num_stages - 1)
         ])
-
-    def init_weights(self, pretrained=None):
-        """Initialize the weights in backbone.
-
-        Args:
-            pretrained (str, optional): Path to pre-trained weights.
-                Defaults to None.
-        """
-        if isinstance(pretrained, str):
-            logger = get_root_logger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    normal_init(m, std=0.001)
-                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m, 1)
-        else:
-            raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
         """Model forward function."""

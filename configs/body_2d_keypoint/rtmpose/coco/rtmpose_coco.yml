@@ -1,0 +1,170 @@
+Collections:
+- Name: RTMPose
+  Paper:
+    Title: "RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose"
+    URL: https://arxiv.org/abs/2303.07399
+  README: https://github.com/open-mmlab/mmpose/blob/main/projects/rtmpose/README.md
+Models:
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-t_8xb256-420e_coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: &id001
+    - RTMPose
+    Training Data: COCO
+  Name: rtmpose-t_8xb256-420e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.682
+      AP@0.5: 0.883
+      AP@0.75: 0.759
+      AR: 0.736
+      AR@0.5: 0.92
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-s_8xb256-420e_coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: rtmpose-s_8xb256-420e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.716
+      AP@0.5: 0.892
+      AP@0.75: 0.789
+      AR: 0.768
+      AR@0.5: 0.929
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: rtmpose-m_8xb256-420e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.746
+      AP@0.5: 0.899
+      AP@0.75: 0.817
+      AR: 0.795
+      AR@0.5: 0.935
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: rtmpose-l_8xb256-420e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.758
+      AP@0.5: 0.906
+      AP@0.75: 0.826
+      AR: 0.806
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-t_8xb256-420e_aic-coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: &id002
+    - COCO
+    - AI Challenger
+  Name: rtmpose-t_8xb256-420e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.685
+      AP@0.5: 0.88
+      AP@0.75: 0.761
+      AR: 0.738
+      AR@0.5: 0.918
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-tiny_simcc-aic-coco_pt-aic-coco_420e-256x192-cfc8f33d_20230126.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-s_8xb256-420e_aic-coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-s_8xb256-420e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.722
+      AP@0.5: 0.892
+      AP@0.75: 0.794
+      AR: 0.772
+      AR@0.5: 0.929
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-aic-coco_pt-aic-coco_420e-256x192-fcb2599b_20230126.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-m_8xb256-420e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.758
+      AP@0.5: 0.903
+      AP@0.75: 0.826
+      AR: 0.806
+      AR@0.5: 0.94
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_aic-coco-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-l_8xb256-420e_aic-coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.765
+      AP@0.5: 0.906
+      AP@0.75: 0.835
+      AR: 0.813
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-256x192-f016ffe0_20230126.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-384x288.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-m_8xb256-420e_aic-coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.770
+      AP@0.5: 0.908
+      AP@0.75: 0.833
+      AR: 0.816
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-384x288-a62a0b32_20230228.pth
+- Config: configs/body_2d_keypoint/rtmpose/coco/rtmpose-l_8xb256-420e_aic-coco-384x288.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-l_8xb256-420e_aic-coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.773
+      AP@0.5: 0.907
+      AP@0.75: 0.835
+      AR: 0.819
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-aic-coco_pt-aic-coco_420e-384x288-97d6cb0f_20230228.pth

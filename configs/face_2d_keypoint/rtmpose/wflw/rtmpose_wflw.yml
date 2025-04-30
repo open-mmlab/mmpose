@@ -1,0 +1,14 @@
+Models:
+- Config: configs/face_2d_keypoint/rtmpose/wflw/rtmpose-m_8xb64-60e_wflw-256x256.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+    - RTMPose
+    Training Data: WFLW
+  Name: rtmpose-m_8xb64-60e_wflw-256x256
+  Results:
+  - Dataset: WFLW
+    Metrics:
+      NME: 4.01
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-wflw_pt-aic-coco_60e-256x256-dc1dcdcf_20230228.pth

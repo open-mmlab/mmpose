@@ -1,0 +1,35 @@
+Models:
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ap10k/td-hm_res50_8xb64-210e_ap10k-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
+    Training Data: AP-10K
+  Name: td-hm_res50_8xb64-210e_ap10k-256x256
+  Results:
+  - Dataset: AP-10K
+    Metrics:
+      AP: 0.680
+      AP@0.5: 0.926
+      AP@0.75: 0.738
+      AP (L): 0.687
+      AP (M): 0.552
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ap10k/td-hm_res101_8xb64-210e_ap10k-256x256.py
+  In Collection: SimpleBaseline2D
+  Metadata:
+    Architecture: *id001
+    Training Data: AP-10K
+  Name: td-hm_res101_8xb64-210e_ap10k-256x256
+  Results:
+  - Dataset: AP-10K
+    Metrics:
+      AP: 0.681
+      AP@0.5: 0.921
+      AP@0.75: 0.751
+      AP (L): 0.690
+      AP (M): 0.545
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.pth

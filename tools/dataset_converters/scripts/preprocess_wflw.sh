@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+DOWNLOAD_DIR=$1
+DATA_ROOT=$2
+
+tar -zxvf $DOWNLOAD_DIR/OpenDataLab___WFLW/raw/WFLW.tar.gz.00 -C $DOWNLOAD_DIR/
+tar -xvf $DOWNLOAD_DIR/WFLW/WFLW.tar.00 -C $DATA_ROOT/
+rm -rf $DOWNLOAD_DIR/WFLW $DOWNLOAD_DIR/OpenDataLab___WFLW

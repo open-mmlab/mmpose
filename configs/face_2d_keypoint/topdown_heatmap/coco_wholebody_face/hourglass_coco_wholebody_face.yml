@@ -1,0 +1,14 @@
+Models:
+- Config: configs/face_2d_keypoint/topdown_heatmap/coco_wholebody_face/td-hm_hourglass52_8xb32-60e_coco-wholebody-face-256x256.py
+  In Collection: Hourglass
+  Metadata:
+    Architecture:
+    - Hourglass
+    Training Data: COCO-WholeBody-Face
+  Name: td-hm_hourglass52_8xb32-60e_coco-wholebody-face-256x256
+  Results:
+  - Dataset: COCO-WholeBody-Face
+    Metrics:
+      NME: 0.0587
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/hourglass/hourglass52_coco_wholebody_face_256x256-6994cf2e_20210909.pth

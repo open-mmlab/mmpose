@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_regression/rhd2d/td-reg_res50_8xb64-210e_rhd2d-256x256.py
+  In Collection: DeepPose
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+    Training Data: RHD
+  Name: td-reg_res50_8xb64-210e_rhd2d-256x256
+  Results:
+  - Dataset: RHD
+    Metrics:
+      AUC: 0.865
+      EPE: 3.32
+      PCK@0.2: 0.988
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/deeppose/deeppose_res50_rhd2d_256x256-37f1c4d3_20210330.pth

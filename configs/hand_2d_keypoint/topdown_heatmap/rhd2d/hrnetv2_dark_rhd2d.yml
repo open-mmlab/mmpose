@@ -1,0 +1,17 @@
+Models:
+- Config: configs/hand_2d_keypoint/topdown_heatmap/rhd2d/td-hm_hrnetv2-w18_dark-8xb64-210e_rhd2d-256x256.py
+  In Collection: DarkPose
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - DarkPose
+    Training Data: RHD
+  Name: td-hm_hrnetv2-w18_dark-8xb64-210e_rhd2d-256x256
+  Results:
+  - Dataset: RHD
+    Metrics:
+      AUC: 0.903
+      EPE: 2.18
+      PCK@0.2: 0.992
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark-4df3a347_20210330.pth

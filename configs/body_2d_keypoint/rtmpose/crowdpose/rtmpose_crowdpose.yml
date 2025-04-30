@@ -1,0 +1,19 @@
+Models:
+- Config: configs/body_2d_keypoint/rtmpose/crowdpose/rtmpose-m_8xb64-210e_crowdpose-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture:
+    - RTMPose
+    Training Data: CrowdPose
+  Name: rtmpose-t_8xb256-420e_coco-256x192
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.706
+      AP@0.5: 0.841
+      AP@0.75: 0.765
+      AP (E): 0.799
+      AP (M): 0.719
+      AP (L): 0.582
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-crowdpose_pt-aic-coco_210e-256x192-e6192cac_20230224.pth

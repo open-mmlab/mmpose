@@ -1,11 +1,24 @@
-from .classfication_loss import BCELoss
-from .mesh_loss import GANLoss, MeshLoss
-from .mse_loss import JointsMSELoss, JointsOHKMMSELoss, SymmetryLoss
-from .multi_loss_factory import AELoss, HeatmapLoss, MultiLossFactory
-from .regression_loss import L1Loss, MPJPELoss, MSELoss, SmoothL1Loss, WingLoss
+# Copyright (c) OpenMMLab. All rights reserved.
+from .ae_loss import AssociativeEmbeddingLoss
+from .bbox_loss import IoULoss
+from .classification_loss import (BCELoss, JSDiscretLoss, KLDiscretLoss,
+                                  VariFocalLoss)
+from .fea_dis_loss import FeaLoss
+from .heatmap_loss import (AdaptiveWingLoss, KeypointMSELoss,
+                           KeypointOHKMMSELoss, MLECCLoss, OutputSymmetryLoss)
+from .logit_dis_loss import KDLoss
+from .loss_wrappers import CombinedLoss, MultipleLossWrapper
+from .regression_loss import (BoneLoss, L1Loss, MPJPELoss,
+                              MPJPEVelocityJointLoss, MSELoss, OKSLoss,
+                              RLELoss, SemiSupervisionLoss, SmoothL1Loss,
+                              SoftWeightSmoothL1Loss, SoftWingLoss, WingLoss)
 
 __all__ = [
-    'JointsMSELoss', 'JointsOHKMMSELoss', 'HeatmapLoss', 'AELoss',
-    'MultiLossFactory', 'MeshLoss', 'GANLoss', 'SmoothL1Loss', 'WingLoss',
-    'MPJPELoss', 'MSELoss', 'L1Loss', 'BCELoss', 'SymmetryLoss',
+    'KeypointMSELoss', 'KeypointOHKMMSELoss', 'SmoothL1Loss', 'WingLoss',
+    'MPJPELoss', 'MSELoss', 'L1Loss', 'BCELoss', 'BoneLoss',
+    'SemiSupervisionLoss', 'SoftWingLoss', 'AdaptiveWingLoss', 'RLELoss',
+    'KLDiscretLoss', 'MultipleLossWrapper', 'JSDiscretLoss', 'CombinedLoss',
+    'AssociativeEmbeddingLoss', 'SoftWeightSmoothL1Loss',
+    'MPJPEVelocityJointLoss', 'FeaLoss', 'KDLoss', 'OKSLoss', 'IoULoss',
+    'VariFocalLoss', 'MLECCLoss', 'OutputSymmetryLoss'
 ]

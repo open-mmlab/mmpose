@@ -1,0 +1,20 @@
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/crowdpose/cspnext-m_udp_8xb64-210e_crowpose-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture:
+    - UDP
+    - CSPNeXt
+    Training Data: CrowdPose
+  Name: cspnext-m_udp_8xb64-210e_crowpose-256x192
+  Results:
+  - Dataset: CrowdPose
+    Metrics:
+      AP: 0.662
+      AP (E): 0.759
+      AP (H): 0.539
+      AP (M): 0.675
+      AP@0.5: 0.821
+      AP@0.75: 0.723
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-crowdpose_pt-in1k_210e-256x192-f591079f_20230123.pth

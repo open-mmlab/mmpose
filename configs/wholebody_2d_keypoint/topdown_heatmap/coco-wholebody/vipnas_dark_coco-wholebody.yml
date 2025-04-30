@@ -1,0 +1,45 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_vipnas-mbv3_dark-8xb64-210e_coco-wholebody-256x192.py
+  In Collection: ViPNAS
+  Metadata:
+    Architecture: &id001
+    - ViPNAS
+    - DarkPose
+    Training Data: COCO-WholeBody
+  Name: td-hm_vipnas-mbv3_dark-8xb64-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.632
+      Body AR: 0.71
+      Face AP: 0.672
+      Face AR: 0.771
+      Foot AP: 0.53
+      Foot AR: 0.66
+      Hand AP: 0.404
+      Hand AR: 0.519
+      Whole AP: 0.508
+      Whole AR: 0.607
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_mbv3_coco_wholebody_256x192_dark-e2158108_20211205.pth
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_vipnas-res50_dark-8xb64-210e_coco-wholebody-256x192.py
+  In Collection: ViPNAS
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: td-hm_vipnas-res50_dark-8xb64-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.65
+      Body AR: 0.732
+      Face AP: 0.684
+      Face AR: 0.783
+      Foot AP: 0.55
+      Foot AR: 0.686
+      Hand AP: 0.437
+      Hand AR: 0.554
+      Whole AP: 0.528
+      Whole AR: 0.632
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth

@@ -1,0 +1,124 @@
+Collections:
+- Name: HRNet
+  Paper:
+    Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/hrnet.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.746
+      AP@0.5: 0.904
+      AP@0.75: 0.819
+      AR: 0.799
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192-81c58e40_20220909.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-384x288.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_8xb64-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.76
+      AP@0.5: 0.906
+      AP@0.75: 0.83
+      AR: 0.81
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-384x288-ca5956af_20220909.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w48_8xb32-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.756
+      AP@0.5: 0.907
+      AP@0.75: 0.825
+      AR: 0.806
+      AR@0.5: 0.942
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-384x288.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w48_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.767
+      AP@0.5: 0.91
+      AP@0.75: 0.831
+      AR: 0.816
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w48_8xb32-210e_coco-384x288-c161b7de_20220915.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data:
+    - COCO
+    - AI Challenger
+  Name: td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.757
+      AP@0.5: 0.907
+      AP@0.75: 0.829
+      AR: 0.809
+      AR@0.5: 0.944
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-merge-b05435b9_20221025.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data:
+    - COCO
+    - AI Challenger
+  Name: td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.756
+      AP@0.5: 0.906
+      AP@0.75: 0.826
+      AR: 0.807
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-aic-256x192-combine-4ce66880_20221026.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_fp16-8xb64-210e_coco-256x192.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_hrnet-w32_fp16-8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.749
+      AP@0.5: 0.907
+      AP@0.75: 0.822
+      AR: 0.802
+      AR@0.5: 0.946
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_fp16-8xb64-210e_coco-256x192-f1e84e3b_20220914.pth

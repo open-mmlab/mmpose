@@ -1,6 +1,7 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import ResLayer
 from .seresnet import SEBottleneck as _SEBottleneck
 from .seresnet import SEResNet
@@ -31,6 +32,8 @@ class SEBottleneck(_SEBottleneck):
             Default: dict(type='BN')
         with_cp (bool): Use checkpoint or not. Using checkpoint will save some
             memory while slowing down the training speed.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -90,7 +93,7 @@ class SEBottleneck(_SEBottleneck):
         self.add_module(self.norm3_name, norm3)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class SEResNeXt(SEResNet):
     """SEResNeXt backbone.
 
@@ -132,6 +135,29 @@ class SEResNeXt(SEResNet):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
+
+    Example:
+        >>> from mmpose.models import SEResNeXt
+        >>> import torch
+        >>> self = SEResNet(depth=50, out_indices=(0, 1, 2, 3))
+        >>> self.eval()
+        >>> inputs = torch.rand(1, 3, 224, 224)
+        >>> level_outputs = self.forward(inputs)
+        >>> for level_out in level_outputs:
+        ...     print(tuple(level_out.shape))
+        (1, 256, 56, 56)
+        (1, 512, 28, 28)
+        (1, 1024, 14, 14)
+        (1, 2048, 7, 7)
     """
 
     arch_settings = {

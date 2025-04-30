@@ -1,15 +1,16 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import copy
 
 import numpy as np
 import torch.nn as nn
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import ResNet
 from .resnext import Bottleneck
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class RegNet(ResNet):
     """RegNet backbone.
 
@@ -22,7 +23,7 @@ class RegNet(ResNet):
             - wm (float): quantization parameter to quantize the width
             - depth (int): depth of the backbone
             - group_w (int): width of group
-            - bot_mul (float): bottleneck ratio, i.e. expansion of bottlneck.
+            - bot_mul (float): bottleneck ratio, i.e. expansion of bottleneck.
         strides (Sequence[int]): Strides of the first block of each stage.
         base_channels (int): Base channels after stem layer.
         in_channels (int): Number of input image channels. Default: 3.
@@ -42,6 +43,15 @@ class RegNet(ResNet):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import RegNet
@@ -53,7 +63,8 @@ class RegNet(ResNet):
                     wm=2.25,
                     group_w=48,
                     depth=25,
-                    bot_mul=1.0))
+                    bot_mul=1.0),
+                 out_indices=(0, 1, 2, 3))
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 32, 32)
         >>> level_outputs = self.forward(inputs)
@@ -99,10 +110,17 @@ class RegNet(ResNet):
                  norm_cfg=dict(type='BN', requires_grad=True),
                  norm_eval=False,
                  with_cp=False,
-                 zero_init_residual=True):
+                 zero_init_residual=True,
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super(ResNet, self).__init__()
+        super(ResNet, self).__init__(init_cfg=init_cfg)
 
         # Generate RegNet parameters first
         if isinstance(arch, str):
@@ -310,6 +328,4 @@ class RegNet(ResNet):
             if i in self.out_indices:
                 outs.append(x)
 
-        if len(outs) == 1:
-            return outs[0]
         return tuple(outs)

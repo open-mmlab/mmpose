@@ -1,0 +1,28 @@
+Collections:
+- Name: RTMPose
+  Paper:
+    Title: "RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose"
+    URL: https://arxiv.org/abs/2303.07399
+  README: https://github.com/open-mmlab/mmpose/blob/main/projects/rtmpose/README.md
+Models:
+- Config: configs/hand_2d_keypoint/rtmpose/hand5/rtmpose-m_8xb256-210e_hand5-256x256.py
+  In Collection: RTMPose
+  Alias: hand
+  Metadata:
+    Architecture: &id001
+    - RTMPose
+    Training Data: &id002
+    - COCO-Wholebody-Hand
+    - OneHand10K
+    - FreiHand2d
+    - RHD2d
+    - Halpe
+  Name: rtmpose-m_8xb256-210e_hand5-256x256
+  Results:
+  - Dataset: Hand5
+    Metrics:
+      PCK@0.2: 0.964
+      AUC: 0.839
+      EPE: 5.06
+    Task: Hand 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-hand5_pt-aic-coco_210e-256x256-74fb594_20230320.pth

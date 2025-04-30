@@ -1,0 +1,98 @@
+Collections:
+- Name: RTMPose
+  Paper:
+    Title: "RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose"
+    URL: https://arxiv.org/abs/2303.07399
+  README: https://github.com/open-mmlab/mmpose/blob/main/projects/rtmpose/README.md
+Models:
+- Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-t_8xb256-420e_body8-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: &id001
+    - RTMPose
+    Training Data: &id002
+    - AI Challenger
+    - COCO
+    - CrowdPose
+    - MPII
+    - sub-JHMDB
+    - Halpe
+    - PoseTrack18
+  Name: rtmpose-t_8xb256-420e_body8-256x192
+  Results:
+  - Dataset: Body8
+    Metrics:
+      AP: 0.659
+      Mean@0.1: 0.914
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-t_simcc-body7_pt-body7_420e-256x192-026a1439_20230504.pth
+- Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-s_8xb256-420e_body8-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-s_8xb256-420e_body8-256x192
+  Results:
+  - Dataset: Body8
+    Metrics:
+      AP: 0.697
+      Mean@0.1: 0.925
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-s_simcc-body7_pt-body7_420e-256x192-acd4a1ef_20230504.pth
+- Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-m_8xb256-420e_body8-256x192.py
+  In Collection: RTMPose
+  Alias:
+    - human
+    - body
+    - body17
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-m_8xb256-420e_body8-256x192
+  Results:
+  - Dataset: Body8
+    Metrics:
+      AP: 0.749
+      Mean@0.1: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-256x192-e48f03d0_20230504.pth
+- Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-l_8xb256-420e_body8-256x192.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-l_8xb256-420e_body8-256x192
+  Results:
+  - Dataset: Body8
+    Metrics:
+      AP: 0.767
+      Mean@0.1: 0.951
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-256x192-4dba18fc_20230504.pth
+- Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-m_8xb256-420e_body8-384x288.py
+  In Collection: RTMPose
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-m_8xb256-420e_body8-384x288
+  Results:
+  - Dataset: Body8
+    Metrics:
+      AP: 0.766
+      Mean@0.1: 0.946
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-body7_pt-body7_420e-384x288-65e718c4_20230504.pth
+- Config: configs/body_2d_keypoint/rtmpose/body8/rtmpose-l_8xb256-420e_body8-384x288.py
+  In Collection: RTMPose
+  Alias: rtmpose-l
+  Metadata:
+    Architecture: *id001
+    Training Data: *id002
+  Name: rtmpose-l_8xb256-420e_body8-384x288
+  Results:
+  - Dataset: Body8
+    Metrics:
+      AP: 0.783
+      Mean@0.1: 0.964
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-l_simcc-body7_pt-body7_420e-384x288-3f5a1437_20230504.pth

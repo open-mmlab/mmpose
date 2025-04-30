@@ -1,0 +1,24 @@
+Models:
+- Config: configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/cspnext-m_udp_8xb64-210e_coco-wholebody-256x192.py
+  In Collection: UDP
+  Metadata:
+    Architecture: &id001
+    - UDP
+    - CSPNeXt
+    Training Data: COCO-WholeBody
+  Name: cspnext-m_udp_8xb64-210e_coco-wholebody-256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.687
+      Body AR: 0.735
+      Face AP: 0.697
+      Face AR: 0.755
+      Foot AP: 0.680
+      Foot AR: 0.763
+      Hand AP: 0.46
+      Hand AR: 0.567
+      Whole AP: 0.567
+      Whole AR: 0.641
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-coco-wholebody_pt-in1k_210e-256x192-320fa258_20230123.pth

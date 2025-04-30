@@ -1,52 +1,43 @@
-from mmcv.utils import build_from_cfg
-from torch import nn
+# Copyright (c) OpenMMLab. All rights reserved.
+import warnings
 
-from .registry import BACKBONES, HEADS, LOSSES, NECKS, POSENETS
+from mmpose.registry import MODELS
 
-
-def build(cfg, registry, default_args=None):
-    """Build a module.
-
-    Args:
-        cfg (dict, list[dict]): The config of modules, it is either a dict
-            or a list of configs.
-        registry (:obj:`Registry`): A registry the module belongs to.
-        default_args (dict, optional): Default arguments to build the module.
-            Defaults to None.
-
-    Returns:
-        nn.Module: A built nn module.
-    """
-
-    if isinstance(cfg, list):
-        modules = [
-            build_from_cfg(cfg_, registry, default_args) for cfg_ in cfg
-        ]
-        return nn.Sequential(*modules)
-
-    return build_from_cfg(cfg, registry, default_args)
+BACKBONES = MODELS
+NECKS = MODELS
+HEADS = MODELS
+LOSSES = MODELS
+POSE_ESTIMATORS = MODELS
 
 
 def build_backbone(cfg):
     """Build backbone."""
-    return build(cfg, BACKBONES)
+    return BACKBONES.build(cfg)
 
 
 def build_neck(cfg):
     """Build neck."""
-    return build(cfg, NECKS)
+    return NECKS.build(cfg)
 
 
 def build_head(cfg):
     """Build head."""
-    return build(cfg, HEADS)
+    return HEADS.build(cfg)
 
 
 def build_loss(cfg):
     """Build loss."""
-    return build(cfg, LOSSES)
+    return LOSSES.build(cfg)
+
+
+def build_pose_estimator(cfg):
+    """Build pose estimator."""
+    return POSE_ESTIMATORS.build(cfg)
 
 
 def build_posenet(cfg):
     """Build posenet."""
-    return build(cfg, POSENETS)
+    warnings.warn(
+        '``build_posenet`` will be deprecated soon, '
+        'please use ``build_pose_estimator`` instead.', DeprecationWarning)
+    return build_pose_estimator(cfg)

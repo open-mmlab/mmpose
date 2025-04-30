@@ -1,6 +1,7 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..registry import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import Bottleneck as _Bottleneck
 from .resnet import ResLayer, ResNet
 
@@ -85,7 +86,7 @@ class Bottleneck(_Bottleneck):
         self.add_module(self.norm3_name, norm3)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ResNeXt(ResNet):
     """ResNeXt backbone.
 
@@ -126,6 +127,29 @@ class ResNeXt(ResNet):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
+
+     Example:
+        >>> from mmpose.models import ResNeXt
+        >>> import torch
+        >>> self = ResNeXt(depth=50, out_indices=(0, 1, 2, 3))
+        >>> self.eval()
+        >>> inputs = torch.rand(1, 3, 32, 32)
+        >>> level_outputs = self.forward(inputs)
+        >>> for level_out in level_outputs:
+        ...     print(tuple(level_out.shape))
+        (1, 256, 8, 8)
+        (1, 512, 4, 4)
+        (1, 1024, 2, 2)
+        (1, 2048, 1, 1)
     """
 
     arch_settings = {

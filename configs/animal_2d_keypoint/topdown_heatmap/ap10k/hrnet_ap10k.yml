@@ -1,0 +1,34 @@
+Models:
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ap10k/td-hm_hrnet-w32_8xb64-210e_ap10k-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: &id001
+    - HRNet
+    Training Data: AP-10K
+  Name: td-hm_hrnet-w32_8xb64-210e_ap10k-256x256
+  Results:
+  - Dataset: AP-10K
+    Metrics:
+      AP: 0.722
+      AP@0.5: 0.935
+      AP@0.75: 0.789
+      AP (L): 0.729
+      AP (M): 0.557
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_ap10k_256x256-18aac840_20211029.pth
+- Config: configs/animal_2d_keypoint/topdown_heatmap/ap10k/td-hm_hrnet-w48_8xb64-210e_ap10k-256x256.py
+  In Collection: HRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: AP-10K
+  Name: td-hm_hrnet-w48_8xb64-210e_ap10k-256x256
+  Results:
+  - Dataset: AP-10K
+    Metrics:
+      AP: 0.728
+      AP@0.5: 0.936
+      AP@0.75: 0.802
+      AP (L): 0.735
+      AP (M): 0.577
+    Task: Animal 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_ap10k_256x256-d95ab412_20211029.pth

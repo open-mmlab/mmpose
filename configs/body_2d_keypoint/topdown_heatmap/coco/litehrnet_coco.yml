@@ -1,0 +1,72 @@
+Collections:
+- Name: LiteHRNet
+  Paper:
+    Title: 'Lite-HRNet: A Lightweight High-Resolution Network'
+    URL: https://arxiv.org/abs/2104.06403
+  README: https://github.com/open-mmlab/mmpose/blob/main/docs/src/papers/backbones/litehrnet.md
+Models:
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_litehrnet-18_8xb64-210e_coco-256x192.py
+  In Collection: LiteHRNet
+  Metadata:
+    Architecture: &id001
+    - LiteHRNet
+    Training Data: COCO
+  Name: td-hm_litehrnet-18_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.642
+      AP@0.5: 0.867
+      AP@0.75: 0.719
+      AR: 0.705
+      AR@0.5: 0.911
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_coco_256x192-6bace359_20211230.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_litehrnet-18_8xb32-210e_coco-384x288.py
+  In Collection: LiteHRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_litehrnet-18_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.676
+      AP@0.5: 0.876
+      AP@0.75: 0.746
+      AR: 0.735
+      AR@0.5: 0.919
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_coco_384x288-8d4dac48_20211230.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_litehrnet-30_8xb64-210e_coco-256x192.py
+  In Collection: LiteHRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_litehrnet-30_8xb64-210e_coco-256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.676
+      AP@0.5: 0.88
+      AP@0.75: 0.756
+      AR: 0.736
+      AR@0.5: 0.922
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_256x192-4176555b_20210626.pth
+- Config: configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_litehrnet-30_8xb32-210e_coco-384x288.py
+  In Collection: LiteHRNet
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: td-hm_litehrnet-30_8xb32-210e_coco-384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.7
+      AP@0.5: 0.883
+      AP@0.75: 0.776
+      AR: 0.758
+      AR@0.5: 0.926
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_384x288-a3aef5c4_20210626.pth

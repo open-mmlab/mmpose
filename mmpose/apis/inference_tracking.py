@@ -1,8 +1,9 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
 import numpy as np
 
-from mmpose.core import OneEuroFilter, oks_iou
+from mmpose.evaluation.functional.nms import oks_iou
 
 
 def _compute_iou(bboxA, bboxB):
@@ -36,28 +37,15 @@ def _compute_iou(bboxA, bboxB):
 
 
 def _track_by_iou(res, results_last, thr):
-    """Get track id using IoU tracking greedily.
+    """Get track id using IoU tracking greedily."""
 
-    Args:
-        res (dict): The bbox & pose results of the person instance.
-        results_last (list[dict]): The bbox & pose & track_id info of the
-                last frame (bbox_result, pose_result, track_id).
-        thr (float): The threshold for iou tracking.
-
-    Returns:
-        int: The track id for the new person instance.
-        list[dict]: The bbox & pose & track_id info of the persons
-                that have not been matched on the last frame.
-        dict: The matched person instance on the last frame.
-    """
-
-    bbox = list(res['bbox'])
+    bbox = list(np.squeeze(res.pred_instances.bboxes, axis=0))
 
     max_iou_score = -1
     max_index = -1
     match_result = {}
     for index, res_last in enumerate(results_last):
-        bbox_last = list(res_last['bbox'])
+        bbox_last = list(np.squeeze(res_last.pred_instances.bboxes, axis=0))
 
         iou_score = _compute_iou(bbox, bbox_last)
         if iou_score > max_iou_score:
@@ -65,7 +53,7 @@ def _track_by_iou(res, results_last, thr):
             max_index = index
 
     if max_iou_score > thr:
-        track_id = results_last[max_index]['track_id']
+        track_id = results_last[max_index].track_id
         match_result = results_last[max_index]
         del results_last[max_index]
     else:
@@ -74,257 +62,42 @@ def _track_by_iou(res, results_last, thr):
     return track_id, results_last, match_result
 
 
-def _track_by_oks(res, results_last, thr):
-    """Get track id using OKS tracking greedily.
-
-    Args:
-        res (dict): The pose results of the person instance.
-        results_last (list[dict]): The pose & track_id info of the
-                last frame (pose_result, track_id).
-        thr (float): The threshold for oks tracking.
-
-    Returns:
-        int: The track id for the new person instance.
-        list[dict]: The pose & track_id info of the persons
-                that have not been matched on the last frame.
-        dict: The matched person instance on the last frame.
-    """
-    pose = res['keypoints'].reshape((-1))
-    area = res['area']
+def _track_by_oks(res, results_last, thr, sigmas=None):
+    """Get track id using OKS tracking greedily."""
+    keypoint = np.concatenate((res.pred_instances.keypoints,
+                               res.pred_instances.keypoint_scores[:, :, None]),
+                              axis=2)
+    keypoint = np.squeeze(keypoint, axis=0).reshape((-1))
+    area = np.squeeze(res.pred_instances.areas, axis=0)
     max_index = -1
     match_result = {}
 
     if len(results_last) == 0:
         return -1, results_last, match_result
 
-    pose_last = np.array(
-        [res_last['keypoints'].reshape((-1)) for res_last in results_last])
-    area_last = np.array([res_last['area'] for res_last in results_last])
+    keypoints_last = np.array([
+        np.squeeze(
+            np.concatenate(
+                (res_last.pred_instances.keypoints,
+                 res_last.pred_instances.keypoint_scores[:, :, None]),
+                axis=2),
+            axis=0).reshape((-1)) for res_last in results_last
+    ])
+    area_last = np.array([
+        np.squeeze(res_last.pred_instances.areas, axis=0)
+        for res_last in results_last
+    ])
 
-    oks_score = oks_iou(pose, pose_last, area, area_last)
+    oks_score = oks_iou(
+        keypoint, keypoints_last, area, area_last, sigmas=sigmas)
 
     max_index = np.argmax(oks_score)
 
     if oks_score[max_index] > thr:
-        track_id = results_last[max_index]['track_id']
+        track_id = results_last[max_index].track_id
         match_result = results_last[max_index]
         del results_last[max_index]
     else:
         track_id = -1
 
     return track_id, results_last, match_result
-
-
-def _get_area(results):
-    """Get bbox for each person instance on the current frame.
-
-    Args:
-        results (list[dict]): The pose results of the current frame
-                (pose_result).
-    Returns:
-        list[dict]: The bbox & pose info of the current frame
-                (bbox_result, pose_result, area).
-    """
-    for result in results:
-        if 'bbox' in result:
-            result['area'] = np.abs((result['bbox'][1] - result['bbox'][0]) *
-                                    (result['bbox'][2] - result['bbox'][3]))
-        else:
-            xmin = np.min(
-                result['keypoints'][:, 0][result['keypoints'][:, 0] > 0],
-                initial=1e10)
-            xmax = np.max(result['keypoints'][:, 0])
-            ymin = np.min(
-                result['keypoints'][:, 1][result['keypoints'][:, 1] > 0],
-                initial=1e10)
-            ymax = np.max(result['keypoints'][:, 1])
-            result['area'] = (xmax - xmin) * (ymax - ymin)
-            result['bbox'] = np.array([xmin, ymin, xmax, ymax])
-    return results
-
-
-def _temporal_refine(result, match_result, fps=None):
-    """Refine koypoints using tracked person instance on last frame.
-
-    Args:
-        results (dict): The pose results of the current frame
-                (pose_result).
-        match_result (dict): The pose results of the last frame
-                (match_result)
-    return:
-        (array): The person keypoints after refine.
-    """
-    if 'one_euro' in match_result:
-        result['keypoints'][:, :2] = match_result['one_euro'](
-            result['keypoints'][:, :2])
-        result['one_euro'] = match_result['one_euro']
-    else:
-        result['one_euro'] = OneEuroFilter(result['keypoints'][:, :2], fps=fps)
-    return result['keypoints']
-
-
-def get_track_id(results,
-                 results_last,
-                 next_id,
-                 iou_thr=0.3,
-                 oks_thr=0.3,
-                 min_keypoints=3,
-                 use_oks=False,
-                 use_one_euro=False,
-                 fps=None):
-    """Get track id for each person instance on the current frame.
-
-    Args:
-        results (list[dict]): The bbox & pose results of the current frame
-                (bbox_result, pose_result).
-        results_last (list[dict]): The bbox & pose & track_id info of the
-                last frame (bbox_result, pose_result, track_id).
-        next_id (int): The track id for the new person instance.
-        iou_thr (float): The threshold for iou tracking.
-        oks_thr (float): The threshold for oks tracking.
-        min_keypoints (int): Minimum number of keypoints recognized as person.
-                            default:3
-        use_oks (bool): Flag to using oks tracking. default:False
-        use_one_euro (bool): Option to use one-euro-filter. default:False.
-        fps (optional): Parameters that d_cutoff
-                        when one-euro-filter is used as a video input
-
-    Returns:
-        list[dict]: The bbox & pose & track_id info of the
-                current frame (bbox_result, pose_result, track_id).
-        int: The track id for the new person instance.
-    """
-    results = _get_area(results)
-
-    if use_oks:
-        _track = _track_by_oks
-        thr = oks_thr
-    else:
-        _track = _track_by_iou
-        thr = iou_thr
-
-    for result in results:
-        track_id, results_last, match_result = _track(result, results_last,
-                                                      thr)
-        if track_id == -1:
-            if np.count_nonzero(result['keypoints'][:, 1]) > min_keypoints:
-                result['track_id'] = next_id
-                next_id += 1
-            else:
-                # If the number of keypoints detected is small,
-                # delete that person instance.
-                result['keypoints'][:, 1] = -10
-                result['bbox'] *= 0
-                result['track_id'] = -1
-        else:
-            result['track_id'] = track_id
-        if use_one_euro:
-            result['keypoints'] = _temporal_refine(
-                result, match_result, fps=fps)
-        del match_result
-
-    return results, next_id
-
-
-def vis_pose_tracking_result(model,
-                             img,
-                             result,
-                             kpt_score_thr=0.3,
-                             dataset='TopDownCocoDataset',
-                             show=False,
-                             out_file=None):
-    """Visualize the pose tracking results on the image.
-
-    Args:
-        model (nn.Module): The loaded detector.
-        img (str | np.ndarray): Image filename or loaded image.
-        result (list[dict]): The results to draw over `img`
-                (bbox_result, pose_result).
-        kpt_score_thr (float): The threshold to visualize the keypoints.
-        skeleton (list[tuple()]): Default None.
-        show (bool):  Whether to show the image. Default True.
-        out_file (str|None): The filename of the output visualization image.
-    """
-    if hasattr(model, 'module'):
-        model = model.module
-
-    palette = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102],
-                        [230, 230, 0], [255, 153, 255], [153, 204, 255],
-                        [255, 102, 255], [255, 51, 255], [102, 178, 255],
-                        [51, 153, 255], [255, 153, 153], [255, 102, 102],
-                        [255, 51, 51], [153, 255, 153], [102, 255, 102],
-                        [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
-                        [255, 255, 255]])
-
-    radius = 4
-
-    if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
-                   'TopDownOCHumanDataset'):
-        kpt_num = 17
-        skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                    [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                    [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
-
-    elif dataset == 'TopDownCocoWholeBodyDataset':
-        kpt_num = 133
-        skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                    [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                    [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [16, 18],
-                    [16, 19], [16, 20], [17, 21], [17, 22], [17, 23], [92, 93],
-                    [93, 94], [94, 95], [95, 96], [92, 97], [97, 98], [98, 99],
-                    [99, 100], [92, 101], [101, 102], [102, 103], [103, 104],
-                    [92, 105], [105, 106], [106, 107], [107, 108], [92, 109],
-                    [109, 110], [110, 111], [111, 112], [113, 114], [114, 115],
-                    [115, 116], [116, 117], [113, 118], [118, 119], [119, 120],
-                    [120, 121], [113, 122], [122, 123], [123, 124], [124, 125],
-                    [113, 126], [126, 127], [127, 128], [128, 129], [113, 130],
-                    [130, 131], [131, 132], [132, 133]]
-        radius = 1
-
-    elif dataset == 'TopDownAicDataset':
-        kpt_num = 14
-        skeleton = [[3, 2], [2, 1], [1, 14], [14, 4], [4, 5], [5, 6], [9, 8],
-                    [8, 7], [7, 10], [10, 11], [11, 12], [13, 14], [1, 7],
-                    [4, 10]]
-
-    elif dataset == 'TopDownMpiiDataset':
-        kpt_num = 16
-        skeleton = [[1, 2], [2, 3], [3, 7], [7, 4], [4, 5], [5, 6], [7, 8],
-                    [8, 9], [9, 10], [9, 13], [13, 12], [12, 11], [9, 14],
-                    [14, 15], [15, 16]]
-
-    elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
-                     'PanopticDataset'):
-        kpt_num = 21
-        skeleton = [[1, 2], [2, 3], [3, 4], [4, 5], [1, 6], [6, 7], [7, 8],
-                    [8, 9], [1, 10], [10, 11], [11, 12], [12, 13], [1, 14],
-                    [14, 15], [15, 16], [16, 17], [1, 18], [18, 19], [19, 20],
-                    [20, 21]]
-
-    elif dataset == 'InterHand2DDataset':
-        kpt_num = 21
-        skeleton = [[1, 2], [2, 3], [3, 4], [5, 6], [6, 7], [7, 8], [9, 10],
-                    [10, 11], [11, 12], [13, 14], [14, 15], [15, 16], [17, 18],
-                    [18, 19], [19, 20], [4, 21], [8, 21], [12, 21], [16, 21],
-                    [20, 21]]
-
-    else:
-        raise NotImplementedError()
-
-    for res in result:
-        track_id = res['track_id']
-        bbox_color = palette[track_id % len(palette)]
-        pose_kpt_color = palette[[track_id % len(palette)] * kpt_num]
-        pose_limb_color = palette[[track_id % len(palette)] * len(skeleton)]
-        img = model.show_result(
-            img, [res],
-            skeleton,
-            radius=radius,
-            pose_kpt_color=pose_kpt_color,
-            pose_limb_color=pose_limb_color,
-            bbox_color=tuple(bbox_color.tolist()),
-            kpt_score_thr=kpt_score_thr,
-            show=show,
-            out_file=out_file)
-
-    return img

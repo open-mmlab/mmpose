@@ -1,5 +1,4 @@
 chumpy
-dataclasses; python_version == '3.6'
 json_tricks
 matplotlib
 munkres
@@ -8,4 +7,4 @@ opencv-python
 pillow
 scipy
 torchvision
-xtcocotools>=1.6
+xtcocotools>=1.12
