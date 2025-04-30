@@ -20,7 +20,7 @@ platform:
 
 trigger:
   branch:
-    - main
+    - master
   event:
     - push
 
