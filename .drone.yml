@@ -48,6 +48,26 @@ steps:
         from_secret: DOCKER_QUAY_USERNAME
       password:
         from_secret: DOCKER_QUAY_PASSWORD
+  - name: Build LS_mmdeploy docker image for pull request
+    image: plugins/docker:20.14
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      dockerfile: docker/MMDeploy.Dockerfile
+      context: docker/
+      registry: quay.io
+      repo: quay.io/logivations/ml_all
+      privileged: true
+      build_args:
+        - BUILDKIT_INLINE_CACHE=1
+      cache_from: quay.io/logivations/ml_all:LS_mmdeploy_latest
+      tags:
+        - LS_mmdeploy_latest
+        - LS_mmdeploy_latest_${DRONE_COMMIT_SHA}
+      username:
+        from_secret: DOCKER_QUAY_USERNAME
+      password:
+        from_secret: DOCKER_QUAY_PASSWORD
 
 #######################################################################################################################
 #######################################################################################################################
@@ -96,6 +116,28 @@ steps:
       tags:
         - LS_mmpose_pr${DRONE_PULL_REQUEST}
         - LS_mmpose_pr${DRONE_PULL_REQUEST}_${DRONE_COMMIT_SHA}
+      username:
+        from_secret: DOCKER_QUAY_USERNAME
+      password:
+        from_secret: DOCKER_QUAY_PASSWORD
+  - name: Build LS_mmdeploy docker image for pull request
+    image: plugins/docker:20.14
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      dockerfile: docker/MMDeploy.Dockerfile
+      context: docker/
+      registry: quay.io
+      repo: quay.io/logivations/ml_all
+      privileged: true
+      build_args:
+        - BUILDKIT_INLINE_CACHE=1
+      cache_from:
+        - quay.io/logivations/ml_all:LS_mmdeploy_pr${DRONE_PULL_REQUEST}
+        - quay.io/logivations/ml_all:LS_mmdeploy_latest
+      tags:
+        - LS_mmdeploy_pr${DRONE_PULL_REQUEST}
+        - LS_mmdeploy_pr${DRONE_PULL_REQUEST}_${DRONE_COMMIT_SHA}
       username:
         from_secret: DOCKER_QUAY_USERNAME
       password:
