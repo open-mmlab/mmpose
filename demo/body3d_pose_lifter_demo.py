@@ -11,7 +11,9 @@ import json_tricks as json
 import mmcv
 import mmengine
 import numpy as np
+import sys
 from mmengine.logging import print_log
+from mmpose.codecs.video_pose_lifting import VideoPoseLifting
 
 from mmpose.apis import (_track_by_iou, _track_by_oks,
                          convert_keypoint_definition, extract_pose_sequence,
@@ -216,8 +218,24 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     # filter out the person instances with category and bbox threshold
     # e.g. 0 for person in COCO
     bboxes = pred_instance.bboxes
-    bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
-                                   pred_instance.scores > args.bbox_thr)]
+    
+    ### NEW ###
+    # get the size of the boxes to set a threshold size, filter out background people
+    filtered_bboxes = []
+    for bbox, score, label in zip(bboxes, pred_instance.scores, pred_instance.labels):
+      x_min, y_min, x_max, y_max = bbox
+      w = x_max - x_min
+      h = y_max - y_min
+      area = w * h
+      if (label == args.det_cat_id) and (score > args.bbox_thr) and (area > 5000):
+          filtered_bboxes.append(bbox)
+          #sys.stdout.write(f"area: {area:.1f}")
+      #sys.stdout.write(f"Label: {label}. area={area:.1f}, BBox: x1={x_min:.1f}, y1={y_min:.1f}, x2={x_max:.1f}, y2={y_max:.1f}, score={score:.2f}\n")
+      sys.stdout.flush()
+    bboxes = np.array(filtered_bboxes)
+    #bboxes = filtered_bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
+                                   #pred_instance.scores > args.bbox_thr)]
+    ### END NEW ###
 
     # estimate pose results for current image
     pose_est_results = inference_topdown(pose_estimator, frame, bboxes)
@@ -299,19 +317,32 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         step=pose_lift_dataset.get('seq_step', 1))
 
     # conduct 2D-to-3D pose lifting
-    norm_pose_2d = not args.disable_norm_pose_2d
+    norm_pose_2d = True
     pose_lift_results = inference_pose_lifter_model(
         pose_lifter,
         pose_seq_2d,
         image_size=visualize_frame.shape[:2],
         norm_pose_2d=norm_pose_2d)
+    
+    ### NEW ###
+    def add_pseudo_global_motion(pose_3d):
+      """
+      Adds pseudo-global motion to root-centered pose by accumulating root drift.
+      pose_3d: np.ndarray, shape (T, J, 3) -- root-centered 3D pose
+      """
+      root_positions = pose_3d[:, 0, :]   # Get root for all frames
+      velocity_root = np.diff(root_positions, axis=0, prepend=root_positions[0:1])  # pelvis velocity per frame
+      root_traj = np.cumsum(velocity_root, axis=0)    # relative root trajectory
+      pose_with_motion = pose_3d + root_traj[:, np.newaxis, :]
+      return pose_with_motion
+    ### END NEW ###
 
     # post-processing
     for idx, pose_lift_result in enumerate(pose_lift_results):
         pose_lift_result.track_id = pose_est_results[idx].get('track_id', 1e4)
 
         pred_instances = pose_lift_result.pred_instances
-        keypoints = pred_instances.keypoints
+        keypoints = add_pseudo_global_motion(pred_instances.keypoints)
         keypoint_scores = pred_instances.keypoint_scores
         if keypoint_scores.ndim == 3:
             keypoint_scores = np.squeeze(keypoint_scores, axis=1)
@@ -325,9 +356,9 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
         keypoints[..., 2] = -keypoints[..., 2]
 
         # rebase height (z-axis)
-        if not args.disable_rebase_keypoint:
-            keypoints[..., 2] -= np.min(
-                keypoints[..., 2], axis=-1, keepdims=True)
+        # if not args.disable_rebase_keypoint:
+        #     keypoints[..., 2] -= np.min(
+        #         keypoints[..., 2], axis=-1, keepdims=True)
 
         pose_lift_results[idx].pred_instances.keypoints = keypoints
 
@@ -337,6 +368,13 @@ def process_one_image(args, detector, frame, frame_idx, pose_estimator,
     pred_3d_data_samples = merge_data_samples(pose_lift_results)
     det_data_sample = merge_data_samples(pose_est_results)
     pred_3d_instances = pred_3d_data_samples.get('pred_instances', None)
+
+    ### NEW ###
+    # video_pose_lifting = VideoPoseLifting(num_keypoints=17, remove_root=False)
+    # kp, sc = video_pose_lifting.decode(pred_3d_instances.keypoints)
+    # pred_3d_instances.keypoints = kp
+    # pred_3d_instances.keypoint_scores = sc
+    ### END NEW ###
 
     if args.num_instances < 0:
         args.num_instances = len(pose_lift_results)
