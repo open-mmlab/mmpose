@@ -20,16 +20,16 @@ class MPJPE(BaseMetric):
     Note:
         - length of dataset: N
         - num_keypoints: K
-        - number of keypoint dimensions: D (typically D = 2)
+        - number of keypoint dimensions: D (typically D = 3)
 
     Args:
         mode (str): Method to align the prediction with the
             ground truth. Supported options are:
 
                 - ``'mpjpe'``: no alignment will be applied
-                - ``'p-mpjpe'``: align in the least-square sense in scale
-                - ``'n-mpjpe'``: align in the least-square sense in
-                    scale, rotation, and translation.
+                - ``'p-mpjpe'``: align in the least-square sense in scale,
+                    rotation, and translation.
+                - ``'n-mpjpe'``: align in the least-square sense in scale.
 
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
@@ -79,7 +79,7 @@ class MPJPE(BaseMetric):
             gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [T, K, D]
             gt_coords = gt['lifting_target']
-            # ground truth keypoints_visible, [T, K, 1]
+            # ground truth keypoints_visible, [T, K]
             mask = gt['lifting_target_visible'].astype(bool).reshape(
                 gt_coords.shape[0], -1)
             # instance action

@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 from mmengine.evaluator import BaseMetric
@@ -18,16 +18,16 @@ class SimpleMPJPE(BaseMetric):
     Note:
         - length of dataset: N
         - num_keypoints: K
-        - number of keypoint dimensions: D (typically D = 2)
+        - number of keypoint dimensions: D (typically D = 3)
 
     Args:
         mode (str): Method to align the prediction with the
             ground truth. Supported options are:
 
                 - ``'mpjpe'``: no alignment will be applied
-                - ``'p-mpjpe'``: align in the least-square sense in scale
-                - ``'n-mpjpe'``: align in the least-square sense in
-                    scale, rotation, and translation.
+                - ``'p-mpjpe'``: align in the least-square sense in scale,
+                    rotation, and translation.
+                - ``'n-mpjpe'``: align in the least-square sense in scale.
 
         collect_device (str): Device name used for collecting results from
             different ranks during distributed training. Must be ``'cpu'`` or
@@ -36,8 +36,6 @@ class SimpleMPJPE(BaseMetric):
             names to disambiguate homonymous metrics of different evaluators.
             If prefix is not provided in the argument, ``self.default_prefix``
             will be used instead. Default: ``None``.
-        skip_list (list, optional): The list of subject and action combinations
-            to be skipped. Default: [].
     """
 
     ALIGNMENT = {'mpjpe': 'none', 'p-mpjpe': 'procrustes', 'n-mpjpe': 'scale'}
@@ -45,8 +43,7 @@ class SimpleMPJPE(BaseMetric):
     def __init__(self,
                  mode: str = 'mpjpe',
                  collect_device: str = 'cpu',
-                 prefix: Optional[str] = None,
-                 skip_list: List[str] = []) -> None:
+                 prefix: Optional[str] = None) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
         allowed_modes = self.ALIGNMENT.keys()
         if mode not in allowed_modes:
@@ -54,7 +51,6 @@ class SimpleMPJPE(BaseMetric):
                            f"'n-mpjpe', but got '{mode}'.")
 
         self.mode = mode
-        self.skip_list = skip_list
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
@@ -77,7 +73,7 @@ class SimpleMPJPE(BaseMetric):
             gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [T, K, D]
             gt_coords = gt['lifting_target']
-            # ground truth keypoints_visible, [T, K, 1]
+            # ground truth keypoints_visible, [T, K]
             mask = gt['lifting_target_visible'].astype(bool).reshape(
                 gt_coords.shape[0], -1)
 
