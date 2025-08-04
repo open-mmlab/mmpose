@@ -130,7 +130,7 @@ If everything goes fine, you will be able to get the following visualization res
 
 ![image](https://user-images.githubusercontent.com/87690686/187824033-2cce0f55-034a-4127-82e2-52744178bc32.jpg)
 
-Option (B). If you install mmpose with pip, open you python interpreter and copy & paste the following codes.
+Option (B). If you install mmpose with pip, open your Python interpreter and copy & paste the following codes.
 
 ```python
 from mmpose.apis import inference_topdown, init_model
@@ -170,13 +170,13 @@ When installing PyTorch, you need to specify the version of CUDA. If you are not
 
 Please make sure the GPU driver satisfies the minimum version requirements. See [this table](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-major-component-versions__table-cuda-toolkit-driver-versions) for more information.
 
-Installing CUDA runtime libraries is enough if you follow our best practices, because no CUDA code will be compiled locally. However if you hope to compile MMCV from source or develop other CUDA operators, you need to install the complete CUDA toolkit from NVIDIA's [website](https://developer.nvidia.com/cuda-downloads), and its version should match the CUDA version of PyTorch. i.e., the specified version of cudatoolkit in `conda install` command.
+Installing CUDA runtime libraries is enough if you follow our best practices, because no CUDA code will be compiled locally. However, if you hope to compile MMCV from source or develop other CUDA operators, you need to install the complete CUDA toolkit from NVIDIA's [website](https://developer.nvidia.com/cuda-downloads), and its version should match the CUDA version of PyTorch. i.e., the specified version of cudatoolkit in `conda install` command.
 
 ### Install MMEngine without MIM
 
 To install MMEngine with pip instead of MIM, please follow [MMEngine installation guides](https://mmengine.readthedocs.io/zh_CN/latest/get_started/installation.html).
 
-For example, you can install MMEngine by the following command.
+For example, you can install MMEngine using the following command.
 
 ```shell
 pip install mmengine
@@ -184,11 +184,11 @@ pip install mmengine
 
 ### Install MMCV without MIM
 
-MMCV contains C++ and CUDA extensions, thus depending on PyTorch in a complex way. MIM solves such dependencies automatically and makes the installation easier. However, it is not a must.
+MMCV contains C++ and CUDA extensions, thus, it depends on PyTorch in a complex way. MIM solves such dependencies automatically and makes the installation easier. However, it is not a must.
 
 To install MMCV with pip instead of MIM, please follow [MMCV installation guides](https://mmcv.readthedocs.io/en/2.x/get_started/installation.html). This requires manually specifying a find-url based on PyTorch version and its CUDA version.
 
-For example, the following command install mmcv built for PyTorch 1.10.x and CUDA 11.3.
+For example, the following command installs mmcv built for PyTorch 1.10.x and CUDA 11.3.
 
 ```shell
 pip install 'mmcv>=2.0.1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
@@ -239,7 +239,7 @@ We provide a [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/docke
 
 ```shell
 # build an image with PyTorch 1.8.0, CUDA 10.1, CUDNN 7.
-# If you prefer other versions, just modified the Dockerfile
+# If you prefer other versions, just modify the Dockerfile
 docker build -t mmpose docker/
 ```
 
@@ -254,10 +254,10 @@ docker run --gpus all --shm-size=8g -it -v {DATA_DIR}:/mmpose/data mmpose
 `{DATA_DIR}` is your local folder containing all the datasets for mmpose.
 
 ```{note}
-If you encounter the error message like `permission denied`, please add `sudo` at the start of the command and try it again.
+If you encounter an error message like `permission denied`, please add `sudo` at the start of the command and try it again.
 ```
 
-## Trouble shooting
+## Troubleshooting
 
 If you have some issues during the installation, please first view the [FAQ](./faq.md) page.
 You may [open an issue](https://github.com/open-mmlab/mmpose/issues/new/choose) on GitHub if no solution is found.
