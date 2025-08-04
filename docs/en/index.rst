@@ -27,6 +27,7 @@ You can change the documentation language at the lower-left corner of the page.
    user_guides/how_to_deploy.md
    user_guides/model_analysis.md
    user_guides/dataset_tools.md
+   user_guides/mixed_datasets.md
 
 .. toctree::
    :maxdepth: 1
