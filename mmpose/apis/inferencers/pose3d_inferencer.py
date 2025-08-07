@@ -214,6 +214,8 @@ class Pose3DInferencer(BaseMMPoseInferencer):
                     result.set_field(-1, 'track_id')
             else:
                 result.set_field(track_id, 'track_id')
+
+        self._buffer['results_pose2d_last'] = results_pose2d
         self._buffer['pose2d_results'] = merge_data_samples(results_pose2d)
 
         # convert keypoints
@@ -318,9 +320,16 @@ class Pose3DInferencer(BaseMMPoseInferencer):
         """
         pose_lift_results = self.model.test_step(inputs)
 
+        if len(pose_lift_results) == 0:
+            return []
+
         # Post-processing of pose estimation results
         pose_est_results_converted = self._buffer['pose_est_results_list'][-1]
         for idx, pose_lift_res in enumerate(pose_lift_results):
+            # Protect in case the number of 3D poses predicted is larger than the number of 2D poses detected in the previous step
+            if idx >= len(pose_est_results_converted):
+                pose_lift_results = pose_lift_results[:len(pose_est_results_converted)]
+                break
             # Update track_id from the pose estimation results
             pose_lift_res.track_id = pose_est_results_converted[idx].get(
                 'track_id', 1e4)
