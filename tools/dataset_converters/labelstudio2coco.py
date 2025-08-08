@@ -102,7 +102,7 @@ class LSConverter:
 
         for item_idx, item in enumerate(ann_list):
             # each image is an item
-            image_name = item['file_upload']
+            image_name = item['data']['img']
             image_id = len(images)
             width, height = None, None
 
@@ -143,7 +143,6 @@ class LSConverter:
                     images = add_image(images, width, height, image_id,
                                        image_name)
 
-                category_id = self.category_name_to_id[category_name]
 
                 annotation_id = len(annotations)
 
@@ -201,6 +200,7 @@ class LSConverter:
 
                     # create new annotation in coco
                     # when the keypoint is the first point of an instance
+                    category_id = self.category_name_to_id[category_name]
                     if i == 0 or item['annotations'][0]['result'][
                             i - 1]['type'] != 'keypointlabels':
                         annotations.append({
