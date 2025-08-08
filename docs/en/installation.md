@@ -77,6 +77,30 @@ Here are the version correspondences between mmdet, mmpose and mmcv:
 If you encounter version incompatibility issues, please check the correspondence using `pip list | grep mm` and upgrade or downgrade the dependencies accordingly. Please note that `mmcv-full` is only for `mmcv 1.x`, so please uninstall it first, and then use `mim install mmcv` to install `mmcv 2.x`.
 ```
 
+## Build MMPose with Singularity
+
+Build a Singularity definition file with the following instruction.
+
+```
+cd /path/to/mmpose/../
+sudo singularity build --sandbox mmpose-env-cuda11.3 mmpose/Singularity-cuda11.3.def
+```
+
+A folder named "mmpose-env-cuda11.3" will be generated.
+
+```
+sudo mkdir mmpose-env-cuda11.3/workspace
+singularity shell --writable --nv mmpose-env-cuda11.3/
+```
+
+Now the shell started by Singularity will show. Type the following instruction in it.
+
+```
+cd /path/to/mmpose/
+pip install -r requirements.txt
+mim install .
+```
+
 ## Best Practices
 
 ### Build MMPose from source
