@@ -32,6 +32,12 @@ python tools/misc/publish_model.py ${IN_FILE} ${OUT_FILE}
 python tools/misc/publish_model.py ./epoch_10.pth ./epoch_10_publish.pth
 ```
 
+要将模型保存为 float16 (half)，请添加 --float16，如下所示：
+
+```shell
+python tools/misc/publish_model.py ${IN_FILE} ${OUT_FILE} --float16
+```
+
 脚本会自动对模型进行精简，并将精简后的模型保存到制定路径，并在文件名的最后加上时间戳，例如 `./epoch_10_publish-21815b2c_20230726.pth`。
 
 ## 使用 MMDeploy 部署

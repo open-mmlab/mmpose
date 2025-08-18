@@ -32,6 +32,12 @@ For example:
 python tools/misc/publish_model.py ./epoch_10.pth ./epoch_10_publish.pth
 ```
 
+To save model as float16 (half) add --float16, which is as follows:
+
+```shell
+python tools/misc/publish_model.py ${IN_FILE} ${OUT_FILE} --float16
+```
+
 The script will automatically simplify the model, save the simplified model to the specified path, and add a timestamp to the filename, for example, `./epoch_10_publish-21815b2c_20230726.pth`.
 
 ## Deployment with MMDeploy
