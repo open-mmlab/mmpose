@@ -1026,7 +1026,7 @@ class RTMOHead(YOLOXPoseHead):
         featmaps = []
         for s in self.featmap_strides:
             featmaps.append(
-                torch.rand(1, 1, input_size[0] // s, input_size[1] // s))
+                torch.rand(1, 1, input_size[1] // s, input_size[0] // s))
         featmap_sizes = [fmap.shape[2:] for fmap in featmaps]
 
         self.mlvl_priors = self.prior_generator.grid_priors(
