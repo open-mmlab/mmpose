@@ -182,6 +182,8 @@ class BaseMMPoseInferencer(BaseInferencer):
                 ]
                 inputs = []
                 for filepath in filepath_list:
+                    if mimetypes.guess_type(filepath)[0] is None:
+                        continue
                     input_type = mimetypes.guess_type(filepath)[0].split(
                         '/')[0]
                     if input_type == 'image':
