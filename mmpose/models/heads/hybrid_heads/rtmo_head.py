@@ -1024,9 +1024,10 @@ class RTMOHead(YOLOXPoseHead):
         # grid generator
         input_size = test_cfg.get('input_size', (640, 640))
         featmaps = []
+        # input_size is (W, H); feature maps are (H // s, W // s).
         for s in self.featmap_strides:
             featmaps.append(
-                torch.rand(1, 1, input_size[0] // s, input_size[1] // s))
+                torch.rand(1, 1, input_size[1] // s, input_size[0] // s))
         featmap_sizes = [fmap.shape[2:] for fmap in featmaps]
 
         self.mlvl_priors = self.prior_generator.grid_priors(
