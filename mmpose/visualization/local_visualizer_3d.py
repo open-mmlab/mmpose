@@ -160,8 +160,8 @@ class Pose3dLocalVisualizer(PoseLocalVisualizer):
             for idx, (kpts, score, score_2d) in enumerate(
                     zip(keypoints, scores, scores_2d)):
 
-                valid = np.logical_and(score >= kpt_thr, score_2d >= kpt_thr,
-                                       np.any(~np.isnan(kpts), axis=-1))
+                valid = np.logical_and.reduce([score >= kpt_thr, score_2d >= kpt_thr,
+                                       np.any(~np.isnan(kpts), axis=-1)])
 
                 kpts_valid = kpts[valid]
                 ax = fig.add_subplot(
