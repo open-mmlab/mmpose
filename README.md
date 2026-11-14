@@ -240,7 +240,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 
 - [x] [AFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[homepage\] (ICCVW'2011)
 - [x] [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#jhmdb-iccv-2013) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
-- [x] [COFW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#cofw-iccv-2013) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
+- [x] [COFW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#cofw-iccv-2013) \[homepage\] (ICCV'2013)
 - [x] [MPII](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#mpii-cvpr-2014) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
 - [x] [Human3.6M](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#human3-6m-tpami-2014) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
 - [x] [COCO](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#coco-eccv-2014) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
