@@ -252,7 +252,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [CMU Panoptic HandDB](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#cmu-panoptic-handdb-cvpr-2017) \[[homepage](http://domedb.perception.cs.cmu.edu/handdb.html)\] (CVPR'2017)
 - [x] [AI Challenger](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ai-challenger-arxiv-2017) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
 - [x] [MHP](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#mhp-acm-mm-2018) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
-- [x] [WFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#wflw-cvpr-2018) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
+- [x] [WFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#wflw-cvpr-2018) \[homepage\] (CVPR'2018)
 - [x] [PoseTrack18](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#posetrack18-cvpr-2018) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
 - [x] [OCHuman](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ochuman-cvpr-2019) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
 - [x] [CrowdPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#crowdpose-cvpr-2019) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
