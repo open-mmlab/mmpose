@@ -238,9 +238,9 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 <details open>
 <summary><b>Supported datasets:</b></summary>
 
-- [x] [AFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
+- [x] [AFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#aflw-iccvw-2011) \[homepage\] (ICCVW'2011)
 - [x] [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#jhmdb-iccv-2013) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
-- [x] [COFW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#cofw-iccv-2013) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
+- [x] [COFW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#cofw-iccv-2013) \[homepage\] (ICCV'2013)
 - [x] [MPII](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#mpii-cvpr-2014) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
 - [x] [Human3.6M](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#human3-6m-tpami-2014) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
 - [x] [COCO](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#coco-eccv-2014) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
@@ -252,7 +252,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [CMU Panoptic HandDB](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#cmu-panoptic-handdb-cvpr-2017) \[[homepage](http://domedb.perception.cs.cmu.edu/handdb.html)\] (CVPR'2017)
 - [x] [AI Challenger](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ai-challenger-arxiv-2017) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
 - [x] [MHP](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#mhp-acm-mm-2018) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
-- [x] [WFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#wflw-cvpr-2018) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
+- [x] [WFLW](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#wflw-cvpr-2018) \[homepage\] (CVPR'2018)
 - [x] [PoseTrack18](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#posetrack18-cvpr-2018) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
 - [x] [OCHuman](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ochuman-cvpr-2019) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
 - [x] [CrowdPose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#crowdpose-cvpr-2019) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
@@ -269,7 +269,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [MacaquePose](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#macaquepose-biorxiv-2020) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
 - [x] [InterHand2.6M](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#interhand2-6m-eccv-2020) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
 - [x] [AP-10K](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ap-10k-neurips-2021) \[[homepage](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
-- [x] [Horse-10](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#horse-10-wacv-2021) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
+- [x] [Horse-10](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#horse-10-wacv-2021) \[homepage\] (WACV'2021)
 - [x] [Human-Art](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#human-art-cvpr-2023) \[[homepage](https://idea-research.github.io/HumanArt/)\] (CVPR'2023)
 - [x] [LaPa](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#lapa-aaai-2020) \[[homepage](https://github.com/JDAI-CV/lapa-dataset)\] (AAAI'2020)
 - [x] [UBody](https://mmpose.readthedocs.io/en/latest/model_zoo_papers/datasets.html#ubody-cvpr-2023) \[[homepage](https://github.com/IDEA-Research/OSX)\] (CVPR'2023)
